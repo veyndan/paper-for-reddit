@@ -43,6 +43,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // Ensure that downvote and upvote aren't checked at the same time.
+                if (isChecked) {
+                    holder.downvote.setChecked(false);
+                }
+
                 Thing<Link> post = posts.get(holder.getAdapterPosition());
                 post.data.likes = isChecked ? true : null;
                 reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.kind + "_" + post.data.id)
@@ -56,6 +61,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // Ensure that downvote and upvote aren't checked at the same time.
+                if (isChecked) {
+                    holder.upvote.setChecked(false);
+                }
+
                 Thing<Link> post = posts.get(holder.getAdapterPosition());
                 post.data.likes = isChecked ? false : null;
                 reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.kind + "_" + post.data.id)
