@@ -8,4 +8,17 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="ImageToggleButton" parent="Widget.AppCompat.Button.Borderless">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:background">?selectableItemBackgroundBorderless</item>
+        <item name="android:gravity">center</item>
+        <item name="android:text">@null</item>
+        <item name="android:textOff">@null</item>
+        <item name="android:textOn">@null</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textSize">0sp</item>
+    </style>
+
 </resources>

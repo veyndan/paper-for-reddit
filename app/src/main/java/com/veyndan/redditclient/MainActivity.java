@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        final PostAdapter postAdapter = new PostAdapter(posts);
+        final PostAdapter postAdapter = new PostAdapter(posts, reddit);
         recyclerView.setAdapter(postAdapter);
 
         reddit.subreddit("all", Sort.HOT)
