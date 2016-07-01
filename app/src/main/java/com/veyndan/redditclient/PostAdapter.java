@@ -35,9 +35,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     @Override
     public void onBindViewHolder(final PostAdapter.PostViewHolder holder, int position) {
-        holder.title.setText(posts.get(position).data.title);
+        Thing<Link> post = posts.get(position);
 
-        Boolean likes = posts.get(holder.getAdapterPosition()).data.likes;
+        holder.title.setText(post.data.title);
+
+        Boolean likes = post.data.likes;
 
         holder.upvote.setChecked(likes != null && likes);
         holder.upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -74,6 +76,26 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         .subscribe();
             }
         });
+
+        holder.save.setChecked(post.data.saved);
+        holder.save.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Thing<Link> post = posts.get(holder.getAdapterPosition());
+                post.data.saved = isChecked;
+                if (isChecked) {
+                    reddit.save("", post.kind + "_" + post.data.id)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe();
+                } else {
+                    reddit.unsave(post.kind + "_" + post.data.id)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe();
+                }
+            }
+        });
     }
 
     @Override
@@ -86,12 +108,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         final TextView title;
         final ToggleButton upvote;
         final ToggleButton downvote;
+        final ToggleButton save;
 
         public PostViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.post_title);
             upvote = (ToggleButton) itemView.findViewById(R.id.post_upvote);
             downvote = (ToggleButton) itemView.findViewById(R.id.post_downvote);
+            save = (ToggleButton) itemView.findViewById(R.id.post_save);
         }
     }
 }
