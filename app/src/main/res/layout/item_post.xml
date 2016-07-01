@@ -31,6 +31,11 @@
             style="@style/ImageToggleButton"
             android:drawableTop="@drawable/ic_arrow_upward_black_24dp"/>
 
+        <ToggleButton
+            android:id="@+id/post_downvote"
+            style="@style/ImageToggleButton"
+            android:drawableTop="@drawable/ic_arrow_downward_black_24dp"/>
+
     </LinearLayout>
 
 </LinearLayout>
