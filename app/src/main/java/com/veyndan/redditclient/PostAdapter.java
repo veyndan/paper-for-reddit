@@ -1,6 +1,7 @@
 package com.veyndan.redditclient;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,7 +9,10 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import rawjava.Reddit;
 import rawjava.model.Link;
@@ -18,6 +22,8 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
+
+    private static final String TAG = "veyndan_PostAdapter";
 
     private final List<Thing<Link>> posts;
     private final Reddit reddit;
@@ -38,6 +44,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         Thing<Link> post = posts.get(position);
 
         holder.title.setText(post.data.title);
+
+        String age = TimeUnit.MILLISECONDS.toHours(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(post.data.createdUtc)) + " hrs ago";
+        String urlHost;
+        try {
+            urlHost = new URL(post.data.url).getHost();
+        } catch (MalformedURLException e) {
+            Log.e(TAG, e.getMessage(), e);
+            urlHost = post.data.url;
+        }
+
+        holder.subtitle.setText(post.data.author + " · " + age + " · " + post.data.subreddit + " · " + urlHost);
 
         Boolean likes = post.data.likes;
 
@@ -106,6 +123,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public static class PostViewHolder extends RecyclerView.ViewHolder {
 
         final TextView title;
+        final TextView subtitle;
         final ToggleButton upvote;
         final ToggleButton downvote;
         final ToggleButton save;
@@ -113,6 +131,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         public PostViewHolder(View itemView) {
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.post_title);
+            subtitle = (TextView) itemView.findViewById(R.id.post_subtitle);
             upvote = (ToggleButton) itemView.findViewById(R.id.post_upvote);
             downvote = (ToggleButton) itemView.findViewById(R.id.post_downvote);
             save = (ToggleButton) itemView.findViewById(R.id.post_save);
