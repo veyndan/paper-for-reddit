@@ -1,6 +1,8 @@
 package com.veyndan.redditclient;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -9,8 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,6 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rawjava.Reddit;
 import rawjava.model.Link;
+import rawjava.model.Source;
 import rawjava.model.Thing;
 import rawjava.network.VoteDirection;
 import rx.android.schedulers.AndroidSchedulers;
@@ -33,10 +43,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private final List<Thing<Link>> posts;
     private final Reddit reddit;
+    private final int width;
 
-    public PostAdapter(List<Thing<Link>> posts, Reddit reddit) {
+    public PostAdapter(List<Thing<Link>> posts, Reddit reddit, int width) {
         this.posts = posts;
         this.reddit = reddit;
+        this.width = width;
     }
 
     @Override
@@ -73,6 +85,40 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             subtitleTokens.add(urlHost);
         }
         holder.subtitle.setText(TextUtils.join(" · ", subtitleTokens));
+
+        if (!post.data.isSelf && post.data.preview != null && !post.data.preview.images.isEmpty()) {
+            holder.image.setVisibility(View.VISIBLE);
+            holder.imageProgress.setVisibility(View.VISIBLE);
+            Source source = post.data.preview.images.get(0).source;
+            Glide.with(context)
+                    .load(source.url)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            holder.imageProgress.setVisibility(View.GONE);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            holder.imageProgress.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
+                    .into(holder.image);
+            holder.image.getLayoutParams().height = (int) ((float) width / source.width * source.height);
+            holder.image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Thing<Link> post = posts.get(holder.getAdapterPosition());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
+                    context.startActivity(intent);
+                }
+            });
+        } else {
+            holder.image.setVisibility(View.GONE);
+            holder.imageProgress.setVisibility(View.GONE);
+        }
 
         final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
         final String comments = context.getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
@@ -158,6 +204,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         @BindView(R.id.post_title) TextView title;
         @BindView(R.id.post_subtitle) TextView subtitle;
+        @BindView(R.id.post_image) ImageView image;
+        @BindView(R.id.post_image_progress) ProgressBar imageProgress;
         @BindView(R.id.post_score) TextView score;
         @BindView(R.id.post_upvote) ToggleButton upvote;
         @BindView(R.id.post_downvote) ToggleButton downvote;

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,9 @@ public class MainActivity extends AppCompatActivity {
         final List<Thing<Link>> posts = new ArrayList<>();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        final PostAdapter postAdapter = new PostAdapter(posts, reddit);
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        final PostAdapter postAdapter = new PostAdapter(posts, reddit, metrics.widthPixels);
         recyclerView.setAdapter(postAdapter);
 
         reddit.subreddit("all", Sort.HOT)
