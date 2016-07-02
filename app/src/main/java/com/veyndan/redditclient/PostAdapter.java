@@ -63,7 +63,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         holder.subtitle.setText(post.data.author + " · " + age + " · " + post.data.subreddit + " · " + urlHost);
 
-        holder.score.setText(holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score));
+        final String points = holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
+        final String comments = holder.itemView.getContext().getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
+        holder.score.setText(holder.itemView.getContext().getString(R.string.score, points, comments));
 
         Boolean likes = post.data.likes;
 
@@ -85,7 +87,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 post.data.score += isChecked ? 1 : -1;
 
-                holder.score.setText(holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score));
+                final String points = holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
+                final String comments = holder.itemView.getContext().getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
+                holder.score.setText(holder.itemView.getContext().getString(R.string.score, points, comments));
             }
         });
 
@@ -107,7 +111,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 post.data.score += isChecked ? -1 : 1;
 
-                holder.score.setText(holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score));
+                final String points = holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
+                final String comments = holder.itemView.getContext().getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
+                holder.score.setText(holder.itemView.getContext().getString(R.string.score, points, comments));
             }
         });
 
