@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -104,6 +105,13 @@
             android:id="@+id/post_save"
             style="@style/ImageToggleButton"
             android:drawableTop="@drawable/ic_bookmark_black_24dp"/>
+
+        <ImageButton
+            android:id="@+id/post_other"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?selectableItemBackgroundBorderless"
+            app:srcCompat="@drawable/ic_more_vert_black_24dp"/>
 
     </LinearLayout>
 

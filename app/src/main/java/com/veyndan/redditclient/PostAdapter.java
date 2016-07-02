@@ -8,11 +8,14 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -202,6 +205,38 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 }
             }
         });
+
+        final PopupMenu otherMenu = new PopupMenu(context, holder.other);
+        otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
+
+        holder.other.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                otherMenu.show();
+            }
+        });
+
+        otherMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_post_share:
+                        return true;
+                    case R.id.action_post_hide:
+                        return true;
+                    case R.id.action_post_profile:
+                        return true;
+                    case R.id.action_post_subreddit:
+                        return true;
+                    case R.id.action_post_browser:
+                        return true;
+                    case R.id.action_post_report:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
     }
 
     @Override
@@ -221,6 +256,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         @BindView(R.id.post_upvote) ToggleButton upvote;
         @BindView(R.id.post_downvote) ToggleButton downvote;
         @BindView(R.id.post_save) ToggleButton save;
+        @BindView(R.id.post_other) ImageButton other;
 
         public PostViewHolder(View itemView) {
             super(itemView);
