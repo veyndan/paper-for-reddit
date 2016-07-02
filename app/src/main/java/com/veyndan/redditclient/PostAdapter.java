@@ -1,6 +1,7 @@
 package com.veyndan.redditclient;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,7 +46,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         holder.title.setText(post.data.title);
 
-        String age = TimeUnit.MILLISECONDS.toHours(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(post.data.createdUtc)) + " hrs ago";
+        CharSequence age = DateUtils.getRelativeTimeSpanString(
+                TimeUnit.SECONDS.toMillis(post.data.createdUtc), System.currentTimeMillis(),
+                DateUtils.SECOND_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
+
         String urlHost;
         try {
             urlHost = new URL(post.data.url).getHost();
