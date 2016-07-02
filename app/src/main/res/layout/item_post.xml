@@ -23,18 +23,26 @@
         android:layout_height="wrap_content"
         android:paddingBottom="16dp"
         android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        tools:text="Theone211 · 2 years ago · r/funny · imgur.com"
-        android:paddingRight="16dp"/>
+        tools:text="Theone211 · 2 years ago · r/funny · imgur.com"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="end"
+        android:gravity="center_vertical|end"
         android:paddingBottom="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="8dp">
+
+        <TextView
+            android:id="@+id/post_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            tools:text="29471"/>
 
         <ToggleButton
             android:id="@+id/post_upvote"

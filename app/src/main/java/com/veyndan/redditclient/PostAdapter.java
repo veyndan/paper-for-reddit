@@ -61,6 +61,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         holder.subtitle.setText(post.data.author + " · " + age + " · " + post.data.subreddit + " · " + urlHost);
 
+        holder.score.setText(String.valueOf(post.data.score));
+
         Boolean likes = post.data.likes;
 
         holder.upvote.setChecked(likes != null && likes);
@@ -129,6 +131,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         final TextView title;
         final TextView subtitle;
+        final TextView score;
         final ToggleButton upvote;
         final ToggleButton downvote;
         final ToggleButton save;
@@ -137,6 +140,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             super(itemView);
             title = (TextView) itemView.findViewById(R.id.post_title);
             subtitle = (TextView) itemView.findViewById(R.id.post_subtitle);
+            score = (TextView) itemView.findViewById(R.id.post_score);
             upvote = (ToggleButton) itemView.findViewById(R.id.post_upvote);
             downvote = (ToggleButton) itemView.findViewById(R.id.post_downvote);
             save = (ToggleButton) itemView.findViewById(R.id.post_save);
