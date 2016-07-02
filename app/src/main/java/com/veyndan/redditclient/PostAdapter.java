@@ -1,5 +1,6 @@
 package com.veyndan.redditclient;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -47,6 +48,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(final PostAdapter.PostViewHolder holder, int position) {
         Thing<Link> post = posts.get(position);
+        final Context context = holder.itemView.getContext();
 
         holder.title.setText(post.data.title);
 
@@ -72,9 +74,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
         holder.subtitle.setText(TextUtils.join(" · ", subtitleTokens));
 
-        final String points = holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
-        final String comments = holder.itemView.getContext().getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
-        holder.score.setText(holder.itemView.getContext().getString(R.string.score, points, comments));
+        final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
+        final String comments = context.getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
+        holder.score.setText(context.getString(R.string.score, points, comments));
 
         Boolean likes = post.data.likes;
 
@@ -96,9 +98,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 post.data.score += isChecked ? 1 : -1;
 
-                final String points = holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
-                final String comments = holder.itemView.getContext().getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
-                holder.score.setText(holder.itemView.getContext().getString(R.string.score, points, comments));
+                final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
+                final String comments = context.getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
+                holder.score.setText(context.getString(R.string.score, points, comments));
             }
         });
 
@@ -120,9 +122,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 post.data.score += isChecked ? -1 : 1;
 
-                final String points = holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
-                final String comments = holder.itemView.getContext().getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
-                holder.score.setText(holder.itemView.getContext().getString(R.string.score, points, comments));
+                final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
+                final String comments = context.getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
+                holder.score.setText(context.getString(R.string.score, points, comments));
             }
         });
 
