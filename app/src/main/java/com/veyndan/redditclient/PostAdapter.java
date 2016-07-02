@@ -15,6 +15,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rawjava.Reddit;
 import rawjava.model.Link;
 import rawjava.model.Thing;
@@ -137,21 +139,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView title;
-        final TextView subtitle;
-        final TextView score;
-        final ToggleButton upvote;
-        final ToggleButton downvote;
-        final ToggleButton save;
+        @BindView(R.id.post_title) TextView title;
+        @BindView(R.id.post_subtitle) TextView subtitle;
+        @BindView(R.id.post_score) TextView score;
+        @BindView(R.id.post_upvote) ToggleButton upvote;
+        @BindView(R.id.post_downvote) ToggleButton downvote;
+        @BindView(R.id.post_save) ToggleButton save;
 
         public PostViewHolder(View itemView) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.post_title);
-            subtitle = (TextView) itemView.findViewById(R.id.post_subtitle);
-            score = (TextView) itemView.findViewById(R.id.post_score);
-            upvote = (ToggleButton) itemView.findViewById(R.id.post_upvote);
-            downvote = (ToggleButton) itemView.findViewById(R.id.post_downvote);
-            save = (ToggleButton) itemView.findViewById(R.id.post_save);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

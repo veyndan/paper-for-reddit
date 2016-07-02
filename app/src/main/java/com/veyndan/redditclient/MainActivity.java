@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rawjava.Reddit;
 import rawjava.model.Link;
 import rawjava.model.Listing;
@@ -20,17 +22,19 @@ import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
+    @BindView(R.id.recycler_view) RecyclerView recyclerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         Credentials credentials = Credentials.create(getResources().openRawResource(R.raw.credentials));
         Reddit reddit = new Reddit(credentials);
 
         final List<Thing<Link>> posts = new ArrayList<>();
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         final PostAdapter postAdapter = new PostAdapter(posts, reddit);
         recyclerView.setAdapter(postAdapter);
