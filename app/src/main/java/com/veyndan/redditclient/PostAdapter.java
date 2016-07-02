@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -73,7 +74,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         subtitleTokens.add(post.data.author);
         subtitleTokens.add(age);
         subtitleTokens.add(post.data.subreddit);
-        if (!post.data.isSelf) {
+        if (!post.data.isSelf && (post.data.preview == null || post.data.preview.images.isEmpty())) {
             String urlHost;
             try {
                 urlHost = new URL(post.data.url).getHost();
@@ -87,8 +88,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.subtitle.setText(TextUtils.join(" · ", subtitleTokens));
 
         if (!post.data.isSelf && post.data.preview != null && !post.data.preview.images.isEmpty()) {
-            holder.image.setVisibility(View.VISIBLE);
-            holder.imageProgress.setVisibility(View.VISIBLE);
+            holder.urlContainer.setVisibility(View.VISIBLE);
             Source source = post.data.preview.images.get(0).source;
             Glide.with(context)
                     .load(source.url)
@@ -107,7 +107,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     })
                     .into(holder.image);
             holder.image.getLayoutParams().height = (int) ((float) width / source.width * source.height);
-            holder.image.setOnClickListener(new View.OnClickListener() {
+            holder.urlContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Thing<Link> post = posts.get(holder.getAdapterPosition());
@@ -115,9 +115,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     context.startActivity(intent);
                 }
             });
+
+            String urlHost;
+            try {
+                urlHost = new URL(post.data.url).getHost();
+            } catch (MalformedURLException e) {
+                Log.e(TAG, e.getMessage(), e);
+                urlHost = post.data.url;
+            }
+
+            holder.url.setText(urlHost);
         } else {
-            holder.image.setVisibility(View.GONE);
-            holder.imageProgress.setVisibility(View.GONE);
+            holder.urlContainer.setVisibility(View.GONE);
         }
 
         final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
@@ -206,6 +215,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         @BindView(R.id.post_subtitle) TextView subtitle;
         @BindView(R.id.post_image) ImageView image;
         @BindView(R.id.post_image_progress) ProgressBar imageProgress;
+        @BindView(R.id.post_url) TextView url;
+        @BindView(R.id.post_url_container) LinearLayout urlContainer;
         @BindView(R.id.post_score) TextView score;
         @BindView(R.id.post_upvote) ToggleButton upvote;
         @BindView(R.id.post_downvote) ToggleButton downvote;
