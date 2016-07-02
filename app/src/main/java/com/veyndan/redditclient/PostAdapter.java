@@ -1,6 +1,7 @@
 package com.veyndan.redditclient;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.ToggleButton;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -53,15 +55,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 DateUtils.SECOND_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
 
-        String urlHost;
-        try {
-            urlHost = new URL(post.data.url).getHost();
-        } catch (MalformedURLException e) {
-            Log.e(TAG, e.getMessage(), e);
-            urlHost = post.data.url;
-        }
+        List<CharSequence> subtitleTokens = new ArrayList<>();
+        subtitleTokens.add(post.data.author);
+        subtitleTokens.add(age);
+        subtitleTokens.add(post.data.subreddit);
+        if (!post.data.isSelf) {
+            String urlHost;
+            try {
+                urlHost = new URL(post.data.url).getHost();
+            } catch (MalformedURLException e) {
+                Log.e(TAG, e.getMessage(), e);
+                urlHost = post.data.url;
+            }
 
-        holder.subtitle.setText(post.data.author + " · " + age + " · " + post.data.subreddit + " · " + urlHost);
+            subtitleTokens.add(urlHost);
+        }
+        holder.subtitle.setText(TextUtils.join(" · ", subtitleTokens));
 
         final String points = holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
         final String comments = holder.itemView.getContext().getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
