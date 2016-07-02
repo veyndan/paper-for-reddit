@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            tools:text="29471 points"/>
+            tools:text="29471 points\n2992 comments"/>
 
         <ToggleButton
             android:id="@+id/post_upvote"
