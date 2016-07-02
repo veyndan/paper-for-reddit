@@ -74,39 +74,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         subtitleTokens.add(post.data.author);
         subtitleTokens.add(age);
         subtitleTokens.add(post.data.subreddit);
-        if (!post.data.isSelf && (post.data.preview == null || post.data.preview.images.isEmpty())) {
-            String urlHost;
-            try {
-                urlHost = new URL(post.data.url).getHost();
-            } catch (MalformedURLException e) {
-                Log.e(TAG, e.getMessage(), e);
-                urlHost = post.data.url;
-            }
-
-            subtitleTokens.add(urlHost);
-        }
         holder.subtitle.setText(TextUtils.join(" · ", subtitleTokens));
 
-        if (!post.data.isSelf && post.data.preview != null && !post.data.preview.images.isEmpty()) {
+        holder.image.setImageDrawable(null);
+        if (!post.data.isSelf) {
             holder.urlContainer.setVisibility(View.VISIBLE);
-            Source source = post.data.preview.images.get(0).source;
-            Glide.with(context)
-                    .load(source.url)
-                    .listener(new RequestListener<String, GlideDrawable>() {
-                        @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            holder.imageProgress.setVisibility(View.GONE);
-                            return false;
-                        }
 
-                        @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            holder.imageProgress.setVisibility(View.GONE);
-                            return false;
-                        }
-                    })
-                    .into(holder.image);
-            holder.image.getLayoutParams().height = (int) ((float) width / source.width * source.height);
             holder.urlContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -125,8 +98,35 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
 
             holder.url.setText(urlHost);
+
+            if (post.data.preview != null && !post.data.preview.images.isEmpty()) {
+                holder.image.setVisibility(View.VISIBLE);
+                holder.imageProgress.setVisibility(View.VISIBLE);
+                Source source = post.data.preview.images.get(0).source;
+                Glide.with(context)
+                        .load(source.url)
+                        .listener(new RequestListener<String, GlideDrawable>() {
+                            @Override
+                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                holder.imageProgress.setVisibility(View.GONE);
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                holder.imageProgress.setVisibility(View.GONE);
+                                return false;
+                            }
+                        })
+                        .into(holder.image);
+                holder.image.getLayoutParams().height = (int) ((float) width / source.width * source.height);
+            } else {
+                holder.image.setVisibility(View.GONE);
+                holder.imageProgress.setVisibility(View.GONE);
+            }
         } else {
             holder.urlContainer.setVisibility(View.GONE);
+            holder.image.setVisibility(View.GONE);
         }
 
         final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
