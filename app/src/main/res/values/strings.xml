@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Reddit Client</string>
 
+    <string name="subtitle">%1$s · %2$s · %3$s</string>
+
     <plurals name="points">
         <item quantity="one">%1$d point</item>
         <item quantity="other">%1$d points</item>

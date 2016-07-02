@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,7 +26,6 @@ import com.bumptech.glide.request.target.Target;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -73,11 +71,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 DateUtils.SECOND_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
 
-        List<CharSequence> subtitleTokens = new ArrayList<>();
-        subtitleTokens.add(post.data.author);
-        subtitleTokens.add(age);
-        subtitleTokens.add(post.data.subreddit);
-        holder.subtitle.setText(TextUtils.join(" · ", subtitleTokens));
+        holder.subtitle.setText(context.getString(R.string.subtitle, post.data.author, age, post.data.subreddit));
 
         holder.image.setImageDrawable(null);
         if (!post.data.isSelf) {
