@@ -229,6 +229,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     case R.id.action_post_subreddit:
                         return true;
                     case R.id.action_post_browser:
+                        Thing<Link> post = posts.get(holder.getAdapterPosition());
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
+                        context.startActivity(intent);
                         return true;
                     case R.id.action_post_report:
                         return true;
