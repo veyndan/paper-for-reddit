@@ -61,7 +61,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         holder.subtitle.setText(post.data.author + " · " + age + " · " + post.data.subreddit + " · " + urlHost);
 
-        holder.score.setText(String.valueOf(post.data.score));
+        holder.score.setText(holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score));
 
         Boolean likes = post.data.likes;
 

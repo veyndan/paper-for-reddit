@@ -38,11 +38,11 @@
 
         <TextView
             android:id="@+id/post_score"
-            style="@style/TextAppearance.AppCompat.Small"
+            style="@style/TextAppearance.AppCompat.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            tools:text="29471"/>
+            tools:text="29471 points"/>
 
         <ToggleButton
             android:id="@+id/post_upvote"
