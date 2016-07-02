@@ -14,7 +14,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:paddingTop="24dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         tools:text="This is Carter. He knocked on my door to ask if he could have a banana then left."/>
 
     <TextView
@@ -24,7 +24,7 @@
         android:paddingBottom="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         tools:text="Theone211 · 2 years ago · r/funny · imgur.com"/>
 
     <LinearLayout
