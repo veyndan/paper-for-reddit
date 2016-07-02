@@ -80,6 +80,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe();
+
+                post.data.score += isChecked ? 1 : -1;
+
+                holder.score.setText(holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score));
             }
         });
 
@@ -98,6 +102,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe();
+
+                post.data.score += isChecked ? -1 : 1;
+
+                holder.score.setText(holder.itemView.getContext().getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score));
             }
         });
 
