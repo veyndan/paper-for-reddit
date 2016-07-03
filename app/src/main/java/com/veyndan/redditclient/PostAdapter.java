@@ -130,9 +130,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         final String comments = context.getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
         holder.score.setText(context.getString(R.string.score, points, comments));
 
-        Boolean likes = post.data.likes;
+        VoteDirection likes = post.data.getLikes();
 
-        holder.upvote.setChecked(likes != null && likes);
+        holder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
         holder.upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -142,7 +142,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 }
 
                 Thing<Link> post = posts.get(holder.getAdapterPosition());
-                post.data.likes = isChecked ? true : null;
+                post.data.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
                 reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.kind + "_" + post.data.id)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
@@ -156,7 +156,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         });
 
-        holder.downvote.setChecked(likes != null && !likes);
+        holder.downvote.setChecked(likes.equals(VoteDirection.DOWNVOTE));
         holder.downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -166,7 +166,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 }
 
                 Thing<Link> post = posts.get(holder.getAdapterPosition());
-                post.data.likes = isChecked ? false : null;
+                post.data.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
                 reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.kind + "_" + post.data.id)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
