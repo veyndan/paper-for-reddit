@@ -12,9 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -74,12 +74,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         holder.subtitle.setText(context.getString(R.string.subtitle, post.data.author, age, post.data.subreddit));
 
-        holder.image.setImageDrawable(null);
+        holder.mediaContainer.removeAllViews();
         if (!post.data.isSelf && post.data.preview != null && !post.data.preview.images.isEmpty() && post.data.url.contains("i.imgur.com/")) {
-            holder.urlContainer.setVisibility(View.VISIBLE);
-            holder.url.setVisibility(View.GONE);
+            View mediaRoot = LayoutInflater.from(context).inflate(R.layout.post_media_url, holder.mediaContainer, false);
+            holder.mediaContainer.addView(mediaRoot);
 
-            holder.urlContainer.setOnClickListener(new View.OnClickListener() {
+            TextView url = (TextView) holder.mediaContainer.findViewById(R.id.post_url);
+            ImageView image = (ImageView) holder.mediaContainer.findViewById(R.id.post_image);
+            final ProgressBar imageProgress = (ProgressBar) holder.mediaContainer.findViewById(R.id.post_image_progress);
+
+            url.setVisibility(View.GONE);
+
+            mediaRoot.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Thing<Link> post = posts.get(holder.getAdapterPosition());
@@ -88,31 +94,33 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 }
             });
 
-            holder.image.setVisibility(View.VISIBLE);
-            holder.imageProgress.setVisibility(View.VISIBLE);
             Glide.with(context)
                     .load(post.data.url)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            holder.imageProgress.setVisibility(View.GONE);
+                            imageProgress.setVisibility(View.GONE);
                             return false;
                         }
 
                         @Override
                         public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            holder.imageProgress.setVisibility(View.GONE);
+                            imageProgress.setVisibility(View.GONE);
                             return false;
                         }
                     })
-                    .into(holder.image);
+                    .into(image);
             Source source = post.data.preview.images.get(0).source;
-            holder.image.getLayoutParams().height = (int) ((float) width / source.width * source.height);
+            image.getLayoutParams().height = (int) ((float) width / source.width * source.height);
         } else if (!post.data.isSelf) {
-            holder.urlContainer.setVisibility(View.VISIBLE);
-            holder.url.setVisibility(View.VISIBLE);
+            View mediaRoot = LayoutInflater.from(context).inflate(R.layout.post_media_url, holder.mediaContainer, false);
+            holder.mediaContainer.addView(mediaRoot);
 
-            holder.urlContainer.setOnClickListener(new View.OnClickListener() {
+            TextView url = (TextView) holder.mediaContainer.findViewById(R.id.post_url);
+            ImageView image = (ImageView) holder.mediaContainer.findViewById(R.id.post_image);
+            final ProgressBar imageProgress = (ProgressBar) holder.mediaContainer.findViewById(R.id.post_image_progress);
+
+            mediaRoot.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Thing<Link> post = posts.get(holder.getAdapterPosition());
@@ -129,35 +137,33 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 urlHost = post.data.url;
             }
 
-            holder.url.setText(urlHost);
+            url.setText(urlHost);
 
             if (post.data.preview != null && !post.data.preview.images.isEmpty()) {
-                holder.image.setVisibility(View.VISIBLE);
-                holder.imageProgress.setVisibility(View.VISIBLE);
+                image.setVisibility(View.VISIBLE);
+                imageProgress.setVisibility(View.VISIBLE);
                 Source source = post.data.preview.images.get(0).source;
                 Glide.with(context)
                         .load(source.url)
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                holder.imageProgress.setVisibility(View.GONE);
+                                imageProgress.setVisibility(View.GONE);
                                 return false;
                             }
 
                             @Override
                             public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                holder.imageProgress.setVisibility(View.GONE);
+                                imageProgress.setVisibility(View.GONE);
                                 return false;
                             }
                         })
-                        .into(holder.image);
-                holder.image.getLayoutParams().height = (int) ((float) width / source.width * source.height);
+                        .into(image);
+                image.getLayoutParams().height = (int) ((float) width / source.width * source.height);
             } else {
-                holder.image.setVisibility(View.GONE);
-                holder.imageProgress.setVisibility(View.GONE);
+                image.setVisibility(View.GONE);
+                imageProgress.setVisibility(View.GONE);
             }
-        } else {
-            holder.urlContainer.setVisibility(View.GONE);
         }
 
         final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
@@ -316,10 +322,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         @BindView(R.id.post_title) TextView title;
         @BindView(R.id.post_subtitle) TextView subtitle;
-        @BindView(R.id.post_image) ImageView image;
-        @BindView(R.id.post_image_progress) ProgressBar imageProgress;
-        @BindView(R.id.post_url) TextView url;
-        @BindView(R.id.post_url_container) LinearLayout urlContainer;
+        @BindView(R.id.post_media_container) FrameLayout mediaContainer;
         @BindView(R.id.post_score) TextView score;
         @BindView(R.id.post_upvote) ToggleButton upvote;
         @BindView(R.id.post_downvote) ToggleButton downvote;
