@@ -3,6 +3,7 @@ package com.veyndan.redditclient;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -213,15 +214,44 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         otherMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                int position = holder.getAdapterPosition();
-                Thing<Link> post = posts.get(position);
+                final int position = holder.getAdapterPosition();
+                final Thing<Link> post = posts.get(position);
 
                 switch (item.getItemId()) {
                     case R.id.action_post_hide:
-                        reddit.hide(post.kind + "_" + post.data.id)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe();
+                        final View.OnClickListener undoClickListener = new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // If undo pressed, then don't follow through with request to hide
+                                // the post.
+                                posts.add(position, post);
+                                notifyItemInserted(position);
+                            }
+                        };
+
+                        final Snackbar.Callback snackbarCallback = new Snackbar.Callback() {
+                            @Override
+                            public void onDismissed(Snackbar snackbar, int event) {
+                                super.onDismissed(snackbar, event);
+                                // If undo pressed, don't hide post.
+                                if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                    // Chance to undo post hiding has gone, so follow through with
+                                    // hiding network request.
+                                    reddit.hide(post.kind + "_" + post.data.id)
+                                            .subscribeOn(Schedulers.io())
+                                            .observeOn(AndroidSchedulers.mainThread())
+                                            .subscribe();
+                                }
+                            }
+                        };
+
+                        Snackbar.make(holder.itemView, R.string.notify_post_hidden, Snackbar.LENGTH_LONG)
+                                .setAction(R.string.notify_post_hidden_undo, undoClickListener)
+                                .setCallback(snackbarCallback)
+                                .show();
+
+                        // Hide post from list, but make no network request yet. Outcome of the
+                        // user's interaction with the snackbar handling will determine this.
                         posts.remove(position);
                         notifyItemRemoved(position);
                         return true;
