@@ -75,8 +75,42 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.subtitle.setText(context.getString(R.string.subtitle, post.data.author, age, post.data.subreddit));
 
         holder.image.setImageDrawable(null);
-        if (!post.data.isSelf) {
+        if (!post.data.isSelf && post.data.preview != null && !post.data.preview.images.isEmpty() && post.data.url.contains("i.imgur.com/")) {
             holder.urlContainer.setVisibility(View.VISIBLE);
+            holder.url.setVisibility(View.GONE);
+
+            holder.urlContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Thing<Link> post = posts.get(holder.getAdapterPosition());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
+                    context.startActivity(intent);
+                }
+            });
+
+            holder.image.setVisibility(View.VISIBLE);
+            holder.imageProgress.setVisibility(View.VISIBLE);
+            Glide.with(context)
+                    .load(post.data.url)
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            holder.imageProgress.setVisibility(View.GONE);
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            holder.imageProgress.setVisibility(View.GONE);
+                            return false;
+                        }
+                    })
+                    .into(holder.image);
+            Source source = post.data.preview.images.get(0).source;
+            holder.image.getLayoutParams().height = (int) ((float) width / source.width * source.height);
+        } else if (!post.data.isSelf) {
+            holder.urlContainer.setVisibility(View.VISIBLE);
+            holder.url.setVisibility(View.VISIBLE);
 
             holder.urlContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -124,7 +158,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         } else {
             holder.urlContainer.setVisibility(View.GONE);
-            holder.image.setVisibility(View.GONE);
         }
 
         final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
