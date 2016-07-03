@@ -213,17 +213,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         otherMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                int position = holder.getAdapterPosition();
+                Thing<Link> post = posts.get(position);
+
                 switch (item.getItemId()) {
-                    case R.id.action_post_share:
-                        return true;
                     case R.id.action_post_hide:
+                        reddit.hide(post.kind + "_" + post.data.id)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe();
+                        posts.remove(position);
+                        notifyItemRemoved(position);
+                        return true;
+                    case R.id.action_post_share:
                         return true;
                     case R.id.action_post_profile:
                         return true;
                     case R.id.action_post_subreddit:
                         return true;
                     case R.id.action_post_browser:
-                        Thing<Link> post = posts.get(holder.getAdapterPosition());
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
                         context.startActivity(intent);
                         return true;
