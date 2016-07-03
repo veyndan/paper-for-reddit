@@ -76,14 +76,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         holder.mediaContainer.removeAllViews();
         if (!post.data.isSelf && post.data.preview != null && !post.data.preview.images.isEmpty() && post.data.url.contains("i.imgur.com/")) {
-            View mediaRoot = LayoutInflater.from(context).inflate(R.layout.post_media_url, holder.mediaContainer, false);
+            View mediaRoot = LayoutInflater.from(context).inflate(R.layout.post_media_image, holder.mediaContainer, false);
             holder.mediaContainer.addView(mediaRoot);
 
-            TextView url = (TextView) holder.mediaContainer.findViewById(R.id.post_url);
             ImageView image = (ImageView) holder.mediaContainer.findViewById(R.id.post_image);
             final ProgressBar imageProgress = (ProgressBar) holder.mediaContainer.findViewById(R.id.post_image_progress);
-
-            url.setVisibility(View.GONE);
 
             mediaRoot.setOnClickListener(new View.OnClickListener() {
                 @Override
