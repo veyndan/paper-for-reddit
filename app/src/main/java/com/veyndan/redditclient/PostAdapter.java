@@ -121,8 +121,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.mediaContainer.addView(mediaRoot);
 
             TextView url = (TextView) holder.mediaContainer.findViewById(R.id.post_url);
-            ImageView image = (ImageView) holder.mediaContainer.findViewById(R.id.post_image);
-            final ProgressBar imageProgress = (ProgressBar) holder.mediaContainer.findViewById(R.id.post_image_progress);
+            View imageContainer = holder.mediaContainer.findViewById(R.id.post_image_container);
+            ImageView image = (ImageView) imageContainer.findViewById(R.id.post_image);
+            final ProgressBar imageProgress = (ProgressBar) imageContainer.findViewById(R.id.post_image_progress);
 
             mediaRoot.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -144,8 +145,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             url.setText(urlHost);
 
             if (!post.data.preview.images.isEmpty()) {
-                image.setVisibility(View.VISIBLE);
-                imageProgress.setVisibility(View.VISIBLE);
                 Source source = post.data.preview.images.get(0).source;
                 Glide.with(context)
                         .load(source.url)
@@ -164,8 +163,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         })
                         .into(image);
             } else {
-                image.setVisibility(View.GONE);
-                imageProgress.setVisibility(View.GONE);
+                imageContainer.setVisibility(View.GONE);
             }
         }
 
