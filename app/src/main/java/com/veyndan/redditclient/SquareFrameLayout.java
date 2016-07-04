@@ -2,9 +2,9 @@ package com.veyndan.redditclient;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 
-public class SquareFrameLayout extends LinearLayout {
+public class SquareFrameLayout extends FrameLayout {
 
     public SquareFrameLayout(Context context) {
         super(context);

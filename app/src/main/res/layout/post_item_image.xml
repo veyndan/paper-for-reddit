@@ -31,10 +31,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         tools:text="Theone211 · 2 years ago · r/funny"/>
 
-    <FrameLayout
-        android:id="@+id/post_media_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <include layout="@layout/post_media_image"/>
 
     <LinearLayout
         android:layout_width="match_parent"
