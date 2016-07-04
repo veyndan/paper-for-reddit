@@ -75,7 +75,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.subtitle.setText(context.getString(R.string.subtitle, post.data.author, age, post.data.subreddit));
 
         holder.mediaContainer.removeAllViews();
-        if (!post.data.isSelf && post.data.preview != null && !post.data.preview.images.isEmpty() && post.data.url.contains("imgur.com/") && !post.data.url.contains("/a/") && !post.data.url.contains("/gallery/")) {
+        if (!post.data.isSelf && !post.data.preview.images.isEmpty() && post.data.url.contains("imgur.com/") && !post.data.url.contains("/a/") && !post.data.url.contains("/gallery/")) {
             View mediaRoot = LayoutInflater.from(context).inflate(R.layout.post_media_image, holder.mediaContainer, false);
             holder.mediaContainer.addView(mediaRoot);
 
@@ -143,7 +143,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
             url.setText(urlHost);
 
-            if (post.data.preview != null && !post.data.preview.images.isEmpty()) {
+            if (!post.data.preview.images.isEmpty()) {
                 image.setVisibility(View.VISIBLE);
                 imageProgress.setVisibility(View.VISIBLE);
                 Source source = post.data.preview.images.get(0).source;
