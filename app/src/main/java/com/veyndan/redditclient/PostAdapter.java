@@ -156,7 +156,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             }
                         })
                         .into(image);
-                image.getLayoutParams().height = (int) ((float) width / source.width * source.height);
             } else {
                 image.setVisibility(View.GONE);
                 imageProgress.setVisibility(View.GONE);
