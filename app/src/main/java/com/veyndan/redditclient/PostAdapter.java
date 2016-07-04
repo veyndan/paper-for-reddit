@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -69,19 +70,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHo
     @Override
     public PostAdapter.BasePostViewHolder onCreateViewHolder(ViewGroup parent, @ViewType int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v;
+
+        View v = inflater.inflate(R.layout.post_item, parent, false);
+        ViewStub mediaStub = ((ViewStub) v.findViewById(R.id.post_media_stub));
+
         switch (viewType) {
             case TYPE_SELF:
-                v = inflater.inflate(R.layout.post_item_self, parent, false);
                 return new PostSelfViewHolder(v);
             case TYPE_IMAGE:
-                v = inflater.inflate(R.layout.post_item_image, parent, false);
+                mediaStub.setLayoutResource(R.layout.post_media_image);
+                mediaStub.inflate();
                 return new PostImageViewHolder(v);
             case TYPE_LINK:
-                v = inflater.inflate(R.layout.post_item_link, parent, false);
+                mediaStub.setLayoutResource(R.layout.post_media_link);
+                mediaStub.inflate();
                 return new PostLinkViewHolder(v);
             case TYPE_LINK_IMAGE:
-                v = inflater.inflate(R.layout.post_item_link_image, parent, false);
+                mediaStub.setLayoutResource(R.layout.post_media_link_image);
+                mediaStub.inflate();
                 return new PostLinkImageViewHolder(v);
             default:
                 throw new IllegalStateException("Unknown viewType: " + viewType);

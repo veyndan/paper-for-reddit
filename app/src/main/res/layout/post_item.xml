@@ -31,7 +31,11 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         tools:text="Theone211 · 2 years ago · r/funny"/>
 
-    <include layout="@layout/post_media_image"/>
+    <ViewStub
+        android:id="@+id/post_media_stub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inflatedId="@+id/post_media_container"/>
 
     <LinearLayout
         android:layout_width="match_parent"
