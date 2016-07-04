@@ -3,6 +3,7 @@ package com.veyndan.redditclient;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.IntDef;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -25,6 +26,8 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -44,6 +47,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHo
 
     private static final String TAG = "veyndan_PostAdapter";
 
+    @IntDef({TYPE_SELF, TYPE_IMAGE, TYPE_LINK, TYPE_LINK_IMAGE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ViewType {}
+
     private static final int TYPE_SELF = 0;
     private static final int TYPE_IMAGE = 1;
     private static final int TYPE_LINK = 2;
@@ -60,7 +67,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHo
     }
 
     @Override
-    public PostAdapter.BasePostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public PostAdapter.BasePostViewHolder onCreateViewHolder(ViewGroup parent, @ViewType int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View v;
         switch (viewType) {
@@ -95,7 +102,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHo
 
         holder.subtitle.setText(context.getString(R.string.subtitle, post.data.author, age, post.data.subreddit));
 
-        switch (holder.getItemViewType()) {
+        @ViewType int viewType = holder.getItemViewType();
+        switch (viewType) {
             case TYPE_SELF:
                 break;
             case TYPE_IMAGE:
