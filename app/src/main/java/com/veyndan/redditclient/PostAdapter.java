@@ -75,7 +75,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.subtitle.setText(context.getString(R.string.subtitle, post.data.author, age, post.data.subreddit));
 
         holder.mediaContainer.removeAllViews();
-        if (!post.data.isSelf && post.data.preview != null && !post.data.preview.images.isEmpty() && post.data.url.contains("i.imgur.com/")) {
+        if (!post.data.isSelf && post.data.preview != null && !post.data.preview.images.isEmpty() && post.data.url.contains("imgur.com/") && !post.data.url.contains("/a/") && !post.data.url.contains("/gallery/")) {
             View mediaRoot = LayoutInflater.from(context).inflate(R.layout.post_media_image, holder.mediaContainer, false);
             holder.mediaContainer.addView(mediaRoot);
 
@@ -91,8 +91,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 }
             });
 
+            String url = post.data.url;
+            if (!url.contains("i.imgur.com")) {
+                url = url.replace("imgur.com", "i.imgur.com");
+                if (!url.endsWith(".gifv")) {
+                    url += ".png";
+                }
+            }
             Glide.with(context)
-                    .load(post.data.url)
+                    .load(url)
                     .listener(new RequestListener<String, GlideDrawable>() {
                         @Override
                         public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
