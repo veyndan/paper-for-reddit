@@ -12,8 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/post_url_border"
-        android:clickable="true"
-        android:focusable="true"
         android:padding="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         tools:text="imgur.com"/>
