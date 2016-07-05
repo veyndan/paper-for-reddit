@@ -31,6 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -145,15 +146,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     }
                 });
 
-                String url = post.data.url;
-                if (!url.contains("i.imgur.com")) {
-                    url = url.replace("imgur.com", "i.imgur.com");
-                    if (!url.endsWith(".gifv")) {
-                        url += ".png";
-                    }
-                }
                 Glide.with(context)
-                        .load(url)
+                        .load(post.data.url)
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -390,9 +384,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         int viewType;
 
+        if (post.data.url.contains("imgur.com/") && !post.data.url.contains("/a/") && !post.data.url.contains("/gallery/") && !post.data.url.contains("i.imgur.com")) {
+            post.data.url = post.data.url.replace("imgur.com", "i.imgur.com");
+            if (!post.data.url.endsWith(".gifv")) {
+                post.data.url += ".png";
+            }
+        }
+
         if (post.data.isSelf) {
             viewType = TYPE_SELF;
-        } else if (!post.data.preview.images.isEmpty() && post.data.url.contains("imgur.com/") && !post.data.url.contains("/a/") && !post.data.url.contains("/gallery/")) {
+        } else if (Pattern.compile("(.jpg|.jpeg|.gif|.png)$").matcher(post.data.url).find()) {
             viewType = TYPE_IMAGE;
         } else if (!post.data.preview.images.isEmpty()) {
             viewType = TYPE_LINK_IMAGE;
