@@ -16,7 +16,6 @@
         android:orientation="vertical">
 
         <com.veyndan.redditclient.SquareFrameLayout
-            android:id="@+id/post_media_image_container"
             android:layout_width="match_parent"
             android:layout_height="0dp">
 

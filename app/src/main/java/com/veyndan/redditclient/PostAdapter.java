@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.IntDef;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -14,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -44,7 +44,7 @@ import rawjava.network.VoteDirection;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHolder> {
+public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
     private static final String TAG = "veyndan_PostAdapter";
 
@@ -68,7 +68,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHo
     }
 
     @Override
-    public PostAdapter.BasePostViewHolder onCreateViewHolder(ViewGroup parent, @ViewType int viewType) {
+    public PostViewHolder onCreateViewHolder(ViewGroup parent, @ViewType int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         View v = inflater.inflate(R.layout.post_item, parent, false);
@@ -76,26 +76,27 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHo
 
         switch (viewType) {
             case TYPE_SELF:
-                return new PostSelfViewHolder(v);
+                break;
             case TYPE_IMAGE:
                 mediaStub.setLayoutResource(R.layout.post_media_image);
                 mediaStub.inflate();
-                return new PostImageViewHolder(v);
+                break;
             case TYPE_LINK:
                 mediaStub.setLayoutResource(R.layout.post_media_link);
                 mediaStub.inflate();
-                return new PostLinkViewHolder(v);
+                break;
             case TYPE_LINK_IMAGE:
                 mediaStub.setLayoutResource(R.layout.post_media_link_image);
                 mediaStub.inflate();
-                return new PostLinkImageViewHolder(v);
+                break;
             default:
                 throw new IllegalStateException("Unknown viewType: " + viewType);
         }
+        return new PostViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(final PostAdapter.BasePostViewHolder holder, int position) {
+    public void onBindViewHolder(final PostViewHolder holder, int position) {
         Thing<Link> post = posts.get(position);
         final Context context = holder.itemView.getContext();
 
@@ -113,13 +114,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHo
             case TYPE_SELF:
                 break;
             case TYPE_IMAGE:
-                final PostImageViewHolder imageHolder = (PostImageViewHolder) holder;
-                imageHolder.mediaImageProgress.setVisibility(View.VISIBLE);
+                assert holder.mediaContainer != null;
+                assert holder.mediaImage != null;
+                assert holder.mediaImageProgress != null;
 
-                imageHolder.mediaContainer.setOnClickListener(new View.OnClickListener() {
+                holder.mediaImageProgress.setVisibility(View.VISIBLE);
+
+                holder.mediaContainer.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Thing<Link> post = posts.get(imageHolder.getAdapterPosition());
+                        Thing<Link> post = posts.get(holder.getAdapterPosition());
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
                         context.startActivity(intent);
                     }
@@ -137,23 +141,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHo
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                imageHolder.mediaImageProgress.setVisibility(View.GONE);
+                                holder.mediaImageProgress.setVisibility(View.GONE);
                                 return false;
                             }
 
                             @Override
                             public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                imageHolder.mediaImageProgress.setVisibility(View.GONE);
+                                holder.mediaImageProgress.setVisibility(View.GONE);
                                 return false;
                             }
                         })
-                        .into(imageHolder.mediaImage);
+                        .into(holder.mediaImage);
                 Source source = post.data.preview.images.get(0).source;
-                imageHolder.mediaImage.getLayoutParams().height = (int) ((float) width / source.width * source.height);
+                holder.mediaImage.getLayoutParams().height = (int) ((float) width / source.width * source.height);
                 break;
             case TYPE_LINK_IMAGE:
-                final PostLinkImageViewHolder linkImageHolder = (PostLinkImageViewHolder) holder;
-                linkImageHolder.mediaImageProgress.setVisibility(View.VISIBLE);
+                assert holder.mediaImage != null;
+                assert holder.mediaImageProgress != null;
+
+                holder.mediaImageProgress.setVisibility(View.VISIBLE);
 
                 source = post.data.preview.images.get(0).source;
                 Glide.with(context)
@@ -161,24 +167,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHo
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                linkImageHolder.mediaImageProgress.setVisibility(View.GONE);
+                                holder.mediaImageProgress.setVisibility(View.GONE);
                                 return false;
                             }
 
                             @Override
                             public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                linkImageHolder.mediaImageProgress.setVisibility(View.GONE);
+                                holder.mediaImageProgress.setVisibility(View.GONE);
                                 return false;
                             }
                         })
-                        .into(linkImageHolder.mediaImage);
+                        .into(holder.mediaImage);
             case TYPE_LINK:
-                final PostLinkViewHolder linkHolder = (PostLinkViewHolder) holder;
+                assert holder.mediaContainer != null;
+                assert holder.mediaUrl != null;
 
-                linkHolder.mediaContainer.setOnClickListener(new View.OnClickListener() {
+                holder.mediaContainer.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Thing<Link> post = posts.get(linkHolder.getAdapterPosition());
+                        Thing<Link> post = posts.get(holder.getAdapterPosition());
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
                         context.startActivity(intent);
                     }
@@ -192,7 +199,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHo
                     urlHost = post.data.url;
                 }
 
-                linkHolder.mediaUrl.setText(urlHost);
+                holder.mediaUrl.setText(urlHost);
 
                 break;
         }
@@ -363,7 +370,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHo
         return posts.size();
     }
 
-    public static class BasePostViewHolder extends RecyclerView.ViewHolder {
+    public static class PostViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.post_title) TextView title;
         @BindView(R.id.post_subtitle) TextView subtitle;
@@ -373,50 +380,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.BasePostViewHo
         @BindView(R.id.post_save) ToggleButton save;
         @BindView(R.id.post_other) ImageButton other;
 
-        public BasePostViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
-    }
+        // Media: Image
+        // Media: Link
+        // Media: Link Image
+        @Nullable @BindView(R.id.post_media_container) View mediaContainer;
 
-    public static class PostSelfViewHolder extends BasePostViewHolder {
+        // Media: Image
+        // Media: Link Image
+        @Nullable @BindView(R.id.post_media_image) ImageView mediaImage;
 
-        public PostSelfViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
-    }
+        // Media: Image
+        // Media: Link Image
+        @Nullable @BindView(R.id.post_media_image_progress) ProgressBar mediaImageProgress;
 
-    public static class PostImageViewHolder extends BasePostViewHolder {
+        // Media: Link
+        // Media: Link Image
+        @Nullable @BindView(R.id.post_media_url) TextView mediaUrl;
 
-        @BindView(R.id.post_media_container) View mediaContainer;
-        @BindView(R.id.post_media_image) ImageView mediaImage;
-        @BindView(R.id.post_media_image_progress) ProgressBar mediaImageProgress;
-
-        public PostImageViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
-    }
-
-    public static class PostLinkViewHolder extends BasePostViewHolder {
-
-        @BindView(R.id.post_media_container) View mediaContainer;
-        @BindView(R.id.post_media_url) TextView mediaUrl;
-
-        public PostLinkViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
-    }
-
-    public static class PostLinkImageViewHolder extends PostLinkViewHolder {
-
-        @BindView(R.id.post_media_image_container) FrameLayout mediaImageContainer;
-        @BindView(R.id.post_media_image) ImageView mediaImage;
-        @BindView(R.id.post_media_image_progress) ProgressBar mediaImageProgress;
-
-        public PostLinkImageViewHolder(View itemView) {
+        public PostViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
