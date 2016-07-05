@@ -31,12 +31,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rawjava.Reddit;
 import rawjava.model.Link;
+import rawjava.model.PostHint;
 import rawjava.model.Source;
 import rawjava.model.Thing;
 import rawjava.network.VoteDirection;
@@ -389,11 +389,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             if (!post.data.url.endsWith(".gifv")) {
                 post.data.url += ".png";
             }
+            post.data.postHint = PostHint.IMAGE;
         }
 
         if (post.data.isSelf) {
             viewType = TYPE_SELF;
-        } else if (Pattern.compile("(.jpg|.jpeg|.gif|.png)$").matcher(post.data.url).find()) {
+        } else if (post.data.postHint != null && post.data.postHint.equals(PostHint.IMAGE)) {
             viewType = TYPE_IMAGE;
         } else if (!post.data.preview.images.isEmpty()) {
             viewType = TYPE_LINK_IMAGE;
