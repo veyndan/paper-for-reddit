@@ -50,6 +50,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private static final int TYPE_LINK = 2;
     private static final int TYPE_LINK_IMAGE = 3;
 
+    private static final int TYPE_FLAIR_LINK = 10;
+
     private final List<Thing<Link>> posts;
     private final Reddit reddit;
     private final int width;
@@ -65,9 +67,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         View v = inflater.inflate(R.layout.post_item, parent, false);
-        ViewStub mediaStub = ((ViewStub) v.findViewById(R.id.post_media_stub));
+        ViewStub flairLinkStub = (ViewStub) v.findViewById(R.id.post_flair_link_stub);
+        ViewStub mediaStub = (ViewStub) v.findViewById(R.id.post_media_stub);
 
-        switch (viewType) {
+        switch (viewType % 10) {
             case TYPE_SELF:
                 break;
             case TYPE_IMAGE:
@@ -85,6 +88,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             default:
                 throw new IllegalStateException("Unknown viewType: " + viewType);
         }
+
+        switch (((viewType % 100) / 10) * 10) {
+            case TYPE_FLAIR_LINK:
+                flairLinkStub.setLayoutResource(R.layout.post_flair_link);
+                flairLinkStub.inflate();
+                break;
+        }
+
         return new PostViewHolder(v);
     }
 
@@ -103,7 +114,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.subtitle.setText(context.getString(R.string.subtitle, post.data.author, age, post.data.subreddit));
 
         int viewType = holder.getItemViewType();
-        switch (viewType) {
+
+        switch (viewType % 10) {
             case TYPE_SELF:
                 break;
             case TYPE_IMAGE:
@@ -193,7 +205,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 }
 
                 holder.mediaUrl.setText(urlHost);
+                break;
+        }
 
+        switch (((viewType % 100) / 10) * 10) {
+            case TYPE_FLAIR_LINK:
+                assert holder.flairLinkText != null;
+
+                holder.flairLinkText.setText(post.data.linkFlairText);
                 break;
         }
 
@@ -347,15 +366,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public int getItemViewType(int position) {
         Thing<Link> post = posts.get(position);
+
+        int viewType;
+
         if (post.data.isSelf) {
-            return TYPE_SELF;
+            viewType = TYPE_SELF;
         } else if (!post.data.preview.images.isEmpty() && post.data.url.contains("imgur.com/") && !post.data.url.contains("/a/") && !post.data.url.contains("/gallery/")) {
-            return TYPE_IMAGE;
+            viewType = TYPE_IMAGE;
         } else if (!post.data.preview.images.isEmpty()) {
-            return TYPE_LINK_IMAGE;
+            viewType = TYPE_LINK_IMAGE;
         } else {
-            return TYPE_LINK;
+            viewType = TYPE_LINK;
         }
+
+        if (post.data.linkFlairText != null) {
+            viewType += TYPE_FLAIR_LINK;
+        }
+
+        return viewType;
     }
 
     @Override
@@ -389,6 +417,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         // Media: Link
         // Media: Link Image
         @Nullable @BindView(R.id.post_media_url) TextView mediaUrl;
+
+        // Flair: Link
+        @Nullable @BindView(R.id.post_flair_link_text) TextView flairLinkText;
 
         public PostViewHolder(View itemView) {
             super(itemView);

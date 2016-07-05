@@ -1,5 +1,5 @@
 <resources>
     <dimen name="post_url_border_width">1dp</dimen>
 
-    <dimen name="post_media_link_horizontal_margin">16dp</dimen>
+    <dimen name="post_horizontal_margin">16dp</dimen>
 </resources>

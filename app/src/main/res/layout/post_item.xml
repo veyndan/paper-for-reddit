@@ -32,6 +32,15 @@
         tools:text="Theone211 · 2 years ago · r/funny"/>
 
     <ViewStub
+        android:id="@+id/post_flair_link_stub"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="@dimen/post_horizontal_margin"
+        android:layout_marginRight="@dimen/post_horizontal_margin"
+        android:inflatedId="@+id/post_flair_link_container"/>
+
+    <ViewStub
         android:id="@+id/post_media_stub"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

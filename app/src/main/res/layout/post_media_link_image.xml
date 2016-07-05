@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="@dimen/post_media_link_horizontal_margin"
-    android:paddingRight="@dimen/post_media_link_horizontal_margin">
+    android:paddingLeft="@dimen/post_horizontal_margin"
+    android:paddingRight="@dimen/post_horizontal_margin">
 
     <LinearLayout
         android:layout_width="match_parent"
