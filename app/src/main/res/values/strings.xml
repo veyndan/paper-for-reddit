@@ -25,4 +25,5 @@
 
     <string name="notify_post_hidden">Post hidden</string>
     <string name="notify_post_hidden_undo">Undo</string>
+    <string name="post_nsfw">nsfw</string>
 </resources>

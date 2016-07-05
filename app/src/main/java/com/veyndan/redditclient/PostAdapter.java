@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,6 +52,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private static final int TYPE_LINK_IMAGE = 3;
 
     private static final int TYPE_FLAIR_LINK = 10;
+    private static final int TYPE_FLAIR_NSFW = 20;
+    private static final int TYPE_FLAIR_LINK_NSFW = 30;
 
     private final List<Thing<Link>> posts;
     private final Reddit reddit;
@@ -67,7 +70,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         View v = inflater.inflate(R.layout.post_item, parent, false);
-        ViewStub flairLinkStub = (ViewStub) v.findViewById(R.id.post_flair_link_stub);
+        ViewStub flairStub = (ViewStub) v.findViewById(R.id.post_flair_stub);
         ViewStub mediaStub = (ViewStub) v.findViewById(R.id.post_media_stub);
 
         switch (viewType % 10) {
@@ -91,8 +94,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         switch (((viewType % 100) / 10) * 10) {
             case TYPE_FLAIR_LINK:
-                flairLinkStub.setLayoutResource(R.layout.post_flair_link);
-                flairLinkStub.inflate();
+                flairStub.setLayoutResource(R.layout.post_flair_link);
+                flairStub.inflate();
+                break;
+            case TYPE_FLAIR_NSFW:
+                flairStub.setLayoutResource(R.layout.post_flair_nsfw);
+                flairStub.inflate();
+                break;
+            case TYPE_FLAIR_LINK_NSFW:
+                flairStub.setLayoutResource(R.layout.post_flair_link_nsfw);
+                flairStub.inflate();
                 break;
         }
 
@@ -210,9 +221,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         switch (((viewType % 100) / 10) * 10) {
             case TYPE_FLAIR_LINK:
-                assert holder.flairLinkText != null;
+                assert holder.flairLink != null;
 
-                holder.flairLinkText.setText(post.data.linkFlairText);
+                holder.flairLink.setText(post.data.linkFlairText);
+                break;
+            case TYPE_FLAIR_NSFW:
+                assert holder.flairNsfw != null;
+
+                break;
+            case TYPE_FLAIR_LINK_NSFW:
+                assert holder.flairLink != null;
+                assert holder.flairNsfw != null;
+
+                holder.flairLink.setText(post.data.linkFlairText);
                 break;
         }
 
@@ -379,8 +400,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             viewType = TYPE_LINK;
         }
 
-        if (post.data.linkFlairText != null) {
+        if (!TextUtils.isEmpty(post.data.linkFlairText) && post.data.over18) {
+            viewType += TYPE_FLAIR_LINK_NSFW;
+        } else if (!TextUtils.isEmpty(post.data.linkFlairText)) {
             viewType += TYPE_FLAIR_LINK;
+        } else if (post.data.over18) {
+            viewType += TYPE_FLAIR_NSFW;
         }
 
         return viewType;
@@ -419,7 +444,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         @Nullable @BindView(R.id.post_media_url) TextView mediaUrl;
 
         // Flair: Link
-        @Nullable @BindView(R.id.post_flair_link_text) TextView flairLinkText;
+        // Flair: Link NSFW
+        @Nullable @BindView(R.id.post_flair_link) TextView flairLink;
+
+        // Flair: NSFW
+        // Flair: Link NSFW
+        @Nullable @BindView(R.id.post_flair_nsfw) TextView flairNsfw;
 
         public PostViewHolder(View itemView) {
             super(itemView);

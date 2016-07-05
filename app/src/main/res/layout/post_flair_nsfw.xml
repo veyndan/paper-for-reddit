@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/post_flair_link"
+    android:id="@+id/post_flair_nsfw"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/post_flair_link_background"
+    android:background="@drawable/post_flair_nsfw_background"
     android:gravity="center"
     android:paddingBottom="4dp"
     android:paddingLeft="12dp"
     android:paddingRight="12dp"
     android:paddingTop="4dp"
+    android:text="@string/post_nsfw"
+    android:textAllCaps="true"
     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-    android:textStyle="bold"
-    tools:text="Mirror in comments"/>
+    android:textColor="#E57373"
+    android:textStyle="bold"/>
