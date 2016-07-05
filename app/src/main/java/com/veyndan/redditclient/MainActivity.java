@@ -36,6 +36,7 @@ public class MainActivity extends BaseActivity {
         final List<Thing<Link>> posts = new ArrayList<>();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addItemDecoration(new DividerItemDecoration(this));
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
         final PostAdapter postAdapter = new PostAdapter(posts, reddit, metrics.widthPixels);
@@ -52,5 +53,4 @@ public class MainActivity extends BaseActivity {
                     }
                 });
     }
-
 }
