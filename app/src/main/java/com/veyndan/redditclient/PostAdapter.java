@@ -56,7 +56,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private static final int TYPE_FLAIR_LINK = 0x10;
     private static final int TYPE_FLAIR_NSFW = 0x20;
-    private static final int TYPE_FLAIR_LINK_NSFW = 0x40;
 
     private static final ImmutableList<String> DIRECT_IMAGE_DOMAINS = ImmutableList.of(
             "i.imgur.com", "i.redd.it", "i.reddituploads.com", "pbs.twimg.com",
@@ -101,22 +100,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         boolean inflateFlairStub = false;
 
-        Log.d(TAG, "onCreateViewHolder: " + (viewType & TYPE_FLAIR_LINK));
-        Log.d(TAG, "onCreateViewHolder: " + viewType);
-
-        if ((viewType & TYPE_FLAIR_LINK) != 0) {
-            flairStub.setLayoutResource(R.layout.post_flair_link);
-            inflateFlairStub = true;
-        }
-
-        if ((viewType & TYPE_FLAIR_NSFW) != 0) {
-            flairStub.setLayoutResource(R.layout.post_flair_nsfw);
-            inflateFlairStub = true;
-        }
-
-        if ((viewType & TYPE_FLAIR_LINK_NSFW) != 0) {
+        if ((viewType & (TYPE_FLAIR_LINK | TYPE_FLAIR_NSFW)) == (TYPE_FLAIR_LINK | TYPE_FLAIR_NSFW)) {
             flairStub.setLayoutResource(R.layout.post_flair_link_nsfw);
             inflateFlairStub = true;
+        } else {
+            if ((viewType & TYPE_FLAIR_LINK) != 0) {
+                flairStub.setLayoutResource(R.layout.post_flair_link);
+                inflateFlairStub = true;
+            }
+
+            if ((viewType & TYPE_FLAIR_NSFW) != 0) {
+                flairStub.setLayoutResource(R.layout.post_flair_nsfw);
+                inflateFlairStub = true;
+            }
         }
 
         if (inflateFlairStub) {
@@ -236,13 +232,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         if ((viewType & TYPE_FLAIR_NSFW) != 0) {
             assert holder.flairNsfw != null;
-        }
-
-        if ((viewType & TYPE_FLAIR_LINK_NSFW) != 0) {
-            assert holder.flairLink != null;
-            assert holder.flairNsfw != null;
-
-            holder.flairLink.setText(post.data.linkFlairText);
         }
 
         final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
@@ -416,11 +405,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             viewType = TYPE_LINK;
         }
 
-        if (!TextUtils.isEmpty(post.data.linkFlairText) && post.data.over18) {
-            viewType += TYPE_FLAIR_LINK_NSFW;
-        } else if (!TextUtils.isEmpty(post.data.linkFlairText)) {
+        if (!TextUtils.isEmpty(post.data.linkFlairText)) {
             viewType += TYPE_FLAIR_LINK;
-        } else if (post.data.over18) {
+        }
+        if (post.data.over18) {
             viewType += TYPE_FLAIR_NSFW;
         }
 
