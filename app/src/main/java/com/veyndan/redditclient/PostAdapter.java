@@ -49,14 +49,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private static final String TAG = "veyndan_PostAdapter";
 
-    private static final int TYPE_SELF = 0;
-    private static final int TYPE_IMAGE = 1;
-    private static final int TYPE_LINK = 2;
-    private static final int TYPE_LINK_IMAGE = 3;
+    private static final int TYPE_SELF = 0x0;
+    private static final int TYPE_IMAGE = 0x1;
+    private static final int TYPE_LINK = 0x2;
+    private static final int TYPE_LINK_IMAGE = 0x3;
 
-    private static final int TYPE_FLAIR_LINK = 10;
-    private static final int TYPE_FLAIR_NSFW = 20;
-    private static final int TYPE_FLAIR_LINK_NSFW = 30;
+    private static final int TYPE_FLAIR_LINK = 0x10;
+    private static final int TYPE_FLAIR_NSFW = 0x20;
+    private static final int TYPE_FLAIR_LINK_NSFW = 0x40;
 
     private static final ImmutableList<String> DIRECT_IMAGE_DOMAINS = ImmutableList.of(
             "i.imgur.com", "i.redd.it", "i.reddituploads.com", "pbs.twimg.com",
@@ -80,7 +80,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         ViewStub flairStub = (ViewStub) v.findViewById(R.id.post_flair_stub);
         ViewStub mediaStub = (ViewStub) v.findViewById(R.id.post_media_stub);
 
-        switch (viewType % 10) {
+        switch (viewType % 16) {
             case TYPE_SELF:
                 break;
             case TYPE_IMAGE:
@@ -99,19 +99,28 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 throw new IllegalStateException("Unknown viewType: " + viewType);
         }
 
-        switch (((viewType % 100) / 10) * 10) {
-            case TYPE_FLAIR_LINK:
-                flairStub.setLayoutResource(R.layout.post_flair_link);
-                flairStub.inflate();
-                break;
-            case TYPE_FLAIR_NSFW:
-                flairStub.setLayoutResource(R.layout.post_flair_nsfw);
-                flairStub.inflate();
-                break;
-            case TYPE_FLAIR_LINK_NSFW:
-                flairStub.setLayoutResource(R.layout.post_flair_link_nsfw);
-                flairStub.inflate();
-                break;
+        boolean inflateFlairStub = false;
+
+        Log.d(TAG, "onCreateViewHolder: " + (viewType & TYPE_FLAIR_LINK));
+        Log.d(TAG, "onCreateViewHolder: " + viewType);
+
+        if ((viewType & TYPE_FLAIR_LINK) != 0) {
+            flairStub.setLayoutResource(R.layout.post_flair_link);
+            inflateFlairStub = true;
+        }
+
+        if ((viewType & TYPE_FLAIR_NSFW) != 0) {
+            flairStub.setLayoutResource(R.layout.post_flair_nsfw);
+            inflateFlairStub = true;
+        }
+
+        if ((viewType & TYPE_FLAIR_LINK_NSFW) != 0) {
+            flairStub.setLayoutResource(R.layout.post_flair_link_nsfw);
+            inflateFlairStub = true;
+        }
+
+        if (inflateFlairStub) {
+            flairStub.inflate();
         }
 
         return new PostViewHolder(v);
@@ -133,7 +142,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         int viewType = holder.getItemViewType();
 
-        switch (viewType % 10) {
+        switch (viewType % 16) {
             case TYPE_SELF:
                 break;
             case TYPE_IMAGE:
@@ -219,22 +228,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 break;
         }
 
-        switch (((viewType % 100) / 10) * 10) {
-            case TYPE_FLAIR_LINK:
-                assert holder.flairLink != null;
+        if ((viewType & TYPE_FLAIR_LINK) != 0) {
+            assert holder.flairLink != null;
 
-                holder.flairLink.setText(post.data.linkFlairText);
-                break;
-            case TYPE_FLAIR_NSFW:
-                assert holder.flairNsfw != null;
+            holder.flairLink.setText(post.data.linkFlairText);
+        }
 
-                break;
-            case TYPE_FLAIR_LINK_NSFW:
-                assert holder.flairLink != null;
-                assert holder.flairNsfw != null;
+        if ((viewType & TYPE_FLAIR_NSFW) != 0) {
+            assert holder.flairNsfw != null;
+        }
 
-                holder.flairLink.setText(post.data.linkFlairText);
-                break;
+        if ((viewType & TYPE_FLAIR_LINK_NSFW) != 0) {
+            assert holder.flairLink != null;
+            assert holder.flairNsfw != null;
+
+            holder.flairLink.setText(post.data.linkFlairText);
         }
 
         final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
