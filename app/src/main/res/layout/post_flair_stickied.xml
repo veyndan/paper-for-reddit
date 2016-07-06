@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/post_flair_stickied"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="4dp"
+    android:layout_marginRight="4dp"
+    android:background="@drawable/post_flair_stickied_background"
+    android:gravity="center"
+    android:paddingBottom="4dp"
+    android:text="@string/post_stickied"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
+    android:paddingTop="4dp"
+    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+    android:textColor="#388E3C"
+    android:textStyle="bold"/>
