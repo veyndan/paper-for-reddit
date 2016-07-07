@@ -260,7 +260,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             assert holder.flairGilded != null;
 
             holder.flairGilded.setText(String.valueOf(post.data.gilded));
-            // TODO
         }
 
         final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
