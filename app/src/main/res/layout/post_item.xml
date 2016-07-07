@@ -68,16 +68,19 @@
         <ToggleButton
             android:id="@+id/post_upvote"
             style="@style/ImageToggleButton"
+            android:contentDescription="@string/post_content_description_upvote"
             android:drawableTop="@drawable/ic_arrow_upward_black_24dp"/>
 
         <ToggleButton
             android:id="@+id/post_downvote"
             style="@style/ImageToggleButton"
+            android:contentDescription="@string/post_content_description_downvote"
             android:drawableTop="@drawable/ic_arrow_downward_black_24dp"/>
 
         <ToggleButton
             android:id="@+id/post_save"
             style="@style/ImageToggleButton"
+            android:contentDescription="@string/post_content_description_save"
             android:drawableTop="@drawable/ic_bookmark_black_24dp"/>
 
         <ImageButton
@@ -85,6 +88,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/post_content_description_other"
             app:srcCompat="@drawable/ic_more_vert_black_24dp"/>
 
     </LinearLayout>

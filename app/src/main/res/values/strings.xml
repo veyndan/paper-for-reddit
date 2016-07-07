@@ -28,4 +28,10 @@
 
     <string name="post_nsfw">nsfw</string>
     <string name="post_stickied">Stickied</string>
+
+    <string name="post_content_description_upvote">Upvote</string>
+    <string name="post_content_description_downvote">Downvote</string>
+    <string name="post_content_description_save">Save</string>
+    <string name="post_content_description_other">More</string>
+    <string name="post_content_description_media_image">Post image</string>
 </resources>

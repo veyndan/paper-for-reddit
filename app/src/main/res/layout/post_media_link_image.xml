@@ -21,6 +21,7 @@
                 android:id="@+id/post_media_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:contentDescription="@string/post_content_description_media_image"
                 android:scaleType="centerCrop"
                 tools:src="@drawable/carter"/>
 
