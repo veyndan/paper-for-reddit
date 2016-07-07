@@ -58,6 +58,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private static final int TYPE_FLAIR_STICKIED = 0x10;
     private static final int TYPE_FLAIR_NSFW = 0x20;
     private static final int TYPE_FLAIR_LINK = 0x40;
+    private static final int TYPE_FLAIR_GILDED = 0x80;
 
     private static final ImmutableList<String> DIRECT_IMAGE_DOMAINS = ImmutableList.of(
             "i.imgur.com", "i.redd.it", "i.reddituploads.com", "pbs.twimg.com",
@@ -100,7 +101,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 throw new IllegalStateException("Unknown viewType: " + viewType);
         }
 
-        if ((viewType & (TYPE_FLAIR_STICKIED | TYPE_FLAIR_NSFW | TYPE_FLAIR_LINK)) != 0) {
+        if ((viewType & (TYPE_FLAIR_STICKIED | TYPE_FLAIR_NSFW | TYPE_FLAIR_LINK | TYPE_FLAIR_GILDED)) != 0) {
             LinearLayout flairContainer = (LinearLayout) flairStub.inflate();
 
             if ((viewType & TYPE_FLAIR_STICKIED) == TYPE_FLAIR_STICKIED) {
@@ -113,6 +114,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
             if ((viewType & TYPE_FLAIR_LINK) == TYPE_FLAIR_LINK) {
                 flairContainer.addView(inflater.inflate(R.layout.post_flair_link, flairContainer, false));
+            }
+
+            if ((viewType & TYPE_FLAIR_GILDED) == TYPE_FLAIR_GILDED) {
+                flairContainer.addView(inflater.inflate(R.layout.post_flair_gilded, flairContainer, false));
             }
         }
 
@@ -233,6 +238,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             assert holder.flairLink != null;
 
             holder.flairLink.setText(post.data.linkFlairText);
+        }
+
+        if ((viewType & TYPE_FLAIR_GILDED) == TYPE_FLAIR_GILDED) {
+            assert holder.flairGilded != null;
+
+            holder.flairGilded.setText(String.valueOf(post.data.gilded));
+            // TODO
         }
 
         final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
@@ -415,6 +427,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         if (!TextUtils.isEmpty(post.data.linkFlairText)) {
             viewType += TYPE_FLAIR_LINK;
         }
+        if (post.data.gilded != 0) {
+            viewType += TYPE_FLAIR_GILDED;
+        }
 
         return viewType;
     }
@@ -459,6 +474,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         // Flair: Link
         @Nullable @BindView(R.id.post_flair_link) TextView flairLink;
+
+        // Flair: Gilded
+        @Nullable @BindView(R.id.post_flair_gilded) TextView flairGilded;
 
         public PostViewHolder(View itemView) {
             super(itemView);
