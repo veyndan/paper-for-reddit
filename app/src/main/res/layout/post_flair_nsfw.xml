@@ -2,18 +2,8 @@
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/post_flair_nsfw"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="4dp"
-    android:layout_marginRight="4dp"
+    style="@style/FlairTextView"
     android:background="@drawable/post_flair_nsfw_background"
-    android:gravity="center"
-    android:paddingBottom="4dp"
-    android:paddingLeft="12dp"
-    android:paddingRight="12dp"
-    android:paddingTop="4dp"
     android:text="@string/post_nsfw"
     android:textAllCaps="true"
-    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-    android:textColor="#E57373"
-    android:textStyle="bold"/>
+    android:textColor="#E57373"/>
