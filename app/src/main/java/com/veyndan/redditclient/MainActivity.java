@@ -42,7 +42,7 @@ public class MainActivity extends BaseActivity {
         final PostAdapter postAdapter = new PostAdapter(posts, reddit, metrics.widthPixels);
         recyclerView.setAdapter(postAdapter);
 
-        reddit.subreddit("pics", Sort.HOT)
+        reddit.subreddit("all", Sort.HOT)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<Thing<Listing<Thing<Link>>>>() {

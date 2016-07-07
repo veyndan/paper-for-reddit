@@ -31,6 +31,7 @@ import com.google.common.collect.ImmutableList;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +39,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.HttpUrl;
 import rawjava.Reddit;
+import rawjava.model.Image;
 import rawjava.model.Link;
 import rawjava.model.PostHint;
 import rawjava.model.Source;
@@ -126,7 +128,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     @Override
     public void onBindViewHolder(final PostViewHolder holder, int position) {
-        Thing<Link> post = posts.get(position);
+        final Thing<Link> post = posts.get(position);
         final Context context = holder.itemView.getContext();
 
         holder.title.setText(post.data.title);
@@ -159,6 +161,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     }
                 });
 
+                final boolean imageDimensAvailable = !post.data.preview.images.isEmpty();
+
                 Glide.with(context)
                         .load(post.data.url)
                         .listener(new RequestListener<String, GlideDrawable>() {
@@ -171,12 +175,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             @Override
                             public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                                 holder.mediaImageProgress.setVisibility(View.GONE);
+                                if (!imageDimensAvailable) {
+                                    final Image image = new Image();
+                                    image.source = new Source();
+                                    image.source.width = resource.getIntrinsicWidth();
+                                    image.source.height = resource.getIntrinsicHeight();
+                                    post.data.preview.images = new ArrayList<>();
+                                    post.data.preview.images.add(image);
+
+                                    holder.mediaImage.getLayoutParams().height = (int) ((float) width / image.source.width * image.source.height);
+                                }
                                 return false;
                             }
                         })
                         .into(holder.mediaImage);
-                Source source = post.data.preview.images.get(0).source;
-                holder.mediaImage.getLayoutParams().height = (int) ((float) width / source.width * source.height);
+                if (imageDimensAvailable) {
+                    Source source = post.data.preview.images.get(0).source;
+                    holder.mediaImage.getLayoutParams().height = (int) ((float) width / source.width * source.height);
+                }
                 break;
             case TYPE_LINK_IMAGE:
                 assert holder.mediaImage != null;
@@ -184,7 +200,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 holder.mediaImageProgress.setVisibility(View.VISIBLE);
 
-                source = post.data.preview.images.get(0).source;
+                Source source = post.data.preview.images.get(0).source;
                 Glide.with(context)
                         .load(source.url)
                         .listener(new RequestListener<String, GlideDrawable>() {
