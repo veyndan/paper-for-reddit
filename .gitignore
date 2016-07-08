@@ -7,3 +7,6 @@
 /build
 /captures
 app/src/main/res/raw/credentials.json
+app/fabric.properties
+app/src/main/java/com/veyndan/redditclient/Config.java
+app/src/main/res/values/config.xml
