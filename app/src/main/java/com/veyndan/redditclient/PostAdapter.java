@@ -28,6 +28,12 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.common.collect.ImmutableList;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.tweetui.TweetUtils;
+import com.twitter.sdk.android.tweetui.TweetView;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -56,6 +62,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private static final int TYPE_IMAGE = 0x1;
     private static final int TYPE_LINK = 0x2;
     private static final int TYPE_LINK_IMAGE = 0x3;
+    private static final int TYPE_TWEET = 0x4;
 
     private static final int TYPE_FLAIR_STICKIED = 0x10;
     private static final int TYPE_FLAIR_NSFW = 0x20;
@@ -97,6 +104,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 break;
             case TYPE_LINK_IMAGE:
                 mediaStub.setLayoutResource(R.layout.post_media_link_image);
+                mediaStub.inflate();
+                break;
+            case TYPE_TWEET:
+                mediaStub.setLayoutResource(R.layout.post_media_tweet);
                 mediaStub.inflate();
                 break;
             default:
@@ -193,6 +204,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     Source source = post.data.preview.images.get(0).source;
                     holder.mediaImage.getLayoutParams().height = (int) ((float) width / source.width * source.height);
                 }
+                break;
+            case TYPE_TWEET:
+                assert holder.mediaContainer != null;
+
+                long tweetId = Long.parseLong(post.data.url.substring(post.data.url.indexOf("/status/") + "/status/".length()));
+                TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
+                    @Override
+                    public void success(Result<Tweet> result) {
+                        ((TweetView) holder.mediaContainer).setTweet(result.data);
+                    }
+
+                    @Override
+                    public void failure(TwitterException exception) {
+                        Log.e(TAG, "Load Tweet failure", exception);
+                    }
+                });
                 break;
             case TYPE_LINK_IMAGE:
                 assert holder.mediaImage != null;
@@ -425,6 +452,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         if (post.data.isSelf) {
             viewType = TYPE_SELF;
+        } else if (post.data.url.contains("twitter.com")) {
+            viewType = TYPE_TWEET;
         } else if ((post.data.postHint != null && post.data.postHint.equals(PostHint.IMAGE)) || DIRECT_IMAGE_DOMAINS.contains(HttpUrl.parse(post.data.url).host())) {
             viewType = TYPE_IMAGE;
         } else if (!post.data.preview.images.isEmpty()) {

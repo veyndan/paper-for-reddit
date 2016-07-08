@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.twitter.sdk.android.tweetui.TweetView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:twittersdk="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/city_hall_tweet"
+    style="@style/tw__TweetLightStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    twittersdk:tw__tweet_id="521061104445693952"/>
