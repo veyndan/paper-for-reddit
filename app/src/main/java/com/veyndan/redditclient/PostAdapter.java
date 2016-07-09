@@ -223,6 +223,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             case TYPE_ALBUM:
                 assert holder.mediaContainer != null;
 
+                RecyclerView recyclerView = (RecyclerView) holder.mediaContainer;
+
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
+                recyclerView.setLayoutManager(layoutManager);
+
+                final List<com.veyndan.redditclient.Image> images = new ArrayList<>();
+
+                final AlbumAdapter albumAdapter = new AlbumAdapter(images, width);
+                recyclerView.setAdapter(albumAdapter);
+
                 OkHttpClient client = new OkHttpClient.Builder()
                         .addInterceptor(new Interceptor() {
                             @Override
@@ -250,13 +260,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         .subscribe(new Action1<Basic<Album>>() {
                             @Override
                             public void call(Basic<Album> basic) {
-                                RecyclerView recyclerView = (RecyclerView) holder.mediaContainer;
-
-                                AlbumAdapter albumAdapter = new AlbumAdapter(basic.data.images, width);
-                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
-
-                                recyclerView.setLayoutManager(layoutManager);
-                                recyclerView.setAdapter(albumAdapter);
+                                images.addAll(basic.data.images);
+                                albumAdapter.notifyDataSetChanged();
                             }
                         });
                 break;
