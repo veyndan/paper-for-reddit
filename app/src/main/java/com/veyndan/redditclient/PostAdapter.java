@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -35,6 +36,7 @@ import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetUtils;
 import com.twitter.sdk.android.tweetui.TweetView;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -44,6 +46,10 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import rawjava.Reddit;
 import rawjava.model.Image;
 import rawjava.model.Link;
@@ -51,7 +57,11 @@ import rawjava.model.PostHint;
 import rawjava.model.Source;
 import rawjava.model.Thing;
 import rawjava.network.VoteDirection;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.converter.moshi.MoshiConverterFactory;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
@@ -60,9 +70,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private static final int TYPE_SELF = 0x0;
     private static final int TYPE_IMAGE = 0x1;
-    private static final int TYPE_LINK = 0x2;
-    private static final int TYPE_LINK_IMAGE = 0x3;
-    private static final int TYPE_TWEET = 0x4;
+    private static final int TYPE_ALBUM = 0x2;
+    private static final int TYPE_LINK = 0x3;
+    private static final int TYPE_LINK_IMAGE = 0x4;
+    private static final int TYPE_TWEET = 0x5;
 
     private static final int TYPE_FLAIR_STICKIED = 0x10;
     private static final int TYPE_FLAIR_NSFW = 0x20;
@@ -96,6 +107,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 break;
             case TYPE_IMAGE:
                 mediaStub.setLayoutResource(R.layout.post_media_image);
+                mediaStub.inflate();
+                break;
+            case TYPE_ALBUM:
+                mediaStub.setLayoutResource(R.layout.post_media_album);
                 mediaStub.inflate();
                 break;
             case TYPE_LINK:
@@ -204,6 +219,48 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     Source source = post.data.preview.images.get(0).source;
                     holder.mediaImage.getLayoutParams().height = (int) ((float) width / source.width * source.height);
                 }
+                break;
+            case TYPE_ALBUM:
+                assert holder.mediaContainer != null;
+
+                OkHttpClient client = new OkHttpClient.Builder()
+                        .addInterceptor(new Interceptor() {
+                            @Override
+                            public Response intercept(Chain chain) throws IOException {
+                                Request request = chain.request().newBuilder()
+                                        .addHeader("Authorization", "Client-ID " + Config.IMGUR_CLIENT_ID)
+                                        .build();
+                                return chain.proceed(request);
+                            }
+                        })
+                        .build();
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl("https://api.imgur.com/3/")
+                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                        .addConverterFactory(MoshiConverterFactory.create())
+                        .client(client)
+                        .build();
+
+                ImgurService imgurService = retrofit.create(ImgurService.class);
+
+                imgurService.album(post.data.url.split("/a/")[1])
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action1<Basic<Album>>() {
+                            @Override
+                            public void call(Basic<Album> basic) {
+                                RecyclerView recyclerView = (RecyclerView) holder.mediaContainer;
+
+                                Log.d(TAG, "call: " + basic.data.images);
+                                AlbumAdapter albumAdapter = new AlbumAdapter(basic.data.images);
+                                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
+                                layoutManager.setAutoMeasureEnabled(true);
+
+                                recyclerView.setLayoutManager(layoutManager);
+                                recyclerView.setAdapter(albumAdapter);
+                            }
+                        });
                 break;
             case TYPE_TWEET:
                 assert holder.mediaContainer != null;
@@ -449,13 +506,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
             post.data.postHint = PostHint.IMAGE;
         }
-
         if (post.data.isSelf) {
             viewType = TYPE_SELF;
         } else if (post.data.url.contains("twitter.com")) {
             viewType = TYPE_TWEET;
         } else if ((post.data.postHint != null && post.data.postHint.equals(PostHint.IMAGE)) || DIRECT_IMAGE_DOMAINS.contains(HttpUrl.parse(post.data.url).host())) {
             viewType = TYPE_IMAGE;
+        } else if (post.data.url.contains("/a/")) {
+            viewType = TYPE_ALBUM;
         } else if (!post.data.preview.images.isEmpty()) {
             viewType = TYPE_LINK_IMAGE;
         } else {
