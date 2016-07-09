@@ -252,10 +252,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             public void call(Basic<Album> basic) {
                                 RecyclerView recyclerView = (RecyclerView) holder.mediaContainer;
 
-                                Log.d(TAG, "call: " + basic.data.images);
-                                AlbumAdapter albumAdapter = new AlbumAdapter(basic.data.images);
+                                AlbumAdapter albumAdapter = new AlbumAdapter(basic.data.images, width);
                                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
-                                layoutManager.setAutoMeasureEnabled(true);
 
                                 recyclerView.setLayoutManager(layoutManager);
                                 recyclerView.setAdapter(albumAdapter);
