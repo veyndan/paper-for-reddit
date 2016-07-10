@@ -28,7 +28,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.google.common.collect.ImmutableList;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterException;
@@ -45,7 +44,6 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -79,10 +77,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private static final int TYPE_FLAIR_NSFW = 0x20;
     private static final int TYPE_FLAIR_LINK = 0x40;
     private static final int TYPE_FLAIR_GILDED = 0x80;
-
-    private static final ImmutableList<String> DIRECT_IMAGE_DOMAINS = ImmutableList.of(
-            "i.imgur.com", "i.redd.it", "i.reddituploads.com", "pbs.twimg.com",
-            "upload.wikimedia.org");
 
     private final List<Thing<Link>> posts;
     private final Reddit reddit;
@@ -507,13 +501,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             if (!post.data.url.endsWith(".gifv")) {
                 post.data.url += ".png";
             }
-            post.data.postHint = PostHint.IMAGE;
+            post.data.setPostHint(PostHint.IMAGE);
         }
         if (post.data.isSelf) {
             viewType = TYPE_SELF;
         } else if (post.data.url.contains("twitter.com")) {
             viewType = TYPE_TWEET;
-        } else if ((post.data.postHint != null && post.data.postHint.equals(PostHint.IMAGE)) || DIRECT_IMAGE_DOMAINS.contains(HttpUrl.parse(post.data.url).host())) {
+        } else if (post.data.getPostHint().equals(PostHint.IMAGE)) {
             viewType = TYPE_IMAGE;
         } else if (post.data.url.contains("/a/")) {
             viewType = TYPE_ALBUM;
