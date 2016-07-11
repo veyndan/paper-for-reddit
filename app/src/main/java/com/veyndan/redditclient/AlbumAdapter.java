@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.jakewharton.rxbinding.view.RxView;
 
 import java.util.List;
 
@@ -45,11 +46,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
 
         holder.mediaImageProgress.setVisibility(View.VISIBLE);
 
-        holder.mediaContainer.setOnClickListener(view -> {
-            Image image1 = images.get(holder.getAdapterPosition());
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(image1.link));
-            context.startActivity(intent);
-        });
+        RxView.clicks(holder.mediaImageProgress)
+                .subscribe(aVoid -> {
+                    Image image1 = images.get(holder.getAdapterPosition());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(image1.link));
+                    context.startActivity(intent);
+                });
 
         Glide.with(context)
                 .load(image.link)

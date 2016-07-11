@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -27,6 +26,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
+import com.jakewharton.rxbinding.view.RxView;
+import com.jakewharton.rxbinding.widget.RxCompoundButton;
+import com.jakewharton.rxbinding.widget.RxPopupMenu;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterException;
@@ -167,11 +170,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 holder.mediaImageProgress.setVisibility(View.VISIBLE);
 
-                holder.mediaContainer.setOnClickListener(view -> {
-                    Thing<Link> post1 = posts.get(holder.getAdapterPosition());
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post1.data.url));
-                    context.startActivity(intent);
-                });
+                RxView.clicks(holder.mediaContainer)
+                        .subscribe(aVoid -> {
+                            Thing<Link> post1 = posts.get(holder.getAdapterPosition());
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post1.data.url));
+                            context.startActivity(intent);
+                        });
 
                 final boolean imageDimensAvailable = !post.data.preview.images.isEmpty();
 
@@ -288,11 +292,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 assert holder.mediaContainer != null;
                 assert holder.mediaUrl != null;
 
-                holder.mediaContainer.setOnClickListener(view -> {
-                    Thing<Link> post1 = posts.get(holder.getAdapterPosition());
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post1.data.url));
-                    context.startActivity(intent);
-                });
+                RxView.clicks(holder.mediaContainer)
+                        .subscribe(aVoid -> {
+                            Thing<Link> post1 = posts.get(holder.getAdapterPosition());
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post1.data.url));
+                            context.startActivity(intent);
+                        });
 
                 String urlHost;
                 try {
@@ -333,127 +338,123 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         VoteDirection likes = post.data.getLikes();
 
         holder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
-        holder.upvote.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // Ensure that downvote and upvote aren't checked at the same time.
-            if (isChecked) {
-                holder.downvote.setChecked(false);
-            }
+        RxCompoundButton.checkedChanges(holder.upvote)
+                .subscribe(isChecked -> {
+                    // Ensure that downvote and upvote aren't checked at the same time.
+                    if (isChecked) {
+                        holder.downvote.setChecked(false);
+                    }
 
-            Thing<Link> post1 = posts.get(holder.getAdapterPosition());
-            post1.data.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
-            reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post1.kind + "_" + post1.data.id)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe();
+                    Thing<Link> post1 = posts.get(holder.getAdapterPosition());
+                    post1.data.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
+                    reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post1.kind + "_" + post1.data.id)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe();
 
-            post1.data.score += isChecked ? 1 : -1;
+                    post1.data.score += isChecked ? 1 : -1;
 
-            final String points1 = context.getResources().getQuantityString(R.plurals.points, post1.data.score, post1.data.score);
-            final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post1.data.numComments, post1.data.numComments);
-            holder.score.setText(context.getString(R.string.score, points1, comments1));
-        });
+                    final String points1 = context.getResources().getQuantityString(R.plurals.points, post1.data.score, post1.data.score);
+                    final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post1.data.numComments, post1.data.numComments);
+                    holder.score.setText(context.getString(R.string.score, points1, comments1));
+                });
 
         holder.downvote.setChecked(likes.equals(VoteDirection.DOWNVOTE));
-        holder.downvote.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // Ensure that downvote and upvote aren't checked at the same time.
-            if (isChecked) {
-                holder.upvote.setChecked(false);
-            }
+        RxCompoundButton.checkedChanges(holder.downvote)
+                .subscribe(isChecked -> {
+                    // Ensure that downvote and upvote aren't checked at the same time.
+                    if (isChecked) {
+                        holder.upvote.setChecked(false);
+                    }
 
-            Thing<Link> post1 = posts.get(holder.getAdapterPosition());
-            post1.data.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
-            reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post1.kind + "_" + post1.data.id)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe();
+                    Thing<Link> post1 = posts.get(holder.getAdapterPosition());
+                    post1.data.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
+                    reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post1.kind + "_" + post1.data.id)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe();
 
-            post1.data.score += isChecked ? -1 : 1;
+                    post1.data.score += isChecked ? -1 : 1;
 
-            final String points1 = context.getResources().getQuantityString(R.plurals.points, post1.data.score, post1.data.score);
-            final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post1.data.numComments, post1.data.numComments);
-            holder.score.setText(context.getString(R.string.score, points1, comments1));
-        });
+                    final String points1 = context.getResources().getQuantityString(R.plurals.points, post1.data.score, post1.data.score);
+                    final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post1.data.numComments, post1.data.numComments);
+                    holder.score.setText(context.getString(R.string.score, points1, comments1));
+                });
 
         holder.save.setChecked(post.data.saved);
-        holder.save.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            Thing<Link> post1 = posts.get(holder.getAdapterPosition());
-            post1.data.saved = isChecked;
-            if (isChecked) {
-                reddit.save("", post1.kind + "_" + post1.data.id)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe();
-            } else {
-                reddit.unsave(post1.kind + "_" + post1.data.id)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe();
-            }
-        });
+        RxCompoundButton.checkedChanges(holder.save)
+                .subscribe(isChecked -> {
+                    Thing<Link> post1 = posts.get(holder.getAdapterPosition());
+                    post1.data.saved = isChecked;
+                    if (isChecked) {
+                        reddit.save("", post1.kind + "_" + post1.data.id)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe();
+                    } else {
+                        reddit.unsave(post1.kind + "_" + post1.data.id)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe();
+                    }
+                });
 
         final PopupMenu otherMenu = new PopupMenu(context, holder.other);
         otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
 
-        holder.other.setOnClickListener(view -> otherMenu.show());
+        RxView.clicks(holder.other)
+                .subscribe(aVoid -> otherMenu.show());
 
-        otherMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                final int position = holder.getAdapterPosition();
-                final Thing<Link> post = posts.get(position);
+        RxPopupMenu.itemClicks(otherMenu)
+                .subscribe(menuItem -> {
+                    final int adapterPosition = holder.getAdapterPosition();
 
-                switch (item.getItemId()) {
-                    case R.id.action_post_hide:
-                        final View.OnClickListener undoClickListener = view -> {
-                            // If undo pressed, then don't follow through with request to hide
-                            // the post.
-                            posts.add(position, post);
-                            notifyItemInserted(position);
-                        };
+                    switch (menuItem.getItemId()) {
+                        case R.id.action_post_hide:
+                            final View.OnClickListener undoClickListener = view -> {
+                                // If undo pressed, then don't follow through with request to hide
+                                // the post.
+                                posts.add(adapterPosition, post);
+                                notifyItemInserted(adapterPosition);
+                            };
 
-                        final Snackbar.Callback snackbarCallback = new Snackbar.Callback() {
-                            @Override
-                            public void onDismissed(Snackbar snackbar, int event) {
-                                super.onDismissed(snackbar, event);
-                                // If undo pressed, don't hide post.
-                                if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                                    // Chance to undo post hiding has gone, so follow through with
-                                    // hiding network request.
-                                    reddit.hide(post.kind + "_" + post.data.id)
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribe();
-                                }
-                            }
-                        };
+                            Snackbar snackbar = Snackbar.make(holder.itemView, R.string.notify_post_hidden, Snackbar.LENGTH_LONG)
+                                    .setAction(R.string.notify_post_hidden_undo, undoClickListener);
 
-                        Snackbar.make(holder.itemView, R.string.notify_post_hidden, Snackbar.LENGTH_LONG)
-                                .setAction(R.string.notify_post_hidden_undo, undoClickListener)
-                                .setCallback(snackbarCallback)
-                                .show();
+                            RxSnackbar.dismisses(snackbar)
+                                    .subscribe(event -> {
+                                        // If undo pressed, don't hide post.
+                                        if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                            // Chance to undo post hiding has gone, so follow through with
+                                            // hiding network request.
+                                            reddit.hide(post.kind + "_" + post.data.id)
+                                                    .subscribeOn(Schedulers.io())
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe();
+                                        }
+                                    });
 
-                        // Hide post from list, but make no network request yet. Outcome of the
-                        // user's interaction with the snackbar handling will determine this.
-                        posts.remove(position);
-                        notifyItemRemoved(position);
-                        return true;
-                    case R.id.action_post_share:
-                        return true;
-                    case R.id.action_post_profile:
-                        return true;
-                    case R.id.action_post_subreddit:
-                        return true;
-                    case R.id.action_post_browser:
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
-                        context.startActivity(intent);
-                        return true;
-                    case R.id.action_post_report:
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-        });
+                            snackbar.show();
+
+                            // Hide post from list, but make no network request yet. Outcome of the
+                            // user's interaction with the snackbar handling will determine this.
+                            posts.remove(adapterPosition);
+                            notifyItemRemoved(adapterPosition);
+                            break;
+                        case R.id.action_post_share:
+                            break;
+                        case R.id.action_post_profile:
+                            break;
+                        case R.id.action_post_subreddit:
+                            break;
+                        case R.id.action_post_browser:
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
+                            context.startActivity(intent);
+                            break;
+                        case R.id.action_post_report:
+                            break;
+                    }
+                });
     }
 
     @Override
