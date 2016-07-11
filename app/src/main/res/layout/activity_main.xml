@@ -29,6 +29,7 @@
         android:layout_height="match_parent"
         android:background="@android:color/white"
         android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/post_item"/>
 
 </android.support.design.widget.CoordinatorLayout>
