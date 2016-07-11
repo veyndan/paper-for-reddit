@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'android-apt'
 apply plugin: 'io.fabric'
 
@@ -19,6 +20,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -42,7 +47,7 @@ dependencies {
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 
     // Reddit
-    compile 'com.github.veyndan:rawjava:-SNAPSHOT'
+    compile 'com.github.veyndan:rawjava:bcb5bb2da9'
 
     // Retrofit
     compile 'com.squareup.retrofit2:retrofit:2.1.0'

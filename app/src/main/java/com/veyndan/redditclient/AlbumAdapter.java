@@ -45,13 +45,10 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
 
         holder.mediaImageProgress.setVisibility(View.VISIBLE);
 
-        holder.mediaContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Image image = images.get(holder.getAdapterPosition());
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(image.link));
-                context.startActivity(intent);
-            }
+        holder.mediaContainer.setOnClickListener(view -> {
+            Image image1 = images.get(holder.getAdapterPosition());
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(image1.link));
+            context.startActivity(intent);
         });
 
         Glide.with(context)

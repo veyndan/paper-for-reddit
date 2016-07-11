@@ -12,12 +12,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rawjava.Reddit;
 import rawjava.model.Link;
-import rawjava.model.Listing;
 import rawjava.model.Thing;
 import rawjava.network.Credentials;
 import rawjava.network.Sort;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity {
@@ -47,12 +45,9 @@ public class MainActivity extends BaseActivity {
         reddit.subreddit("all", Sort.HOT)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Thing<Listing<Thing<Link>>>>() {
-                    @Override
-                    public void call(Thing<Listing<Thing<Link>>> post) {
-                        posts.addAll(post.data.children);
-                        postAdapter.notifyDataSetChanged();
-                    }
+                .subscribe(post -> {
+                    posts.addAll(post.data.children);
+                    postAdapter.notifyDataSetChanged();
                 });
     }
 }

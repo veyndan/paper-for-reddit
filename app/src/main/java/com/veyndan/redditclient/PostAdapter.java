@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,7 +34,6 @@ import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetUtils;
 import com.twitter.sdk.android.tweetui.TweetView;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -44,10 +42,8 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
 import rawjava.Reddit;
 import rawjava.model.Image;
 import rawjava.model.Link;
@@ -59,7 +55,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
@@ -172,13 +167,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 holder.mediaImageProgress.setVisibility(View.VISIBLE);
 
-                holder.mediaContainer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Thing<Link> post = posts.get(holder.getAdapterPosition());
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
-                        context.startActivity(intent);
-                    }
+                holder.mediaContainer.setOnClickListener(view -> {
+                    Thing<Link> post1 = posts.get(holder.getAdapterPosition());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post1.data.url));
+                    context.startActivity(intent);
                 });
 
                 final boolean imageDimensAvailable = !post.data.preview.images.isEmpty();
@@ -228,14 +220,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 recyclerView.setAdapter(albumAdapter);
 
                 OkHttpClient client = new OkHttpClient.Builder()
-                        .addInterceptor(new Interceptor() {
-                            @Override
-                            public Response intercept(Chain chain) throws IOException {
-                                Request request = chain.request().newBuilder()
-                                        .addHeader("Authorization", "Client-ID " + Config.IMGUR_CLIENT_ID)
-                                        .build();
-                                return chain.proceed(request);
-                            }
+                        .addInterceptor(chain -> {
+                            Request request = chain.request().newBuilder()
+                                    .addHeader("Authorization", "Client-ID " + Config.IMGUR_CLIENT_ID)
+                                    .build();
+                            return chain.proceed(request);
                         })
                         .build();
 
@@ -251,12 +240,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 imgurService.album(post.data.url.split("/a/")[1])
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<Basic<Album>>() {
-                            @Override
-                            public void call(Basic<Album> basic) {
-                                images.addAll(basic.data.images);
-                                albumAdapter.notifyDataSetChanged();
-                            }
+                        .subscribe(basic -> {
+                            images.addAll(basic.data.images);
+                            albumAdapter.notifyDataSetChanged();
                         });
                 break;
             case TYPE_TWEET:
@@ -302,13 +288,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 assert holder.mediaContainer != null;
                 assert holder.mediaUrl != null;
 
-                holder.mediaContainer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Thing<Link> post = posts.get(holder.getAdapterPosition());
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
-                        context.startActivity(intent);
-                    }
+                holder.mediaContainer.setOnClickListener(view -> {
+                    Thing<Link> post1 = posts.get(holder.getAdapterPosition());
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post1.data.url));
+                    context.startActivity(intent);
                 });
 
                 String urlHost;
@@ -350,82 +333,68 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         VoteDirection likes = post.data.getLikes();
 
         holder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
-        holder.upvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // Ensure that downvote and upvote aren't checked at the same time.
-                if (isChecked) {
-                    holder.downvote.setChecked(false);
-                }
-
-                Thing<Link> post = posts.get(holder.getAdapterPosition());
-                post.data.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
-                reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.kind + "_" + post.data.id)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe();
-
-                post.data.score += isChecked ? 1 : -1;
-
-                final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
-                final String comments = context.getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
-                holder.score.setText(context.getString(R.string.score, points, comments));
+        holder.upvote.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // Ensure that downvote and upvote aren't checked at the same time.
+            if (isChecked) {
+                holder.downvote.setChecked(false);
             }
+
+            Thing<Link> post1 = posts.get(holder.getAdapterPosition());
+            post1.data.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
+            reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post1.kind + "_" + post1.data.id)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
+
+            post1.data.score += isChecked ? 1 : -1;
+
+            final String points1 = context.getResources().getQuantityString(R.plurals.points, post1.data.score, post1.data.score);
+            final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post1.data.numComments, post1.data.numComments);
+            holder.score.setText(context.getString(R.string.score, points1, comments1));
         });
 
         holder.downvote.setChecked(likes.equals(VoteDirection.DOWNVOTE));
-        holder.downvote.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // Ensure that downvote and upvote aren't checked at the same time.
-                if (isChecked) {
-                    holder.upvote.setChecked(false);
-                }
-
-                Thing<Link> post = posts.get(holder.getAdapterPosition());
-                post.data.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
-                reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.kind + "_" + post.data.id)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe();
-
-                post.data.score += isChecked ? -1 : 1;
-
-                final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
-                final String comments = context.getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
-                holder.score.setText(context.getString(R.string.score, points, comments));
+        holder.downvote.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            // Ensure that downvote and upvote aren't checked at the same time.
+            if (isChecked) {
+                holder.upvote.setChecked(false);
             }
+
+            Thing<Link> post1 = posts.get(holder.getAdapterPosition());
+            post1.data.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
+            reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post1.kind + "_" + post1.data.id)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
+
+            post1.data.score += isChecked ? -1 : 1;
+
+            final String points1 = context.getResources().getQuantityString(R.plurals.points, post1.data.score, post1.data.score);
+            final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post1.data.numComments, post1.data.numComments);
+            holder.score.setText(context.getString(R.string.score, points1, comments1));
         });
 
         holder.save.setChecked(post.data.saved);
-        holder.save.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Thing<Link> post = posts.get(holder.getAdapterPosition());
-                post.data.saved = isChecked;
-                if (isChecked) {
-                    reddit.save("", post.kind + "_" + post.data.id)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe();
-                } else {
-                    reddit.unsave(post.kind + "_" + post.data.id)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe();
-                }
+        holder.save.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            Thing<Link> post1 = posts.get(holder.getAdapterPosition());
+            post1.data.saved = isChecked;
+            if (isChecked) {
+                reddit.save("", post1.kind + "_" + post1.data.id)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe();
+            } else {
+                reddit.unsave(post1.kind + "_" + post1.data.id)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe();
             }
         });
 
         final PopupMenu otherMenu = new PopupMenu(context, holder.other);
         otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
 
-        holder.other.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                otherMenu.show();
-            }
-        });
+        holder.other.setOnClickListener(view -> otherMenu.show());
 
         otherMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -435,14 +404,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 switch (item.getItemId()) {
                     case R.id.action_post_hide:
-                        final View.OnClickListener undoClickListener = new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // If undo pressed, then don't follow through with request to hide
-                                // the post.
-                                posts.add(position, post);
-                                notifyItemInserted(position);
-                            }
+                        final View.OnClickListener undoClickListener = view -> {
+                            // If undo pressed, then don't follow through with request to hide
+                            // the post.
+                            posts.add(position, post);
+                            notifyItemInserted(position);
                         };
 
                         final Snackbar.Callback snackbarCallback = new Snackbar.Callback() {
