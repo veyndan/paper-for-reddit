@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
     @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
 
     @Override
