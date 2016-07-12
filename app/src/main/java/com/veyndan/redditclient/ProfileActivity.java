@@ -1,5 +1,6 @@
 package com.veyndan.redditclient;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -19,9 +20,18 @@ public class ProfileActivity extends BaseActivity {
         setContentView(R.layout.profile_activity);
         ButterKnife.bind(this);
 
-        ActionBar ab = getSupportActionBar();
+        String username;
+        final Intent intent = getIntent();
+        if (intent != null) {
+            username = intent.getStringExtra("username");
+        } else {
+            throw new IllegalStateException("Activity started by unknown caller");
+        }
+
+        final ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
+            ab.setTitle(username);
         }
 
         tabs.addTab(tabs.newTab().setText("Overview"));

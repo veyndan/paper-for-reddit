@@ -445,6 +445,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             break;
                         case R.id.action_post_profile:
                             Intent intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
+                            intent.putExtra("username", post.data.author);
                             context.startActivity(intent);
                             break;
                         case R.id.action_post_subreddit:
