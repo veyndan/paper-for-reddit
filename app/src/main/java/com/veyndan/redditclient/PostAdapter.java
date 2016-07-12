@@ -444,11 +444,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         case R.id.action_post_share:
                             break;
                         case R.id.action_post_profile:
+                            Intent intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
+                            context.startActivity(intent);
                             break;
                         case R.id.action_post_subreddit:
                             break;
                         case R.id.action_post_browser:
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
+                            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
                             context.startActivity(intent);
                             break;
                         case R.id.action_post_report:

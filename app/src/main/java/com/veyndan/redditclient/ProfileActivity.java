@@ -1,0 +1,34 @@
+package com.veyndan.redditclient;
+
+import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class ProfileActivity extends BaseActivity {
+
+    @BindView(R.id.profile_view_pager) ViewPager viewPager;
+    @BindView(R.id.profile_tabs) TabLayout tabs;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.profile_activity);
+        ButterKnife.bind(this);
+
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
+
+        tabs.addTab(tabs.newTab().setText("Overview"));
+        tabs.addTab(tabs.newTab().setText("Comments"));
+        tabs.addTab(tabs.newTab().setText("Submitted"));
+        tabs.addTab(tabs.newTab().setText("Gilded"));
+
+        tabs.setupWithViewPager(viewPager);
+    }
+}
