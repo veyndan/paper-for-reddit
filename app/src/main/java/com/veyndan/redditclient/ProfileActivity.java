@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 
+import java.util.Objects;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -34,10 +36,9 @@ public class ProfileActivity extends BaseActivity {
         }
 
         final ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(true);
-            ab.setTitle(username);
-        }
+        Objects.requireNonNull(ab, "An ActionBar should be attached to this activity");
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setTitle(username);
 
         viewPager.setAdapter(new ProfileSectionAdapter(getSupportFragmentManager()));
 
