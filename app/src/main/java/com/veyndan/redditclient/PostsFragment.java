@@ -10,19 +10,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import rawjava.Reddit;
 import rawjava.model.Link;
+import rawjava.model.Listing;
 import rawjava.model.Thing;
 import rawjava.network.Credentials;
+import rx.Observable;
 
 public class PostsFragment extends Fragment {
+
+    private RecyclerView recyclerView;
 
     private final List<Thing<Link>> posts = new ArrayList<>();
 
     private PostAdapter postAdapter;
+
+    private LinearLayoutManager layoutManager;
+
+    private boolean loadingPosts;
+    private int pastVisiblesItems, visibleItemCount, totalItemCount;
 
     public PostsFragment() {
         // Required empty public constructor
@@ -43,18 +54,19 @@ public class PostsFragment extends Fragment {
         if (postAdapter != null) {
             postAdapter.notifyDataSetChanged();
         }
+        loadingPosts = false;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final RecyclerView recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
+        recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
 
         final Credentials credentials = Credentials.create(getResources().openRawResource(R.raw.credentials));
         final Reddit reddit = new Reddit(credentials);
 
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         final DisplayMetrics metrics = new DisplayMetrics();
@@ -63,5 +75,21 @@ public class PostsFragment extends Fragment {
         recyclerView.setAdapter(postAdapter);
 
         return recyclerView;
+    }
+
+    Observable<Thing<Listing<Thing<Link>>>> getNextPageTrigger() {
+        return RxRecyclerView.scrollEvents(recyclerView)
+                .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
+                .map(scrollEvent -> {
+                    visibleItemCount = layoutManager.getChildCount();
+                    totalItemCount = layoutManager.getItemCount();
+                    pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
+                    return scrollEvent;
+                })
+                .filter(scrollEvent -> !loadingPosts && visibleItemCount + pastVisiblesItems >= totalItemCount)
+                .map(scrollEvent -> {
+                    loadingPosts = true;
+                    return null;
+                });
     }
 }
