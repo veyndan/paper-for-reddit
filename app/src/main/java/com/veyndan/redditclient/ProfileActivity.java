@@ -1,5 +1,6 @@
 package com.veyndan.redditclient;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -13,6 +14,11 @@ import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rawjava.Reddit;
+import rawjava.network.Credentials;
+import rawjava.network.User;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class ProfileActivity extends BaseActivity {
 
@@ -40,7 +46,7 @@ public class ProfileActivity extends BaseActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(username);
 
-        viewPager.setAdapter(new ProfileSectionAdapter(getSupportFragmentManager()));
+        viewPager.setAdapter(new ProfileSectionAdapter(getSupportFragmentManager(), this, username));
 
         tabs.setupWithViewPager(viewPager);
     }
@@ -49,13 +55,58 @@ public class ProfileActivity extends BaseActivity {
 
         private static final String titles[] = {"Overview", "Comments", "Submitted", "Gilded"};
 
-        public ProfileSectionAdapter(FragmentManager fm) {
+        private final PostsFragment overviewFragment;
+        private final PostsFragment commentsFragment;
+        private final PostsFragment submittedFragment;
+        private final PostsFragment gildedFragment;
+
+        private final Reddit reddit;
+
+        public ProfileSectionAdapter(FragmentManager fm, Context context, String username) {
             super(fm);
+            Credentials credentials = Credentials.create(context.getResources().openRawResource(R.raw.credentials));
+            reddit = new Reddit(credentials);
+
+            overviewFragment = PostsFragment.newInstance();
+            commentsFragment = PostsFragment.newInstance();
+            submittedFragment = PostsFragment.newInstance();
+            gildedFragment = PostsFragment.newInstance();
+
+            reddit.user(username, User.OVERVIEW)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(thing -> overviewFragment.addPosts(thing.data.children));
+
+            reddit.user(username, User.COMMENTS)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(thing -> commentsFragment.addPosts(thing.data.children));
+
+            reddit.user(username, User.SUBMITTED)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(thing -> submittedFragment.addPosts(thing.data.children));
+
+            reddit.user(username, User.GILDED)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(thing -> gildedFragment.addPosts(thing.data.children));
         }
 
         @Override
         public Fragment getItem(int position) {
-            return ProfileSectionFragment.newInstance();
+            switch (position) {
+                case 0:
+                    return overviewFragment;
+                case 1:
+                    return commentsFragment;
+                case 2:
+                    return submittedFragment;
+                case 3:
+                    return gildedFragment;
+                default:
+                    throw new IllegalStateException("Too many fragments");
+            }
         }
 
         @Override

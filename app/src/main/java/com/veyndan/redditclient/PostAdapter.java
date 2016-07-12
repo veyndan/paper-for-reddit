@@ -466,20 +466,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         int viewType;
 
-        if (post.data.url.contains("imgur.com/") && !post.data.url.contains("/a/") && !post.data.url.contains("/gallery/") && !post.data.url.contains("i.imgur.com")) {
+        if (post.kind.equals("t3") && post.data.url.contains("imgur.com/") && !post.data.url.contains("/a/") && !post.data.url.contains("/gallery/") && !post.data.url.contains("i.imgur.com")) {
             post.data.url = post.data.url.replace("imgur.com", "i.imgur.com");
             if (!post.data.url.endsWith(".gifv")) {
                 post.data.url += ".png";
             }
             post.data.setPostHint(PostHint.IMAGE);
         }
+
         if (post.data.isSelf) {
             viewType = TYPE_SELF;
-        } else if (post.data.url.contains("twitter.com")) {
+        } else if (post.kind.equals("t3") && post.data.url.contains("twitter.com")) {
             viewType = TYPE_TWEET;
-        } else if (post.data.getPostHint().equals(PostHint.IMAGE)) {
+        } else if (post.kind.equals("t3") && post.data.getPostHint().equals(PostHint.IMAGE)) {
             viewType = TYPE_IMAGE;
-        } else if (post.data.url.contains("/a/")) {
+        } else if (post.kind.equals("t3") && post.data.url.contains("/a/")) {
             viewType = TYPE_ALBUM;
         } else if (!post.data.preview.images.isEmpty()) {
             viewType = TYPE_LINK_IMAGE;
