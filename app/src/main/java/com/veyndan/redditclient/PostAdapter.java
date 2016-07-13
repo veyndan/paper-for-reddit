@@ -339,6 +339,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         holder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
         RxCompoundButton.checkedChanges(holder.upvote)
+                .skip(1)
                 .subscribe(isChecked -> {
                     // Ensure that downvote and upvote aren't checked at the same time.
                     if (isChecked) {
@@ -363,6 +364,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         holder.downvote.setChecked(likes.equals(VoteDirection.DOWNVOTE));
         RxCompoundButton.checkedChanges(holder.downvote)
+                .skip(1)
                 .subscribe(isChecked -> {
                     // Ensure that downvote and upvote aren't checked at the same time.
                     if (isChecked) {
@@ -387,6 +389,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         holder.save.setChecked(post.data.saved);
         RxCompoundButton.checkedChanges(holder.save)
+                .skip(1)
                 .subscribe(isChecked -> {
                     Thing<Link> post1 = posts.get(holder.getAdapterPosition());
                     post1.data.saved = isChecked;
