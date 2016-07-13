@@ -347,16 +347,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                     Thing<Link> post1 = posts.get(holder.getAdapterPosition());
                     post1.data.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
-                    reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post1.kind + "_" + post1.data.id)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe();
+                    if (!post1.data.archived) {
+                        reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post1.kind + "_" + post1.data.id)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe();
 
-                    post1.data.score += isChecked ? 1 : -1;
+                        post1.data.score += isChecked ? 1 : -1;
 
-                    final String points1 = context.getResources().getQuantityString(R.plurals.points, post1.data.score, post1.data.score);
-                    final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post1.data.numComments, post1.data.numComments);
-                    holder.score.setText(context.getString(R.string.score, points1, comments1));
+                        final String points1 = context.getResources().getQuantityString(R.plurals.points, post1.data.score, post1.data.score);
+                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post1.data.numComments, post1.data.numComments);
+                        holder.score.setText(context.getString(R.string.score, points1, comments1));
+                    }
                 });
 
         holder.downvote.setChecked(likes.equals(VoteDirection.DOWNVOTE));
@@ -369,16 +371,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                     Thing<Link> post1 = posts.get(holder.getAdapterPosition());
                     post1.data.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
-                    reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post1.kind + "_" + post1.data.id)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe();
+                    if (!post1.data.archived) {
+                        reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post1.kind + "_" + post1.data.id)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe();
 
-                    post1.data.score += isChecked ? -1 : 1;
+                        post1.data.score += isChecked ? -1 : 1;
 
-                    final String points1 = context.getResources().getQuantityString(R.plurals.points, post1.data.score, post1.data.score);
-                    final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post1.data.numComments, post1.data.numComments);
-                    holder.score.setText(context.getString(R.string.score, points1, comments1));
+                        final String points1 = context.getResources().getQuantityString(R.plurals.points, post1.data.score, post1.data.score);
+                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post1.data.numComments, post1.data.numComments);
+                        holder.score.setText(context.getString(R.string.score, points1, comments1));
+                    }
                 });
 
         holder.save.setChecked(post.data.saved);
