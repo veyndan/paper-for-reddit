@@ -11,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -56,8 +57,8 @@ public class ProfileActivity extends BaseActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(thing -> {
-                    linkKarma.setText(String.valueOf(thing.data.linkKarma));
-                    commentKarma.setText(String.valueOf(thing.data.commentKarma));
+                    linkKarma.setText(NumberFormat.getNumberInstance().format(thing.data.linkKarma));
+                    commentKarma.setText(NumberFormat.getNumberInstance().format(thing.data.commentKarma));
                 });
 
         viewPager.setAdapter(new ProfileSectionAdapter(getSupportFragmentManager(), this, username));
