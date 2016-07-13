@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.widget.TextView;
 
 import java.util.Objects;
 
@@ -26,6 +27,8 @@ public class ProfileActivity extends BaseActivity {
 
     @BindView(R.id.profile_view_pager) ViewPager viewPager;
     @BindView(R.id.profile_tabs) TabLayout tabs;
+    @BindView(R.id.profile_link_karma) TextView linkKarma;
+    @BindView(R.id.profile_comment_karma) TextView commentKarma;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,17 @@ public class ProfileActivity extends BaseActivity {
         Objects.requireNonNull(ab, "An ActionBar should be attached to this activity");
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(username);
+
+        final Credentials credentials = Credentials.create(getResources().openRawResource(R.raw.credentials));
+        final Reddit reddit = new Reddit(credentials);
+
+        reddit.userAbout(username)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(thing -> {
+                    linkKarma.setText(String.valueOf(thing.data.linkKarma));
+                    commentKarma.setText(String.valueOf(thing.data.commentKarma));
+                });
 
         viewPager.setAdapter(new ProfileSectionAdapter(getSupportFragmentManager(), this, username));
 

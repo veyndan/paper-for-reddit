@@ -34,4 +34,7 @@
     <string name="post_content_description_save">Save</string>
     <string name="post_content_description_other">More</string>
     <string name="post_content_description_media_image">Post image</string>
+
+    <string name="profile_link_karma">Link karma</string>
+    <string name="profile_comment_karma">Comment karma</string>
 </resources>
