@@ -17,7 +17,6 @@ import java.util.List;
 
 import rawjava.Reddit;
 import rawjava.model.Link;
-import rawjava.model.Listing;
 import rawjava.model.Thing;
 import rawjava.network.Credentials;
 import rx.Observable;
@@ -85,7 +84,7 @@ public class PostsFragment extends Fragment {
         return recyclerView;
     }
 
-    Observable<Thing<Listing<Thing<Link>>>> getNextPageTrigger() {
+    Observable<Boolean> getNextPageTrigger() {
         return RxRecyclerView.scrollEvents(recyclerView)
                 .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
                 .map(scrollEvent -> {
@@ -97,7 +96,7 @@ public class PostsFragment extends Fragment {
                 .filter(scrollEvent -> !loadingPosts && visibleItemCount + pastVisiblesItems >= totalItemCount)
                 .map(scrollEvent -> {
                     loadingPosts = true;
-                    return null;
+                    return true;
                 });
     }
 }
