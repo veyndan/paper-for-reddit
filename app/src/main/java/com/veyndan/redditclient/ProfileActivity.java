@@ -9,14 +9,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rawjava.Reddit;
+import rawjava.model.Thing;
+import rawjava.model.Trophy;
 import rawjava.network.Credentials;
 import rawjava.network.User;
 import rx.android.schedulers.AndroidSchedulers;
@@ -26,10 +31,11 @@ public class ProfileActivity extends BaseActivity {
 
     private static final int TAB_COUNT = 4;
 
-    @BindView(R.id.profile_view_pager) ViewPager viewPager;
-    @BindView(R.id.profile_tabs) TabLayout tabs;
     @BindView(R.id.profile_link_karma) TextView linkKarma;
     @BindView(R.id.profile_comment_karma) TextView commentKarma;
+    @BindView(R.id.profile_trophies_recycler_view) RecyclerView trophiesRecyclerView;
+    @BindView(R.id.profile_view_pager) ViewPager viewPager;
+    @BindView(R.id.profile_tabs) TabLayout tabs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,19 @@ public class ProfileActivity extends BaseActivity {
                 .subscribe(thing -> {
                     linkKarma.setText(NumberFormat.getNumberInstance().format(thing.data.linkKarma));
                     commentKarma.setText(NumberFormat.getNumberInstance().format(thing.data.commentKarma));
+                });
+
+        final List<Thing<Trophy>> trophies = new ArrayList<>();
+
+        TrophyAdapter trophyAdapter = new TrophyAdapter(trophies);
+        trophiesRecyclerView.setAdapter(trophyAdapter);
+
+        reddit.userTrophies(username)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(thing -> {
+                    trophies.addAll(thing.data.trophies);
+                    trophyAdapter.notifyDataSetChanged();
                 });
 
         viewPager.setAdapter(new ProfileSectionAdapter(getSupportFragmentManager(), this, username));

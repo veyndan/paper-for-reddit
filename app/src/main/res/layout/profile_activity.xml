@@ -17,7 +17,7 @@
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="256dp"
+            android:layout_height="400dp"
             android:fitsSystemWindows="true"
             app:expandedTitleGravity="center_horizontal|top"
             app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
@@ -33,8 +33,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="32dp"
+                android:layout_gravity="bottom"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_collapseMode="pin">
@@ -92,6 +91,15 @@
                     </LinearLayout>
 
                 </LinearLayout>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/profile_trophies_recycler_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
+                    app:layoutManager="LinearLayoutManager"
+                    tools:listitem="@layout/profile_item_trophy"/>
 
             </LinearLayout>
 
