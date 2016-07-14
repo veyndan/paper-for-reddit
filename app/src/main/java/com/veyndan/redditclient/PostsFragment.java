@@ -57,6 +57,14 @@ public class PostsFragment extends Fragment {
         loadingPosts = false;
     }
 
+    public void clearPosts() {
+        int postsSize = this.posts.size();
+        this.posts.clear();
+        if (postAdapter != null) {
+            postAdapter.notifyItemRangeRemoved(0, postsSize);
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

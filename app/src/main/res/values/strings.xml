@@ -37,4 +37,21 @@
 
     <string name="profile_link_karma">Link karma</string>
     <string name="profile_comment_karma">Comment karma</string>
+
+    <!-- Sort overflow titles -->
+    <string name="action_sort">Sort</string>
+
+    <string name="action_sort_hot">Hot</string>
+    <string name="action_sort_new">New</string>
+    <string name="action_sort_rising">Rising</string>
+    <string name="action_sort_controversial">Controversial</string>
+    <string name="action_sort_top">Top</string>
+
+    <string name="action_sort_time_period_hour">Hour</string>
+    <string name="action_sort_time_period_day">Day</string>
+    <string name="action_sort_time_period_week">Week</string>
+    <string name="action_sort_time_period_month">Month</string>
+    <string name="action_sort_time_period_year">Year</string>
+    <string name="action_sort_time_period_all">All</string>
+    <!-- -->
 </resources>
