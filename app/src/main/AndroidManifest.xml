@@ -27,7 +27,7 @@
         </activity>
 
         <activity
-            android:name="com.airbnb.deeplinkdispatch.DeepLinkActivity"
+            android:name=".CustomDeepLinkHandler"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

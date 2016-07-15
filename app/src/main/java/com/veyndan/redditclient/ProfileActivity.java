@@ -31,13 +31,7 @@ import rx.schedulers.Schedulers;
 
 @DeepLink({
         "http://reddit.com/u/{username}",
-        "http://reddit.com/user/{username}",
-        "http://{subdomain}.reddit.com/u/{username}",
-        "http://{subdomain}.reddit.com/user/{username}",
-        "https://reddit.com/u/{username}",
-        "https://reddit.com/user/{username}",
-        "https://{subdomain}.reddit.com/u/{username}",
-        "https://{subdomain}.reddit.com/user/{username}",
+        "http://reddit.com/user/{username}"
 })
 public class ProfileActivity extends BaseActivity {
 
