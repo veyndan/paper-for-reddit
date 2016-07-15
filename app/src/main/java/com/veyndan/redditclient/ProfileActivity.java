@@ -1,7 +1,6 @@
 package com.veyndan.redditclient;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -17,7 +16,6 @@ import com.airbnb.deeplinkdispatch.DeepLink;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,9 +49,7 @@ public class ProfileActivity extends BaseActivity {
         setContentView(R.layout.profile_activity);
         ButterKnife.bind(this);
 
-        final Intent intent = getIntent();
-        Objects.requireNonNull(intent, "Activity started by unknown caller");
-        String username = intent.getStringExtra("username");
+        String username = getIntent().getStringExtra("username");
 
         final ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);

@@ -35,7 +35,7 @@ public class MainActivity extends BaseActivity {
 
         String subreddit;
         Intent intent = getIntent();
-        if (intent != null && intent.getExtras() != null) {
+        if (intent.getExtras() != null) {
             subreddit = intent.getStringExtra("subreddit");
         } else {
             subreddit = "all";
