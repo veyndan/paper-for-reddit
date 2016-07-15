@@ -51,16 +51,11 @@ public class ProfileActivity extends BaseActivity {
         setContentView(R.layout.profile_activity);
         ButterKnife.bind(this);
 
-        String username;
         final Intent intent = getIntent();
-        if (intent != null) {
-            username = intent.getStringExtra("username");
-        } else {
-            throw new IllegalStateException("Activity started by unknown caller");
-        }
+        Objects.requireNonNull(intent, "Activity started by unknown caller");
+        String username = intent.getStringExtra("username");
 
         final ActionBar ab = getSupportActionBar();
-        Objects.requireNonNull(ab, "An ActionBar should be attached to this activity");
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(username);
 
