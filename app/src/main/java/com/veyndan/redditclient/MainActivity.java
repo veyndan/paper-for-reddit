@@ -1,5 +1,6 @@
 package com.veyndan.redditclient;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +33,15 @@ public class MainActivity extends BaseActivity {
 
         postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
 
-        reddit.subreddit("all", Sort.HOT, postsFragment.getNextPageTrigger(), Schedulers.io(), AndroidSchedulers.mainThread())
+        String subreddit;
+        Intent intent = getIntent();
+        if (intent != null && intent.getExtras() != null) {
+            subreddit = intent.getStringExtra("subreddit");
+        } else {
+            subreddit = "all";
+        }
+
+        reddit.subreddit(subreddit, Sort.HOT, postsFragment.getNextPageTrigger(), Schedulers.io(), AndroidSchedulers.mainThread())
                 .subscribe(post -> {
                     postsFragment.addPosts(post.data.children);
                 });
