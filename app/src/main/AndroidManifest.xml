@@ -26,6 +26,20 @@
             android:parentActivityName=".MainActivity">
         </activity>
 
+        <activity
+            android:name="com.airbnb.deeplinkdispatch.DeepLinkActivity"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="*.reddit.com" />
+                <data android:scheme="http" android:host="reddit.com" />
+                <data android:scheme="https" android:host="*.reddit.com" />
+                <data android:scheme="https" android:host="reddit.com" />
+            </intent-filter>
+        </activity>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="@string/fabric_key"/>

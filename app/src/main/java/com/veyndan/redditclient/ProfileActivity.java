@@ -12,6 +12,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
+import com.airbnb.deeplinkdispatch.DeepLink;
+
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,19 @@ import rawjava.network.User;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
+@DeepLink({
+        "http://reddit.com/u/{username}",
+        "http://reddit.com/user/{username}",
+        "http://{subdomain}.reddit.com/u/{username}",
+        "http://{subdomain}.reddit.com/user/{username}",
+        "https://reddit.com/u/{username}",
+        "https://reddit.com/user/{username}",
+        "https://{subdomain}.reddit.com/u/{username}",
+        "https://{subdomain}.reddit.com/user/{username}",
+})
 public class ProfileActivity extends BaseActivity {
+
+    private static final String TAG = "veyndan_ProfileActivity";
 
     private static final int TAB_COUNT = 4;
 
