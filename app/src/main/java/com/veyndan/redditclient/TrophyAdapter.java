@@ -27,8 +27,6 @@ import rawjava.model.Trophy;
 
 public class TrophyAdapter extends RecyclerView.Adapter<TrophyAdapter.TrohpyViewHolder> {
 
-    private static final String TAG = "veyndan_TrophyAdapter";
-
     private final List<Thing<Trophy>> trophies;
 
     public TrophyAdapter(List<Thing<Trophy>> trophies) {

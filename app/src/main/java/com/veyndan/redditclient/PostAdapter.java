@@ -9,7 +9,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,10 +57,9 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
-
-    private static final String TAG = "veyndan_PostAdapter";
 
     private static final int TYPE_SELF = 0x0;
     private static final int TYPE_IMAGE = 0x1;
@@ -241,7 +239,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                     @Override
                     public void failure(TwitterException exception) {
-                        Log.e(TAG, "Load Tweet failure", exception);
+                        Timber.e(exception, "Load Tweet failure");
                     }
                 });
                 break;
@@ -283,7 +281,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 try {
                     urlHost = new URL(post.data.url).getHost();
                 } catch (MalformedURLException e) {
-                    Log.e(TAG, e.getMessage(), e);
+                    Timber.e(e, "Could not obtain the host of %s", post.data.url);
                     urlHost = post.data.url;
                 }
 

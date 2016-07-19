@@ -33,8 +33,6 @@ import rx.schedulers.Schedulers;
 })
 public class ProfileActivity extends BaseActivity {
 
-    private static final String TAG = "veyndan_ProfileActivity";
-
     private static final int TAB_COUNT = 4;
 
     @BindView(R.id.profile_link_karma) TextView linkKarma;

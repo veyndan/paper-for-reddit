@@ -23,8 +23,6 @@ import butterknife.ButterKnife;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> {
 
-    private static final String TAG = "veyndan_AlbumAdapter";
-
     private final List<Image> images;
     private final int width;
 

@@ -72,6 +72,9 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:24.0.0'
     compile 'com.android.support:design:24.0.0'
 
+    // Timber
+    compile 'com.jakewharton.timber:timber:4.1.2'
+
     // Twitter
     compile('com.twitter.sdk.android:twitter:1.14.1@aar') {
         transitive = true;

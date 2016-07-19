@@ -16,8 +16,6 @@ import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity {
 
-    private static final String TAG = "veyndan_MainActivity";
-
     private PostsFragment postsFragment;
 
     private Reddit reddit;
