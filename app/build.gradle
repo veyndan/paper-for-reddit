@@ -69,8 +69,9 @@ dependencies {
 
     // Support Library
     compile 'com.android.support:appcompat-v7:24.1.0'
-    compile 'com.android.support:recyclerview-v7:24.1.0'
+    compile 'com.android.support:customtabs:24.1.0'
     compile 'com.android.support:design:24.1.0'
+    compile 'com.android.support:recyclerview-v7:24.1.0'
 
     // Timber
     compile 'com.jakewharton.timber:timber:4.1.2'

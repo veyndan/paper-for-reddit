@@ -1,8 +1,12 @@
 package com.veyndan.redditclient;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsClient;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.customtabs.CustomTabsSession;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,12 +27,18 @@ import butterknife.ButterKnife;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHolder> {
 
+    private final Activity activity;
     private final List<Image> images;
     private final int width;
+    private final CustomTabsClient customTabsClient;
+    private final CustomTabsIntent customTabsIntent;
 
-    public AlbumAdapter(List<Image> images, int width) {
+    public AlbumAdapter(Activity activity, List<Image> images, int width, @Nullable CustomTabsClient customTabsClient, CustomTabsIntent customTabsIntent) {
+        this.activity = activity;
         this.images = images;
         this.width = width;
+        this.customTabsClient = customTabsClient;
+        this.customTabsIntent = customTabsIntent;
     }
 
     @Override
@@ -44,11 +54,15 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
 
         holder.mediaImageProgress.setVisibility(View.VISIBLE);
 
+        if (customTabsClient != null) {
+            CustomTabsSession session = customTabsClient.newSession(null);
+            session.mayLaunchUrl(Uri.parse(image.link), null, null);
+        }
+
         RxView.clicks(holder.mediaImageProgress)
                 .subscribe(aVoid -> {
                     Image image1 = images.get(holder.getAdapterPosition());
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(image1.link));
-                    context.startActivity(intent);
+                    customTabsIntent.launchUrl(activity, Uri.parse(image1.link));
                 });
 
         Glide.with(context)

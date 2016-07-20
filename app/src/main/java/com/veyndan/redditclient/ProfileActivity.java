@@ -1,7 +1,12 @@
 package com.veyndan.redditclient;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsClient;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -35,11 +40,17 @@ public class ProfileActivity extends BaseActivity {
 
     private static final int TAB_COUNT = 4;
 
+    private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
+
     @BindView(R.id.profile_link_karma) TextView linkKarma;
     @BindView(R.id.profile_comment_karma) TextView commentKarma;
     @BindView(R.id.profile_trophies_recycler_view) RecyclerView trophiesRecyclerView;
     @BindView(R.id.profile_view_pager) ViewPager viewPager;
     @BindView(R.id.profile_tabs) TabLayout tabs;
+
+    private final CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+    private final CustomTabsIntent customTabsIntent = builder.build();
+    @Nullable private CustomTabsClient customTabsClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +77,22 @@ public class ProfileActivity extends BaseActivity {
 
         final List<Thing<Trophy>> trophies = new ArrayList<>();
 
-        TrophyAdapter trophyAdapter = new TrophyAdapter(trophies);
+        CustomTabsClient.bindCustomTabsService(this, CUSTOM_TAB_PACKAGE_NAME, new CustomTabsServiceConnection() {
+            @Override
+            public void onCustomTabsServiceConnected(ComponentName name, CustomTabsClient client) {
+                // customTabsClient is now valid.
+                customTabsClient = client;
+                customTabsClient.warmup(0);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                // customTabsClient is no longer valid. This also invalidates sessions.
+                customTabsClient = null;
+            }
+        });
+
+        TrophyAdapter trophyAdapter = new TrophyAdapter(this, trophies, customTabsClient, customTabsIntent);
         trophiesRecyclerView.setAdapter(trophyAdapter);
 
         reddit.userTrophies(username)

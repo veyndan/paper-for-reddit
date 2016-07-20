@@ -1,9 +1,16 @@
 package com.veyndan.redditclient;
 
+import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsCallback;
+import android.support.customtabs.CustomTabsClient;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.customtabs.CustomTabsServiceConnection;
+import android.support.customtabs.CustomTabsSession;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -70,14 +77,37 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private static final int TYPE_FLAIR = 0x10;
 
+    private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
+
+    private final Activity activity;
     private final List<Thing<Link>> posts;
     private final Reddit reddit;
     private final int width;
 
-    public PostAdapter(List<Thing<Link>> posts, Reddit reddit, int width) {
+    private final CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+    private final CustomTabsIntent customTabsIntent = builder.build();
+    @Nullable private CustomTabsClient customTabsClient;
+
+    public PostAdapter(Activity activity, List<Thing<Link>> posts, Reddit reddit, int width) {
+        this.activity = activity;
         this.posts = posts;
         this.reddit = reddit;
         this.width = width;
+
+        CustomTabsClient.bindCustomTabsService(activity, CUSTOM_TAB_PACKAGE_NAME, new CustomTabsServiceConnection() {
+            @Override
+            public void onCustomTabsServiceConnected(ComponentName name, CustomTabsClient client) {
+                // customTabsClient is now valid.
+                customTabsClient = client;
+                customTabsClient.warmup(0);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                // customTabsClient is no longer valid. This also invalidates sessions.
+                customTabsClient = null;
+            }
+        });
     }
 
     @Override
@@ -148,11 +178,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 holder.mediaImageProgress.setVisibility(View.VISIBLE);
 
+                if (customTabsClient != null) {
+                    CustomTabsSession session = customTabsClient.newSession(new CustomTabsCallback());
+                    session.mayLaunchUrl(Uri.parse(post.data.url), null, null);
+                }
+
                 RxView.clicks(holder.mediaContainer)
                         .subscribe(aVoid -> {
                             Thing<Link> post1 = posts.get(holder.getAdapterPosition());
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post1.data.url));
-                            context.startActivity(intent);
+                            customTabsIntent.launchUrl(activity, Uri.parse(post1.data.url));
                         });
 
                 final boolean imageDimensAvailable = !post.data.preview.images.isEmpty();
@@ -198,7 +232,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 final List<com.veyndan.redditclient.Image> images = new ArrayList<>();
 
-                final AlbumAdapter albumAdapter = new AlbumAdapter(images, width);
+                final AlbumAdapter albumAdapter = new AlbumAdapter(activity, images, width, customTabsClient, customTabsIntent);
                 recyclerView.setAdapter(albumAdapter);
 
                 OkHttpClient client = new OkHttpClient.Builder()
@@ -270,11 +304,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 assert holder.mediaContainer != null;
                 assert holder.mediaUrl != null;
 
+                if (customTabsClient != null) {
+                    CustomTabsSession session = customTabsClient.newSession(null);
+
+                    // null check required for comment posts.
+                    if (post.data.url != null) {
+                        session.mayLaunchUrl(Uri.parse(post.data.url), null, null);
+                    }
+                }
+
                 RxView.clicks(holder.mediaContainer)
                         .subscribe(aVoid -> {
                             Thing<Link> post1 = posts.get(holder.getAdapterPosition());
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post1.data.url));
-                            context.startActivity(intent);
+                            customTabsIntent.launchUrl(activity, Uri.parse(post1.data.url));
                         });
 
                 String urlHost;

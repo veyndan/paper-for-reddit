@@ -78,7 +78,7 @@ public class PostsFragment extends Fragment {
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity()));
         final DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        postAdapter = new PostAdapter(posts, reddit, metrics.widthPixels);
+        postAdapter = new PostAdapter(getActivity(), posts, reddit, metrics.widthPixels);
         recyclerView.setAdapter(postAdapter);
 
         return recyclerView;

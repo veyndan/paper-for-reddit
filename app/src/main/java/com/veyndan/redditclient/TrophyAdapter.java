@@ -1,9 +1,13 @@
 package com.veyndan.redditclient;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.support.annotation.Nullable;
+import android.support.customtabs.CustomTabsClient;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.customtabs.CustomTabsSession;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -27,10 +31,16 @@ import rawjava.model.Trophy;
 
 public class TrophyAdapter extends RecyclerView.Adapter<TrophyAdapter.TrohpyViewHolder> {
 
+    private final Activity activity;
     private final List<Thing<Trophy>> trophies;
+    private final CustomTabsClient customTabsClient;
+    private final CustomTabsIntent customTabsIntent;
 
-    public TrophyAdapter(List<Thing<Trophy>> trophies) {
+    public TrophyAdapter(Activity activity, List<Thing<Trophy>> trophies, @Nullable CustomTabsClient customTabsClient, CustomTabsIntent customTabsIntent) {
+        this.activity = activity;
         this.trophies = trophies;
+        this.customTabsClient = customTabsClient;
+        this.customTabsIntent = customTabsIntent;
     }
 
     @Override
@@ -59,11 +69,15 @@ public class TrophyAdapter extends RecyclerView.Adapter<TrophyAdapter.TrohpyView
         }
         holder.text.setText(spannable);
 
+        if (customTabsClient != null) {
+            CustomTabsSession session = customTabsClient.newSession(null);
+            session.mayLaunchUrl(Uri.parse(trophy.data.url), null, null);
+        }
+
         RxView.clicks(holder.itemView)
                 .subscribe(aVoid -> {
                     if (!TextUtils.isEmpty(trophy.data.url)) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(trophy.data.url));
-                        context.startActivity(intent);
+                        customTabsIntent.launchUrl(activity, Uri.parse(trophy.data.url));
                     }
                 });
     }
