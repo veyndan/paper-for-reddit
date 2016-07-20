@@ -61,8 +61,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
 
         RxView.clicks(holder.mediaImageProgress)
                 .subscribe(aVoid -> {
-                    Image image1 = images.get(holder.getAdapterPosition());
-                    customTabsIntent.launchUrl(activity, Uri.parse(image1.link));
+                    customTabsIntent.launchUrl(activity, Uri.parse(image.link));
                 });
 
         Glide.with(context)

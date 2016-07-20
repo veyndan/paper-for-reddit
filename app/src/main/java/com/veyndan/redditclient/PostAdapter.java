@@ -185,8 +185,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 RxView.clicks(holder.mediaContainer)
                         .subscribe(aVoid -> {
-                            Thing<Link> post1 = posts.get(holder.getAdapterPosition());
-                            customTabsIntent.launchUrl(activity, Uri.parse(post1.data.url));
+                            customTabsIntent.launchUrl(activity, Uri.parse(post.data.url));
                         });
 
                 final boolean imageDimensAvailable = !post.data.preview.images.isEmpty();
@@ -315,8 +314,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 RxView.clicks(holder.mediaContainer)
                         .subscribe(aVoid -> {
-                            Thing<Link> post1 = posts.get(holder.getAdapterPosition());
-                            customTabsIntent.launchUrl(activity, Uri.parse(post1.data.url));
+                            customTabsIntent.launchUrl(activity, Uri.parse(post.data.url));
                         });
 
                 String urlHost;
@@ -377,18 +375,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         holder.downvote.setChecked(false);
                     }
 
-                    Thing<Link> post1 = posts.get(holder.getAdapterPosition());
-                    post1.data.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
-                    if (!post1.data.archived) {
-                        reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post1.kind + "_" + post1.data.id)
+                    post.data.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
+                    if (!post.data.archived) {
+                        reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.kind + "_" + post.data.id)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
 
-                        post1.data.score += isChecked ? 1 : -1;
+                        post.data.score += isChecked ? 1 : -1;
 
-                        final String points1 = context.getResources().getQuantityString(R.plurals.points, post1.data.score, post1.data.score);
-                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post1.data.numComments, post1.data.numComments);
+                        final String points1 = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
+                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
                         holder.score.setText(context.getString(R.string.score, points1, comments1));
                     }
                 });
@@ -402,18 +399,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         holder.upvote.setChecked(false);
                     }
 
-                    Thing<Link> post1 = posts.get(holder.getAdapterPosition());
-                    post1.data.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
-                    if (!post1.data.archived) {
-                        reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post1.kind + "_" + post1.data.id)
+                    post.data.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
+                    if (!post.data.archived) {
+                        reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.kind + "_" + post.data.id)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
 
-                        post1.data.score += isChecked ? -1 : 1;
+                        post.data.score += isChecked ? -1 : 1;
 
-                        final String points1 = context.getResources().getQuantityString(R.plurals.points, post1.data.score, post1.data.score);
-                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post1.data.numComments, post1.data.numComments);
+                        final String points1 = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
+                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
                         holder.score.setText(context.getString(R.string.score, points1, comments1));
                     }
                 });
@@ -422,15 +418,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         RxCompoundButton.checkedChanges(holder.save)
                 .skip(1)
                 .subscribe(isChecked -> {
-                    Thing<Link> post1 = posts.get(holder.getAdapterPosition());
-                    post1.data.saved = isChecked;
+                    post.data.saved = isChecked;
                     if (isChecked) {
-                        reddit.save("", post1.kind + "_" + post1.data.id)
+                        reddit.save("", post.kind + "_" + post.data.id)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
                     } else {
-                        reddit.unsave(post1.kind + "_" + post1.data.id)
+                        reddit.unsave(post.kind + "_" + post.data.id)
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
