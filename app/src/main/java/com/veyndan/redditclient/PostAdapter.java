@@ -56,8 +56,9 @@ import rawjava.Reddit;
 import rawjava.model.Image;
 import rawjava.model.Link;
 import rawjava.model.PostHint;
+import rawjava.model.RedditObject;
 import rawjava.model.Source;
-import rawjava.model.Thing;
+import rawjava.model.Submission;
 import rawjava.network.VoteDirection;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -80,7 +81,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
     private final Activity activity;
-    private final List<Thing<Link>> posts;
+    private final List<RedditObject> posts;
     private final Reddit reddit;
     private final int width;
 
@@ -88,7 +89,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private final CustomTabsIntent customTabsIntent = builder.build();
     @Nullable private CustomTabsClient customTabsClient;
 
-    public PostAdapter(Activity activity, List<Thing<Link>> posts, Reddit reddit, int width) {
+    public PostAdapter(Activity activity, List<RedditObject> posts, Reddit reddit, int width) {
         this.activity = activity;
         this.posts = posts;
         this.reddit = reddit;
@@ -154,19 +155,53 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     @Override
     public void onBindViewHolder(final PostViewHolder holder, int position) {
-        final Thing<Link> post = posts.get(position);
         final Context context = holder.itemView.getContext();
-
-        holder.title.setText(post.data.title);
+        final Submission submission = (Submission) posts.get(position);
 
         CharSequence age = DateUtils.getRelativeTimeSpanString(
-                TimeUnit.SECONDS.toMillis(post.data.createdUtc), System.currentTimeMillis(),
+                TimeUnit.SECONDS.toMillis(submission.createdUtc), System.currentTimeMillis(),
                 DateUtils.SECOND_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
 
-        holder.subtitle.setText(context.getString(R.string.subtitle, post.data.author, age, post.data.subreddit));
+        holder.subtitle.setText(context.getString(R.string.subtitle, submission.author, age, submission.subreddit));
 
         int viewType = holder.getItemViewType();
+
+        if ((viewType & TYPE_FLAIR) != 0) {
+            assert holder.flairContainer != null;
+
+            holder.flairContainer.removeAllViews();
+            LayoutInflater inflater = LayoutInflater.from(context);
+
+            if (submission.stickied) {
+                TextView flairStickied = (TextView) inflater.inflate(R.layout.post_flair_stickied, holder.flairContainer, false);
+                holder.flairContainer.addView(flairStickied);
+            }
+
+            if (submission instanceof Link && ((Link) submission).over18) {
+                TextView flairNsfw = (TextView) inflater.inflate(R.layout.post_flair_nsfw, holder.flairContainer, false);
+                holder.flairContainer.addView(flairNsfw);
+            }
+
+            if (submission instanceof Link && !TextUtils.isEmpty(((Link) submission).linkFlairText)) {
+                TextView flairLink = (TextView) inflater.inflate(R.layout.post_flair_link, holder.flairContainer, false);
+                holder.flairContainer.addView(flairLink);
+
+                flairLink.setText(((Link) submission).linkFlairText);
+            }
+
+            if (submission.gilded != 0) {
+                TextView flairGilded = (TextView) inflater.inflate(R.layout.post_flair_gilded, holder.flairContainer, false);
+                holder.flairContainer.addView(flairGilded);
+
+                flairGilded.setText(String.valueOf(submission.gilded));
+            }
+        }
+
+        if (!(posts.get(position) instanceof Link)) return;
+        final Link link = (Link) posts.get(position);
+
+        holder.title.setText(link.title);
 
         switch (viewType % 16) {
             case TYPE_SELF:
@@ -180,18 +215,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 if (customTabsClient != null) {
                     CustomTabsSession session = customTabsClient.newSession(new CustomTabsCallback());
-                    session.mayLaunchUrl(Uri.parse(post.data.url), null, null);
+                    session.mayLaunchUrl(Uri.parse(link.url), null, null);
                 }
 
                 RxView.clicks(holder.mediaContainer)
                         .subscribe(aVoid -> {
-                            customTabsIntent.launchUrl(activity, Uri.parse(post.data.url));
+                            customTabsIntent.launchUrl(activity, Uri.parse(link.url));
                         });
 
-                final boolean imageDimensAvailable = !post.data.preview.images.isEmpty();
+                final boolean imageDimensAvailable = !link.preview.images.isEmpty();
 
                 Glide.with(context)
-                        .load(post.data.url)
+                        .load(link.url)
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -207,8 +242,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                     image.source = new Source();
                                     image.source.width = resource.getIntrinsicWidth();
                                     image.source.height = resource.getIntrinsicHeight();
-                                    post.data.preview.images = new ArrayList<>();
-                                    post.data.preview.images.add(image);
+                                    link.preview.images = new ArrayList<>();
+                                    link.preview.images.add(image);
 
                                     holder.mediaImage.getLayoutParams().height = (int) ((float) width / image.source.width * image.source.height);
                                 }
@@ -217,7 +252,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         })
                         .into(holder.mediaImage);
                 if (imageDimensAvailable) {
-                    Source source = post.data.preview.images.get(0).source;
+                    Source source = link.preview.images.get(0).source;
                     holder.mediaImage.getLayoutParams().height = (int) ((float) width / source.width * source.height);
                 }
                 break;
@@ -252,7 +287,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 ImgurService imgurService = retrofit.create(ImgurService.class);
 
-                imgurService.album(post.data.url.split("/a/")[1])
+                imgurService.album(link.url.split("/a/")[1])
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(basic -> {
@@ -263,7 +298,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             case TYPE_TWEET:
                 assert holder.mediaContainer != null;
 
-                long tweetId = Long.parseLong(post.data.url.substring(post.data.url.indexOf("/status/") + "/status/".length()));
+                long tweetId = Long.parseLong(link.url.substring(link.url.indexOf("/status/") + "/status/".length()));
                 TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
                     @Override
                     public void success(Result<Tweet> result) {
@@ -282,7 +317,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                 holder.mediaImageProgress.setVisibility(View.VISIBLE);
 
-                Source source = post.data.preview.images.get(0).source;
+                Source source = link.preview.images.get(0).source;
                 Glide.with(context)
                         .load(source.url)
                         .listener(new RequestListener<String, GlideDrawable>() {
@@ -307,64 +342,33 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     CustomTabsSession session = customTabsClient.newSession(null);
 
                     // null check required for comment posts.
-                    if (post.data.url != null) {
-                        session.mayLaunchUrl(Uri.parse(post.data.url), null, null);
+                    if (link.url != null) {
+                        session.mayLaunchUrl(Uri.parse(link.url), null, null);
                     }
                 }
 
                 RxView.clicks(holder.mediaContainer)
                         .subscribe(aVoid -> {
-                            customTabsIntent.launchUrl(activity, Uri.parse(post.data.url));
+                            customTabsIntent.launchUrl(activity, Uri.parse(link.url));
                         });
 
                 String urlHost;
                 try {
-                    urlHost = new URL(post.data.url).getHost();
+                    urlHost = new URL(link.url).getHost();
                 } catch (MalformedURLException e) {
-                    Timber.e(e, "Could not obtain the host of %s", post.data.url);
-                    urlHost = post.data.url;
+                    Timber.e(e, "Could not obtain the host of %s", link.url);
+                    urlHost = link.url;
                 }
 
                 holder.mediaUrl.setText(urlHost);
                 break;
         }
 
-        if ((viewType & TYPE_FLAIR) != 0) {
-            assert holder.flairContainer != null;
-
-            holder.flairContainer.removeAllViews();
-            LayoutInflater inflater = LayoutInflater.from(context);
-
-            if (post.data.stickied) {
-                TextView flairStickied = (TextView) inflater.inflate(R.layout.post_flair_stickied, holder.flairContainer, false);
-                holder.flairContainer.addView(flairStickied);
-            }
-
-            if (post.data.over18) {
-                TextView flairNsfw = (TextView) inflater.inflate(R.layout.post_flair_nsfw, holder.flairContainer, false);
-                holder.flairContainer.addView(flairNsfw);
-            }
-
-            if (!TextUtils.isEmpty(post.data.linkFlairText)) {
-                TextView flairLink = (TextView) inflater.inflate(R.layout.post_flair_link, holder.flairContainer, false);
-                holder.flairContainer.addView(flairLink);
-
-                flairLink.setText(post.data.linkFlairText);
-            }
-
-            if (post.data.gilded != 0) {
-                TextView flairGilded = (TextView) inflater.inflate(R.layout.post_flair_gilded, holder.flairContainer, false);
-                holder.flairContainer.addView(flairGilded);
-
-                flairGilded.setText(String.valueOf(post.data.gilded));
-            }
-        }
-
-        final String points = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
-        final String comments = context.getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
+        final String points = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
+        final String comments = context.getResources().getQuantityString(R.plurals.comments, link.numComments, link.numComments);
         holder.score.setText(context.getString(R.string.score, points, comments));
 
-        VoteDirection likes = post.data.getLikes();
+        VoteDirection likes = submission.getLikes();
 
         holder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
         RxCompoundButton.checkedChanges(holder.upvote)
@@ -375,17 +379,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         holder.downvote.setChecked(false);
                     }
 
-                    post.data.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
-                    if (!post.data.archived) {
-                        reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.kind + "_" + post.data.id)
+                    submission.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
+                    if (!submission.archived) {
+                        reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, submission.getFullname())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
 
-                        post.data.score += isChecked ? 1 : -1;
+                        submission.score += isChecked ? 1 : -1;
 
-                        final String points1 = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
-                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
+                        final String points1 = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
+                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, link.numComments, link.numComments);
                         holder.score.setText(context.getString(R.string.score, points1, comments1));
                     }
                 });
@@ -399,33 +403,33 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         holder.upvote.setChecked(false);
                     }
 
-                    post.data.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
-                    if (!post.data.archived) {
-                        reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.kind + "_" + post.data.id)
+                    submission.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
+                    if (!submission.archived) {
+                        reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, submission.getFullname())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
 
-                        post.data.score += isChecked ? -1 : 1;
+                        submission.score += isChecked ? -1 : 1;
 
-                        final String points1 = context.getResources().getQuantityString(R.plurals.points, post.data.score, post.data.score);
-                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, post.data.numComments, post.data.numComments);
+                        final String points1 = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
+                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, link.numComments, link.numComments);
                         holder.score.setText(context.getString(R.string.score, points1, comments1));
                     }
                 });
 
-        holder.save.setChecked(post.data.saved);
+        holder.save.setChecked(submission.saved);
         RxCompoundButton.checkedChanges(holder.save)
                 .skip(1)
                 .subscribe(isChecked -> {
-                    post.data.saved = isChecked;
+                    submission.saved = isChecked;
                     if (isChecked) {
-                        reddit.save("", post.kind + "_" + post.data.id)
+                        reddit.save("", submission.getFullname())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
                     } else {
-                        reddit.unsave(post.kind + "_" + post.data.id)
+                        reddit.unsave(submission.getFullname())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
@@ -447,7 +451,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             final View.OnClickListener undoClickListener = view -> {
                                 // If undo pressed, then don't follow through with request to hide
                                 // the post.
-                                posts.add(adapterPosition, post);
+                                posts.add(adapterPosition, submission);
                                 notifyItemInserted(adapterPosition);
                             };
 
@@ -460,7 +464,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                         if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
                                             // Chance to undo post hiding has gone, so follow through with
                                             // hiding network request.
-                                            reddit.hide(post.kind + "_" + post.data.id)
+                                            reddit.hide(submission.getFullname())
                                                     .subscribeOn(Schedulers.io())
                                                     .observeOn(AndroidSchedulers.mainThread())
                                                     .subscribe();
@@ -478,16 +482,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             break;
                         case R.id.action_post_profile:
                             Intent intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
-                            intent.putExtra("username", post.data.author);
+                            intent.putExtra("username", submission.author);
                             context.startActivity(intent);
                             break;
                         case R.id.action_post_subreddit:
                             intent = new Intent(context.getApplicationContext(), MainActivity.class);
-                            intent.putExtra("subreddit", post.data.subreddit);
+                            intent.putExtra("subreddit", submission.subreddit);
                             context.startActivity(intent);
                             break;
                         case R.id.action_post_browser:
-                            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.data.url));
+                            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link.url));
                             context.startActivity(intent);
                             break;
                         case R.id.action_post_report:
@@ -498,34 +502,36 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        Thing<Link> post = posts.get(position);
+        Submission submission = (Submission) posts.get(position);
 
         int viewType;
 
-        if (post.kind.equals("t3") && post.data.url.contains("imgur.com/") && !post.data.url.contains("/a/") && !post.data.url.contains("/gallery/") && !post.data.url.contains("i.imgur.com")) {
-            post.data.url = post.data.url.replace("imgur.com", "i.imgur.com");
-            if (!post.data.url.endsWith(".gifv")) {
-                post.data.url += ".png";
+        if (submission instanceof Link && ((Link) submission).url.contains("imgur.com/") && !((Link) submission).url.contains("/a/") && !((Link) submission).url.contains("/gallery/") && !((Link) submission).url.contains("i.imgur.com")) {
+            ((Link) submission).url = ((Link) submission).url.replace("imgur.com", "i.imgur.com");
+            if (!((Link) submission).url.endsWith(".gifv")) {
+                ((Link) submission).url += ".png";
             }
-            post.data.setPostHint(PostHint.IMAGE);
+            ((Link) submission).setPostHint(PostHint.IMAGE);
         }
 
-        if (post.data.isSelf) {
+        if (submission instanceof Link && ((Link) submission).isSelf) {
             viewType = TYPE_SELF;
-        } else if (post.kind.equals("t3") && post.data.url.contains("twitter.com")) {
+        } else if (submission instanceof Link && ((Link) submission).url.contains("twitter.com")) {
             viewType = TYPE_TWEET;
-        } else if (post.kind.equals("t3") && post.data.getPostHint().equals(PostHint.IMAGE)) {
+        } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.IMAGE)) {
             viewType = TYPE_IMAGE;
-        } else if (post.kind.equals("t3") && post.data.url.contains("/a/")) {
+        } else if (submission instanceof Link && ((Link) submission).url.contains("/a/")) {
             viewType = TYPE_ALBUM;
-        } else if (!post.data.preview.images.isEmpty()) {
+        } else if (submission instanceof Link && !((Link) submission).preview.images.isEmpty()) {
             viewType = TYPE_LINK_IMAGE;
         } else {
             viewType = TYPE_LINK;
         }
 
-        if (post.data.stickied || post.data.over18 || !TextUtils.isEmpty(post.data.linkFlairText)
-                || post.data.gilded != 0) {
+        if (submission.stickied
+                || submission.gilded != 0
+                || (submission instanceof Link && ((Link) submission).over18)
+                || (submission instanceof Link && !TextUtils.isEmpty(((Link) submission).linkFlairText))) {
             viewType += TYPE_FLAIR;
         }
 

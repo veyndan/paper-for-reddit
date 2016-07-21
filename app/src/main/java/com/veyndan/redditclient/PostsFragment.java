@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rawjava.Reddit;
-import rawjava.model.Link;
-import rawjava.model.Thing;
+import rawjava.model.RedditObject;
 import rawjava.network.Credentials;
 import rx.Observable;
 
@@ -25,7 +24,7 @@ public class PostsFragment extends Fragment {
 
     private RecyclerView recyclerView;
 
-    private final List<Thing<Link>> posts = new ArrayList<>();
+    private final List<RedditObject> posts = new ArrayList<>();
 
     private PostAdapter postAdapter;
 
@@ -48,7 +47,7 @@ public class PostsFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    public void addPosts(List<Thing<Link>> posts) {
+    public void addPosts(List<RedditObject> posts) {
         this.posts.addAll(posts);
         if (postAdapter != null) {
             postAdapter.notifyDataSetChanged();

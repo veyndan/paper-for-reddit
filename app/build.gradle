@@ -51,7 +51,7 @@ dependencies {
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 
     // Reddit
-    compile 'com.github.veyndan:rawjava:-SNAPSHOT'
+    compile 'com.github.veyndan:rawjava:48720be9bd'
 
     // Retrofit
     compile 'com.squareup.retrofit2:retrofit:2.1.0'

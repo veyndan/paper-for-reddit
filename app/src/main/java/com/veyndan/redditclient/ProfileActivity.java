@@ -132,22 +132,30 @@ public class ProfileActivity extends BaseActivity {
             reddit.user(username, User.OVERVIEW)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(thing -> overviewFragment.addPosts(thing.data.children));
+                    .subscribe(items -> {
+                        overviewFragment.addPosts(items.data.children);
+                    });
 
             reddit.user(username, User.COMMENTS)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(thing -> commentsFragment.addPosts(thing.data.children));
+                    .subscribe(items -> {
+                        commentsFragment.addPosts(items.data.children);
+                    });
 
             reddit.user(username, User.SUBMITTED)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(thing -> submittedFragment.addPosts(thing.data.children));
+                    .subscribe(items -> {
+                        submittedFragment.addPosts(items.data.children);
+                    });
 
             reddit.user(username, User.GILDED)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(thing -> gildedFragment.addPosts(thing.data.children));
+                    .subscribe(items -> {
+                        gildedFragment.addPosts(items.data.children);
+                    });
         }
 
         @Override
