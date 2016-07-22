@@ -68,10 +68,10 @@ dependencies {
     compile 'com.jakewharton.rxbinding:rxbinding-recyclerview-v7:0.4.0'
 
     // Support Library
-    compile 'com.android.support:appcompat-v7:24.1.0'
-    compile 'com.android.support:customtabs:24.1.0'
-    compile 'com.android.support:design:24.1.0'
-    compile 'com.android.support:recyclerview-v7:24.1.0'
+    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile 'com.android.support:customtabs:24.1.1'
+    compile 'com.android.support:design:24.1.1'
+    compile 'com.android.support:recyclerview-v7:24.1.1'
 
     // Timber
     compile 'com.jakewharton.timber:timber:4.1.2'
