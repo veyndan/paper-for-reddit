@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/post_url_border"
+        android:foreground="?selectableItemBackground"
         android:padding="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
         tools:text="imgur.com"/>
