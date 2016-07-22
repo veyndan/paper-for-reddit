@@ -14,6 +14,7 @@ import android.support.customtabs.CustomTabsSession;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -53,6 +54,7 @@ import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import rawjava.Reddit;
+import rawjava.model.Comment;
 import rawjava.model.Image;
 import rawjava.model.Link;
 import rawjava.model.PostHint;
@@ -75,6 +77,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private static final int TYPE_LINK = 0x3;
     private static final int TYPE_LINK_IMAGE = 0x4;
     private static final int TYPE_TWEET = 0x5;
+    private static final int TYPE_COMMENT = 0x6;
 
     private static final int TYPE_FLAIR = 0x10;
 
@@ -115,7 +118,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        View v = inflater.inflate(R.layout.post_item, parent, false);
+        View v = inflater.inflate(R.layout.post_item_link, parent, false);
         ViewStub flairStub = (ViewStub) v.findViewById(R.id.post_flair_stub);
         ViewStub mediaStub = (ViewStub) v.findViewById(R.id.post_media_stub);
 
@@ -142,6 +145,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 mediaStub.setLayoutResource(R.layout.post_media_tweet);
                 mediaStub.inflate();
                 break;
+            case TYPE_COMMENT:
+                v = inflater.inflate(R.layout.post_item_comment, parent, false);
+                flairStub = (ViewStub) v.findViewById(R.id.post_flair_stub);
+                if ((viewType & TYPE_FLAIR) != 0) {
+                    flairStub.inflate();
+                }
+                return new PostCommentViewHolder(v);
             default:
                 throw new IllegalStateException("Unknown viewType: " + viewType);
         }
@@ -150,7 +160,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             flairStub.inflate();
         }
 
-        return new PostViewHolder(v);
+        return new PostLinkViewHolder(v);
     }
 
     @Override
@@ -198,306 +208,315 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         }
 
-        if (!(posts.get(position) instanceof Link)) return;
-        final Link link = (Link) posts.get(position);
+        if (submission instanceof Comment) {
+            final Comment comment = (Comment) posts.get(position);
+            final PostCommentViewHolder commentHolder = (PostCommentViewHolder) holder;
 
-        holder.title.setText(link.title);
+            holder.title.setText(comment.linkTitle);
+            final String points = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
+            holder.subtitle.setText(points + " · " + holder.subtitle.getText());
+            Timber.d(comment.bodyHtml);
+            commentHolder.commentText.setText(Html.fromHtml(comment.bodyHtml)); // Html adding extra padding bottom
+//            commentHolder.commentText.setText(comment.body);
+        } else if (submission instanceof Link) {
+            final Link link = (Link) posts.get(position);
+            final PostLinkViewHolder linkHolder = (PostLinkViewHolder) holder;
 
-        switch (viewType % 16) {
-            case TYPE_SELF:
-                break;
-            case TYPE_IMAGE:
-                assert holder.mediaContainer != null;
-                assert holder.mediaImage != null;
-                assert holder.mediaImageProgress != null;
+            holder.title.setText(link.title);
 
-                holder.mediaImageProgress.setVisibility(View.VISIBLE);
+            switch (viewType % 16) {
+                case TYPE_SELF:
+                    break;
+                case TYPE_IMAGE:
+                    assert linkHolder.mediaContainer != null;
+                    assert linkHolder.mediaImage != null;
+                    assert linkHolder.mediaImageProgress != null;
 
-                if (customTabsClient != null) {
-                    CustomTabsSession session = customTabsClient.newSession(new CustomTabsCallback());
-                    session.mayLaunchUrl(Uri.parse(link.url), null, null);
-                }
+                    linkHolder.mediaImageProgress.setVisibility(View.VISIBLE);
 
-                RxView.clicks(holder.mediaContainer)
-                        .subscribe(aVoid -> {
-                            customTabsIntent.launchUrl(activity, Uri.parse(link.url));
-                        });
-
-                final boolean imageDimensAvailable = !link.preview.images.isEmpty();
-
-                Glide.with(context)
-                        .load(link.url)
-                        .listener(new RequestListener<String, GlideDrawable>() {
-                            @Override
-                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                holder.mediaImageProgress.setVisibility(View.GONE);
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                holder.mediaImageProgress.setVisibility(View.GONE);
-                                if (!imageDimensAvailable) {
-                                    final Image image = new Image();
-                                    image.source = new Source();
-                                    image.source.width = resource.getIntrinsicWidth();
-                                    image.source.height = resource.getIntrinsicHeight();
-                                    link.preview.images = new ArrayList<>();
-                                    link.preview.images.add(image);
-
-                                    holder.mediaImage.getLayoutParams().height = (int) ((float) width / image.source.width * image.source.height);
-                                }
-                                return false;
-                            }
-                        })
-                        .into(holder.mediaImage);
-                if (imageDimensAvailable) {
-                    Source source = link.preview.images.get(0).source;
-                    holder.mediaImage.getLayoutParams().height = (int) ((float) width / source.width * source.height);
-                }
-                break;
-            case TYPE_ALBUM:
-                assert holder.mediaContainer != null;
-
-                RecyclerView recyclerView = (RecyclerView) holder.mediaContainer;
-
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
-                recyclerView.setLayoutManager(layoutManager);
-
-                final List<com.veyndan.redditclient.Image> images = new ArrayList<>();
-
-                final AlbumAdapter albumAdapter = new AlbumAdapter(activity, images, width, customTabsClient, customTabsIntent);
-                recyclerView.setAdapter(albumAdapter);
-
-                OkHttpClient client = new OkHttpClient.Builder()
-                        .addInterceptor(chain -> {
-                            Request request = chain.request().newBuilder()
-                                    .addHeader("Authorization", "Client-ID " + Config.IMGUR_CLIENT_ID)
-                                    .build();
-                            return chain.proceed(request);
-                        })
-                        .build();
-
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("https://api.imgur.com/3/")
-                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        .addConverterFactory(MoshiConverterFactory.create())
-                        .client(client)
-                        .build();
-
-                ImgurService imgurService = retrofit.create(ImgurService.class);
-
-                imgurService.album(link.url.split("/a/")[1])
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(basic -> {
-                            images.addAll(basic.data.images);
-                            albumAdapter.notifyDataSetChanged();
-                        });
-                break;
-            case TYPE_TWEET:
-                assert holder.mediaContainer != null;
-
-                long tweetId = Long.parseLong(link.url.substring(link.url.indexOf("/status/") + "/status/".length()));
-                TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
-                    @Override
-                    public void success(Result<Tweet> result) {
-                        ((TweetView) holder.mediaContainer).setTweet(result.data);
-                    }
-
-                    @Override
-                    public void failure(TwitterException exception) {
-                        Timber.e(exception, "Load Tweet failure");
-                    }
-                });
-                break;
-            case TYPE_LINK_IMAGE:
-                assert holder.mediaImage != null;
-                assert holder.mediaImageProgress != null;
-
-                holder.mediaImageProgress.setVisibility(View.VISIBLE);
-
-                Source source = link.preview.images.get(0).source;
-                Glide.with(context)
-                        .load(source.url)
-                        .listener(new RequestListener<String, GlideDrawable>() {
-                            @Override
-                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                holder.mediaImageProgress.setVisibility(View.GONE);
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                holder.mediaImageProgress.setVisibility(View.GONE);
-                                return false;
-                            }
-                        })
-                        .into(holder.mediaImage);
-            case TYPE_LINK:
-                assert holder.mediaContainer != null;
-                assert holder.mediaUrl != null;
-
-                if (customTabsClient != null) {
-                    CustomTabsSession session = customTabsClient.newSession(null);
-
-                    // null check required for comment posts.
-                    if (link.url != null) {
+                    if (customTabsClient != null) {
+                        CustomTabsSession session = customTabsClient.newSession(new CustomTabsCallback());
                         session.mayLaunchUrl(Uri.parse(link.url), null, null);
                     }
-                }
 
-                RxView.clicks(holder.mediaContainer)
-                        .subscribe(aVoid -> {
-                            customTabsIntent.launchUrl(activity, Uri.parse(link.url));
-                        });
+                    RxView.clicks(linkHolder.mediaContainer)
+                            .subscribe(aVoid -> {
+                                customTabsIntent.launchUrl(activity, Uri.parse(link.url));
+                            });
 
-                String urlHost;
-                try {
-                    urlHost = new URL(link.url).getHost();
-                } catch (MalformedURLException e) {
-                    Timber.e(e, "Could not obtain the host of %s", link.url);
-                    urlHost = link.url;
-                }
+                    final boolean imageDimensAvailable = !link.preview.images.isEmpty();
 
-                holder.mediaUrl.setText(urlHost);
-                break;
+                    Glide.with(context)
+                            .load(link.url)
+                            .listener(new RequestListener<String, GlideDrawable>() {
+                                @Override
+                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                    linkHolder.mediaImageProgress.setVisibility(View.GONE);
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                    linkHolder.mediaImageProgress.setVisibility(View.GONE);
+                                    if (!imageDimensAvailable) {
+                                        final Image image = new Image();
+                                        image.source = new Source();
+                                        image.source.width = resource.getIntrinsicWidth();
+                                        image.source.height = resource.getIntrinsicHeight();
+                                        link.preview.images = new ArrayList<>();
+                                        link.preview.images.add(image);
+
+                                        linkHolder.mediaImage.getLayoutParams().height = (int) ((float) width / image.source.width * image.source.height);
+                                    }
+                                    return false;
+                                }
+                            })
+                            .into(linkHolder.mediaImage);
+                    if (imageDimensAvailable) {
+                        Source source = link.preview.images.get(0).source;
+                        linkHolder.mediaImage.getLayoutParams().height = (int) ((float) width / source.width * source.height);
+                    }
+                    break;
+                case TYPE_ALBUM:
+                    assert linkHolder.mediaContainer != null;
+
+                    RecyclerView recyclerView = (RecyclerView) linkHolder.mediaContainer;
+
+                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
+                    recyclerView.setLayoutManager(layoutManager);
+
+                    final List<com.veyndan.redditclient.Image> images = new ArrayList<>();
+
+                    final AlbumAdapter albumAdapter = new AlbumAdapter(activity, images, width, customTabsClient, customTabsIntent);
+                    recyclerView.setAdapter(albumAdapter);
+
+                    OkHttpClient client = new OkHttpClient.Builder()
+                            .addInterceptor(chain -> {
+                                Request request = chain.request().newBuilder()
+                                        .addHeader("Authorization", "Client-ID " + Config.IMGUR_CLIENT_ID)
+                                        .build();
+                                return chain.proceed(request);
+                            })
+                            .build();
+
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl("https://api.imgur.com/3/")
+                            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                            .addConverterFactory(MoshiConverterFactory.create())
+                            .client(client)
+                            .build();
+
+                    ImgurService imgurService = retrofit.create(ImgurService.class);
+
+                    imgurService.album(link.url.split("/a/")[1])
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(basic -> {
+                                images.addAll(basic.data.images);
+                                albumAdapter.notifyDataSetChanged();
+                            });
+                    break;
+                case TYPE_TWEET:
+                    assert linkHolder.mediaContainer != null;
+
+                    long tweetId = Long.parseLong(link.url.substring(link.url.indexOf("/status/") + "/status/".length()));
+                    TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
+                        @Override
+                        public void success(Result<Tweet> result) {
+                            ((TweetView) linkHolder.mediaContainer).setTweet(result.data);
+                        }
+
+                        @Override
+                        public void failure(TwitterException exception) {
+                            Timber.e(exception, "Load Tweet failure");
+                        }
+                    });
+                    break;
+                case TYPE_LINK_IMAGE:
+                    assert linkHolder.mediaImage != null;
+                    assert linkHolder.mediaImageProgress != null;
+
+                    linkHolder.mediaImageProgress.setVisibility(View.VISIBLE);
+
+                    Source source = link.preview.images.get(0).source;
+                    Glide.with(context)
+                            .load(source.url)
+                            .listener(new RequestListener<String, GlideDrawable>() {
+                                @Override
+                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                    linkHolder.mediaImageProgress.setVisibility(View.GONE);
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                    linkHolder.mediaImageProgress.setVisibility(View.GONE);
+                                    return false;
+                                }
+                            })
+                            .into(linkHolder.mediaImage);
+                case TYPE_LINK:
+                    assert linkHolder.mediaContainer != null;
+                    assert linkHolder.mediaUrl != null;
+
+                    if (customTabsClient != null) {
+                        CustomTabsSession session = customTabsClient.newSession(null);
+
+                        session.mayLaunchUrl(Uri.parse(link.url), null, null);
+                    }
+
+                    RxView.clicks(linkHolder.mediaContainer)
+                            .subscribe(aVoid -> {
+                                customTabsIntent.launchUrl(activity, Uri.parse(link.url));
+                            });
+
+                    String urlHost;
+                    try {
+                        urlHost = new URL(link.url).getHost();
+                    } catch (MalformedURLException e) {
+                        Timber.e(e, "Could not obtain the host of %s", link.url);
+                        urlHost = link.url;
+                    }
+
+                    linkHolder.mediaUrl.setText(urlHost);
+                    break;
+            }
+
+            final String points = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
+            final String comments = context.getResources().getQuantityString(R.plurals.comments, link.numComments, link.numComments);
+            linkHolder.score.setText(context.getString(R.string.score, points, comments));
+
+            VoteDirection likes = submission.getLikes();
+
+            linkHolder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
+            RxCompoundButton.checkedChanges(linkHolder.upvote)
+                    .skip(1)
+                    .subscribe(isChecked -> {
+                        // Ensure that downvote and upvote aren't checked at the same time.
+                        if (isChecked) {
+                            linkHolder.downvote.setChecked(false);
+                        }
+
+                        submission.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
+                        if (!submission.archived) {
+                            reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, submission.getFullname())
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe();
+
+                            submission.score += isChecked ? 1 : -1;
+
+                            final String points1 = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
+                            final String comments1 = context.getResources().getQuantityString(R.plurals.comments, link.numComments, link.numComments);
+                            linkHolder.score.setText(context.getString(R.string.score, points1, comments1));
+                        }
+                    });
+
+            linkHolder.downvote.setChecked(likes.equals(VoteDirection.DOWNVOTE));
+            RxCompoundButton.checkedChanges(linkHolder.downvote)
+                    .skip(1)
+                    .subscribe(isChecked -> {
+                        // Ensure that downvote and upvote aren't checked at the same time.
+                        if (isChecked) {
+                            linkHolder.upvote.setChecked(false);
+                        }
+
+                        submission.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
+                        if (!submission.archived) {
+                            reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, submission.getFullname())
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe();
+
+                            submission.score += isChecked ? -1 : 1;
+
+                            final String points1 = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
+                            final String comments1 = context.getResources().getQuantityString(R.plurals.comments, link.numComments, link.numComments);
+                            linkHolder.score.setText(context.getString(R.string.score, points1, comments1));
+                        }
+                    });
+
+            linkHolder.save.setChecked(submission.saved);
+            RxCompoundButton.checkedChanges(linkHolder.save)
+                    .skip(1)
+                    .subscribe(isChecked -> {
+                        submission.saved = isChecked;
+                        if (isChecked) {
+                            reddit.save("", submission.getFullname())
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe();
+                        } else {
+                            reddit.unsave(submission.getFullname())
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe();
+                        }
+                    });
+
+            final PopupMenu otherMenu = new PopupMenu(context, linkHolder.other);
+            otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
+
+            RxView.clicks(linkHolder.other)
+                    .subscribe(aVoid -> otherMenu.show());
+
+            RxPopupMenu.itemClicks(otherMenu)
+                    .subscribe(menuItem -> {
+                        final int adapterPosition = holder.getAdapterPosition();
+
+                        switch (menuItem.getItemId()) {
+                            case R.id.action_post_hide:
+                                final View.OnClickListener undoClickListener = view -> {
+                                    // If undo pressed, then don't follow through with request to hide
+                                    // the post.
+                                    posts.add(adapterPosition, submission);
+                                    notifyItemInserted(adapterPosition);
+                                };
+
+                                Snackbar snackbar = Snackbar.make(holder.itemView, R.string.notify_post_hidden, Snackbar.LENGTH_LONG)
+                                        .setAction(R.string.notify_post_hidden_undo, undoClickListener);
+
+                                RxSnackbar.dismisses(snackbar)
+                                        .subscribe(event -> {
+                                            // If undo pressed, don't hide post.
+                                            if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                                // Chance to undo post hiding has gone, so follow through with
+                                                // hiding network request.
+                                                reddit.hide(submission.getFullname())
+                                                        .subscribeOn(Schedulers.io())
+                                                        .observeOn(AndroidSchedulers.mainThread())
+                                                        .subscribe();
+                                            }
+                                        });
+
+                                snackbar.show();
+
+                                // Hide post from list, but make no network request yet. Outcome of the
+                                // user's interaction with the snackbar handling will determine this.
+                                posts.remove(adapterPosition);
+                                notifyItemRemoved(adapterPosition);
+                                break;
+                            case R.id.action_post_share:
+                                break;
+                            case R.id.action_post_profile:
+                                Intent intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
+                                intent.putExtra("username", submission.author);
+                                context.startActivity(intent);
+                                break;
+                            case R.id.action_post_subreddit:
+                                intent = new Intent(context.getApplicationContext(), MainActivity.class);
+                                intent.putExtra("subreddit", submission.subreddit);
+                                context.startActivity(intent);
+                                break;
+                            case R.id.action_post_browser:
+                                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link.url));
+                                context.startActivity(intent);
+                                break;
+                            case R.id.action_post_report:
+                                break;
+                        }
+                    });
         }
-
-        final String points = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
-        final String comments = context.getResources().getQuantityString(R.plurals.comments, link.numComments, link.numComments);
-        holder.score.setText(context.getString(R.string.score, points, comments));
-
-        VoteDirection likes = submission.getLikes();
-
-        holder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
-        RxCompoundButton.checkedChanges(holder.upvote)
-                .skip(1)
-                .subscribe(isChecked -> {
-                    // Ensure that downvote and upvote aren't checked at the same time.
-                    if (isChecked) {
-                        holder.downvote.setChecked(false);
-                    }
-
-                    submission.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
-                    if (!submission.archived) {
-                        reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, submission.getFullname())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe();
-
-                        submission.score += isChecked ? 1 : -1;
-
-                        final String points1 = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
-                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, link.numComments, link.numComments);
-                        holder.score.setText(context.getString(R.string.score, points1, comments1));
-                    }
-                });
-
-        holder.downvote.setChecked(likes.equals(VoteDirection.DOWNVOTE));
-        RxCompoundButton.checkedChanges(holder.downvote)
-                .skip(1)
-                .subscribe(isChecked -> {
-                    // Ensure that downvote and upvote aren't checked at the same time.
-                    if (isChecked) {
-                        holder.upvote.setChecked(false);
-                    }
-
-                    submission.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
-                    if (!submission.archived) {
-                        reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, submission.getFullname())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe();
-
-                        submission.score += isChecked ? -1 : 1;
-
-                        final String points1 = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
-                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, link.numComments, link.numComments);
-                        holder.score.setText(context.getString(R.string.score, points1, comments1));
-                    }
-                });
-
-        holder.save.setChecked(submission.saved);
-        RxCompoundButton.checkedChanges(holder.save)
-                .skip(1)
-                .subscribe(isChecked -> {
-                    submission.saved = isChecked;
-                    if (isChecked) {
-                        reddit.save("", submission.getFullname())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe();
-                    } else {
-                        reddit.unsave(submission.getFullname())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe();
-                    }
-                });
-
-        final PopupMenu otherMenu = new PopupMenu(context, holder.other);
-        otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
-
-        RxView.clicks(holder.other)
-                .subscribe(aVoid -> otherMenu.show());
-
-        RxPopupMenu.itemClicks(otherMenu)
-                .subscribe(menuItem -> {
-                    final int adapterPosition = holder.getAdapterPosition();
-
-                    switch (menuItem.getItemId()) {
-                        case R.id.action_post_hide:
-                            final View.OnClickListener undoClickListener = view -> {
-                                // If undo pressed, then don't follow through with request to hide
-                                // the post.
-                                posts.add(adapterPosition, submission);
-                                notifyItemInserted(adapterPosition);
-                            };
-
-                            Snackbar snackbar = Snackbar.make(holder.itemView, R.string.notify_post_hidden, Snackbar.LENGTH_LONG)
-                                    .setAction(R.string.notify_post_hidden_undo, undoClickListener);
-
-                            RxSnackbar.dismisses(snackbar)
-                                    .subscribe(event -> {
-                                        // If undo pressed, don't hide post.
-                                        if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                                            // Chance to undo post hiding has gone, so follow through with
-                                            // hiding network request.
-                                            reddit.hide(submission.getFullname())
-                                                    .subscribeOn(Schedulers.io())
-                                                    .observeOn(AndroidSchedulers.mainThread())
-                                                    .subscribe();
-                                        }
-                                    });
-
-                            snackbar.show();
-
-                            // Hide post from list, but make no network request yet. Outcome of the
-                            // user's interaction with the snackbar handling will determine this.
-                            posts.remove(adapterPosition);
-                            notifyItemRemoved(adapterPosition);
-                            break;
-                        case R.id.action_post_share:
-                            break;
-                        case R.id.action_post_profile:
-                            Intent intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
-                            intent.putExtra("username", submission.author);
-                            context.startActivity(intent);
-                            break;
-                        case R.id.action_post_subreddit:
-                            intent = new Intent(context.getApplicationContext(), MainActivity.class);
-                            intent.putExtra("subreddit", submission.subreddit);
-                            context.startActivity(intent);
-                            break;
-                        case R.id.action_post_browser:
-                            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link.url));
-                            context.startActivity(intent);
-                            break;
-                        case R.id.action_post_report:
-                            break;
-                    }
-                });
     }
 
     @Override
@@ -514,7 +533,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             ((Link) submission).setPostHint(PostHint.IMAGE);
         }
 
-        if (submission instanceof Link && ((Link) submission).isSelf) {
+        if (submission instanceof Comment) {
+            viewType = TYPE_COMMENT;
+        } else if (submission instanceof Link && ((Link) submission).isSelf) {
             viewType = TYPE_SELF;
         } else if (submission instanceof Link && ((Link) submission).url.contains("twitter.com")) {
             viewType = TYPE_TWEET;
@@ -547,6 +568,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         @BindView(R.id.post_title) TextView title;
         @BindView(R.id.post_subtitle) TextView subtitle;
+
+        // Flair
+        @Nullable @BindView(R.id.post_flair_container) ViewGroup flairContainer;
+
+        public PostViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
+
+    public static class PostLinkViewHolder extends PostViewHolder {
+
         @BindView(R.id.post_score) TextView score;
         @BindView(R.id.post_upvote) ToggleButton upvote;
         @BindView(R.id.post_downvote) ToggleButton downvote;
@@ -570,10 +603,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         // Media: Link Image
         @Nullable @BindView(R.id.post_media_url) TextView mediaUrl;
 
-        // Flair
-        @Nullable @BindView(R.id.post_flair_container) ViewGroup flairContainer;
+        public PostLinkViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+    }
 
-        public PostViewHolder(View itemView) {
+    public static class PostCommentViewHolder extends PostViewHolder {
+
+        @BindView(R.id.post_comment_text) TextView commentText;
+
+        public PostCommentViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }

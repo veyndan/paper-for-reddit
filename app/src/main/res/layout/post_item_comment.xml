@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/post_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp"
+        android:paddingLeft="@dimen/post_horizontal_margin"
+        android:paddingRight="@dimen/post_horizontal_margin"
+        android:paddingTop="24dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textStyle="italic|bold"
+        tools:text="This is Carter. He knocked on my door to ask if he could have a banana then left."/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingBottom="8dp"
+        android:paddingLeft="@dimen/post_horizontal_margin"
+        android:paddingRight="@dimen/post_horizontal_margin">
+
+        <ToggleButton
+            style="@style/ImageToggleButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:drawableTop="@drawable/ic_toggle_black_24dp"
+            android:paddingTop="0dp"
+            android:stateListAnimator="@animator/comment_expand_toggle"/>
+
+        <TextView
+            android:id="@+id/post_subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            tools:text="Theone211 · 2 years ago · r/funny"/>
+
+    </LinearLayout>
+
+    <ViewStub
+        android:id="@+id/post_flair_stub"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:inflatedId="@+id/post_flair_container"
+        android:layout="@layout/post_flair"/>
+
+    <TextView
+        android:id="@+id/post_comment_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autoLink="all"
+        android:linksClickable="true"
+        android:paddingBottom="16dp"
+        android:paddingLeft="@dimen/post_horizontal_margin"
+        android:paddingRight="@dimen/post_horizontal_margin"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        tools:text="Carter went as a firefighter if anyone wanted to know. btw this is awesome!"/>
+
+</LinearLayout>
