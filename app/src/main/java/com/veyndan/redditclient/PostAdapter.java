@@ -170,6 +170,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         final Context context = holder.itemView.getContext();
         final Submission submission = (Submission) posts.get(position);
 
+        holder.title.setText(submission.linkTitle);
+
         CharSequence age = DateUtils.getRelativeTimeSpanString(
                 TimeUnit.SECONDS.toMillis(submission.createdUtc), System.currentTimeMillis(),
                 DateUtils.SECOND_IN_MILLIS,
@@ -218,7 +220,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             final Comment comment = (Comment) posts.get(position);
             final PostCommentViewHolder commentHolder = (PostCommentViewHolder) holder;
 
-            holder.title.setText(comment.linkTitle);
             holder.subtitle.setText(points + " · " + holder.subtitle.getText());
             Bypass.Options options = new Bypass.Options();
             options.setBlockQuoteColor(ContextCompat.getColor(context, R.color.colorAccent));
@@ -230,8 +231,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else if (submission instanceof Link) {
             final Link link = (Link) posts.get(position);
             final PostLinkViewHolder linkHolder = (PostLinkViewHolder) holder;
-
-            holder.title.setText(link.title);
 
             switch (viewType % 16) {
                 case TYPE_SELF:
@@ -245,18 +244,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                     if (customTabsClient != null) {
                         CustomTabsSession session = customTabsClient.newSession(new CustomTabsCallback());
-                        session.mayLaunchUrl(Uri.parse(link.url), null, null);
+                        session.mayLaunchUrl(Uri.parse(submission.linkUrl), null, null);
                     }
 
                     RxView.clicks(linkHolder.mediaContainer)
                             .subscribe(aVoid -> {
-                                customTabsIntent.launchUrl(activity, Uri.parse(link.url));
+                                customTabsIntent.launchUrl(activity, Uri.parse(submission.linkUrl));
                             });
 
                     final boolean imageDimensAvailable = !link.preview.images.isEmpty();
 
                     Glide.with(context)
-                            .load(link.url)
+                            .load(submission.linkUrl)
                             .listener(new RequestListener<String, GlideDrawable>() {
                                 @Override
                                 public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
@@ -317,7 +316,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                     ImgurService imgurService = retrofit.create(ImgurService.class);
 
-                    imgurService.album(link.url.split("/a/")[1])
+                    imgurService.album(submission.linkUrl.split("/a/")[1])
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(basic -> {
@@ -328,7 +327,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 case TYPE_TWEET:
                     assert linkHolder.mediaContainer != null;
 
-                    long tweetId = Long.parseLong(link.url.substring(link.url.indexOf("/status/") + "/status/".length()));
+                    long tweetId = Long.parseLong(submission.linkUrl.substring(submission.linkUrl.indexOf("/status/") + "/status/".length()));
                     TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
                         @Override
                         public void success(Result<Tweet> result) {
@@ -371,20 +370,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     if (customTabsClient != null) {
                         CustomTabsSession session = customTabsClient.newSession(null);
 
-                        session.mayLaunchUrl(Uri.parse(link.url), null, null);
+                        session.mayLaunchUrl(Uri.parse(submission.linkUrl), null, null);
                     }
 
                     RxView.clicks(linkHolder.mediaContainer)
                             .subscribe(aVoid -> {
-                                customTabsIntent.launchUrl(activity, Uri.parse(link.url));
+                                customTabsIntent.launchUrl(activity, Uri.parse(submission.linkUrl));
                             });
 
                     String urlHost;
                     try {
-                        urlHost = new URL(link.url).getHost();
+                        urlHost = new URL(submission.linkUrl).getHost();
                     } catch (MalformedURLException e) {
-                        Timber.e(e, "Could not obtain the host of %s", link.url);
-                        urlHost = link.url;
+                        Timber.e(e, "Could not obtain the host of %s", submission.linkUrl);
+                        urlHost = submission.linkUrl;
                     }
 
                     linkHolder.mediaUrl.setText(urlHost);
@@ -521,7 +520,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 context.startActivity(intent);
                                 break;
                             case R.id.action_post_browser:
-                                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link.url));
+                                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(submission.linkUrl));
                                 context.startActivity(intent);
                                 break;
                             case R.id.action_post_report:
@@ -537,23 +536,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         int viewType;
 
-        if (submission instanceof Link && ((Link) submission).url.contains("imgur.com/") && !((Link) submission).url.contains("/a/") && !((Link) submission).url.contains("/gallery/") && !((Link) submission).url.contains("i.imgur.com")) {
-            ((Link) submission).url = ((Link) submission).url.replace("imgur.com", "i.imgur.com");
-            if (!((Link) submission).url.endsWith(".gifv")) {
-                ((Link) submission).url += ".png";
+        if (submission instanceof Link && submission.linkUrl.contains("imgur.com/") && !submission.linkUrl.contains("/a/") && !submission.linkUrl.contains("/gallery/") && !submission.linkUrl.contains("i.imgur.com")) {
+            submission.linkUrl = submission.linkUrl.replace("imgur.com", "i.imgur.com");
+            if (!submission.linkUrl.endsWith(".gifv")) {
+                submission.linkUrl += ".png";
             }
             ((Link) submission).setPostHint(PostHint.IMAGE);
         }
 
         if (submission instanceof Comment) {
             viewType = TYPE_COMMENT;
-        } else if (submission instanceof Link && ((Link) submission).isSelf) {
+        } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.SELF)) {
             viewType = TYPE_SELF;
-        } else if (submission instanceof Link && ((Link) submission).url.contains("twitter.com")) {
+        } else if (submission instanceof Link && submission.linkUrl.contains("twitter.com")) {
             viewType = TYPE_TWEET;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.IMAGE)) {
             viewType = TYPE_IMAGE;
-        } else if (submission instanceof Link && ((Link) submission).url.contains("/a/")) {
+        } else if (submission instanceof Link && submission.linkUrl.contains("/a/")) {
             viewType = TYPE_ALBUM;
         } else if (submission instanceof Link && !((Link) submission).preview.images.isEmpty()) {
             viewType = TYPE_LINK_IMAGE;
