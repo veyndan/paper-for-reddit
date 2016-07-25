@@ -44,8 +44,6 @@ import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetUtils;
 import com.twitter.sdk.android.tweetui.TweetView;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -378,15 +376,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                 customTabsIntent.launchUrl(activity, Uri.parse(submission.linkUrl));
                             });
 
-                    String urlHost;
-                    try {
-                        urlHost = new URL(submission.linkUrl).getHost();
-                    } catch (MalformedURLException e) {
-                        Timber.e(e, "Could not obtain the host of %s", submission.linkUrl);
-                        urlHost = submission.linkUrl;
-                    }
-
-                    linkHolder.mediaUrl.setText(urlHost);
+                    linkHolder.mediaUrl.setText(link.domain);
                     break;
             }
 
