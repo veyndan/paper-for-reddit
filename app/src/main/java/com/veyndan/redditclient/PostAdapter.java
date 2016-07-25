@@ -12,11 +12,12 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.customtabs.CustomTabsSession;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import in.uncod.android.bypass.Bypass;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import rawjava.Reddit;
@@ -215,9 +217,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             holder.title.setText(comment.linkTitle);
             final String points = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
             holder.subtitle.setText(points + " · " + holder.subtitle.getText());
-            Timber.d(comment.bodyHtml);
-            commentHolder.commentText.setText(Html.fromHtml(comment.bodyHtml)); // Html adding extra padding bottom
-//            commentHolder.commentText.setText(comment.body);
+            Bypass.Options options = new Bypass.Options();
+            options.setBlockQuoteColor(ContextCompat.getColor(context, R.color.colorAccent));
+            options.setHruleColor(ContextCompat.getColor(context, R.color.colorAccent));
+            Bypass bypass = new Bypass(context, options);
+            CharSequence commentText = bypass.markdownToSpannable(comment.body);
+            commentHolder.commentText.setText(commentText);
+            commentHolder.commentText.setMovementMethod(LinkMovementMethod.getInstance());
         } else if (submission instanceof Link) {
             final Link link = (Link) posts.get(position);
             final PostLinkViewHolder linkHolder = (PostLinkViewHolder) holder;
