@@ -53,5 +53,6 @@
     <string name="action_sort_time_period_month">Month</string>
     <string name="action_sort_time_period_year">Year</string>
     <string name="action_sort_time_period_all">All</string>
+    <string name="score_hidden">[score hidden]</string>
     <!-- -->
 </resources>

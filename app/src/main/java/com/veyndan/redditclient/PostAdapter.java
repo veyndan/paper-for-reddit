@@ -210,12 +210,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
         }
 
+        final String points = submission.scoreHidden
+                ? context.getString(R.string.score_hidden)
+                : context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
+
         if (submission instanceof Comment) {
             final Comment comment = (Comment) posts.get(position);
             final PostCommentViewHolder commentHolder = (PostCommentViewHolder) holder;
 
             holder.title.setText(comment.linkTitle);
-            final String points = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
             holder.subtitle.setText(points + " · " + holder.subtitle.getText());
             Bypass.Options options = new Bypass.Options();
             options.setBlockQuoteColor(ContextCompat.getColor(context, R.color.colorAccent));
@@ -388,7 +391,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     break;
             }
 
-            final String points = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
             final String comments = context.getResources().getQuantityString(R.plurals.comments, link.numComments, link.numComments);
             linkHolder.score.setText(context.getString(R.string.score, points, comments));
 
@@ -412,7 +414,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                             submission.score += isChecked ? 1 : -1;
 
-                            final String points1 = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
+                            final String points1 = submission.scoreHidden
+                                    ? context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score)
+                                    : context.getString(R.string.score_hidden);
                             final String comments1 = context.getResources().getQuantityString(R.plurals.comments, link.numComments, link.numComments);
                             linkHolder.score.setText(context.getString(R.string.score, points1, comments1));
                         }
@@ -436,7 +440,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
                             submission.score += isChecked ? -1 : 1;
 
-                            final String points1 = context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
+                            final String points1 = submission.scoreHidden
+                                    ? context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score)
+                                    : context.getString(R.string.score_hidden);
                             final String comments1 = context.getResources().getQuantityString(R.plurals.comments, link.numComments, link.numComments);
                             linkHolder.score.setText(context.getString(R.string.score, points1, comments1));
                         }
