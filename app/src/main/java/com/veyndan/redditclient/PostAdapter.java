@@ -266,10 +266,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                                     linkHolder.mediaImageProgress.setVisibility(View.GONE);
                                     if (!imageDimensAvailable) {
                                         final Image image = new Image();
-                                        image.source = new Source();
                                         image.source.width = resource.getIntrinsicWidth();
                                         image.source.height = resource.getIntrinsicHeight();
-                                        link.preview.images = new ArrayList<>();
                                         link.preview.images.add(image);
 
                                         linkHolder.mediaImage.getLayoutParams().height = (int) ((float) width / image.source.width * image.source.height);
