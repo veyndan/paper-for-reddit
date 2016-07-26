@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsCallback;
 import android.support.customtabs.CustomTabsClient;
@@ -12,9 +13,9 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.customtabs.CustomTabsSession;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
@@ -44,13 +45,14 @@ import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetUtils;
 import com.twitter.sdk.android.tweetui.TweetView;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import in.uncod.android.bypass.Bypass;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import rawjava.Reddit;
@@ -163,6 +165,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new PostLinkViewHolder(v);
     }
 
+    private CharSequence trimTrailingWhitespace(@NonNull CharSequence source) {
+        int i = source.length();
+
+        // loop back to the first non-whitespace character
+        do {
+            i--;
+        } while (i > 0 && Character.isWhitespace(source.charAt(i)));
+
+        return source.subSequence(0, i + 1);
+    }
+
     @Override
     public void onBindViewHolder(final PostViewHolder holder, int position) {
         final Context context = holder.itemView.getContext();
@@ -219,12 +232,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             final PostCommentViewHolder commentHolder = (PostCommentViewHolder) holder;
 
             holder.subtitle.setText(points + " · " + holder.subtitle.getText());
-            Bypass.Options options = new Bypass.Options();
-            options.setBlockQuoteColor(ContextCompat.getColor(context, R.color.colorAccent));
-            options.setHruleColor(ContextCompat.getColor(context, R.color.colorAccent));
-            Bypass bypass = new Bypass(context, options);
-            CharSequence commentText = bypass.markdownToSpannable(comment.body);
-            commentHolder.commentText.setText(commentText);
+            commentHolder.commentText.setText(trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(comment.bodyHtml))));
             commentHolder.commentText.setMovementMethod(LinkMovementMethod.getInstance());
         } else if (submission instanceof Link) {
             final Link link = (Link) posts.get(position);
