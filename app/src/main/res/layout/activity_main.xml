@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
     android:fitsSystemWindows="true"
     tools:context="com.veyndan.redditclient.MainActivity">
 
@@ -28,6 +27,6 @@
         android:name="com.veyndan.redditclient.PostsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        android:layout_marginTop="?actionBarSize"/>
 
 </android.support.design.widget.CoordinatorLayout>
