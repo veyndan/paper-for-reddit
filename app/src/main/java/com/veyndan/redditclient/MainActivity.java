@@ -27,7 +27,7 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         Credentials credentials = Credentials.create(getResources().openRawResource(R.raw.credentials));
-        reddit = new Reddit(credentials);
+        reddit = new Reddit.Builder(credentials).build();
 
         postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
 
@@ -40,8 +40,8 @@ public class MainActivity extends BaseActivity {
         }
 
         reddit.subreddit(subreddit, Sort.HOT, postsFragment.getNextPageTrigger(), Schedulers.io(), AndroidSchedulers.mainThread())
-                .subscribe(post -> {
-                    postsFragment.addPosts(post.data.children);
+                .subscribe(response -> {
+                    postsFragment.addPosts(response.body().data.children);
                 });
     }
 
@@ -120,8 +120,8 @@ public class MainActivity extends BaseActivity {
         postsFragment.clearPosts();
 
         reddit.subreddit("all", sort, query, postsFragment.getNextPageTrigger(), Schedulers.io(), AndroidSchedulers.mainThread())
-                .subscribe(post -> {
-                    postsFragment.addPosts(post.data.children);
+                .subscribe(response -> {
+                    postsFragment.addPosts(response.body().data.children);
                 });
 
         return true;

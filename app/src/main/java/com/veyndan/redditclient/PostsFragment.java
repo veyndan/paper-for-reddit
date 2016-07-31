@@ -70,7 +70,7 @@ public class PostsFragment extends Fragment {
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
 
         final Credentials credentials = Credentials.create(getResources().openRawResource(R.raw.credentials));
-        final Reddit reddit = new Reddit(credentials);
+        final Reddit reddit = new Reddit.Builder(credentials).build();
 
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);

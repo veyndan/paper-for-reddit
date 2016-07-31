@@ -65,14 +65,14 @@ public class ProfileActivity extends BaseActivity {
         ab.setTitle(username);
 
         final Credentials credentials = Credentials.create(getResources().openRawResource(R.raw.credentials));
-        final Reddit reddit = new Reddit(credentials);
+        final Reddit reddit = new Reddit.Builder(credentials).build();
 
         reddit.userAbout(username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(thing -> {
-                    linkKarma.setText(NumberFormat.getNumberInstance().format(thing.data.linkKarma));
-                    commentKarma.setText(NumberFormat.getNumberInstance().format(thing.data.commentKarma));
+                .subscribe(response -> {
+                    linkKarma.setText(NumberFormat.getNumberInstance().format(response.body().data.linkKarma));
+                    commentKarma.setText(NumberFormat.getNumberInstance().format(response.body().data.commentKarma));
                 });
 
         final List<Thing<Trophy>> trophies = new ArrayList<>();
@@ -98,8 +98,8 @@ public class ProfileActivity extends BaseActivity {
         reddit.userTrophies(username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(thing -> {
-                    trophies.addAll(thing.data.trophies);
+                .subscribe(response -> {
+                    trophies.addAll(response.body().data.trophies);
                     trophyAdapter.notifyDataSetChanged();
                 });
 
@@ -122,7 +122,7 @@ public class ProfileActivity extends BaseActivity {
         public ProfileSectionAdapter(FragmentManager fm, Context context, String username) {
             super(fm);
             Credentials credentials = Credentials.create(context.getResources().openRawResource(R.raw.credentials));
-            reddit = new Reddit(credentials);
+            reddit = new Reddit.Builder(credentials).build();
 
             overviewFragment = PostsFragment.newInstance();
             commentsFragment = PostsFragment.newInstance();
@@ -132,29 +132,29 @@ public class ProfileActivity extends BaseActivity {
             reddit.user(username, User.OVERVIEW)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(items -> {
-                        overviewFragment.addPosts(items.data.children);
+                    .subscribe(response -> {
+                        overviewFragment.addPosts(response.body().data.children);
                     });
 
             reddit.user(username, User.COMMENTS)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(items -> {
-                        commentsFragment.addPosts(items.data.children);
+                    .subscribe(response -> {
+                        commentsFragment.addPosts(response.body().data.children);
                     });
 
             reddit.user(username, User.SUBMITTED)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(items -> {
-                        submittedFragment.addPosts(items.data.children);
+                    .subscribe(response -> {
+                        submittedFragment.addPosts(response.body().data.children);
                     });
 
             reddit.user(username, User.GILDED)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(items -> {
-                        gildedFragment.addPosts(items.data.children);
+                    .subscribe(response -> {
+                        gildedFragment.addPosts(response.body().data.children);
                     });
         }
 
