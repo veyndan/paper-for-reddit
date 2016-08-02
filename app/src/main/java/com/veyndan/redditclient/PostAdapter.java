@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,9 +17,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
+import android.text.style.LineHeightSpan;
+import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +34,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.binaryfork.spanny.Spanny;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
@@ -181,14 +186,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         final Context context = holder.itemView.getContext();
         final Submission submission = (Submission) posts.get(position);
 
-        holder.title.setText(submission.linkTitle);
-
         CharSequence age = DateUtils.getRelativeTimeSpanString(
                 TimeUnit.SECONDS.toMillis(submission.createdUtc), System.currentTimeMillis(),
                 DateUtils.SECOND_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
-
-        holder.subtitle.setText(context.getString(R.string.subtitle, submission.author, age, submission.subreddit));
 
         int viewType = holder.getItemViewType();
 
@@ -231,12 +232,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             final Comment comment = (Comment) posts.get(position);
             final PostCommentViewHolder commentHolder = (PostCommentViewHolder) holder;
 
-            holder.subtitle.setText(points + " · " + holder.subtitle.getText());
+            holder.title.setText(submission.linkTitle);
+            commentHolder.subtitle.setText(context.getString(R.string.subtitle, submission.author, age, submission.subreddit));
+            commentHolder.subtitle.setText(points + " · " + commentHolder.subtitle.getText());
             commentHolder.commentText.setText(trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(comment.bodyHtml))));
             commentHolder.commentText.setMovementMethod(LinkMovementMethod.getInstance());
         } else if (submission instanceof Link) {
             final Link link = (Link) posts.get(position);
             final PostLinkViewHolder linkHolder = (PostLinkViewHolder) holder;
+
+            holder.setHeader(submission.linkTitle, context.getString(R.string.subtitle, submission.author, age, submission.subreddit));
 
             switch (viewType % 16) {
                 case TYPE_SELF:
@@ -573,8 +578,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
 
+        private final Context context;
+
         @BindView(R.id.post_title) TextView title;
-        @BindView(R.id.post_subtitle) TextView subtitle;
 
         // Flair
         @Nullable @BindView(R.id.post_flair_container) ViewGroup flairContainer;
@@ -582,6 +588,29 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         public PostViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            context = itemView.getContext();
+        }
+
+        void setHeader(final String title, final String subtitle) {
+            final TextAppearanceSpan subtitleTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostSubtitleTextAppearance);
+            final LineHeightSpan subtitleLineHeightSpan = new LineHeightSpan.WithDensity() {
+                @Override
+                public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm, TextPaint paint) {
+                    final int spacing = context.getResources().getDimensionPixelSize(R.dimen.post_title_subtitle_spacing);
+                    fm.ascent += -spacing;
+                }
+
+                @Override
+                public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm) {
+                }
+            };
+
+            final Spanny spanny = new Spanny(title)
+                    .append("\n")
+                    .append(subtitle, subtitleTextAppearanceSpan, subtitleLineHeightSpan);
+
+            this.title.setText(spanny);
         }
     }
 
@@ -618,6 +647,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     public static class PostCommentViewHolder extends PostViewHolder {
 
+        @BindView(R.id.post_subtitle) TextView subtitle;
         @BindView(R.id.post_comment_text) TextView commentText;
 
         public PostCommentViewHolder(View itemView) {
