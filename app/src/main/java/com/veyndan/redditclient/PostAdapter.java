@@ -202,35 +202,38 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             LayoutInflater inflater = LayoutInflater.from(context);
 
             if (submission.stickied) {
-                TextView flairStickied = (TextView) inflater.inflate(R.layout.post_flair_stickied, holder.flairContainer, false);
+                TextView flairStickied = (TextView) inflater.inflate(R.layout.post_flair, holder.flairContainer, false);
                 holder.flairContainer.addView(flairStickied);
 
                 final GradientDrawable background = (GradientDrawable) flairStickied.getBackground().mutate();
                 background.setColor(Color.parseColor("#388E3C"));
+                flairStickied.setText(R.string.post_stickied);
             }
 
             if (submission instanceof Link && ((Link) submission).over18) {
-                TextView flairNsfw = (TextView) inflater.inflate(R.layout.post_flair_nsfw, holder.flairContainer, false);
+                TextView flairNsfw = (TextView) inflater.inflate(R.layout.post_flair, holder.flairContainer, false);
                 holder.flairContainer.addView(flairNsfw);
 
                 final GradientDrawable background = (GradientDrawable) flairNsfw.getBackground().mutate();
                 background.setColor(Color.parseColor("#E57373"));
+                flairNsfw.setText(R.string.post_nsfw);
             }
 
             if (submission instanceof Link && !TextUtils.isEmpty(((Link) submission).linkFlairText)) {
-                TextView flairLink = (TextView) inflater.inflate(R.layout.post_flair_link, holder.flairContainer, false);
+                TextView flairLink = (TextView) inflater.inflate(R.layout.post_flair, holder.flairContainer, false);
                 holder.flairContainer.addView(flairLink);
 
                 flairLink.setText(((Link) submission).linkFlairText);
             }
 
             if (submission.gilded != 0) {
-                TextView flairGilded = (TextView) inflater.inflate(R.layout.post_flair_gilded, holder.flairContainer, false);
+                TextView flairGilded = (TextView) inflater.inflate(R.layout.post_flair, holder.flairContainer, false);
                 holder.flairContainer.addView(flairGilded);
 
                 final GradientDrawable background = (GradientDrawable) flairGilded.getBackground().mutate();
                 background.setColor(Color.parseColor("#FFA000"));
                 flairGilded.setText(String.valueOf(submission.gilded));
+                flairGilded.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star_white_12sp, 0, 0, 0);
             }
         }
 

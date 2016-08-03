@@ -55,7 +55,7 @@
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:inflatedId="@+id/post_flair_container"
-        android:layout="@layout/post_flair"/>
+        android:layout="@layout/post_flair_container"/>
 
     <TextView
         android:id="@+id/post_comment_text"
