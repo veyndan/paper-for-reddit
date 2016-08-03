@@ -4,6 +4,4 @@
     android:id="@+id/post_flair_nsfw"
     style="@style/FlairTextView"
     android:background="@drawable/post_flair_nsfw_background"
-    android:text="@string/post_nsfw"
-    android:textAllCaps="true"
-    android:textColor="#E57373"/>
+    android:text="@string/post_nsfw"/>

@@ -4,5 +4,4 @@
     android:id="@+id/post_flair_stickied"
     style="@style/FlairTextView"
     android:background="@drawable/post_flair_stickied_background"
-    android:text="@string/post_stickied"
-    android:textColor="#388E3C"/>
+    android:text="@string/post_stickied"/>
