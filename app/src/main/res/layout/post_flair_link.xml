@@ -4,5 +4,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/post_flair_link"
     style="@style/FlairTextView"
-    android:background="@drawable/post_flair_link_background"
+    android:background="@drawable/post_flair_background"
     tools:text="Mirror in comments"/>

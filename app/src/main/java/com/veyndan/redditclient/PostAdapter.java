@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -202,11 +204,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             if (submission.stickied) {
                 TextView flairStickied = (TextView) inflater.inflate(R.layout.post_flair_stickied, holder.flairContainer, false);
                 holder.flairContainer.addView(flairStickied);
+
+                final GradientDrawable background = (GradientDrawable) flairStickied.getBackground().mutate();
+                background.setColor(Color.parseColor("#388E3C"));
             }
 
             if (submission instanceof Link && ((Link) submission).over18) {
                 TextView flairNsfw = (TextView) inflater.inflate(R.layout.post_flair_nsfw, holder.flairContainer, false);
                 holder.flairContainer.addView(flairNsfw);
+
+                final GradientDrawable background = (GradientDrawable) flairNsfw.getBackground().mutate();
+                background.setColor(Color.parseColor("#E57373"));
             }
 
             if (submission instanceof Link && !TextUtils.isEmpty(((Link) submission).linkFlairText)) {
@@ -220,6 +228,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 TextView flairGilded = (TextView) inflater.inflate(R.layout.post_flair_gilded, holder.flairContainer, false);
                 holder.flairContainer.addView(flairGilded);
 
+                final GradientDrawable background = (GradientDrawable) flairGilded.getBackground().mutate();
+                background.setColor(Color.parseColor("#FFA000"));
                 flairGilded.setText(String.valueOf(submission.gilded));
             }
         }

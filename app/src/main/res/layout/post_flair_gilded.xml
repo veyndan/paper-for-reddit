@@ -3,5 +3,5 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/post_flair_gilded"
     style="@style/FlairTextView"
-    android:background="@drawable/post_flair_gilded_background"
+    android:background="@drawable/post_flair_background"
     android:drawableStart="@drawable/ic_star_white_12sp"/>
