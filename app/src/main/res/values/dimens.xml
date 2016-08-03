@@ -8,6 +8,11 @@
 
     <!-- Post -->
     <dimen name="post_title_subtitle_spacing">12dp</dimen>
+
+    <!-- Post Flair -->
+    <dimen name="post_flair_corner_radius">8dp</dimen>
+    <!-- /Post Flair -->
+
     <!-- /Post -->
 
 </resources>
