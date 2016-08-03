@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -16,6 +15,7 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.customtabs.CustomTabsSession;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -206,7 +206,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 holder.flairContainer.addView(flairStickied);
 
                 final GradientDrawable background = (GradientDrawable) flairStickied.getBackground().mutate();
-                background.setColor(Color.parseColor("#388E3C"));
+                background.setColor(ContextCompat.getColor(context, R.color.post_flair_stickied));
                 flairStickied.setText(R.string.post_stickied);
             }
 
@@ -215,7 +215,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 holder.flairContainer.addView(flairNsfw);
 
                 final GradientDrawable background = (GradientDrawable) flairNsfw.getBackground().mutate();
-                background.setColor(Color.parseColor("#E57373"));
+                background.setColor(ContextCompat.getColor(context, R.color.post_flair_nsfw));
                 flairNsfw.setText(R.string.post_nsfw);
             }
 
@@ -231,7 +231,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 holder.flairContainer.addView(flairGilded);
 
                 final GradientDrawable background = (GradientDrawable) flairGilded.getBackground().mutate();
-                background.setColor(Color.parseColor("#FFA000"));
+                background.setColor(ContextCompat.getColor(context, R.color.post_flair_gilded));
                 flairGilded.setText(String.valueOf(submission.gilded));
                 flairGilded.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star_white_12sp, 0, 0, 0);
             }
