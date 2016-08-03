@@ -25,6 +25,8 @@
 
     <!-- Post -->
 
+    <style name="PostTitleTextAppearance" parent="TextAppearance.AppCompat.Subhead"/>
+
     <style name="PostSubtitleTextAppearance" parent="TextAppearance.AppCompat.Caption"/>
 
     <style name="FlairTextView">

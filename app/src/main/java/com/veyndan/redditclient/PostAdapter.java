@@ -606,6 +606,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
 
         void setHeader(final String title, final String subtitle) {
+            final TextAppearanceSpan titleTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostTitleTextAppearance);
+
             final TextAppearanceSpan subtitleTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostSubtitleTextAppearance);
             final LineHeightSpan subtitleLineHeightSpan = new LineHeightSpan.WithDensity() {
                 @Override
@@ -619,7 +621,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 }
             };
 
-            final Spanny spanny = new Spanny(title)
+            final Spanny spanny = new Spanny(title, titleTextAppearanceSpan)
                     .append("\n")
                     .append(subtitle, subtitleTextAppearanceSpan, subtitleLineHeightSpan);
 

@@ -18,7 +18,6 @@
         android:paddingLeft="@dimen/post_horizontal_margin"
         android:paddingRight="@dimen/post_horizontal_margin"
         android:paddingTop="24dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         tools:text="This is Carter. He knocked on my door to ask if he could have a banana then left."/>
 
     <ViewStub
