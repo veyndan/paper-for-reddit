@@ -584,9 +584,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     fm.ascent -= titleSubtitleSpacing;
                     fm.top -= titleSubtitleSpacing;
 
-                    final int subtitleFlairSpacing = context.getResources().getDimensionPixelSize(R.dimen.post_subtitle_flair_spacing);
-                    fm.descent += subtitleFlairSpacing;
-                    fm.bottom += subtitleFlairSpacing;
+                    if (!flairs.isEmpty()) {
+                        final int subtitleFlairSpacing = context.getResources().getDimensionPixelSize(R.dimen.post_subtitle_flair_spacing);
+                        fm.descent += subtitleFlairSpacing;
+                        fm.bottom += subtitleFlairSpacing;
+                    }
                 }
 
                 @Override
