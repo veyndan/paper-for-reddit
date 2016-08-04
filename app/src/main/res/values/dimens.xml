@@ -8,8 +8,13 @@
 
     <!-- Post -->
     <dimen name="post_title_subtitle_spacing">12dp</dimen>
+    <dimen name="post_subtitle_flair_spacing">16dp</dimen>
 
     <!-- Post Flair -->
+    <dimen name="post_flair_margin_horizontal">4dp</dimen>
+    <dimen name="post_flair_padding_horizontal">12dp</dimen>
+    <dimen name="post_flair_padding_vertical">4dp</dimen>
+    <dimen name="post_flair_padding_drawable">4dp</dimen>
     <dimen name="post_flair_corner_radius">8dp</dimen>
     <!-- /Post Flair -->
 

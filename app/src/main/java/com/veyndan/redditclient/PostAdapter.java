@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -195,45 +194,36 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         int viewType = holder.getItemViewType();
 
+        final List<Flair> flairs = new ArrayList<>();
+
         if ((viewType & TYPE_FLAIR) != 0) {
             assert holder.flairContainer != null;
 
             holder.flairContainer.removeAllViews();
-            LayoutInflater inflater = LayoutInflater.from(context);
 
             if (submission.stickied) {
-                TextView flairStickied = (TextView) inflater.inflate(R.layout.post_flair, holder.flairContainer, false);
-                holder.flairContainer.addView(flairStickied);
-
-                final GradientDrawable background = (GradientDrawable) flairStickied.getBackground().mutate();
-                background.setColor(ContextCompat.getColor(context, R.color.post_flair_stickied));
-                flairStickied.setText(R.string.post_stickied);
+                flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_stickied))
+                        .text(context.getString(R.string.post_stickied))
+                        .build());
             }
 
             if (submission instanceof Link && ((Link) submission).over18) {
-                TextView flairNsfw = (TextView) inflater.inflate(R.layout.post_flair, holder.flairContainer, false);
-                holder.flairContainer.addView(flairNsfw);
-
-                final GradientDrawable background = (GradientDrawable) flairNsfw.getBackground().mutate();
-                background.setColor(ContextCompat.getColor(context, R.color.post_flair_nsfw));
-                flairNsfw.setText(R.string.post_nsfw);
+                flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_nsfw))
+                        .text(context.getString(R.string.post_nsfw))
+                        .build());
             }
 
             if (submission instanceof Link && !TextUtils.isEmpty(((Link) submission).linkFlairText)) {
-                TextView flairLink = (TextView) inflater.inflate(R.layout.post_flair, holder.flairContainer, false);
-                holder.flairContainer.addView(flairLink);
-
-                flairLink.setText(((Link) submission).linkFlairText);
+                flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_link))
+                        .text(((Link) submission).linkFlairText)
+                        .build());
             }
 
             if (submission.gilded != 0) {
-                TextView flairGilded = (TextView) inflater.inflate(R.layout.post_flair, holder.flairContainer, false);
-                holder.flairContainer.addView(flairGilded);
-
-                final GradientDrawable background = (GradientDrawable) flairGilded.getBackground().mutate();
-                background.setColor(ContextCompat.getColor(context, R.color.post_flair_gilded));
-                flairGilded.setText(String.valueOf(submission.gilded));
-                flairGilded.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_star_white_12sp, 0, 0, 0);
+                flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_gilded))
+                        .text(String.valueOf(submission.gilded))
+                        .icon(R.drawable.ic_star_white_12sp)
+                        .build());
             }
         }
 
@@ -254,7 +244,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             final Link link = (Link) posts.get(position);
             final PostLinkViewHolder linkHolder = (PostLinkViewHolder) holder;
 
-            holder.setHeader(submission.linkTitle, context.getString(R.string.subtitle, submission.author, age, submission.subreddit));
+            holder.setHeader(submission.linkTitle, context.getString(R.string.subtitle, submission.author, age, submission.subreddit), flairs);
 
             switch (viewType % 16) {
                 case TYPE_SELF:
@@ -605,25 +595,65 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             context = itemView.getContext();
         }
 
-        void setHeader(final String title, final String subtitle) {
+        void setHeader(final String title, final String subtitle, @NonNull final List<Flair> flairs) {
             final TextAppearanceSpan titleTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostTitleTextAppearance);
 
             final TextAppearanceSpan subtitleTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostSubtitleTextAppearance);
             final LineHeightSpan subtitleLineHeightSpan = new LineHeightSpan.WithDensity() {
                 @Override
                 public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm, TextPaint paint) {
-                    final int spacing = context.getResources().getDimensionPixelSize(R.dimen.post_title_subtitle_spacing);
-                    fm.ascent += -spacing;
+                    final int titleSubtitleSpacing = context.getResources().getDimensionPixelSize(R.dimen.post_title_subtitle_spacing);
+                    fm.ascent -= titleSubtitleSpacing;
+                    fm.top -= titleSubtitleSpacing;
+
+                    final int subtitleFlairSpacing = context.getResources().getDimensionPixelSize(R.dimen.post_subtitle_flair_spacing);
+                    fm.descent += subtitleFlairSpacing;
+                    fm.bottom += subtitleFlairSpacing;
                 }
 
                 @Override
                 public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm) {
+                    chooseHeight(text, start, end, spanstartv, v, fm, null);
                 }
             };
 
             final Spanny spanny = new Spanny(title, titleTextAppearanceSpan)
                     .append("\n")
                     .append(subtitle, subtitleTextAppearanceSpan, subtitleLineHeightSpan);
+
+            if (!flairs.isEmpty()) {
+                spanny.append("\n");
+
+                final Spanny flairsSpanny = new Spanny();
+
+                String divider = "";
+                for (Flair flair : flairs) {
+                    flairsSpanny.append(divider);
+                    if (divider.isEmpty()) {
+                        divider = "   "; // TODO Replace with margin left and right of 4dp
+                    }
+
+                    flairsSpanny.append(flair.getSpannable(context));
+                }
+
+                spanny.append(flairsSpanny, new LineHeightSpan.WithDensity() {
+                    @Override
+                    public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm, TextPaint paint) {
+                        final int resetTitleSubtitleSpacing = context.getResources().getDimensionPixelSize(R.dimen.post_title_subtitle_spacing);
+                        fm.ascent += resetTitleSubtitleSpacing;
+                        fm.top += resetTitleSubtitleSpacing;
+
+                        final int resetSubtitleFlairSpacing = context.getResources().getDimensionPixelSize(R.dimen.post_subtitle_flair_spacing);
+                        fm.descent -= resetSubtitleFlairSpacing;
+                        fm.bottom -= resetSubtitleFlairSpacing;
+                    }
+
+                    @Override
+                    public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm) {
+                        chooseHeight(text, start, end, spanstartv, v, fm, null);
+                    }
+                });
+            }
 
             this.title.setText(spanny);
         }

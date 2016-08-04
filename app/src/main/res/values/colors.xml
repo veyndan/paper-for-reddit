@@ -12,6 +12,7 @@
     <!-- Post Flair -->
     <color name="post_flair_stickied">#388E3C</color>
     <color name="post_flair_nsfw">#E57373</color>
+    <color name="post_flair_link">#8A000000</color>
     <color name="post_flair_gilded">#FFA000</color>
     <!-- /Post Flair -->
 
