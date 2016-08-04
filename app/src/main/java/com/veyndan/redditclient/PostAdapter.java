@@ -82,13 +82,13 @@ import timber.log.Timber;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
 
-    private static final int TYPE_SELF = 0x0;
-    private static final int TYPE_IMAGE = 0x1;
-    private static final int TYPE_ALBUM = 0x2;
-    private static final int TYPE_LINK = 0x3;
-    private static final int TYPE_LINK_IMAGE = 0x4;
-    private static final int TYPE_TWEET = 0x5;
-    private static final int TYPE_COMMENT = 0x6;
+    private static final int TYPE_SELF = 0;
+    private static final int TYPE_IMAGE = 1;
+    private static final int TYPE_ALBUM = 2;
+    private static final int TYPE_LINK = 3;
+    private static final int TYPE_LINK_IMAGE = 4;
+    private static final int TYPE_TWEET = 5;
+    private static final int TYPE_COMMENT = 6;
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
@@ -130,7 +130,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         View v = inflater.inflate(R.layout.post_item_link, parent, false);
         ViewStub mediaStub = (ViewStub) v.findViewById(R.id.post_media_stub);
 
-        switch (viewType % 16) {
+        switch (viewType) {
             case TYPE_SELF:
                 break;
             case TYPE_IMAGE:
@@ -229,7 +229,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             final Link link = (Link) posts.get(position);
             final PostLinkViewHolder linkHolder = (PostLinkViewHolder) holder;
 
-            switch (viewType % 16) {
+            switch (viewType) {
                 case TYPE_SELF:
                     break;
                 case TYPE_IMAGE:
