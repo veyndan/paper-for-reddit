@@ -27,9 +27,9 @@ import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -127,40 +127,35 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        View v = inflater.inflate(R.layout.post_item_link, parent, false);
-        ViewStub mediaStub = (ViewStub) v.findViewById(R.id.post_media_stub);
+        LinearLayout container = (LinearLayout) inflater.inflate(R.layout.post_item_link, parent, false);
 
         switch (viewType) {
             case TYPE_SELF:
                 break;
             case TYPE_IMAGE:
-                mediaStub.setLayoutResource(R.layout.post_media_image);
-                mediaStub.inflate();
+                container.addView(inflater.inflate(R.layout.post_media_image, container, false), 1);
                 break;
             case TYPE_ALBUM:
-                mediaStub.setLayoutResource(R.layout.post_media_album);
-                mediaStub.inflate();
+                container.addView(inflater.inflate(R.layout.post_media_album, container, false), 1);
                 break;
             case TYPE_LINK:
-                mediaStub.setLayoutResource(R.layout.post_media_link);
-                mediaStub.inflate();
+                container.addView(inflater.inflate(R.layout.post_media_link, container, false), 1);
                 break;
             case TYPE_LINK_IMAGE:
-                mediaStub.setLayoutResource(R.layout.post_media_link_image);
-                mediaStub.inflate();
+                container.addView(inflater.inflate(R.layout.post_media_link_image, container, false), 1);
                 break;
             case TYPE_TWEET:
-                mediaStub.setLayoutResource(R.layout.post_media_tweet);
-                mediaStub.inflate();
+                container.addView(inflater.inflate(R.layout.post_media_tweet, container, false), 1);
                 break;
             case TYPE_COMMENT:
-                v = inflater.inflate(R.layout.post_item_comment, parent, false);
-                return new PostCommentViewHolder(v);
+                container = (LinearLayout) inflater.inflate(R.layout.post_item_comment, parent, false);
+                container.addView(inflater.inflate(R.layout.post_media_image, container, false), 1);
+                return new PostCommentViewHolder(container);
             default:
                 throw new IllegalStateException("Unknown viewType: " + viewType);
         }
 
-        return new PostLinkViewHolder(v);
+        return new PostLinkViewHolder(container);
     }
 
     private CharSequence trimTrailingWhitespace(@NonNull CharSequence source) {

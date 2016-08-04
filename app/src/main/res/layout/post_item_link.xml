@@ -20,12 +20,6 @@
         android:paddingTop="24dp"
         tools:text="This is Carter. He knocked on my door to ask if he could have a banana then left."/>
 
-    <ViewStub
-        android:id="@+id/post_media_stub"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inflatedId="@+id/post_media_container"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
