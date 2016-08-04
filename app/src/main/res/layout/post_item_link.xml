@@ -21,16 +21,6 @@
         tools:text="This is Carter. He knocked on my door to ask if he could have a banana then left."/>
 
     <ViewStub
-        android:id="@+id/post_flair_stub"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:inflatedId="@+id/post_flair_container"
-        android:layout="@layout/post_flair_container"/>
-
-    <ViewStub
         android:id="@+id/post_media_stub"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

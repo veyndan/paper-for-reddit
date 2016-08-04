@@ -87,8 +87,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private static final int TYPE_TWEET = 0x5;
     private static final int TYPE_COMMENT = 0x6;
 
-    private static final int TYPE_FLAIR = 0x10;
-
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
     private final Activity activity;
@@ -127,7 +125,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         View v = inflater.inflate(R.layout.post_item_link, parent, false);
-        ViewStub flairStub = (ViewStub) v.findViewById(R.id.post_flair_stub);
         ViewStub mediaStub = (ViewStub) v.findViewById(R.id.post_media_stub);
 
         switch (viewType % 16) {
@@ -155,17 +152,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 break;
             case TYPE_COMMENT:
                 v = inflater.inflate(R.layout.post_item_comment, parent, false);
-                flairStub = (ViewStub) v.findViewById(R.id.post_flair_stub);
-                if ((viewType & TYPE_FLAIR) != 0) {
-                    flairStub.inflate();
-                }
                 return new PostCommentViewHolder(v);
             default:
                 throw new IllegalStateException("Unknown viewType: " + viewType);
-        }
-
-        if ((viewType & TYPE_FLAIR) != 0) {
-            flairStub.inflate();
         }
 
         return new PostLinkViewHolder(v);
@@ -196,55 +185,46 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         final List<Flair> flairs = new ArrayList<>();
 
-        if ((viewType & TYPE_FLAIR) != 0) {
-            assert holder.flairContainer != null;
+        if (submission.stickied) {
+            flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_stickied))
+                    .text(context.getString(R.string.post_stickied))
+                    .build());
+        }
 
-            holder.flairContainer.removeAllViews();
+        if (submission instanceof Link && ((Link) submission).over18) {
+            flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_nsfw))
+                    .text(context.getString(R.string.post_nsfw))
+                    .build());
+        }
 
-            if (submission.stickied) {
-                flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_stickied))
-                        .text(context.getString(R.string.post_stickied))
-                        .build());
-            }
+        if (submission instanceof Link && !TextUtils.isEmpty(((Link) submission).linkFlairText)) {
+            flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_link))
+                    .text(((Link) submission).linkFlairText)
+                    .build());
+        }
 
-            if (submission instanceof Link && ((Link) submission).over18) {
-                flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_nsfw))
-                        .text(context.getString(R.string.post_nsfw))
-                        .build());
-            }
-
-            if (submission instanceof Link && !TextUtils.isEmpty(((Link) submission).linkFlairText)) {
-                flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_link))
-                        .text(((Link) submission).linkFlairText)
-                        .build());
-            }
-
-            if (submission.gilded != 0) {
-                flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_gilded))
-                        .text(String.valueOf(submission.gilded))
-                        .icon(R.drawable.ic_star_white_12sp)
-                        .build());
-            }
+        if (submission.gilded != 0) {
+            flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_gilded))
+                    .text(String.valueOf(submission.gilded))
+                    .icon(R.drawable.ic_star_white_12sp)
+                    .build());
         }
 
         final String points = submission.scoreHidden
                 ? context.getString(R.string.score_hidden)
                 : context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
 
+        holder.setHeader(submission.linkTitle, context.getString(R.string.subtitle, submission.author, age, submission.subreddit), flairs);
+
         if (submission instanceof Comment) {
             final Comment comment = (Comment) posts.get(position);
             final PostCommentViewHolder commentHolder = (PostCommentViewHolder) holder;
 
-            holder.title.setText(submission.linkTitle);
-            commentHolder.subtitle.setText(context.getString(R.string.subtitle, submission.author, age, submission.subreddit));
-            commentHolder.subtitle.setText(points + " · " + commentHolder.subtitle.getText());
             commentHolder.commentText.setText(trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(comment.bodyHtml))));
             commentHolder.commentText.setMovementMethod(LinkMovementMethod.getInstance());
         } else if (submission instanceof Link) {
             final Link link = (Link) posts.get(position);
             final PostLinkViewHolder linkHolder = (PostLinkViewHolder) holder;
-
-            holder.setHeader(submission.linkTitle, context.getString(R.string.subtitle, submission.author, age, submission.subreddit), flairs);
 
             switch (viewType % 16) {
                 case TYPE_SELF:
@@ -564,13 +544,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             viewType = TYPE_LINK;
         }
 
-        if (submission.stickied
-                || submission.gilded != 0
-                || (submission instanceof Link && ((Link) submission).over18)
-                || (submission instanceof Link && !TextUtils.isEmpty(((Link) submission).linkFlairText))) {
-            viewType += TYPE_FLAIR;
-        }
-
         return viewType;
     }
 
@@ -584,9 +557,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         private final Context context;
 
         @BindView(R.id.post_title) TextView title;
-
-        // Flair
-        @Nullable @BindView(R.id.post_flair_container) ViewGroup flairContainer;
 
         public PostViewHolder(View itemView) {
             super(itemView);
@@ -692,7 +662,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     public static class PostCommentViewHolder extends PostViewHolder {
 
-        @BindView(R.id.post_subtitle) TextView subtitle;
         @BindView(R.id.post_comment_text) TextView commentText;
 
         public PostCommentViewHolder(View itemView) {
