@@ -40,6 +40,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.common.base.Optional;
 import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxCompoundButton;
@@ -56,6 +57,8 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -319,18 +322,28 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 case TYPE_TWEET:
                     assert linkHolder.mediaContainer != null;
 
-                    long tweetId = Long.parseLong(submission.linkUrl.substring(submission.linkUrl.indexOf("/status/") + "/status/".length()));
-                    TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
-                        @Override
-                        public void success(Result<Tweet> result) {
-                            ((TweetView) linkHolder.mediaContainer).setTweet(result.data);
-                        }
+                    final Pattern pattern = Pattern.compile("https://twitter.com/\\w*/status/(\\d+)$");
+                    final Matcher matcher = pattern.matcher(submission.linkUrl);
 
-                        @Override
-                        public void failure(TwitterException exception) {
-                            Timber.e(exception, "Load Tweet failure");
+                    if (matcher.find()) {
+                        final Optional<Long> tweetId = UrlMatcher.Twitter.tweetId(submission.linkUrl);
+
+                        if (tweetId.isPresent()) {
+                            TweetUtils.loadTweet(tweetId.get(), new Callback<Tweet>() {
+                                @Override
+                                public void success(Result<Tweet> result) {
+                                    ((TweetView) linkHolder.mediaContainer).setTweet(result.data);
+                                }
+
+                                @Override
+                                public void failure(TwitterException exception) {
+                                    Timber.e(exception, "Load Tweet failure");
+                                }
+                            });
+                        } else {
+                            // TODO Show default link view as tweetId couldn't be parsed.
                         }
-                    });
+                    }
                     break;
                 case TYPE_LINK_IMAGE:
                     assert linkHolder.mediaImage != null;
@@ -532,7 +545,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             viewType = TYPE_COMMENT;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.SELF)) {
             viewType = TYPE_SELF;
-        } else if (submission instanceof Link && submission.linkUrl.contains("twitter.com")) {
+        } else if (submission instanceof Link && UrlMatcher.Twitter.tweetId(submission.linkUrl).isPresent()) {
             viewType = TYPE_TWEET;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.IMAGE)) {
             viewType = TYPE_IMAGE;
