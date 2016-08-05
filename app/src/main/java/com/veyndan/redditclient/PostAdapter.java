@@ -66,7 +66,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import rawjava.Reddit;
 import rawjava.model.Comment;
-import rawjava.model.Image;
 import rawjava.model.Link;
 import rawjava.model.PostHint;
 import rawjava.model.RedditObject;
@@ -80,7 +79,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
+public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
     private static final int TYPE_SELF = 0;
     private static final int TYPE_IMAGE = 1;
@@ -124,7 +123,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     @Override
-    public PostViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    protected PostViewHolder onCreateContentViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         LinearLayout container = (LinearLayout) inflater.inflate(R.layout.post_item_link, parent, false);
@@ -157,19 +156,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new PostViewHolder(container);
     }
 
-    private CharSequence trimTrailingWhitespace(@NonNull CharSequence source) {
-        int i = source.length();
-
-        // loop back to the first non-whitespace character
-        do {
-            i--;
-        } while (i > 0 && Character.isWhitespace(source.charAt(i)));
-
-        return source.subSequence(0, i + 1);
-    }
-
     @Override
-    public void onBindViewHolder(final PostViewHolder holder, int position) {
+    protected void onBindContentViewHolder(PostViewHolder holder, int position) {
         final Context context = holder.itemView.getContext();
         final Submission submission = (Submission) posts.get(position);
 
@@ -252,7 +240,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                                 holder.mediaImageProgress.setVisibility(View.GONE);
                                 if (!imageDimensAvailable) {
-                                    final Image image = new Image();
+                                    final rawjava.model.Image image = new rawjava.model.Image();
                                     image.source.width = resource.getIntrinsicWidth();
                                     image.source.height = resource.getIntrinsicHeight();
                                     finalLink.preview.images.add(image);
@@ -530,8 +518,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 });
     }
 
+    private CharSequence trimTrailingWhitespace(@NonNull CharSequence source) {
+        int i = source.length();
+
+        // loop back to the first non-whitespace character
+        do {
+            i--;
+        } while (i > 0 && Character.isWhitespace(source.charAt(i)));
+
+        return source.subSequence(0, i + 1);
+    }
+
     @Override
-    public int getItemViewType(int position) {
+    public int getContentItemViewType(int position) {
         Submission submission = (Submission) posts.get(position);
 
         int viewType;
@@ -564,7 +563,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     @Override
-    public int getItemCount() {
+    protected int getContentItemCount() {
         return posts.size();
     }
 
