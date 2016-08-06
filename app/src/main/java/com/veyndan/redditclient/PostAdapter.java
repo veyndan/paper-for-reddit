@@ -403,8 +403,8 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         submission.score += isChecked ? 1 : -1;
 
                         final String points1 = submission.scoreHidden
-                                ? context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score)
-                                : context.getString(R.string.score_hidden);
+                                ? context.getString(R.string.score_hidden)
+                                : context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
                         final String comments1 = context.getResources().getQuantityString(R.plurals.comments, submission instanceof Link ? ((Link) submission).numComments : 0, submission instanceof Link ? ((Link) submission).numComments : 0);
                         holder.score.setText(context.getString(R.string.score, points1, comments1));
                     }
@@ -429,8 +429,8 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         submission.score += isChecked ? -1 : 1;
 
                         final String points1 = submission.scoreHidden
-                                ? context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score)
-                                : context.getString(R.string.score_hidden);
+                                ? context.getString(R.string.score_hidden)
+                                : context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
                         final String comments1 = context.getResources().getQuantityString(R.plurals.comments, submission instanceof Link ? ((Link) submission).numComments : 0, submission instanceof Link ? ((Link) submission).numComments : 0);
                         holder.score.setText(context.getString(R.string.score, points1, comments1));
                     }
