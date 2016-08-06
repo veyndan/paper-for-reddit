@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/post_media_container"
     android:layout_width="match_parent"
@@ -15,16 +16,16 @@
         android:foreground="?selectableItemBackground"
         android:orientation="vertical">
 
-        <com.veyndan.redditclient.SquareFrameLayout
+        <android.support.percent.PercentFrameLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/post_media_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
                 android:contentDescription="@string/post_content_description_media_image"
                 android:scaleType="centerCrop"
+                app:layout_aspectRatio="100%"
+                app:layout_widthPercent="100%"
                 tools:src="@drawable/carter"/>
 
             <ProgressBar
@@ -34,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"/>
 
-        </com.veyndan.redditclient.SquareFrameLayout>
+        </android.support.percent.PercentFrameLayout>
 
         <TextView
             android:id="@+id/post_media_url"
