@@ -126,34 +126,35 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
     protected PostViewHolder onCreateContentViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        LinearLayout container = (LinearLayout) inflater.inflate(R.layout.post_item_link, parent, false);
+        final View cardView = inflater.inflate(R.layout.post_item_link, parent, false);
+        final PostViewHolder holder = new PostViewHolder(cardView);
 
         switch (viewType) {
             case TYPE_SELF:
                 break;
             case TYPE_IMAGE:
-                container.addView(inflater.inflate(R.layout.post_media_image, container, false), 1);
+                holder.container.addView(inflater.inflate(R.layout.post_media_image, holder.container, false), 1);
                 break;
             case TYPE_ALBUM:
-                container.addView(inflater.inflate(R.layout.post_media_album, container, false), 1);
+                holder.container.addView(inflater.inflate(R.layout.post_media_album, holder.container, false), 1);
                 break;
             case TYPE_LINK:
-                container.addView(inflater.inflate(R.layout.post_media_link, container, false), 1);
+                holder.container.addView(inflater.inflate(R.layout.post_media_link, holder.container, false), 1);
                 break;
             case TYPE_LINK_IMAGE:
-                container.addView(inflater.inflate(R.layout.post_media_link_image, container, false), 1);
+                holder.container.addView(inflater.inflate(R.layout.post_media_link_image, holder.container, false), 1);
                 break;
             case TYPE_TWEET:
-                container.addView(inflater.inflate(R.layout.post_media_tweet, container, false), 1);
+                holder.container.addView(inflater.inflate(R.layout.post_media_tweet, holder.container, false), 1);
                 break;
             case TYPE_TEXT:
-                container.addView(inflater.inflate(R.layout.post_media_text, container, false), 1);
+                holder.container.addView(inflater.inflate(R.layout.post_media_text, holder.container, false), 1);
                 break;
             default:
                 throw new IllegalStateException("Unknown viewType: " + viewType);
         }
 
-        return new PostViewHolder(container);
+        return new PostViewHolder(cardView);
     }
 
     @Override
@@ -571,6 +572,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
         private final Context context;
 
+        @BindView(R.id.post_container) LinearLayout container;
         @BindView(R.id.post_title) TextView title;
 
         // Media: Image
