@@ -23,7 +23,7 @@
     <string name="action_post_browser">Open in Browser</string>
     <string name="action_post_report">Report</string>
 
-    <string name="notify_post_hidden">Post hidden</string>
+    <string name="notify_post_hidden">Hidden</string>
     <string name="notify_post_hidden_undo">Undo</string>
 
     <string name="post_nsfw">NSFW</string>
