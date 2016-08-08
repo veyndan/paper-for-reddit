@@ -15,12 +15,16 @@ import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindDimen;
+import butterknife.ButterKnife;
 import rawjava.Reddit;
 import rawjava.model.RedditObject;
 import rawjava.network.Credentials;
 import rx.Observable;
 
 public class PostsFragment extends Fragment {
+
+    @BindDimen(R.dimen.card_view_margin) int cardViewMargin;
 
     private RecyclerView recyclerView;
 
@@ -68,12 +72,14 @@ public class PostsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
+        ButterKnife.bind(this, recyclerView);
 
         final Credentials credentials = Credentials.create(getResources().openRawResource(R.raw.credentials));
         final Reddit reddit = new Reddit.Builder(credentials).build();
 
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new MarginItemDecoration(cardViewMargin));
         final DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         postAdapter = new PostAdapter(getActivity(), posts, reddit, metrics.widthPixels);
