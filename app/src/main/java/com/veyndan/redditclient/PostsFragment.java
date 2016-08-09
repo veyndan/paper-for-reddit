@@ -1,5 +1,6 @@
 package com.veyndan.redditclient;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,8 @@ import rawjava.Reddit;
 import rawjava.model.RedditObject;
 import rawjava.network.Credentials;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class PostsFragment extends Fragment {
 
@@ -37,6 +40,8 @@ public class PostsFragment extends Fragment {
     private boolean loadingPosts;
     private int pastVisiblesItems, visibleItemCount, totalItemCount;
 
+    private Reddit reddit;
+
     public PostsFragment() {
         // Required empty public constructor
     }
@@ -46,9 +51,26 @@ public class PostsFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        final Credentials credentials = Credentials.create(getResources().openRawResource(R.raw.credentials));
+        reddit = new Reddit.Builder(credentials).build();
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+    }
+
+    public void setFilter(final SubredditFilter filter) {
+        clearPosts();
+
+        reddit.subreddit(filter.getSubreddit(), filter.getSort(), filter.getQuery(), getNextPageTrigger(), Schedulers.io(), AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    addPosts(response.body().data.children);
+                });
     }
 
     public void addPosts(List<RedditObject> posts) {
@@ -73,9 +95,6 @@ public class PostsFragment extends Fragment {
         // Inflate the layout for this fragment
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
         ButterKnife.bind(this, recyclerView);
-
-        final Credentials credentials = Credentials.create(getResources().openRawResource(R.raw.credentials));
-        final Reddit reddit = new Reddit.Builder(credentials).build();
 
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);

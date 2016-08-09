@@ -12,13 +12,9 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 
 import butterknife.ButterKnife;
-import rawjava.Reddit;
-import rawjava.network.Credentials;
 import rawjava.network.QueryBuilder;
 import rawjava.network.Sort;
 import rawjava.network.TimePeriod;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity {
 
@@ -42,8 +38,6 @@ public class MainActivity extends BaseActivity {
 
     private PostsFragment postsFragment;
 
-    private Reddit reddit;
-
     private String subreddit;
 
     @Override
@@ -51,9 +45,6 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        Credentials credentials = Credentials.create(getResources().openRawResource(R.raw.credentials));
-        reddit = new Reddit.Builder(credentials).build();
 
         postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
 
@@ -98,11 +89,6 @@ public class MainActivity extends BaseActivity {
             query.t(timePeriod.get());
         }
 
-        postsFragment.clearPosts();
-
-        reddit.subreddit(subreddit, sort, query, postsFragment.getNextPageTrigger(), Schedulers.io(), AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    postsFragment.addPosts(response.body().data.children);
-                });
+        postsFragment.setFilter(new SubredditFilter(subreddit, sort, query));
     }
 }
