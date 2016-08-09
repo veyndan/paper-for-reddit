@@ -9,6 +9,10 @@ public class SubredditFilter {
     private Sort sort;
     private QueryBuilder query;
 
+    public SubredditFilter(final String subreddit, final Sort sort) {
+        this(subreddit, sort, new QueryBuilder());
+    }
+
     public SubredditFilter(final String subreddit, final Sort sort, final QueryBuilder query) {
         this.subreddit = subreddit;
         this.sort = sort;

@@ -2,11 +2,9 @@ package com.veyndan.redditclient;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
@@ -18,27 +16,9 @@ import rawjava.network.TimePeriod;
 
 public class MainActivity extends BaseActivity {
 
-    private static final Map<Integer, Pair<Sort, Optional<TimePeriod>>> filters = ImmutableMap.<Integer, Pair<Sort, Optional<TimePeriod>>>builder()
-            .put(R.id.action_sort_hot, Pair.create(Sort.HOT, Optional.absent()))
-            .put(R.id.action_sort_new, Pair.create(Sort.NEW, Optional.absent()))
-            .put(R.id.action_sort_rising, Pair.create(Sort.RISING, Optional.absent()))
-            .put(R.id.action_sort_controversial_hour, Pair.create(Sort.CONTROVERSIAL, Optional.of(TimePeriod.HOUR)))
-            .put(R.id.action_sort_controversial_day, Pair.create(Sort.CONTROVERSIAL, Optional.of(TimePeriod.DAY)))
-            .put(R.id.action_sort_controversial_week, Pair.create(Sort.CONTROVERSIAL, Optional.of(TimePeriod.WEEK)))
-            .put(R.id.action_sort_controversial_month, Pair.create(Sort.CONTROVERSIAL, Optional.of(TimePeriod.MONTH)))
-            .put(R.id.action_sort_controversial_year, Pair.create(Sort.CONTROVERSIAL, Optional.of(TimePeriod.YEAR)))
-            .put(R.id.action_sort_controversial_all, Pair.create(Sort.CONTROVERSIAL, Optional.of(TimePeriod.ALL)))
-            .put(R.id.action_sort_top_hour, Pair.create(Sort.TOP, Optional.of(TimePeriod.HOUR)))
-            .put(R.id.action_sort_top_day, Pair.create(Sort.TOP, Optional.of(TimePeriod.DAY)))
-            .put(R.id.action_sort_top_week, Pair.create(Sort.TOP, Optional.of(TimePeriod.WEEK)))
-            .put(R.id.action_sort_top_month, Pair.create(Sort.TOP, Optional.of(TimePeriod.MONTH)))
-            .put(R.id.action_sort_top_year, Pair.create(Sort.TOP, Optional.of(TimePeriod.YEAR)))
-            .put(R.id.action_sort_top_all, Pair.create(Sort.TOP, Optional.of(TimePeriod.ALL)))
-            .build();
+    private Map<Integer, SubredditFilter> filters;
 
     private PostsFragment postsFragment;
-
-    private String subreddit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +35,27 @@ public class MainActivity extends BaseActivity {
             extras = new Bundle();
         }
 
-        subreddit = extras.getString("subreddit", "all");
+        final String subreddit = extras.getString("subreddit", "all");
 
-        filterPosts(filters.get(R.id.action_sort_hot));
+        filters = ImmutableMap.<Integer, SubredditFilter>builder()
+                .put(R.id.action_sort_hot, new SubredditFilter(subreddit, Sort.HOT))
+                .put(R.id.action_sort_new, new SubredditFilter(subreddit, Sort.NEW))
+                .put(R.id.action_sort_rising, new SubredditFilter(subreddit, Sort.RISING))
+                .put(R.id.action_sort_controversial_hour, new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.HOUR)))
+                .put(R.id.action_sort_controversial_day, new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.DAY)))
+                .put(R.id.action_sort_controversial_week, new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.WEEK)))
+                .put(R.id.action_sort_controversial_month, new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.MONTH)))
+                .put(R.id.action_sort_controversial_year, new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.YEAR)))
+                .put(R.id.action_sort_controversial_all, new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.ALL)))
+                .put(R.id.action_sort_top_hour, new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.HOUR)))
+                .put(R.id.action_sort_top_day, new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.DAY)))
+                .put(R.id.action_sort_top_week, new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.WEEK)))
+                .put(R.id.action_sort_top_month, new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.MONTH)))
+                .put(R.id.action_sort_top_year, new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.YEAR)))
+                .put(R.id.action_sort_top_all, new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.ALL)))
+                .build();
+
+        postsFragment.setFilter(new SubredditFilter(subreddit, Sort.HOT));
     }
 
     @Override
@@ -68,27 +66,14 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final Pair<Sort, Optional<TimePeriod>> filter = filters.get(item.getItemId());
+        final SubredditFilter filter = filters.get(item.getItemId());
 
         // MenuItem id found in the list of handled filters
         if (filter != null) {
-            filterPosts(filter);
+            postsFragment.setFilter(filter);
             return true;
         }
 
         return false;
-    }
-
-    private void filterPosts(final Pair<Sort, Optional<TimePeriod>> filter) {
-        final Sort sort = filter.first;
-        final Optional<TimePeriod> timePeriod = filter.second;
-
-        final QueryBuilder query = new QueryBuilder();
-
-        if (timePeriod.isPresent()) {
-            query.t(timePeriod.get());
-        }
-
-        postsFragment.setFilter(new SubredditFilter(subreddit, sort, query));
     }
 }
