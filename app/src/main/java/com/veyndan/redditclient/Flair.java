@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.TextPaint;
@@ -107,7 +108,7 @@ public class Flair {
         }
 
         @Override
-        public void draw(Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, Paint paint) {
+        public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
             int drawablePadding = 0;
             if (icon.isPresent()) {
                 drawablePadding += icon.get().getIntrinsicWidth() + paddingDrawable;
@@ -135,7 +136,7 @@ public class Flair {
         }
 
         @Override
-        public int getSize(Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+        public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
             if (fm != null) {
                 fm.descent += paddingVertical * 2;
                 fm.bottom += paddingVertical * 2;
