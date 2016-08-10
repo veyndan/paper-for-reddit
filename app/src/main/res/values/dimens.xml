@@ -2,9 +2,6 @@
     <dimen name="post_url_border_width">1dp</dimen>
 
     <dimen name="post_horizontal_margin">16dp</dimen>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="card_view_margin">8dp</dimen>
 
