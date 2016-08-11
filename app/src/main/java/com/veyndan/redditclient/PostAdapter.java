@@ -498,9 +498,13 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                             notifyItemRemoved(adapterPosition);
                             break;
                         case R.id.action_post_share:
+                            Intent intent = new Intent(Intent.ACTION_SEND);
+                            intent.putExtra(Intent.EXTRA_TEXT, submission.getPermalink());
+                            intent.setType("text/plain");
+                            context.startActivity(intent);
                             break;
                         case R.id.action_post_profile:
-                            Intent intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
+                            intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
                             intent.putExtra("username", submission.author);
                             context.startActivity(intent);
                             break;
