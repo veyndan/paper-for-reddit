@@ -3,6 +3,10 @@ apply plugin: 'android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
 
+def fabricPropertiesFile = rootProject.file("app/fabric.properties")
+def fabricProperties = new Properties()
+fabricProperties.load(new FileInputStream(fabricPropertiesFile))
+
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.1"
@@ -14,6 +18,9 @@ android {
         versionCode 1
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
+        manifestPlaceholders = [
+                FABRIC_KEY: fabricProperties['fabricKey']
+        ]
     }
     buildTypes {
         release {
