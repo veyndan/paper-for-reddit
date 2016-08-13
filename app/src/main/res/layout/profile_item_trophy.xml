@@ -12,4 +12,4 @@
     android:padding="8dp"
     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
     tools:drawableTop="@mipmap/ic_launcher"
-    tools:text="Well-rounded"/>
+    tools:text="@string/placeholder_profile_trophy"/>

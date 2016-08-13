@@ -62,7 +62,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                            tools:text="9,197"/>
+                            tools:text="@string/placeholder_profile_link_karma"/>
 
                     </LinearLayout>
 
@@ -86,7 +86,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                            tools:text="14,369"/>
+                            tools:text="@string/placeholder_profile_comment_karma"/>
 
                     </LinearLayout>
 

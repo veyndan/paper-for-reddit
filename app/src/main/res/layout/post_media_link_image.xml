@@ -22,7 +22,7 @@
             android:scaleType="centerCrop"
             app:layout_aspectRatio="100%"
             app:layout_widthPercent="100%"
-            tools:src="@drawable/carter"/>
+            tools:src="@drawable/placeholder_post_image"/>
 
         <ProgressBar
             android:id="@+id/post_media_image_progress"
@@ -39,6 +39,6 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        tools:text="imgur.com"/>
+        tools:text="@string/placeholder_post_media_url"/>
 
 </LinearLayout>

@@ -16,6 +16,6 @@
         android:foreground="?selectableItemBackground"
         android:padding="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        tools:text="imgur.com"/>
+        tools:text="@string/placeholder_post_media_url"/>
 
 </FrameLayout>

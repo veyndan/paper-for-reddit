@@ -24,7 +24,7 @@
             android:paddingLeft="@dimen/post_horizontal_margin"
             android:paddingRight="@dimen/post_horizontal_margin"
             android:paddingTop="24dp"
-            tools:text="This is Carter. He knocked on my door to ask if he could have a banana then left."/>
+            tools:text="@string/placeholder_post_title"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                tools:text="29471 points\n2992 comments"/>
+                tools:text="@string/placeholder_post_score"/>
 
             <ToggleButton
                 android:id="@+id/post_upvote"

@@ -10,4 +10,4 @@
     android:paddingLeft="@dimen/post_horizontal_margin"
     android:paddingRight="@dimen/post_horizontal_margin"
     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-    tools:text="Carter went as a firefighter if anyone wanted to know. btw this is awesome!"/>
+    tools:text="@string/placeholder_post_media_text"/>

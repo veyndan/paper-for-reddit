@@ -13,7 +13,7 @@
         android:adjustViewBounds="true"
         android:contentDescription="@string/post_content_description_media_image"
         android:scaleType="fitXY"
-        tools:src="@drawable/carter"/>
+        tools:src="@drawable/placeholder_post_image"/>
 
     <ProgressBar
         android:id="@+id/post_media_image_progress"
