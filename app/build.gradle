@@ -70,7 +70,7 @@ dependencies {
 
     // Rx
     compile 'io.reactivex:rxandroid:1.2.1'
-    compile 'io.reactivex:rxjava:1.1.7'
+    compile 'io.reactivex:rxjava:1.1.9'
 
     // RxBinding
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
@@ -89,10 +89,10 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:24.1.1'
 
     // Timber
-    compile 'com.jakewharton.timber:timber:4.1.2'
+    compile 'com.jakewharton.timber:timber:4.2.0'
 
     // Twitter
-    compile('com.twitter.sdk.android:twitter:1.14.1@aar') {
+    compile('com.twitter.sdk.android:twitter:2.0.0@aar') {
         transitive = true;
     }
 }
