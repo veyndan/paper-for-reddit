@@ -8,7 +8,6 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
@@ -25,12 +24,12 @@ import timber.log.Timber;
 public class Flair {
 
     private final Optional<String> text;
-    private final Optional<Integer> icon;
+    private final Optional<Drawable> icon;
     private final int backgroundColor;
 
     private Flair(final Builder builder) {
         this.text = Optional.fromNullable(builder.text);
-        this.icon = builder.icon == 0 ? Optional.absent() : Optional.of(builder.icon);
+        this.icon = Optional.fromNullable(builder.icon);
         this.backgroundColor = builder.backgroundColor;
     }
 
@@ -38,7 +37,7 @@ public class Flair {
         return text;
     }
 
-    public Optional<Integer> getIcon() {
+    public Optional<Drawable> getIcon() {
         return icon;
     }
 
@@ -63,7 +62,7 @@ public class Flair {
     public static class Builder {
 
         private String text;
-        @DrawableRes private int icon;
+        private Drawable icon;
         @ColorInt private int backgroundColor;
 
         public Builder(@ColorInt int backgroundColor) {
@@ -75,7 +74,7 @@ public class Flair {
             return this;
         }
 
-        public Builder icon(@DrawableRes final int icon) {
+        public Builder icon(final Drawable icon) {
             this.icon = icon;
             return this;
         }
@@ -96,10 +95,10 @@ public class Flair {
         private final int paddingVertical;
         private final int paddingDrawable;
 
-        public BackgroundSpan(final Context context, @ColorInt final int backgroundColor, final Optional<Integer> icon) {
+        public BackgroundSpan(final Context context, @ColorInt final int backgroundColor, final Optional<Drawable> icon) {
             this.backgroundColor = backgroundColor;
             textColor = ContextCompat.getColor(context, android.R.color.white);
-            this.icon = icon.isPresent() ? Optional.of(ContextCompat.getDrawable(context, icon.get())) : Optional.absent();
+            this.icon = icon;
 
             cornerRadius = context.getResources().getDimensionPixelSize(R.dimen.post_flair_corner_radius);
             paddingHorizontal = context.getResources().getDimensionPixelSize(R.dimen.post_flair_padding_horizontal);

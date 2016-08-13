@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +15,6 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.customtabs.CustomTabsSession;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -60,6 +60,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import butterknife.BindColor;
+import butterknife.BindDimen;
+import butterknife.BindDrawable;
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
@@ -96,6 +100,17 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
     private final Reddit reddit;
     private final int width;
 
+    @BindColor(R.color.post_flair_stickied) int flairStickiedColor;
+    @BindColor(R.color.post_flair_nsfw) int flairNsfwColor;
+    @BindColor(R.color.post_flair_link) int flairLinkColor;
+    @BindColor(R.color.post_flair_gilded) int flairGildedColor;
+
+    @BindDrawable(R.drawable.ic_star_white_12sp) Drawable flairGildedIcon;
+
+    @BindString(R.string.post_stickied) String flairStickiedText;
+    @BindString(R.string.post_nsfw) String flairNsfwText;
+    @BindString(R.string.score_hidden) String scoreHiddenText;
+
     private final CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
     private final CustomTabsIntent customTabsIntent = builder.build();
     @Nullable private CustomTabsClient customTabsClient;
@@ -128,6 +143,8 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
         final View cardView = inflater.inflate(R.layout.post_item_link, parent, false);
         final PostViewHolder holder = new PostViewHolder(cardView);
+
+        ButterKnife.bind(this, parent);
 
         switch (viewType) {
             case TYPE_SELF:
@@ -172,32 +189,32 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         final List<Flair> flairs = new ArrayList<>();
 
         if (submission.stickied) {
-            flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_stickied))
-                    .text(context.getString(R.string.post_stickied))
+            flairs.add(new Flair.Builder(flairStickiedColor)
+                    .text(flairStickiedText)
                     .build());
         }
 
         if (submission instanceof Link && ((Link) submission).over18) {
-            flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_nsfw))
-                    .text(context.getString(R.string.post_nsfw))
+            flairs.add(new Flair.Builder(flairNsfwColor)
+                    .text(flairNsfwText)
                     .build());
         }
 
         if (submission instanceof Link && !TextUtils.isEmpty(((Link) submission).linkFlairText)) {
-            flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_link))
+            flairs.add(new Flair.Builder(flairLinkColor)
                     .text(((Link) submission).linkFlairText)
                     .build());
         }
 
         if (submission.gilded != 0) {
-            flairs.add(new Flair.Builder(ContextCompat.getColor(context, R.color.post_flair_gilded))
+            flairs.add(new Flair.Builder(flairGildedColor)
                     .text(String.valueOf(submission.gilded))
-                    .icon(R.drawable.ic_star_white_12sp)
+                    .icon(flairGildedIcon)
                     .build());
         }
 
         final String points = submission.scoreHidden
-                ? context.getString(R.string.score_hidden)
+                ? scoreHiddenText
                 : context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
 
         holder.setHeader(submission.linkTitle, context.getString(R.string.subtitle, submission.author, age, submission.subreddit), flairs);
@@ -404,7 +421,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         submission.score += isChecked ? 1 : -1;
 
                         final String points1 = submission.scoreHidden
-                                ? context.getString(R.string.score_hidden)
+                                ? scoreHiddenText
                                 : context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
                         final String comments1 = context.getResources().getQuantityString(R.plurals.comments, submission instanceof Link ? ((Link) submission).numComments : 0, submission instanceof Link ? ((Link) submission).numComments : 0);
                         holder.score.setText(context.getString(R.string.score, points1, comments1));
@@ -430,7 +447,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         submission.score += isChecked ? -1 : 1;
 
                         final String points1 = submission.scoreHidden
-                                ? context.getString(R.string.score_hidden)
+                                ? scoreHiddenText
                                 : context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
                         final String comments1 = context.getResources().getQuantityString(R.plurals.comments, submission instanceof Link ? ((Link) submission).numComments : 0, submission instanceof Link ? ((Link) submission).numComments : 0);
                         holder.score.setText(context.getString(R.string.score, points1, comments1));
@@ -605,6 +622,9 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         @BindView(R.id.post_save) ToggleButton save;
         @BindView(R.id.post_other) ImageButton other;
 
+        @BindDimen(R.dimen.post_title_subtitle_spacing) int titleSubtitleSpacing;
+        @BindDimen(R.dimen.post_subtitle_flair_spacing) int subtitleFlairSpacing;
+
         public PostViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
@@ -619,12 +639,10 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             final LineHeightSpan subtitleLineHeightSpan = new LineHeightSpan.WithDensity() {
                 @Override
                 public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm, TextPaint paint) {
-                    final int titleSubtitleSpacing = context.getResources().getDimensionPixelSize(R.dimen.post_title_subtitle_spacing);
                     fm.ascent -= titleSubtitleSpacing;
                     fm.top -= titleSubtitleSpacing;
 
                     if (!flairs.isEmpty()) {
-                        final int subtitleFlairSpacing = context.getResources().getDimensionPixelSize(R.dimen.post_subtitle_flair_spacing);
                         fm.descent += subtitleFlairSpacing;
                         fm.bottom += subtitleFlairSpacing;
                     }
@@ -658,13 +676,13 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 spanny.append(flairsSpanny, new LineHeightSpan.WithDensity() {
                     @Override
                     public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm, TextPaint paint) {
-                        final int resetTitleSubtitleSpacing = context.getResources().getDimensionPixelSize(R.dimen.post_title_subtitle_spacing);
-                        fm.ascent += resetTitleSubtitleSpacing;
-                        fm.top += resetTitleSubtitleSpacing;
+                        // Reset titleSubtitleSpacing.
+                        fm.ascent += titleSubtitleSpacing;
+                        fm.top += titleSubtitleSpacing;
 
-                        final int resetSubtitleFlairSpacing = context.getResources().getDimensionPixelSize(R.dimen.post_subtitle_flair_spacing);
-                        fm.descent -= resetSubtitleFlairSpacing;
-                        fm.bottom -= resetSubtitleFlairSpacing;
+                        // Reset subtitleFlairSpacing.
+                        fm.descent -= subtitleFlairSpacing;
+                        fm.bottom -= subtitleFlairSpacing;
                     }
 
                     @Override
