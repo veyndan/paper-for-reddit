@@ -10,8 +10,6 @@ import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
 import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func1;
 
 public final class AccessTokenInterceptor implements Interceptor {
 
@@ -30,19 +28,11 @@ public final class AccessTokenInterceptor implements Interceptor {
         final Request[] accessTokenRequest = {chain.request()};
 
         Observable.concat(accessTokenCache(), accessTokenNetwork())
-                .first(new Func1<AccessToken, Boolean>() {
-                    @Override
-                    public Boolean call(AccessToken accessToken) {
-                        return !accessToken.isExpired();
-                    }
-                })
-                .subscribe(new Action1<AccessToken>() {
-                    @Override
-                    public void call(AccessToken accessToken) {
-                        accessTokenRequest[0] = accessTokenRequest[0].newBuilder()
-                                .header("Authorization", "Bearer " + accessToken.getAccessToken())
-                                .build();
-                    }
+                .first(accessToken -> !accessToken.isExpired())
+                .subscribe(accessToken -> {
+                    accessTokenRequest[0] = accessTokenRequest[0].newBuilder()
+                            .header("Authorization", "Bearer " + accessToken.getAccessToken())
+                            .build();
                 });
 
         return chain.proceed(accessTokenRequest[0]);
@@ -60,11 +50,6 @@ public final class AccessTokenInterceptor implements Interceptor {
                 "password", credentials.getUsername(), credentials.getPassword());
 
         // Save access token from network into the cache.
-        return observable.doOnNext(new Action1<AccessToken>() {
-            @Override
-            public void call(AccessToken accessToken) {
-                accessTokenCache = accessToken;
-            }
-        });
+        return observable.doOnNext(accessToken -> accessTokenCache = accessToken);
     }
 }

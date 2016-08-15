@@ -189,12 +189,7 @@ public class Reddit {
                     public Observable<Response<Thing<Listing>>> call(final Response<Thing<Listing>> response) {
                         return Observable.just(response)
                                 .concatWith(trigger
-                                        .filter(new Func1<Boolean, Boolean>() {
-                                            @Override
-                                            public Boolean call(Boolean aBoolean) {
-                                                return aBoolean;
-                                            }
-                                        })
+                                        .filter(aBoolean -> aBoolean)
                                         .flatMap(new Func1<Boolean, Observable<Response<Thing<Listing>>>>() {
                                             @Override
                                             public Observable<Response<Thing<Listing>>> call(Boolean aBoolean) {

@@ -37,7 +37,7 @@ public class Prefs {
     public Integer minLinkScore;
     public String mediaPreview;
     public Boolean enableDefaultThemes;
-    public List<String> contentLangs = new ArrayList<String>();
+    public List<String> contentLangs = new ArrayList<>();
     public Object showPromote;
     public Integer minCommentScore;
     public Boolean publicVotes;
