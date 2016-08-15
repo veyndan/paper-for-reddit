@@ -19,6 +19,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.jakewharton.rxbinding.view.RxView;
+import com.veyndan.redditclient.api.imgur.model.Image;
 
 import java.util.List;
 

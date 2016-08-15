@@ -23,8 +23,8 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.jakewharton.rxbinding.view.RxView;
-import com.veyndan.redditclient.api.model.Thing;
-import com.veyndan.redditclient.api.model.Trophy;
+import com.veyndan.redditclient.api.reddit.model.Thing;
+import com.veyndan.redditclient.api.reddit.model.Trophy;
 
 import java.util.List;
 

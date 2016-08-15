@@ -12,9 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
-import com.veyndan.redditclient.api.Reddit;
-import com.veyndan.redditclient.api.model.RedditObject;
-import com.veyndan.redditclient.api.network.Credentials;
+import com.veyndan.redditclient.api.reddit.Reddit;
+import com.veyndan.redditclient.api.reddit.model.RedditObject;
+import com.veyndan.redditclient.api.reddit.network.Credentials;
 
 import java.util.ArrayList;
 import java.util.List;

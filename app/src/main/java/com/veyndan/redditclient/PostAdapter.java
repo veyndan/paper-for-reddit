@@ -51,14 +51,16 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetUtils;
 import com.twitter.sdk.android.tweetui.TweetView;
-import com.veyndan.redditclient.api.Reddit;
-import com.veyndan.redditclient.api.model.Comment;
-import com.veyndan.redditclient.api.model.Link;
-import com.veyndan.redditclient.api.model.PostHint;
-import com.veyndan.redditclient.api.model.RedditObject;
-import com.veyndan.redditclient.api.model.Source;
-import com.veyndan.redditclient.api.model.Submission;
-import com.veyndan.redditclient.api.network.VoteDirection;
+import com.veyndan.redditclient.api.imgur.model.Image;
+import com.veyndan.redditclient.api.imgur.network.ImgurService;
+import com.veyndan.redditclient.api.reddit.Reddit;
+import com.veyndan.redditclient.api.reddit.model.Comment;
+import com.veyndan.redditclient.api.reddit.model.Link;
+import com.veyndan.redditclient.api.reddit.model.PostHint;
+import com.veyndan.redditclient.api.reddit.model.RedditObject;
+import com.veyndan.redditclient.api.reddit.model.Source;
+import com.veyndan.redditclient.api.reddit.model.Submission;
+import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -258,7 +260,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                             public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                                 holder.mediaImageProgress.setVisibility(View.GONE);
                                 if (!imageDimensAvailable) {
-                                    final com.veyndan.redditclient.api.model.Image image = new com.veyndan.redditclient.api.model.Image();
+                                    final com.veyndan.redditclient.api.reddit.model.Image image = new com.veyndan.redditclient.api.reddit.model.Image();
                                     image.source.width = resource.getIntrinsicWidth();
                                     image.source.height = resource.getIntrinsicHeight();
                                     finalLink.preview.images.add(image);
@@ -284,7 +286,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
                 recyclerView.setLayoutManager(layoutManager);
 
-                final List<com.veyndan.redditclient.Image> images = new ArrayList<>();
+                final List<Image> images = new ArrayList<>();
 
                 final AlbumAdapter albumAdapter = new AlbumAdapter(activity, images, width, customTabsClient, customTabsIntent);
                 recyclerView.setAdapter(albumAdapter);

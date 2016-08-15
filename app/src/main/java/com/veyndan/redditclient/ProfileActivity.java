@@ -17,11 +17,11 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
 import com.airbnb.deeplinkdispatch.DeepLink;
-import com.veyndan.redditclient.api.Reddit;
-import com.veyndan.redditclient.api.model.Thing;
-import com.veyndan.redditclient.api.model.Trophy;
-import com.veyndan.redditclient.api.network.Credentials;
-import com.veyndan.redditclient.api.network.User;
+import com.veyndan.redditclient.api.reddit.Reddit;
+import com.veyndan.redditclient.api.reddit.model.Thing;
+import com.veyndan.redditclient.api.reddit.model.Trophy;
+import com.veyndan.redditclient.api.reddit.network.Credentials;
+import com.veyndan.redditclient.api.reddit.network.User;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
