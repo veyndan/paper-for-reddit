@@ -114,7 +114,7 @@ public class Link extends Submission {
     /**
      * #undocumented
      */
-    public Preview preview = new Preview();
+    public final Preview preview = new Preview();
 
     /**
      * #undocumented
@@ -139,7 +139,7 @@ public class Link extends Submission {
         return postHint;
     }
 
-    public void setPostHint(PostHint postHint) {
+    public void setPostHint(final PostHint postHint) {
         this.postHint = Objects.requireNonNull(postHint, "postHint mustn't be null");
     }
 

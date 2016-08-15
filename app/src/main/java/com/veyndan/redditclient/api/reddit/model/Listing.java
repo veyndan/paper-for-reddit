@@ -7,5 +7,5 @@ public class Listing {
     public String before;
     public String after;
     public String modhash;
-    public List<RedditObject> children = new ArrayList<>();
+    public final List<RedditObject> children = new ArrayList<>();
 }

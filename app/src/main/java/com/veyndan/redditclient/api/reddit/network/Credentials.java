@@ -17,12 +17,12 @@ public final class Credentials {
     private Credentials() {
     }
 
-    public static Credentials create(InputStream inputStream) {
+    public static Credentials create(final InputStream inputStream) {
         return fromJson(convertStreamToString(inputStream));
     }
 
-    private static Credentials fromJson(String json) {
-        Gson gson = new GsonBuilder()
+    private static Credentials fromJson(final String json) {
+        final Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
 
@@ -30,8 +30,8 @@ public final class Credentials {
     }
 
     // http://stackoverflow.com/a/5445161
-    private static String convertStreamToString(InputStream is) {
-        Scanner s = new Scanner(is).useDelimiter("\\A");
+    private static String convertStreamToString(final InputStream is) {
+        final Scanner s = new Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }
 

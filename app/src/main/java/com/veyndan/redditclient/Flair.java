@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
 
 import timber.log.Timber;
 
-public class Flair {
+public final class Flair {
 
     private final Optional<String> text;
     private final Optional<Drawable> icon;
@@ -63,9 +63,9 @@ public class Flair {
 
         private String text;
         private Drawable icon;
-        @ColorInt private int backgroundColor;
+        @ColorInt private final int backgroundColor;
 
-        public Builder(@ColorInt int backgroundColor) {
+        public Builder(@ColorInt final int backgroundColor) {
             this.backgroundColor = backgroundColor;
         }
 
@@ -107,7 +107,7 @@ public class Flair {
         }
 
         @Override
-        public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
+        public void draw(@NonNull final Canvas canvas, final CharSequence text, final int start, final int end, final float x, final int top, final int y, final int bottom, @NonNull final Paint paint) {
             int drawablePadding = 0;
             if (icon.isPresent()) {
                 drawablePadding += icon.get().getIntrinsicWidth() + paddingDrawable;
@@ -135,7 +135,7 @@ public class Flair {
         }
 
         @Override
-        public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, Paint.FontMetricsInt fm) {
+        public int getSize(@NonNull final Paint paint, final CharSequence text, final int start, final int end, final Paint.FontMetricsInt fm) {
             if (fm != null) {
                 fm.descent += paddingVertical * 2;
                 fm.bottom += paddingVertical * 2;

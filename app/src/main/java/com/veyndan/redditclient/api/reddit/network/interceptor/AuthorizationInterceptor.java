@@ -10,17 +10,17 @@ import okhttp3.Response;
 
 public class AuthorizationInterceptor implements Interceptor {
 
-    private Credentials credentials;
+    private final Credentials credentials;
 
-    public AuthorizationInterceptor(Credentials credentials) {
+    public AuthorizationInterceptor(final Credentials credentials) {
         this.credentials = credentials;
     }
 
     @Override
-    public Response intercept(Chain chain) throws IOException {
-        Request request = chain.request();
-        String credential = okhttp3.Credentials.basic(credentials.getClientId(), credentials.getClientSecret());
-        Request authenticatedRequest = request.newBuilder()
+    public Response intercept(final Chain chain) throws IOException {
+        final Request request = chain.request();
+        final String credential = okhttp3.Credentials.basic(credentials.getClientId(), credentials.getClientSecret());
+        final Request authenticatedRequest = request.newBuilder()
                 .header("Authorization", credential).build();
         return chain.proceed(authenticatedRequest);
     }

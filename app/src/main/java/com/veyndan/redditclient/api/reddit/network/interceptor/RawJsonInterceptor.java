@@ -10,9 +10,9 @@ import okhttp3.Response;
 public class RawJsonInterceptor implements Interceptor {
 
     @Override
-    public Response intercept(Chain chain) throws IOException {
+    public Response intercept(final Chain chain) throws IOException {
         Request request = chain.request();
-        HttpUrl url = request.url().newBuilder()
+        final HttpUrl url = request.url().newBuilder()
                 .addQueryParameter("raw_json", "1")
                 .build();
         request = request.newBuilder().url(url).build();

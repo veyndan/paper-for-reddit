@@ -17,7 +17,7 @@ public enum Kind {
     private final String type;
     private final Class clazz;
 
-    Kind(String type, Class clazz) {
+    Kind(final String type, final Class clazz) {
         this.type = type;
         this.clazz = clazz;
     }

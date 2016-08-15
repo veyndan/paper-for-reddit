@@ -53,12 +53,12 @@ public class ProfileActivity extends BaseActivity {
     @Nullable private CustomTabsClient customTabsClient;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_activity);
         ButterKnife.bind(this);
 
-        String username = getIntent().getStringExtra("username");
+        final String username = getIntent().getStringExtra("username");
 
         final ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
@@ -79,20 +79,20 @@ public class ProfileActivity extends BaseActivity {
 
         CustomTabsClient.bindCustomTabsService(this, CUSTOM_TAB_PACKAGE_NAME, new CustomTabsServiceConnection() {
             @Override
-            public void onCustomTabsServiceConnected(ComponentName name, CustomTabsClient client) {
+            public void onCustomTabsServiceConnected(final ComponentName name, final CustomTabsClient client) {
                 // customTabsClient is now valid.
                 customTabsClient = client;
                 customTabsClient.warmup(0);
             }
 
             @Override
-            public void onServiceDisconnected(ComponentName name) {
+            public void onServiceDisconnected(final ComponentName name) {
                 // customTabsClient is no longer valid. This also invalidates sessions.
                 customTabsClient = null;
             }
         });
 
-        TrophyAdapter trophyAdapter = new TrophyAdapter(this, trophies, customTabsClient, customTabsIntent);
+        final TrophyAdapter trophyAdapter = new TrophyAdapter(this, trophies, customTabsClient, customTabsIntent);
         trophiesRecyclerView.setAdapter(trophyAdapter);
 
         reddit.userTrophies(username)
@@ -119,9 +119,9 @@ public class ProfileActivity extends BaseActivity {
 
         private final Reddit reddit;
 
-        public ProfileSectionAdapter(FragmentManager fm, Context context, String username) {
+        public ProfileSectionAdapter(final FragmentManager fm, final Context context, final String username) {
             super(fm);
-            Credentials credentials = Credentials.create(context.getResources().openRawResource(R.raw.credentials));
+            final Credentials credentials = Credentials.create(context.getResources().openRawResource(R.raw.credentials));
             reddit = new Reddit.Builder(credentials).build();
 
             overviewFragment = PostsFragment.newInstance();
@@ -159,7 +159,7 @@ public class ProfileActivity extends BaseActivity {
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public Fragment getItem(final int position) {
             switch (position) {
                 case 0:
                     return overviewFragment;
@@ -180,7 +180,7 @@ public class ProfileActivity extends BaseActivity {
         }
 
         @Override
-        public CharSequence getPageTitle(int position) {
+        public CharSequence getPageTitle(final int position) {
             return titles[position];
         }
     }

@@ -14,7 +14,7 @@ public abstract class ProgressAdapter<T extends RecyclerView.ViewHolder> extends
     private static final int FOOTER_SIZE = 1;
 
     @Override
-    public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public final RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         if (viewType == TYPE_PROGRESS) {
             final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             return new ProgressViewHolder(inflater.inflate(R.layout.progress_item, parent, false));
@@ -26,7 +26,7 @@ public abstract class ProgressAdapter<T extends RecyclerView.ViewHolder> extends
     protected abstract T onCreateContentViewHolder(ViewGroup parent, int viewType);
 
     @Override
-    public final void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public final void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         if (holder.getItemViewType() == TYPE_PROGRESS) {
             // TODO: Do something with progress bar
         } else {
@@ -44,7 +44,7 @@ public abstract class ProgressAdapter<T extends RecyclerView.ViewHolder> extends
     protected abstract int getContentItemCount();
 
     @Override
-    public final int getItemViewType(int position) {
+    public final int getItemViewType(final int position) {
         return position == getItemCount() - 1 ? TYPE_PROGRESS : getContentItemViewType(position);
     }
 
@@ -52,9 +52,9 @@ public abstract class ProgressAdapter<T extends RecyclerView.ViewHolder> extends
 
     private final static class ProgressViewHolder extends RecyclerView.ViewHolder {
 
-        ProgressBar progress;
+        final ProgressBar progress;
 
-        public ProgressViewHolder(View itemView) {
+        public ProgressViewHolder(final View itemView) {
             super(itemView);
             progress = (ProgressBar) itemView;
         }

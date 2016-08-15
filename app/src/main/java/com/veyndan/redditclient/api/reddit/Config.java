@@ -1,5 +1,5 @@
 package com.veyndan.redditclient.api.reddit;
 
-public class Config {
+public final class Config {
     public static final boolean DEBUG = false;
 }

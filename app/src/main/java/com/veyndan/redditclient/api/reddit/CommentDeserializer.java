@@ -17,15 +17,15 @@ import java.lang.reflect.Type;
 public class CommentDeserializer implements JsonDeserializer<Comment> {
 
     @Override
-    public Comment deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public Comment deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
         final Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .create();
 
-        JsonObject jsonObject = json.getAsJsonObject();
+        final JsonObject jsonObject = json.getAsJsonObject();
 
         if (jsonObject.get("replies").isJsonPrimitive()) {
-            Thing<Listing> thing = new Thing<>();
+            final Thing<Listing> thing = new Thing<>();
             thing.data = new Listing();
             jsonObject.add("replies", gson.toJsonTree(thing));
         }

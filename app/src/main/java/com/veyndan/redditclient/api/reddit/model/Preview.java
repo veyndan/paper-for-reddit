@@ -4,5 +4,5 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Preview {
-    public List<Image> images = new ArrayList<>();
+    public final List<Image> images = new ArrayList<>();
 }

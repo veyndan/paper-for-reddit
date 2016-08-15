@@ -18,13 +18,14 @@ public final class AccessTokenInterceptor implements Interceptor {
 
     private AccessToken accessTokenCache;
 
-    public AccessTokenInterceptor(AuthenticationService authenticationService, Credentials credentials) {
+    public AccessTokenInterceptor(final AuthenticationService authenticationService,
+                                  final Credentials credentials) {
         this.authenticationService = authenticationService;
         this.credentials = credentials;
     }
 
     @Override
-    public Response intercept(Chain chain) throws IOException {
+    public Response intercept(final Chain chain) throws IOException {
         final Request[] accessTokenRequest = {chain.request()};
 
         Observable.concat(accessTokenCache(), accessTokenNetwork())
@@ -46,7 +47,7 @@ public final class AccessTokenInterceptor implements Interceptor {
     }
 
     private Observable<AccessToken> accessTokenNetwork() {
-        Observable<AccessToken> observable = authenticationService.getAccessToken(
+        final Observable<AccessToken> observable = authenticationService.getAccessToken(
                 "password", credentials.getUsername(), credentials.getPassword());
 
         // Save access token from network into the cache.

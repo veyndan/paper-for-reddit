@@ -35,7 +35,7 @@ public class TrophyAdapter extends RecyclerView.Adapter<TrophyAdapter.TrohpyView
     private final CustomTabsClient customTabsClient;
     private final CustomTabsIntent customTabsIntent;
 
-    public TrophyAdapter(Activity activity, List<Thing<Trophy>> trophies, @Nullable CustomTabsClient customTabsClient, CustomTabsIntent customTabsIntent) {
+    public TrophyAdapter(final Activity activity, final List<Thing<Trophy>> trophies, @Nullable final CustomTabsClient customTabsClient, final CustomTabsIntent customTabsIntent) {
         this.activity = activity;
         this.trophies = trophies;
         this.customTabsClient = customTabsClient;
@@ -43,20 +43,20 @@ public class TrophyAdapter extends RecyclerView.Adapter<TrophyAdapter.TrohpyView
     }
 
     @Override
-    public TrohpyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_item_trophy, parent, false);
+    public TrohpyViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        final View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_item_trophy, parent, false);
         return new TrohpyViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(TrohpyViewHolder holder, int position) {
+    public void onBindViewHolder(final TrohpyViewHolder holder, final int position) {
         final Context context = holder.itemView.getContext();
         final Thing<Trophy> trophy = trophies.get(position);
 
         holder.text.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         Glide.with(context).load(trophy.data.icon70).into(new SimpleTarget<GlideDrawable>() {
             @Override
-            public void onResourceReady(GlideDrawable glideDrawable, GlideAnimation<? super GlideDrawable> glideAnimation) {
+            public void onResourceReady(final GlideDrawable glideDrawable, final GlideAnimation<? super GlideDrawable> glideAnimation) {
                 holder.text.setCompoundDrawablesWithIntrinsicBounds(null, glideDrawable, null, null);
             }
         });
@@ -69,7 +69,7 @@ public class TrophyAdapter extends RecyclerView.Adapter<TrophyAdapter.TrohpyView
         holder.text.setText(spannable);
 
         if (customTabsClient != null) {
-            CustomTabsSession session = customTabsClient.newSession(null);
+            final CustomTabsSession session = customTabsClient.newSession(null);
             session.mayLaunchUrl(Uri.parse(trophy.data.url), null, null);
         }
 
@@ -90,7 +90,7 @@ public class TrophyAdapter extends RecyclerView.Adapter<TrophyAdapter.TrohpyView
 
         final TextView text;
 
-        public TrohpyViewHolder(View itemView) {
+        public TrohpyViewHolder(final View itemView) {
             super(itemView);
             text = (TextView) itemView;
         }

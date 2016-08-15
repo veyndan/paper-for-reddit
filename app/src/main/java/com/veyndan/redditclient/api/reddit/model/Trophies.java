@@ -4,5 +4,5 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Trophies {
-    public List<Thing<Trophy>> trophies = new ArrayList<>();
+    public final List<Thing<Trophy>> trophies = new ArrayList<>();
 }

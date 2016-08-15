@@ -9,7 +9,7 @@ public enum VoteDirection {
 
     private final int direction;
 
-    VoteDirection(int direction) {
+    VoteDirection(final int direction) {
         this.direction = direction;
     }
 

@@ -16,7 +16,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
 
     @Override
-    public void setContentView(@LayoutRes int layoutResID) {
+    public void setContentView(@LayoutRes final int layoutResID) {
         super.setContentView(layoutResID);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);

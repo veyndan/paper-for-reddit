@@ -12,7 +12,7 @@ import java.util.List;
 import rx.Observable;
 import rx.functions.Func1;
 
-public class Mutator {
+public final class Mutator {
 
     public static final Func1<Thing<Trophies>, Observable<Trophy>> TROPHY =
             thing -> Observable.from(thing.data.trophies)
@@ -25,7 +25,7 @@ public class Mutator {
             categories -> Observable.from(categories.categories)
                     .map(new Func1<Category, String>() {
                         @Override
-                        public String call(Category category) {
+                        public String call(final Category category) {
                             return category.category;
                         }
                     });

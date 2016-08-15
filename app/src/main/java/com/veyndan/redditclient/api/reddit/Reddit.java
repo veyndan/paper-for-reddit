@@ -47,7 +47,7 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.functions.Func1;
 
-public class Reddit {
+public final class Reddit {
 
     private final RedditService redditService;
 
@@ -64,7 +64,7 @@ public class Reddit {
                 .addInterceptor(new UserAgentInterceptor(credentials.getUserAgent()))
                 .addInterceptor(new AuthorizationInterceptor(credentials));
 
-        for (Interceptor interceptor : builder.networkInterceptors) {
+        for (final Interceptor interceptor : builder.networkInterceptors) {
             authenticationClientBuilder.addNetworkInterceptor(interceptor);
         }
 
@@ -77,14 +77,14 @@ public class Reddit {
 
         final AuthenticationService authenticationService = authenticatorRetrofit.create(AuthenticationService.class);
 
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+        final OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new UserAgentInterceptor(credentials.getUserAgent()))
                 .addInterceptor(new AccessTokenInterceptor(authenticationService, credentials))
                 .addInterceptor(new RawJsonInterceptor());
 
         if (Config.DEBUG) clientBuilder.addInterceptor(loggingInterceptor());
 
-        for (Interceptor interceptor : builder.networkInterceptors) {
+        for (final Interceptor interceptor : builder.networkInterceptors) {
             clientBuilder.addNetworkInterceptor(interceptor);
         }
 
@@ -99,7 +99,7 @@ public class Reddit {
     }
 
     private static HttpLoggingInterceptor loggingInterceptor() {
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         return loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
     }
 
@@ -139,11 +139,11 @@ public class Reddit {
     //         Links & Comments
     // ================================
 
-    public Observable<Response<ResponseBody>> hide(String... ids) {
+    public Observable<Response<ResponseBody>> hide(final String... ids) {
         return hide(Arrays.asList(ids));
     }
 
-    public Observable<Response<ResponseBody>> hide(List<String> ids) {
+    public Observable<Response<ResponseBody>> hide(final List<String> ids) {
         return redditService.hide(Joiner.on(',').join(ids));
     }
 
@@ -167,13 +167,13 @@ public class Reddit {
     //             Listings
     // ================================
 
-    public Observable<Response<List<Thing<Listing>>>> subredditComments(String subreddit, String article) {
+    public Observable<Response<List<Thing<Listing>>>> subredditComments(final String subreddit, final String article) {
         return redditService.subredditComments(subreddit, article);
     }
 
     public Observable<Response<Thing<Listing>>> subreddit(
-            String subreddit, Sort sort, Observable<Boolean> trigger,
-            Scheduler subscribeOn, Scheduler observeOn) {
+            final String subreddit, final Sort sort, final Observable<Boolean> trigger,
+            final Scheduler subscribeOn, final Scheduler observeOn) {
         return subreddit(subreddit, sort, new QueryBuilder(), trigger, subscribeOn, observeOn);
     }
 
@@ -249,7 +249,7 @@ public class Reddit {
             this.credentials = credentials;
         }
 
-        public Builder addNetworkInterceptor(Interceptor interceptor) {
+        public Builder addNetworkInterceptor(final Interceptor interceptor) {
             networkInterceptors.add(interceptor);
             return this;
         }

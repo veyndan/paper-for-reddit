@@ -29,7 +29,7 @@ public class QueryBuilder {
      *
      * @param fullname fullname of a thing
      */
-    public QueryBuilder after(String fullname) {
+    public QueryBuilder after(final String fullname) {
         query.put("after", fullname);
         return this;
     }
@@ -42,7 +42,7 @@ public class QueryBuilder {
      *
      * @param fullname fullname of a thing
      */
-    public QueryBuilder before(String fullname) {
+    public QueryBuilder before(final String fullname) {
         query.put("before", fullname);
         return this;
     }
@@ -54,7 +54,7 @@ public class QueryBuilder {
      *
      * @param count A positive integer (default: 0)
      */
-    public QueryBuilder count(int count) {
+    public QueryBuilder count(final int count) {
         if (count < 0) {
             throw new IllegalStateException("Query parameter 'count' must be non negative.");
         }
@@ -67,7 +67,7 @@ public class QueryBuilder {
      *
      * @param limit The maximum number of items desired (default: 25, maximum: 100)
      */
-    public QueryBuilder limit(int limit) {
+    public QueryBuilder limit(final int limit) {
         if (limit < 0 || limit > 100) {
             throw new IllegalStateException("Query parameter 'limit' must be between 0 and 100");
         }
@@ -79,7 +79,7 @@ public class QueryBuilder {
      * @param all If {@code true}, filters such as "hide links that I have voted on" will be
      *            disabled.
      */
-    public QueryBuilder show(boolean all) {
+    public QueryBuilder show(final boolean all) {
         if (all) {
             query.put("show", "all");
         } else {
@@ -94,7 +94,7 @@ public class QueryBuilder {
      *
      * #inferred
      */
-    public QueryBuilder t(TimePeriod timePeriod) {
+    public QueryBuilder t(final TimePeriod timePeriod) {
         query.put("t", timePeriod.toString());
         return this;
     }
@@ -102,7 +102,7 @@ public class QueryBuilder {
     /**
      * #undocumented
      */
-    public QueryBuilder srDetail(Object expandSubreddits) {
+    public QueryBuilder srDetail(final Object expandSubreddits) {
         query.put("sr_detail", String.valueOf(expandSubreddits));
         return this;
     }

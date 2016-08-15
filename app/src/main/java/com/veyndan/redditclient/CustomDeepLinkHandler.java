@@ -12,10 +12,10 @@ import com.airbnb.deeplinkdispatch.DeepLinkHandler;
 public class CustomDeepLinkHandler extends AppCompatActivity {
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Uri standardizedUri = getIntent().getData().buildUpon()
+        final Uri standardizedUri = getIntent().getData().buildUpon()
                 .scheme("http")
                 .authority("reddit.com")
                 .build();

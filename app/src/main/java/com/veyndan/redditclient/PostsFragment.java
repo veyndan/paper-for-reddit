@@ -51,7 +51,7 @@ public class PostsFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(final Context context) {
         super.onAttach(context);
 
         final Credentials credentials = Credentials.create(getResources().openRawResource(R.raw.credentials));
@@ -59,7 +59,7 @@ public class PostsFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }
@@ -73,7 +73,7 @@ public class PostsFragment extends Fragment {
                 });
     }
 
-    public void addPosts(List<RedditObject> posts) {
+    public void addPosts(final List<RedditObject> posts) {
         this.posts.addAll(posts);
         if (postAdapter != null) {
             postAdapter.notifyDataSetChanged();
@@ -82,7 +82,7 @@ public class PostsFragment extends Fragment {
     }
 
     public void clearPosts() {
-        int postsSize = this.posts.size();
+        final int postsSize = this.posts.size();
         this.posts.clear();
         if (postAdapter != null) {
             postAdapter.notifyItemRangeRemoved(0, postsSize);
@@ -90,8 +90,8 @@ public class PostsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
         ButterKnife.bind(this, recyclerView);

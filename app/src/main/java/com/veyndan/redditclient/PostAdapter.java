@@ -117,7 +117,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
     private final CustomTabsIntent customTabsIntent = builder.build();
     @Nullable private CustomTabsClient customTabsClient;
 
-    public PostAdapter(Activity activity, List<RedditObject> posts, Reddit reddit, int width) {
+    public PostAdapter(final Activity activity, final List<RedditObject> posts, final Reddit reddit, final int width) {
         this.activity = activity;
         this.posts = posts;
         this.reddit = reddit;
@@ -125,14 +125,14 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
         CustomTabsClient.bindCustomTabsService(activity, CUSTOM_TAB_PACKAGE_NAME, new CustomTabsServiceConnection() {
             @Override
-            public void onCustomTabsServiceConnected(ComponentName name, CustomTabsClient client) {
+            public void onCustomTabsServiceConnected(final ComponentName name, final CustomTabsClient client) {
                 // customTabsClient is now valid.
                 customTabsClient = client;
                 customTabsClient.warmup(0);
             }
 
             @Override
-            public void onServiceDisconnected(ComponentName name) {
+            public void onServiceDisconnected(final ComponentName name) {
                 // customTabsClient is no longer valid. This also invalidates sessions.
                 customTabsClient = null;
             }
@@ -140,8 +140,8 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
     }
 
     @Override
-    protected PostViewHolder onCreateContentViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+    protected PostViewHolder onCreateContentViewHolder(final ViewGroup parent, final int viewType) {
+        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         final View cardView = inflater.inflate(R.layout.post_item_link, parent, false);
         final PostViewHolder holder = new PostViewHolder(cardView);
@@ -177,16 +177,16 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
     }
 
     @Override
-    protected void onBindContentViewHolder(PostViewHolder holder, int position) {
+    protected void onBindContentViewHolder(final PostViewHolder holder, final int position) {
         final Context context = holder.itemView.getContext();
         final Submission submission = (Submission) posts.get(position);
 
-        CharSequence age = DateUtils.getRelativeTimeSpanString(
+        final CharSequence age = DateUtils.getRelativeTimeSpanString(
                 TimeUnit.SECONDS.toMillis(submission.createdUtc), System.currentTimeMillis(),
                 DateUtils.SECOND_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
 
-        int viewType = holder.getItemViewType();
+        final int viewType = holder.getItemViewType();
 
         final List<Flair> flairs = new ArrayList<>();
 
@@ -236,7 +236,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 holder.mediaImageProgress.setVisibility(View.VISIBLE);
 
                 if (customTabsClient != null) {
-                    CustomTabsSession session = customTabsClient.newSession(new CustomTabsCallback());
+                    final CustomTabsSession session = customTabsClient.newSession(new CustomTabsCallback());
                     session.mayLaunchUrl(Uri.parse(submission.linkUrl), null, null);
                 }
 
@@ -251,13 +251,13 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         .load(submission.linkUrl)
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
-                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
                                 holder.mediaImageProgress.setVisibility(View.GONE);
                                 return false;
                             }
 
                             @Override
-                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
                                 holder.mediaImageProgress.setVisibility(View.GONE);
                                 if (!imageDimensAvailable) {
                                     final com.veyndan.redditclient.api.reddit.model.Image image = new com.veyndan.redditclient.api.reddit.model.Image();
@@ -272,7 +272,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         })
                         .into(holder.mediaImage);
                 if (imageDimensAvailable) {
-                    Source source = finalLink.preview.images.get(0).source;
+                    final Source source = finalLink.preview.images.get(0).source;
                     holder.mediaImage.getLayoutParams().height = (int) ((float) width / source.width * source.height);
                 }
                 break;
@@ -281,9 +281,9 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
                 assert holder.mediaContainer != null;
 
-                RecyclerView recyclerView = (RecyclerView) holder.mediaContainer;
+                final RecyclerView recyclerView = (RecyclerView) holder.mediaContainer;
 
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
+                final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
                 recyclerView.setLayoutManager(layoutManager);
 
                 final List<Image> images = new ArrayList<>();
@@ -291,7 +291,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 final AlbumAdapter albumAdapter = new AlbumAdapter(activity, images, width, customTabsClient, customTabsIntent);
                 recyclerView.setAdapter(albumAdapter);
 
-                OkHttpClient client = new OkHttpClient.Builder()
+                final OkHttpClient client = new OkHttpClient.Builder()
                         .addInterceptor(chain -> {
                             Request request = chain.request().newBuilder()
                                     .addHeader("Authorization", "Client-ID " + Config.IMGUR_CLIENT_ID)
@@ -300,14 +300,14 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         })
                         .build();
 
-                Retrofit retrofit = new Retrofit.Builder()
+                final Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl("https://api.imgur.com/3/")
                         .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                         .addConverterFactory(GsonConverterFactory.create())
                         .client(client)
                         .build();
 
-                ImgurService imgurService = retrofit.create(ImgurService.class);
+                final ImgurService imgurService = retrofit.create(ImgurService.class);
 
                 imgurService.album(submission.linkUrl.split("/a/")[1])
                         .subscribeOn(Schedulers.io())
@@ -331,12 +331,12 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                     if (tweetId.isPresent()) {
                         TweetUtils.loadTweet(tweetId.get(), new Callback<Tweet>() {
                             @Override
-                            public void success(Result<Tweet> result) {
+                            public void success(final Result<Tweet> result) {
                                 ((TweetView) holder.mediaContainer).setTweet(result.data);
                             }
 
                             @Override
-                            public void failure(TwitterException exception) {
+                            public void failure(final TwitterException exception) {
                                 Timber.e(exception, "Load Tweet failure");
                             }
                         });
@@ -353,18 +353,18 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
                 holder.mediaImageProgress.setVisibility(View.VISIBLE);
 
-                Source source = link.preview.images.get(0).source;
+                final Source source = link.preview.images.get(0).source;
                 Glide.with(context)
                         .load(source.url)
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
-                            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
                                 holder.mediaImageProgress.setVisibility(View.GONE);
                                 return false;
                             }
 
                             @Override
-                            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
                                 holder.mediaImageProgress.setVisibility(View.GONE);
                                 return false;
                             }
@@ -377,7 +377,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 assert holder.mediaUrl != null;
 
                 if (customTabsClient != null) {
-                    CustomTabsSession session = customTabsClient.newSession(null);
+                    final CustomTabsSession session = customTabsClient.newSession(null);
 
                     session.mayLaunchUrl(Uri.parse(submission.linkUrl), null, null);
                 }
@@ -402,7 +402,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         final String comments = context.getResources().getQuantityString(R.plurals.comments, submission instanceof Link ? ((Link) submission).numComments : 0, submission instanceof Link ? ((Link) submission).numComments : 0);
         holder.score.setText(context.getString(R.string.score, points, comments));
 
-        VoteDirection likes = submission.getLikes();
+        final VoteDirection likes = submission.getLikes();
 
         holder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
         RxCompoundButton.checkedChanges(holder.upvote)
@@ -493,7 +493,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                                 notifyItemInserted(adapterPosition);
                             };
 
-                            Snackbar snackbar = Snackbar.make(holder.itemView, R.string.notify_post_hidden, Snackbar.LENGTH_LONG)
+                            final Snackbar snackbar = Snackbar.make(holder.itemView, R.string.notify_post_hidden, Snackbar.LENGTH_LONG)
                                     .setAction(R.string.notify_post_hidden_undo, undoClickListener);
 
                             RxSnackbar.dismisses(snackbar)
@@ -542,7 +542,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 });
     }
 
-    private CharSequence trimTrailingWhitespace(@NonNull CharSequence source) {
+    private CharSequence trimTrailingWhitespace(@NonNull final CharSequence source) {
         int i = source.length();
 
         // loop back to the first non-whitespace character
@@ -554,10 +554,10 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
     }
 
     @Override
-    public int getContentItemViewType(int position) {
-        Submission submission = (Submission) posts.get(position);
+    public int getContentItemViewType(final int position) {
+        final Submission submission = (Submission) posts.get(position);
 
-        int viewType;
+        final int viewType;
 
         if (submission instanceof Link && submission.linkUrl.contains("imgur.com/") && !submission.linkUrl.contains("/a/") && !submission.linkUrl.contains("/gallery/") && !submission.linkUrl.contains("i.imgur.com")) {
             submission.linkUrl = submission.linkUrl.replace("imgur.com", "i.imgur.com");
@@ -627,7 +627,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         @BindDimen(R.dimen.post_title_subtitle_spacing) int titleSubtitleSpacing;
         @BindDimen(R.dimen.post_subtitle_flair_spacing) int subtitleFlairSpacing;
 
-        public PostViewHolder(View itemView) {
+        public PostViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
 
@@ -640,7 +640,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             final TextAppearanceSpan subtitleTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostSubtitleTextAppearance);
             final LineHeightSpan subtitleLineHeightSpan = new LineHeightSpan.WithDensity() {
                 @Override
-                public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm, TextPaint paint) {
+                public void chooseHeight(final CharSequence text, final int start, final int end, final int spanstartv, final int v, final Paint.FontMetricsInt fm, final TextPaint paint) {
                     fm.ascent -= titleSubtitleSpacing;
                     fm.top -= titleSubtitleSpacing;
 
@@ -651,7 +651,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 }
 
                 @Override
-                public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm) {
+                public void chooseHeight(final CharSequence text, final int start, final int end, final int spanstartv, final int v, final Paint.FontMetricsInt fm) {
                     chooseHeight(text, start, end, spanstartv, v, fm, null);
                 }
             };
@@ -666,7 +666,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 final Spanny flairsSpanny = new Spanny();
 
                 String divider = "";
-                for (Flair flair : flairs) {
+                for (final Flair flair : flairs) {
                     flairsSpanny.append(divider);
                     if (divider.isEmpty()) {
                         divider = "   "; // TODO Replace with margin left and right of 4dp
@@ -677,7 +677,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
                 spanny.append(flairsSpanny, new LineHeightSpan.WithDensity() {
                     @Override
-                    public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm, TextPaint paint) {
+                    public void chooseHeight(final CharSequence text, final int start, final int end, final int spanstartv, final int v, final Paint.FontMetricsInt fm, final TextPaint paint) {
                         // Reset titleSubtitleSpacing.
                         fm.ascent += titleSubtitleSpacing;
                         fm.top += titleSubtitleSpacing;
@@ -688,7 +688,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                     }
 
                     @Override
-                    public void chooseHeight(CharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm) {
+                    public void chooseHeight(final CharSequence text, final int start, final int end, final int spanstartv, final int v, final Paint.FontMetricsInt fm) {
                         chooseHeight(text, start, end, spanstartv, v, fm, null);
                     }
                 });

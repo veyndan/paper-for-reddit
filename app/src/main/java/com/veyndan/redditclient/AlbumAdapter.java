@@ -34,7 +34,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
     private final CustomTabsClient customTabsClient;
     private final CustomTabsIntent customTabsIntent;
 
-    public AlbumAdapter(Activity activity, List<Image> images, int width, @Nullable CustomTabsClient customTabsClient, CustomTabsIntent customTabsIntent) {
+    public AlbumAdapter(final Activity activity, final List<Image> images, final int width,
+                        @Nullable final CustomTabsClient customTabsClient,
+                        final CustomTabsIntent customTabsIntent) {
         this.activity = activity;
         this.images = images;
         this.width = width;
@@ -43,20 +45,20 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
     }
 
     @Override
-    public AlbumViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_media_image, parent, false);
+    public AlbumViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        final View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.post_media_image, parent, false);
         return new AlbumViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(final AlbumViewHolder holder, int position) {
+    public void onBindViewHolder(final AlbumViewHolder holder, final int position) {
         final Image image = images.get(position);
         final Context context = holder.itemView.getContext();
 
         holder.mediaImageProgress.setVisibility(View.VISIBLE);
 
         if (customTabsClient != null) {
-            CustomTabsSession session = customTabsClient.newSession(null);
+            final CustomTabsSession session = customTabsClient.newSession(null);
             session.mayLaunchUrl(Uri.parse(image.link), null, null);
         }
 
@@ -69,13 +71,18 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
                 .load(image.link)
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                    public boolean onException(final Exception e, final String model,
+                                               final Target<GlideDrawable> target,
+                                               final boolean isFirstResource) {
                         holder.mediaImageProgress.setVisibility(View.GONE);
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                    public boolean onResourceReady(final GlideDrawable resource, final String model,
+                                                   final Target<GlideDrawable> target,
+                                                   final boolean isFromMemoryCache,
+                                                   final boolean isFirstResource) {
                         holder.mediaImageProgress.setVisibility(View.GONE);
                         return false;
                     }
@@ -91,11 +98,11 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
 
     public class AlbumViewHolder extends RecyclerView.ViewHolder {
 
-        View mediaContainer;
+        final View mediaContainer;
         @BindView(R.id.post_media_image) ImageView mediaImage;
         @BindView(R.id.post_media_image_progress) ProgressBar mediaImageProgress;
 
-        public AlbumViewHolder(View itemView) {
+        public AlbumViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
             mediaContainer = itemView;

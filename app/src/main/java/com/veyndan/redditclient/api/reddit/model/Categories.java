@@ -4,5 +4,5 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Categories {
-    public List<Category> categories = new ArrayList<>();
+    public final List<Category> categories = new ArrayList<>();
 }
