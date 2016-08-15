@@ -51,6 +51,14 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetUtils;
 import com.twitter.sdk.android.tweetui.TweetView;
+import com.veyndan.redditclient.api.Reddit;
+import com.veyndan.redditclient.api.model.Comment;
+import com.veyndan.redditclient.api.model.Link;
+import com.veyndan.redditclient.api.model.PostHint;
+import com.veyndan.redditclient.api.model.RedditObject;
+import com.veyndan.redditclient.api.model.Source;
+import com.veyndan.redditclient.api.model.Submission;
+import com.veyndan.redditclient.api.network.VoteDirection;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -68,17 +76,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import rawjava.Reddit;
-import rawjava.model.Comment;
-import rawjava.model.Link;
-import rawjava.model.PostHint;
-import rawjava.model.RedditObject;
-import rawjava.model.Source;
-import rawjava.model.Submission;
-import rawjava.network.VoteDirection;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.moshi.MoshiConverterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -258,7 +258,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                             public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
                                 holder.mediaImageProgress.setVisibility(View.GONE);
                                 if (!imageDimensAvailable) {
-                                    final rawjava.model.Image image = new rawjava.model.Image();
+                                    final com.veyndan.redditclient.api.model.Image image = new com.veyndan.redditclient.api.model.Image();
                                     image.source.width = resource.getIntrinsicWidth();
                                     image.source.height = resource.getIntrinsicHeight();
                                     finalLink.preview.images.add(image);
@@ -301,7 +301,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl("https://api.imgur.com/3/")
                         .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        .addConverterFactory(MoshiConverterFactory.create())
+                        .addConverterFactory(GsonConverterFactory.create())
                         .client(client)
                         .build();
 

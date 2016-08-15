@@ -1,7 +1,7 @@
 package com.veyndan.redditclient;
 
-import rawjava.network.QueryBuilder;
-import rawjava.network.Sort;
+import com.veyndan.redditclient.api.network.QueryBuilder;
+import com.veyndan.redditclient.api.network.Sort;
 
 public class SubredditFilter {
 

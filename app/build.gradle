@@ -52,6 +52,9 @@ dependencies {
     // Glide
     compile 'com.github.bumptech.glide:glide:3.7.0'
 
+    // Gson
+    compile 'com.google.code.gson:gson:2.7'
+
     // Guava
     compile 'com.google.guava:guava:19.0'
 
@@ -60,13 +63,11 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 
-    // Reddit
-    compile 'com.github.veyndan:rawjava:9b27f1d2d3'
-
-    // Retrofit
+    // Retrofit/OkHttp
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.squareup.retrofit2:converter-moshi:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
 
     // Rx
     compile 'io.reactivex:rxandroid:1.2.1'

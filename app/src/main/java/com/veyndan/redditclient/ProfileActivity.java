@@ -17,6 +17,11 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
 import com.airbnb.deeplinkdispatch.DeepLink;
+import com.veyndan.redditclient.api.Reddit;
+import com.veyndan.redditclient.api.model.Thing;
+import com.veyndan.redditclient.api.model.Trophy;
+import com.veyndan.redditclient.api.network.Credentials;
+import com.veyndan.redditclient.api.network.User;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -24,11 +29,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rawjava.Reddit;
-import rawjava.model.Thing;
-import rawjava.model.Trophy;
-import rawjava.network.Credentials;
-import rawjava.network.User;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 

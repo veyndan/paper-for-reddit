@@ -6,13 +6,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.common.collect.ImmutableMap;
+import com.veyndan.redditclient.api.network.QueryBuilder;
+import com.veyndan.redditclient.api.network.Sort;
+import com.veyndan.redditclient.api.network.TimePeriod;
 
 import java.util.Map;
 
 import butterknife.ButterKnife;
-import rawjava.network.QueryBuilder;
-import rawjava.network.Sort;
-import rawjava.network.TimePeriod;
 
 public class MainActivity extends BaseActivity {
 

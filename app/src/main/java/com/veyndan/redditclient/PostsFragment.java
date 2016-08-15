@@ -12,15 +12,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
+import com.veyndan.redditclient.api.Reddit;
+import com.veyndan.redditclient.api.model.RedditObject;
+import com.veyndan.redditclient.api.network.Credentials;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindDimen;
 import butterknife.ButterKnife;
-import rawjava.Reddit;
-import rawjava.model.RedditObject;
-import rawjava.network.Credentials;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
