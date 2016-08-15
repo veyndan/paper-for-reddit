@@ -190,12 +190,7 @@ public class Reddit {
                         return Observable.just(response)
                                 .concatWith(trigger
                                         .filter(aBoolean -> aBoolean)
-                                        .flatMap(new Func1<Boolean, Observable<Response<Thing<Listing>>>>() {
-                                            @Override
-                                            public Observable<Response<Thing<Listing>>> call(Boolean aBoolean) {
-                                                return subreddit(subreddit, sort, queryBuilder.after(response.body().data.after), trigger, subscribeOn, observeOn);
-                                            }
-                                        }));
+                                        .flatMap(aBoolean -> subreddit(subreddit, sort, queryBuilder.after(response.body().data.after), trigger, subscribeOn, observeOn)));
                     }
                 });
     }
