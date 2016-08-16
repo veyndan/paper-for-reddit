@@ -1,38 +1,19 @@
 package com.veyndan.redditclient.api.reddit.network;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.io.InputStream;
-import java.util.Scanner;
-
 public final class Credentials {
-    private String clientId;
-    private String clientSecret;
-    private UserAgent userAgent;
-    private String username;
-    private String password;
+    private final String clientId;
+    private final String clientSecret;
+    private final String userAgent;
+    private final String username;
+    private final String password;
 
-    private Credentials() {
-    }
-
-    public static Credentials create(final InputStream inputStream) {
-        return fromJson(convertStreamToString(inputStream));
-    }
-
-    private static Credentials fromJson(final String json) {
-        final Gson gson = new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .create();
-
-        return gson.fromJson(json, Credentials.class);
-    }
-
-    // http://stackoverflow.com/a/5445161
-    private static String convertStreamToString(final InputStream is) {
-        final Scanner s = new Scanner(is).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : "";
+    public Credentials(final String clientId, final String clientSecret, final String userAgent,
+                       final String username, final String password) {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.userAgent = userAgent;
+        this.username = username;
+        this.password = password;
     }
 
     public String getClientId() {
@@ -44,7 +25,7 @@ public final class Credentials {
     }
 
     public String getUserAgent() {
-        return userAgent.string();
+        return userAgent;
     }
 
     public String getUsername() {
@@ -55,14 +36,8 @@ public final class Credentials {
         return password;
     }
 
-    private static final class UserAgent {
-        private String platform;
-        private String appId;
-        private String version;
-        private String username;
-
-        String string() {
-            return String.format("%s:%s:%s (by /u/%s)", platform, appId, version, username);
-        }
+    public static String createUserAgent(final String platform, final String appId,
+                                         final String version, final String username) {
+        return String.format("%s:%s:%s (by /u/%s)", platform, appId, version, username);
     }
 }

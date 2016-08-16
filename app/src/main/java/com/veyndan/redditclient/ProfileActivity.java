@@ -1,7 +1,6 @@
 package com.veyndan.redditclient;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsClient;
@@ -64,7 +63,7 @@ public class ProfileActivity extends BaseActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(username);
 
-        final Credentials credentials = Credentials.create(getResources().openRawResource(R.raw.credentials));
+        final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
         final Reddit reddit = new Reddit.Builder(credentials).build();
 
         reddit.userAbout(username)
@@ -103,7 +102,7 @@ public class ProfileActivity extends BaseActivity {
                     trophyAdapter.notifyDataSetChanged();
                 });
 
-        viewPager.setAdapter(new ProfileSectionAdapter(getSupportFragmentManager(), this, username));
+        viewPager.setAdapter(new ProfileSectionAdapter(getSupportFragmentManager(), username));
 
         tabs.setupWithViewPager(viewPager);
     }
@@ -119,9 +118,9 @@ public class ProfileActivity extends BaseActivity {
 
         private final Reddit reddit;
 
-        public ProfileSectionAdapter(final FragmentManager fm, final Context context, final String username) {
+        public ProfileSectionAdapter(final FragmentManager fm, final String username) {
             super(fm);
-            final Credentials credentials = Credentials.create(context.getResources().openRawResource(R.raw.credentials));
+            final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
             reddit = new Reddit.Builder(credentials).build();
 
             overviewFragment = PostsFragment.newInstance();
