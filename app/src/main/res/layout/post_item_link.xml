@@ -44,23 +44,29 @@
                 android:layout_weight="1"
                 tools:text="@string/placeholder_post_score"/>
 
-            <ToggleButton
+            <android.support.design.widget.CheckableImageButton
                 android:id="@+id/post_upvote"
-                style="@style/ImageToggleButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?selectableItemBackgroundBorderless"
                 android:contentDescription="@string/post_content_description_upvote"
-                android:drawableTop="@drawable/ic_arrow_upward_black_24dp"/>
+                app:srcCompat="@drawable/ic_arrow_upward_black_24dp"/>
 
-            <ToggleButton
+            <android.support.design.widget.CheckableImageButton
                 android:id="@+id/post_downvote"
-                style="@style/ImageToggleButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?selectableItemBackgroundBorderless"
                 android:contentDescription="@string/post_content_description_downvote"
-                android:drawableTop="@drawable/ic_arrow_downward_black_24dp"/>
+                app:srcCompat="@drawable/ic_arrow_downward_black_24dp"/>
 
-            <ToggleButton
+            <android.support.design.widget.CheckableImageButton
                 android:id="@+id/post_save"
-                style="@style/ImageToggleButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?selectableItemBackgroundBorderless"
                 android:contentDescription="@string/post_content_description_save"
-                android:drawableTop="@drawable/ic_bookmark_black_24dp"/>
+                app:srcCompat="@drawable/ic_bookmark_black_24dp"/>
 
             <ImageButton
                 android:id="@+id/post_other"

@@ -14,6 +14,7 @@ import android.support.customtabs.CustomTabsClient;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.customtabs.CustomTabsSession;
+import android.support.design.widget.CheckableImageButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,7 +34,6 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.binaryfork.spanny.Spanny;
 import com.bumptech.glide.Glide;
@@ -43,7 +43,6 @@ import com.bumptech.glide.request.target.Target;
 import com.google.common.base.Optional;
 import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
-import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -405,9 +404,11 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         final VoteDirection likes = submission.getLikes();
 
         holder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
-        RxCompoundButton.checkedChanges(holder.upvote)
-                .skip(1)
-                .subscribe(isChecked -> {
+        RxView.clicks(holder.upvote)
+                .subscribe(aVoid -> {
+                    holder.upvote.toggle();
+                    final boolean isChecked = holder.upvote.isChecked();
+
                     // Ensure that downvote and upvote aren't checked at the same time.
                     if (isChecked) {
                         holder.downvote.setChecked(false);
@@ -431,9 +432,11 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 });
 
         holder.downvote.setChecked(likes.equals(VoteDirection.DOWNVOTE));
-        RxCompoundButton.checkedChanges(holder.downvote)
-                .skip(1)
-                .subscribe(isChecked -> {
+        RxView.clicks(holder.downvote)
+                .subscribe(aVoid -> {
+                    holder.downvote.toggle();
+                    final boolean isChecked = holder.downvote.isChecked();
+
                     // Ensure that downvote and upvote aren't checked at the same time.
                     if (isChecked) {
                         holder.upvote.setChecked(false);
@@ -457,9 +460,11 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 });
 
         holder.save.setChecked(submission.saved);
-        RxCompoundButton.checkedChanges(holder.save)
-                .skip(1)
-                .subscribe(isChecked -> {
+        RxView.clicks(holder.save)
+                .subscribe(aVoid -> {
+                    holder.save.toggle();
+                    final boolean isChecked = holder.save.isChecked();
+
                     submission.saved = isChecked;
                     if (isChecked) {
                         reddit.save("", submission.getFullname())
@@ -619,9 +624,9 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         @Nullable @BindView(R.id.post_media_text) TextView mediaText;
 
         @BindView(R.id.post_score) TextView score;
-        @BindView(R.id.post_upvote) ToggleButton upvote;
-        @BindView(R.id.post_downvote) ToggleButton downvote;
-        @BindView(R.id.post_save) ToggleButton save;
+        @BindView(R.id.post_upvote) CheckableImageButton upvote;
+        @BindView(R.id.post_downvote) CheckableImageButton downvote;
+        @BindView(R.id.post_save) CheckableImageButton save;
         @BindView(R.id.post_other) ImageButton other;
 
         @BindDimen(R.dimen.post_title_subtitle_spacing) int titleSubtitleSpacing;
