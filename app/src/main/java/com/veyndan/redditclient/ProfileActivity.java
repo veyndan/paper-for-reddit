@@ -63,7 +63,7 @@ public class ProfileActivity extends BaseActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(username);
 
-        final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
+        final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID_RAWJAVA, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
         final Reddit reddit = new Reddit.Builder(credentials).build();
 
         reddit.userAbout(username)
@@ -120,7 +120,7 @@ public class ProfileActivity extends BaseActivity {
 
         public ProfileSectionAdapter(final FragmentManager fm, final String username) {
             super(fm);
-            final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
+            final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID_RAWJAVA, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
             reddit = new Reddit.Builder(credentials).build();
 
             overviewFragment = PostsFragment.newInstance();

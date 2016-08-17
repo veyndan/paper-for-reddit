@@ -66,6 +66,12 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
+        if (item.getItemId() == R.id.action_account_add) {
+            final Intent intent = new Intent(this, AuthenticationActivity.class);
+            startActivityForResult(intent, 0);
+            return true;
+        }
+
         final SubredditFilter filter = filters.get(item.getItemId());
 
         // MenuItem id found in the list of handled filters
@@ -75,5 +81,14 @@ public class MainActivity extends BaseActivity {
         }
 
         return false;
+    }
+
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            final String code = data.getStringExtra("code");
+        }
     }
 }

@@ -54,7 +54,7 @@ public class PostsFragment extends Fragment {
     public void onAttach(final Context context) {
         super.onAttach(context);
 
-        final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
+        final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID_RAWJAVA, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
         reddit = new Reddit.Builder(credentials).build();
     }
 

@@ -26,6 +26,9 @@
             android:parentActivityName=".MainActivity">
         </activity>
 
+        <activity android:name=".AuthenticationActivity">
+        </activity>
+
         <activity
             android:name=".CustomDeepLinkHandler"
             android:theme="@android:style/Theme.NoDisplay">

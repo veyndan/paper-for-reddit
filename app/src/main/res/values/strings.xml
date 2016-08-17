@@ -59,4 +59,5 @@
     <string name="action_account_add">Add Account</string>
 
     <string name="score_hidden">[score hidden]</string>
+    <string name="login_aborted">To log in, allow Reddit Client to connect to your account</string>
 </resources>
