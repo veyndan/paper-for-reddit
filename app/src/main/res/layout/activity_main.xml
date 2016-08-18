@@ -21,12 +21,15 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <!-- TODO Unsure why marginTop and marginBottom needed. -->
     <fragment
         android:id="@+id/main_fragment_posts"
         android:name="com.veyndan.redditclient.PostsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="?actionBarSize"
+        android:layout_marginBottom="24dp"
+        android:layout_marginTop="-24dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:layout="@layout/fragment_posts"/>
 
 </android.support.design.widget.CoordinatorLayout>
