@@ -40,7 +40,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.google.common.base.Optional;
 import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
@@ -325,10 +324,10 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 final Matcher matcher = pattern.matcher(submission.linkUrl);
 
                 if (matcher.find()) {
-                    final Optional<Long> tweetId = UrlMatcher.Twitter.tweetId(submission.linkUrl);
+                    final Long tweetId = UrlMatcher.Twitter.tweetId(submission.linkUrl);
 
-                    if (tweetId.isPresent()) {
-                        TweetUtils.loadTweet(tweetId.get(), new Callback<Tweet>() {
+                    if (tweetId != null) {
+                        TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
                             @Override
                             public void success(final Result<Tweet> result) {
                                 ((TweetView) holder.mediaContainer).setTweet(result.data);
@@ -576,7 +575,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             viewType = TYPE_TEXT;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.SELF)) {
             viewType = TYPE_SELF;
-        } else if (submission instanceof Link && UrlMatcher.Twitter.tweetId(submission.linkUrl).isPresent()) {
+        } else if (submission instanceof Link && UrlMatcher.Twitter.tweetId(submission.linkUrl) != null) {
             viewType = TYPE_TWEET;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.IMAGE)) {
             viewType = TYPE_IMAGE;

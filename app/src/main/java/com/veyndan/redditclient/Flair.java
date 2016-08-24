@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.TextPaint;
@@ -17,27 +18,28 @@ import android.text.style.StyleSpan;
 import android.text.style.TextAppearanceSpan;
 
 import com.binaryfork.spanny.Spanny;
-import com.google.common.base.Optional;
 
 import timber.log.Timber;
 
 public final class Flair {
 
-    private final Optional<String> text;
-    private final Optional<Drawable> icon;
+    @Nullable private final String text;
+    @Nullable private final Drawable icon;
     private final int backgroundColor;
 
     private Flair(final Builder builder) {
-        this.text = Optional.fromNullable(builder.text);
-        this.icon = Optional.fromNullable(builder.icon);
+        this.text = builder.text;
+        this.icon = builder.icon;
         this.backgroundColor = builder.backgroundColor;
     }
 
-    public Optional<String> getText() {
+    @Nullable
+    public String getText() {
         return text;
     }
 
-    public Optional<Drawable> getIcon() {
+    @Nullable
+    public Drawable getIcon() {
         return icon;
     }
 
@@ -52,8 +54,8 @@ public final class Flair {
 
         final StringBuilder tagBuilder = new StringBuilder(2);
 
-        if (text.isPresent()) {
-            tagBuilder.append(text.get());
+        if (text != null) {
+            tagBuilder.append(text);
         }
 
         return Spanny.spanText(tagBuilder, textAppearanceSpan, styleSpan, backgroundSpan);
@@ -88,14 +90,14 @@ public final class Flair {
 
         @ColorInt private final int backgroundColor;
         @ColorInt private final int textColor;
-        private final Optional<Drawable> icon;
+        @Nullable private final Drawable icon;
 
         private final int cornerRadius;
         private final int paddingHorizontal;
         private final int paddingVertical;
         private final int paddingDrawable;
 
-        public BackgroundSpan(final Context context, @ColorInt final int backgroundColor, final Optional<Drawable> icon) {
+        public BackgroundSpan(final Context context, @ColorInt final int backgroundColor, @Nullable final Drawable icon) {
             this.backgroundColor = backgroundColor;
             textColor = ContextCompat.getColor(context, android.R.color.white);
             this.icon = icon;
@@ -109,8 +111,8 @@ public final class Flair {
         @Override
         public void draw(@NonNull final Canvas canvas, final CharSequence text, final int start, final int end, final float x, final int top, final int y, final int bottom, @NonNull final Paint paint) {
             int drawablePadding = 0;
-            if (icon.isPresent()) {
-                drawablePadding += icon.get().getIntrinsicWidth() + paddingDrawable;
+            if (icon != null) {
+                drawablePadding += icon.getIntrinsicWidth() + paddingDrawable;
             }
 
             final RectF rect = new RectF(x, top, x + paint.measureText(text, start, end) + paddingHorizontal * 2 + drawablePadding, bottom);
@@ -124,11 +126,11 @@ public final class Flair {
             final float textHeight = textPaint.descent() - textPaint.ascent();
             final float textOffset = (textHeight / 2) - textPaint.descent();
 
-            if (icon.isPresent()) {
+            if (icon != null) {
                 Timber.d("Subtext: %s\tx: %s\ty: %s\ttop: %s\tbottom: %s\ttextHeight: %s\ttextOffset: %s\tascent: %s\tdescent: %s", text.subSequence(start, end), x, y, top, bottom, textHeight, textOffset, textPaint.ascent(), textPaint.descent());
                 final Rect paddedRect = new Rect((int) rect.left + paddingHorizontal, (int) rect.top + paddingVertical, (int) rect.right - paddingHorizontal, (int) rect.bottom - paddingVertical);
-                icon.get().setBounds(paddedRect.left, (int) (paddedRect.top + textPaint.descent()), paddedRect.left + icon.get().getIntrinsicWidth(), (int) (paddedRect.top + textPaint.descent() + icon.get().getIntrinsicHeight()));
-                icon.get().draw(canvas);
+                icon.setBounds(paddedRect.left, (int) (paddedRect.top + textPaint.descent()), paddedRect.left + icon.getIntrinsicWidth(), (int) (paddedRect.top + textPaint.descent() + icon.getIntrinsicHeight()));
+                icon.draw(canvas);
             }
 
             canvas.drawText(text, start, end, rect.centerX() + drawablePadding / 2, rect.centerY() + textOffset, textPaint);
