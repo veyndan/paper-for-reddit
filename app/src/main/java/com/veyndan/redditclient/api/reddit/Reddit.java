@@ -1,6 +1,7 @@
 package com.veyndan.redditclient.api.reddit;
 
-import com.google.common.base.Joiner;
+import android.text.TextUtils;
+
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -144,7 +145,7 @@ public final class Reddit {
     }
 
     public Observable<Response<ResponseBody>> hide(final List<String> ids) {
-        return redditService.hide(Joiner.on(',').join(ids));
+        return redditService.hide(TextUtils.join(",", ids));
     }
 
     public Observable<Response<ResponseBody>> save(final String category, final String id) {
