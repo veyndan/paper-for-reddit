@@ -5,8 +5,11 @@ import com.veyndan.redditclient.Presenter;
 import com.veyndan.redditclient.SubredditFilter;
 import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
+import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
+import com.veyndan.redditclient.post.mutator.Mutators;
 
+import retrofit2.Response;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -15,6 +18,8 @@ public class PostPresenter implements Presenter<PostMvpView> {
     private PostMvpView postMvpView;
 
     private final Reddit reddit;
+
+    private final Mutators mutators = new Mutators();
 
     public PostPresenter() {
         final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID_RAWJAVA, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
@@ -33,8 +38,14 @@ public class PostPresenter implements Presenter<PostMvpView> {
 
     public void loadPosts(final SubredditFilter subredditFilter) {
         reddit.subreddit(subredditFilter.getSubreddit(), subredditFilter.getSort(), subredditFilter.getQuery(), postMvpView.getNextPageTrigger(), Schedulers.io(), AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    postMvpView.showPosts(response.body().data.children);
+                .map(Response::body)
+                .doOnNext(thing -> {
+                    for (RedditObject post : thing.data.children) {
+                        mutators.mutate().call(post);
+                    }
+                })
+                .subscribe(thing -> {
+                    postMvpView.showPosts(thing.data.children);
                 });
     }
 

@@ -563,14 +563,6 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
         final int viewType;
 
-        if (submission instanceof Link && submission.linkUrl.contains("imgur.com/") && !submission.linkUrl.contains("/a/") && !submission.linkUrl.contains("/gallery/") && !submission.linkUrl.contains("i.imgur.com")) {
-            submission.linkUrl = submission.linkUrl.replace("imgur.com", "i.imgur.com");
-            if (!submission.linkUrl.endsWith(".gifv")) {
-                submission.linkUrl += ".png";
-            }
-            ((Link) submission).setPostHint(PostHint.IMAGE);
-        }
-
         if (submission instanceof Comment) {
             viewType = TYPE_TEXT;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.SELF)) {
