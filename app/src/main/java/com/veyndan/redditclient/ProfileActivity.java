@@ -109,7 +109,7 @@ public class ProfileActivity extends BaseActivity {
 
     private static class ProfileSectionAdapter extends FragmentStatePagerAdapter {
 
-        private static final String titles[] = {"Overview", "Comments", "Submitted", "Gilded"};
+        private static final String TITLES[] = {"Overview", "Comments", "Submitted", "Gilded"};
 
         private final PostsFragment overviewFragment;
         private final PostsFragment commentsFragment;
@@ -148,7 +148,7 @@ public class ProfileActivity extends BaseActivity {
 
         @Override
         public CharSequence getPageTitle(final int position) {
-            return titles[position];
+            return TITLES[position];
         }
     }
 }
