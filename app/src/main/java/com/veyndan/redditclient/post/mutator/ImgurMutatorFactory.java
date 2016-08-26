@@ -7,7 +7,7 @@ import com.veyndan.redditclient.api.reddit.model.Submission;
 
 import okhttp3.HttpUrl;
 
-class ImgurMutatorFactory implements MutatorFactory {
+final class ImgurMutatorFactory implements MutatorFactory {
 
     static ImgurMutatorFactory create() {
         return new ImgurMutatorFactory();
