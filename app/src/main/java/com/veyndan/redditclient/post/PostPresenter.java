@@ -5,7 +5,6 @@ import com.veyndan.redditclient.Presenter;
 import com.veyndan.redditclient.SubredditFilter;
 import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
-import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.post.mutator.Mutators;
 
@@ -39,13 +38,10 @@ public class PostPresenter implements Presenter<PostMvpView> {
     public void loadPosts(final SubredditFilter subredditFilter) {
         reddit.subreddit(subredditFilter.getSubreddit(), subredditFilter.getSort(), subredditFilter.getQuery(), postMvpView.getNextPageTrigger(), Schedulers.io(), AndroidSchedulers.mainThread())
                 .map(Response::body)
-                .doOnNext(thing -> {
-                    for (RedditObject post : thing.data.children) {
-                        mutators.mutate().call(post);
-                    }
-                })
-                .subscribe(thing -> {
-                    postMvpView.showPosts(thing.data.children);
+                .map(thing -> thing.data.children)
+                .flatMap(mutators.mutate())
+                .subscribe(posts -> {
+                    postMvpView.showPosts(posts);
                 });
     }
 
