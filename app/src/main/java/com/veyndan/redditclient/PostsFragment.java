@@ -27,6 +27,8 @@ import rx.Observable;
 
 public class PostsFragment extends Fragment implements PostMvpView {
 
+    private static final String ARG_USER_FILTER = "user_filter";
+
     private final PostPresenter postPresenter = new PostPresenter();
 
     @BindDimen(R.dimen.card_view_margin) int cardViewMargin;
@@ -48,8 +50,14 @@ public class PostsFragment extends Fragment implements PostMvpView {
         // Required empty public constructor
     }
 
-    public static PostsFragment newInstance() {
-        return new PostsFragment();
+    public static PostsFragment newInstance(final UserFilter userFilter) {
+        final PostsFragment fragment = new PostsFragment();
+
+        final Bundle args = new Bundle();
+        args.putParcelable(ARG_USER_FILTER, userFilter);
+        fragment.setArguments(args);
+
+        return fragment;
     }
 
     @Override
@@ -73,12 +81,10 @@ public class PostsFragment extends Fragment implements PostMvpView {
         postPresenter.loadPosts(filter);
     }
 
-    public void addPosts(final List<RedditObject> posts) {
-        this.posts.addAll(posts);
-        if (postAdapter != null) {
-            postAdapter.notifyDataSetChanged();
-        }
-        loadingPosts = false;
+    public void setFilter(final UserFilter filter) {
+        clearPosts();
+
+        postPresenter.loadPosts(filter);
     }
 
     public void clearPosts() {
@@ -103,6 +109,11 @@ public class PostsFragment extends Fragment implements PostMvpView {
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         postAdapter = new PostAdapter(getActivity(), posts, reddit, metrics.widthPixels);
         recyclerView.setAdapter(postAdapter);
+
+        final Bundle args = getArguments();
+        if (args != null) {
+            setFilter((UserFilter) args.getParcelable(ARG_USER_FILTER));
+        }
 
         return recyclerView;
     }

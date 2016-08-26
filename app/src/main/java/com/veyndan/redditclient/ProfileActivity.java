@@ -116,45 +116,13 @@ public class ProfileActivity extends BaseActivity {
         private final PostsFragment submittedFragment;
         private final PostsFragment gildedFragment;
 
-        private final Reddit reddit;
-
         public ProfileSectionAdapter(final FragmentManager fm, final String username) {
             super(fm);
-            final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID_RAWJAVA, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
-            reddit = new Reddit.Builder(credentials).build();
 
-            overviewFragment = PostsFragment.newInstance();
-            commentsFragment = PostsFragment.newInstance();
-            submittedFragment = PostsFragment.newInstance();
-            gildedFragment = PostsFragment.newInstance();
-
-            reddit.user(username, User.OVERVIEW)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(response -> {
-                        overviewFragment.addPosts(response.body().data.children);
-                    });
-
-            reddit.user(username, User.COMMENTS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(response -> {
-                        commentsFragment.addPosts(response.body().data.children);
-                    });
-
-            reddit.user(username, User.SUBMITTED)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(response -> {
-                        submittedFragment.addPosts(response.body().data.children);
-                    });
-
-            reddit.user(username, User.GILDED)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(response -> {
-                        gildedFragment.addPosts(response.body().data.children);
-                    });
+            overviewFragment = PostsFragment.newInstance(new UserFilter(username, User.OVERVIEW));
+            commentsFragment = PostsFragment.newInstance(new UserFilter(username, User.COMMENTS));
+            submittedFragment = PostsFragment.newInstance(new UserFilter(username, User.SUBMITTED));
+            gildedFragment = PostsFragment.newInstance(new UserFilter(username, User.GILDED));
         }
 
         @Override

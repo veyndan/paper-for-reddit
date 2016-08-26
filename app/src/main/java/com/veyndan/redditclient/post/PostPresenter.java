@@ -3,6 +3,7 @@ package com.veyndan.redditclient.post;
 import com.veyndan.redditclient.Config;
 import com.veyndan.redditclient.Presenter;
 import com.veyndan.redditclient.SubredditFilter;
+import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
 
@@ -32,6 +33,15 @@ public class PostPresenter implements Presenter<PostMvpView> {
 
     public void loadPosts(final SubredditFilter subredditFilter) {
         reddit.subreddit(subredditFilter.getSubreddit(), subredditFilter.getSort(), subredditFilter.getQuery(), postMvpView.getNextPageTrigger(), Schedulers.io(), AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    postMvpView.showPosts(response.body().data.children);
+                });
+    }
+
+    public void loadPosts(final UserFilter userFilter) {
+        reddit.user(userFilter.getUsername(), userFilter.getUser())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(response -> {
                     postMvpView.showPosts(response.body().data.children);
                 });
