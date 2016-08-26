@@ -45,8 +45,6 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
-import rx.Scheduler;
-import rx.functions.Func1;
 
 public final class Reddit {
 
@@ -172,28 +170,13 @@ public final class Reddit {
         return redditService.subredditComments(subreddit, article);
     }
 
-    public Observable<Response<Thing<Listing>>> subreddit(
-            final String subreddit, final Sort sort, final Observable<Boolean> trigger,
-            final Scheduler subscribeOn, final Scheduler observeOn) {
-        return subreddit(subreddit, sort, new QueryBuilder(), trigger, subscribeOn, observeOn);
+    public Observable<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort) {
+        return subreddit(subreddit, sort, new QueryBuilder());
     }
 
-    public Observable<Response<Thing<Listing>>> subreddit(
-            final String subreddit, final Sort sort, final QueryBuilder queryBuilder,
-            final Observable<Boolean> trigger,
-            final Scheduler subscribeOn, final Scheduler observeOn) {
-        return redditService.subreddit(subreddit, sort, queryBuilder.build())
-                .subscribeOn(subscribeOn)
-                .observeOn(observeOn)
-                .flatMap(new Func1<Response<Thing<Listing>>, Observable<Response<Thing<Listing>>>>() {
-                    @Override
-                    public Observable<Response<Thing<Listing>>> call(final Response<Thing<Listing>> response) {
-                        return Observable.just(response)
-                                .concatWith(trigger
-                                        .filter(aBoolean -> aBoolean)
-                                        .flatMap(aBoolean -> subreddit(subreddit, sort, queryBuilder.after(response.body().data.after), trigger, subscribeOn, observeOn)));
-                    }
-                });
+    public Observable<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort,
+                                                          final QueryBuilder queryBuilder) {
+        return redditService.subreddit(subreddit, sort, queryBuilder.build());
     }
 
     // ================================

@@ -36,8 +36,16 @@ public class PostPresenter implements Presenter<PostMvpView> {
     }
 
     public void loadPosts(final SubredditFilter subredditFilter) {
-        reddit.subreddit(subredditFilter.getSubreddit(), subredditFilter.getSort(), subredditFilter.getQuery(), postMvpView.getNextPageTrigger(), Schedulers.io(), AndroidSchedulers.mainThread())
+        reddit.subreddit(subredditFilter.getSubreddit(), subredditFilter.getSort(), subredditFilter.getQuery())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .map(Response::body)
+                .doOnNext(thing -> postMvpView.getNextPageTrigger()
+                        .filter(Boolean::booleanValue)
+                        .subscribe(aBoolean -> {
+                            subredditFilter.getQuery().after(thing.data.after); // TODO Make an interface with after or QueryBuilder as that what's makes it paginated. Interface implemented by Filters like SubredditFilter and UserFilter.
+                            loadPosts(subredditFilter);
+                        }))
                 .map(thing -> thing.data.children)
                 .flatMap(mutators.mutate())
                 .subscribe(posts -> {
