@@ -126,5 +126,6 @@ public interface RedditService {
 
     @GET("user/{username}/{where}")
     Observable<Response<Thing<Listing>>> user(
-            @Path("username") String username, @Path("where") User where);
+            @Path("username") String username, @Path("where") User where,
+            @QueryMap Map<String, String> queries);
 }

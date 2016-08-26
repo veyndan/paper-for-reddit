@@ -221,7 +221,12 @@ public final class Reddit {
     }
 
     public Observable<Response<Thing<Listing>>> user(final String username, final User where) {
-        return redditService.user(username, where);
+        return user(username, where, new QueryBuilder());
+    }
+
+    public Observable<Response<Thing<Listing>>> user(final String username, final User where,
+                                                     final QueryBuilder queryBuilder) {
+        return redditService.user(username, where, queryBuilder.build());
     }
 
     public static class Builder {
