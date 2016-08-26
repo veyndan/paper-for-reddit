@@ -5,9 +5,9 @@ import com.veyndan.redditclient.api.reddit.network.Sort;
 
 public class SubredditFilter {
 
-    final private String subreddit;
-    final private Sort sort;
-    final private QueryBuilder query;
+    private final String subreddit;
+    private final Sort sort;
+    private final QueryBuilder query;
 
     public SubredditFilter(final String subreddit, final Sort sort) {
         this(subreddit, sort, new QueryBuilder());
