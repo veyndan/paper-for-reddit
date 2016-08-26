@@ -15,6 +15,8 @@ import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
+import com.veyndan.redditclient.post.PostMvpView;
+import com.veyndan.redditclient.post.PostPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +24,10 @@ import java.util.List;
 import butterknife.BindDimen;
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
-public class PostsFragment extends Fragment {
+public class PostsFragment extends Fragment implements PostMvpView {
+
+    private final PostPresenter postPresenter = new PostPresenter();
 
     @BindDimen(R.dimen.card_view_margin) int cardViewMargin;
 
@@ -53,6 +55,7 @@ public class PostsFragment extends Fragment {
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
+        postPresenter.attachView(this);
 
         final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID_RAWJAVA, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
         reddit = new Reddit.Builder(credentials).build();
@@ -67,10 +70,7 @@ public class PostsFragment extends Fragment {
     public void setFilter(final SubredditFilter filter) {
         clearPosts();
 
-        reddit.subreddit(filter.getSubreddit(), filter.getSort(), filter.getQuery(), getNextPageTrigger(), Schedulers.io(), AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    addPosts(response.body().data.children);
-                });
+        postPresenter.loadPosts(filter);
     }
 
     public void addPosts(final List<RedditObject> posts) {
@@ -107,7 +107,22 @@ public class PostsFragment extends Fragment {
         return recyclerView;
     }
 
-    Observable<Boolean> getNextPageTrigger() {
+    @Override
+    public void onDestroy() {
+        postPresenter.detachView();
+        super.onDestroy();
+    }
+
+    @Override
+    public void showPosts(final List<RedditObject> posts) {
+        final int positionStart = this.posts.size() + 1;
+        this.posts.addAll(posts);
+        postAdapter.notifyItemRangeInserted(positionStart, posts.size());
+        loadingPosts = false;
+    }
+
+    @Override
+    public Observable<Boolean> getNextPageTrigger() {
         return RxRecyclerView.scrollEvents(recyclerView)
                 .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
                 .map(scrollEvent -> {
