@@ -1,9 +1,8 @@
 package com.veyndan.redditclient.post;
 
 import com.veyndan.redditclient.Config;
+import com.veyndan.redditclient.PostsFilter;
 import com.veyndan.redditclient.Presenter;
-import com.veyndan.redditclient.SubredditFilter;
-import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.post.mutator.Mutators;
@@ -35,34 +34,17 @@ public class PostPresenter implements Presenter<PostMvpView> {
         postMvpView = null;
     }
 
-    public void loadPosts(final SubredditFilter subredditFilter) {
-        reddit.subreddit(subredditFilter.getSubreddit(), subredditFilter.getSort(), subredditFilter.getQuery())
+    public void loadPosts(final PostsFilter postsFilter) {
+        postsFilter.getRequestObservable(reddit)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(Response::body)
+                // Paginate the posts
                 .doOnNext(thing -> postMvpView.getNextPageTrigger()
                         .filter(Boolean::booleanValue)
                         .subscribe(aBoolean -> {
-                            subredditFilter.getQuery().after(thing.data.after); // TODO Make an interface with after or QueryBuilder as that what's makes it paginated. Interface implemented by Filters like SubredditFilter and UserFilter.
-                            loadPosts(subredditFilter);
-                        }))
-                .map(thing -> thing.data.children)
-                .flatMap(mutators.mutate())
-                .subscribe(posts -> {
-                    postMvpView.showPosts(posts);
-                });
-    }
-
-    public void loadPosts(final UserFilter userFilter) {
-        reddit.user(userFilter.getUsername(), userFilter.getUser(), userFilter.getQuery())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(Response::body)
-                .doOnNext(thing -> postMvpView.getNextPageTrigger()
-                        .filter(Boolean::booleanValue)
-                        .subscribe(aBoolean -> {
-                            userFilter.getQuery().after(thing.data.after); // TODO Make an interface with after or QueryBuilder as that what's makes it paginated. Interface implemented by Filters like SubredditFilter and UserFilter.
-                            loadPosts(userFilter);
+                            postsFilter.setAfter(thing.data.after);
+                            loadPosts(postsFilter);
                         }))
                 .map(thing -> thing.data.children)
                 .flatMap(mutators.mutate())

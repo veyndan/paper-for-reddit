@@ -3,10 +3,16 @@ package com.veyndan.redditclient;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.veyndan.redditclient.api.reddit.Reddit;
+import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.api.reddit.network.QueryBuilder;
 import com.veyndan.redditclient.api.reddit.network.User;
 
-public class UserFilter implements Parcelable {
+import retrofit2.Response;
+import rx.Observable;
+
+public class UserFilter implements Parcelable, PostsFilter {
 
     private final String username;
     private final User user;
@@ -22,16 +28,14 @@ public class UserFilter implements Parcelable {
         this.query = query;
     }
 
-    public String getUsername() {
-        return username;
+    @Override
+    public Observable<Response<Thing<Listing>>> getRequestObservable(final Reddit reddit) {
+        return reddit.user(username, user, query);
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public QueryBuilder getQuery() {
-        return query;
+    @Override
+    public void setAfter(final String after) {
+        query.after(after);
     }
 
     protected UserFilter(final Parcel in) {

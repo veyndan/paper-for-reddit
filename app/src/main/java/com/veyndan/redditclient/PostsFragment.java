@@ -75,15 +75,8 @@ public class PostsFragment extends Fragment implements PostMvpView {
         setRetainInstance(true);
     }
 
-    public void setFilter(final SubredditFilter filter) {
+    public void setFilter(final PostsFilter filter) {
         clearPosts();
-
-        postPresenter.loadPosts(filter);
-    }
-
-    public void setFilter(final UserFilter filter) {
-        clearPosts();
-
         postPresenter.loadPosts(filter);
     }
 
@@ -112,7 +105,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
         final Bundle args = getArguments();
         if (args != null) {
-            setFilter((UserFilter) args.getParcelable(ARG_USER_FILTER));
+            setFilter(args.getParcelable(ARG_USER_FILTER));
         }
 
         return recyclerView;

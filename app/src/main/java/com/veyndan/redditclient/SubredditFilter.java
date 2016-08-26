@@ -1,9 +1,15 @@
 package com.veyndan.redditclient;
 
+import com.veyndan.redditclient.api.reddit.Reddit;
+import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.api.reddit.network.QueryBuilder;
 import com.veyndan.redditclient.api.reddit.network.Sort;
 
-public class SubredditFilter {
+import retrofit2.Response;
+import rx.Observable;
+
+public class SubredditFilter implements PostsFilter {
 
     private final String subreddit;
     private final Sort sort;
@@ -19,15 +25,13 @@ public class SubredditFilter {
         this.query = query;
     }
 
-    public String getSubreddit() {
-        return subreddit;
+    @Override
+    public Observable<Response<Thing<Listing>>> getRequestObservable(final Reddit reddit) {
+        return reddit.subreddit(subreddit, sort, query);
     }
 
-    public Sort getSort() {
-        return sort;
-    }
-
-    public QueryBuilder getQuery() {
-        return query;
+    @Override
+    public void setAfter(final String after) {
+        query.after(after);
     }
 }
