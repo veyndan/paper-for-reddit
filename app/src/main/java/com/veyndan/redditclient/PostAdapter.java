@@ -54,10 +54,10 @@ import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Link;
 import com.veyndan.redditclient.api.reddit.model.PostHint;
-import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.model.Source;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
+import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.post.model.media.Image;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -97,7 +97,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
     private final Activity activity;
-    private final List<RedditObject> posts;
+    private final List<Post> posts;
     private final Reddit reddit;
     private final int width;
 
@@ -116,7 +116,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
     private final CustomTabsIntent customTabsIntent = builder.build();
     @Nullable private CustomTabsClient customTabsClient;
 
-    public PostAdapter(final Activity activity, final List<RedditObject> posts, final Reddit reddit, final int width) {
+    public PostAdapter(final Activity activity, final List<Post> posts, final Reddit reddit, final int width) {
         this.activity = activity;
         this.posts = posts;
         this.reddit = reddit;
@@ -178,7 +178,8 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
     @Override
     protected void onBindContentViewHolder(final PostViewHolder holder, final int position) {
         final Context context = holder.itemView.getContext();
-        final Submission submission = (Submission) posts.get(position);
+        final Post post = posts.get(position);
+        final Submission submission = post.submission;
 
         final CharSequence age = DateUtils.getRelativeTimeSpanString(
                 TimeUnit.SECONDS.toMillis(submission.createdUtc), System.currentTimeMillis(),
@@ -224,7 +225,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             case TYPE_SELF:
                 break;
             case TYPE_IMAGE:
-                final Link finalLink = (Link) posts.get(position);
+                final Link finalLink = (Link) submission;
 
                 assert holder.mediaContainer != null;
                 assert holder.mediaImage != null;
@@ -342,7 +343,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 }
                 break;
             case TYPE_LINK_IMAGE:
-                Link link = (Link) posts.get(position);
+                Link link = (Link) submission;
 
                 assert holder.mediaImage != null;
                 assert holder.mediaImageProgress != null;
@@ -367,7 +368,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         })
                         .into(holder.mediaImage);
             case TYPE_LINK:
-                link = (Link) posts.get(position);
+                link = (Link) submission;
 
                 assert holder.mediaContainer != null;
                 assert holder.mediaUrl != null;
@@ -386,7 +387,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 holder.mediaUrl.setText(link.domain);
                 break;
             case TYPE_TEXT:
-                final Comment comment = (Comment) posts.get(position);
+                final Comment comment = (Comment) submission;
 
                 assert holder.mediaText != null;
 
@@ -491,7 +492,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                             final View.OnClickListener undoClickListener = view -> {
                                 // If undo pressed, then don't follow through with request to hide
                                 // the post.
-                                posts.add(adapterPosition, submission);
+                                posts.add(adapterPosition, post);
                                 notifyItemInserted(adapterPosition);
                             };
 
@@ -557,7 +558,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
     @Override
     public int getContentItemViewType(final int position) {
-        final Submission submission = (Submission) posts.get(position);
+        final Submission submission = (Submission) posts.get(position).submission;
 
         final int viewType;
 

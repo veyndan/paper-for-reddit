@@ -13,10 +13,10 @@ import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 import com.veyndan.redditclient.api.reddit.Reddit;
-import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.post.PostMvpView;
 import com.veyndan.redditclient.post.PostPresenter;
+import com.veyndan.redditclient.post.model.Post;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     private RecyclerView recyclerView;
 
-    private final List<RedditObject> posts = new ArrayList<>();
+    private final List<Post> posts = new ArrayList<>();
 
     private PostAdapter postAdapter;
 
@@ -118,7 +118,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     @Override
-    public void showPosts(final List<RedditObject> posts) {
+    public void showPosts(final List<Post> posts) {
         final int positionStart = this.posts.size() + 1;
         this.posts.addAll(posts);
         postAdapter.notifyItemRangeInserted(positionStart, posts.size());

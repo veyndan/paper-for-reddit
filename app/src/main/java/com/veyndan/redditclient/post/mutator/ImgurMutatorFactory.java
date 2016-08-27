@@ -2,8 +2,7 @@ package com.veyndan.redditclient.post.mutator;
 
 import com.veyndan.redditclient.api.reddit.model.Link;
 import com.veyndan.redditclient.api.reddit.model.PostHint;
-import com.veyndan.redditclient.api.reddit.model.RedditObject;
-import com.veyndan.redditclient.api.reddit.model.Submission;
+import com.veyndan.redditclient.post.model.Post;
 
 import okhttp3.HttpUrl;
 
@@ -17,21 +16,19 @@ final class ImgurMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public boolean applicable(final RedditObject post) {
-        final Submission submission = (Submission) post;
-        final String urlHost = HttpUrl.parse(submission.linkUrl).host();
-        return submission instanceof Link &&
+    public boolean applicable(final Post post) {
+        final String urlHost = HttpUrl.parse(post.submission.linkUrl).host();
+        return post.submission instanceof Link &&
                 urlHost.equals("imgur.com") || urlHost.equals("i.imgur.com");
     }
 
     @Override
-    public void mutate(final RedditObject post) {
-        final Submission submission = (Submission) post;
-        if (!isAlbum(submission.linkUrl) && !isDirectImage(submission.linkUrl)) {
+    public void mutate(final Post post) {
+        if (!isAlbum(post.submission.linkUrl) && !isDirectImage(post.submission.linkUrl)) {
             // TODO .gifv links are HTML 5 videos so the PostHint should be set accordingly.
-            if (!submission.linkUrl.endsWith(".gifv")) {
-                submission.linkUrl = singleImageUrlToDirectImageUrl(submission.linkUrl);
-                ((Link) submission).setPostHint(PostHint.IMAGE);
+            if (!post.submission.linkUrl.endsWith(".gifv")) {
+                post.submission.linkUrl = singleImageUrlToDirectImageUrl(post.submission.linkUrl);
+                ((Link) post.submission).setPostHint(PostHint.IMAGE);
             }
         }
     }

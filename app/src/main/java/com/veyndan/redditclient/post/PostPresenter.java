@@ -5,9 +5,11 @@ import com.veyndan.redditclient.PostsFilter;
 import com.veyndan.redditclient.Presenter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
+import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.post.mutator.Mutators;
 
 import retrofit2.Response;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -47,6 +49,9 @@ public class PostPresenter implements Presenter<PostMvpView> {
                             loadPosts(postsFilter);
                         }))
                 .map(thing -> thing.data.children)
+                .flatMap(Observable::from)
+                .map(Post::new)
+                .toList()
                 .flatMap(mutators.mutate())
                 .subscribe(posts -> {
                     postMvpView.showPosts(posts);

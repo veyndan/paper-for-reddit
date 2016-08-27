@@ -1,7 +1,7 @@
 package com.veyndan.redditclient.post.mutator;
 
 import com.google.common.collect.ImmutableList;
-import com.veyndan.redditclient.api.reddit.model.RedditObject;
+import com.veyndan.redditclient.post.model.Post;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public final class Mutators {
     /**
      * Mutate a list of posts by all the available mutator factories.
      */
-    public Func1<List<RedditObject>, Observable<List<RedditObject>>> mutate() {
+    public Func1<List<Post>, Observable<List<Post>>> mutate() {
         return posts -> Observable.from(posts)
                 .doOnNext(post -> {
                     for (final MutatorFactory mutatorFactory : MUTATOR_FACTORIES) {
