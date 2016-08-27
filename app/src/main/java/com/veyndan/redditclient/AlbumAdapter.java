@@ -62,7 +62,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
             session.mayLaunchUrl(Uri.parse(image.getUrl()), null, null);
         }
 
-        RxView.clicks(holder.mediaImageProgress)
+        RxView.clicks(holder.mediaContainer)
                 .subscribe(aVoid -> {
                     customTabsIntent.launchUrl(activity, Uri.parse(image.getUrl()));
                 });
