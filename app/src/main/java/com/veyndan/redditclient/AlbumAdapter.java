@@ -19,7 +19,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.jakewharton.rxbinding.view.RxView;
-import com.veyndan.redditclient.api.imgur.model.Image;
+import com.veyndan.redditclient.post.model.media.Image;
 
 import java.util.List;
 
@@ -59,16 +59,16 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
 
         if (customTabsClient != null) {
             final CustomTabsSession session = customTabsClient.newSession(null);
-            session.mayLaunchUrl(Uri.parse(image.link), null, null);
+            session.mayLaunchUrl(Uri.parse(image.getUrl()), null, null);
         }
 
         RxView.clicks(holder.mediaImageProgress)
                 .subscribe(aVoid -> {
-                    customTabsIntent.launchUrl(activity, Uri.parse(image.link));
+                    customTabsIntent.launchUrl(activity, Uri.parse(image.getUrl()));
                 });
 
         Glide.with(context)
-                .load(image.link)
+                .load(image.getUrl())
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(final Exception e, final String model,
@@ -88,7 +88,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.AlbumViewHol
                     }
                 })
                 .into(holder.mediaImage);
-        holder.mediaImage.getLayoutParams().height = (int) ((float) width / image.width * image.height);
+        holder.mediaImage.getLayoutParams().height = (int) ((float) width / image.getWidth() * image.getHeight());
     }
 
     @Override

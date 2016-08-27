@@ -49,7 +49,6 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetUtils;
 import com.twitter.sdk.android.tweetui.TweetView;
-import com.veyndan.redditclient.api.imgur.model.Image;
 import com.veyndan.redditclient.api.imgur.network.ImgurService;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Comment;
@@ -59,6 +58,7 @@ import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.model.Source;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
+import com.veyndan.redditclient.post.model.media.Image;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -79,6 +79,7 @@ import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -310,8 +311,11 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 imgurService.album(submission.linkUrl.split("/a/")[1])
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(basic -> {
-                            images.addAll(basic.data.images);
+                        .flatMap(basic -> Observable.from(basic.data.images))
+                        .map(image -> new Image(image.link, image.width, image.height))
+                        .toList()
+                        .subscribe(images1 -> {
+                            images.addAll(images1);
                             albumAdapter.notifyDataSetChanged();
                         });
                 break;
