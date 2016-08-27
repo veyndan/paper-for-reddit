@@ -222,8 +222,6 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
         switch (viewType) {
             case TYPE_SELF:
-                Link link = (Link) posts.get(position);
-
                 break;
             case TYPE_IMAGE:
                 final Link finalLink = (Link) posts.get(position);
@@ -276,8 +274,6 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 }
                 break;
             case TYPE_ALBUM:
-                link = (Link) posts.get(position);
-
                 assert holder.mediaContainer != null;
 
                 final RecyclerView recyclerView = (RecyclerView) holder.mediaContainer;
@@ -320,8 +316,6 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         });
                 break;
             case TYPE_TWEET:
-                link = (Link) posts.get(position);
-
                 assert holder.mediaContainer != null;
 
                 final Pattern pattern = Pattern.compile("https://twitter.com/\\w*/status/(\\d+)$");
@@ -348,7 +342,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 }
                 break;
             case TYPE_LINK_IMAGE:
-                link = (Link) posts.get(position);
+                Link link = (Link) posts.get(position);
 
                 assert holder.mediaImage != null;
                 assert holder.mediaImageProgress != null;
