@@ -224,8 +224,6 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             case TYPE_SELF:
                 break;
             case TYPE_IMAGE:
-                final Link finalLink = (Link) submission;
-
                 assert holder.mediaContainer != null;
                 assert holder.mediaImage != null;
                 assert holder.mediaImageProgress != null;
@@ -242,36 +240,42 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                             customTabsIntent.launchUrl(activity, Uri.parse(submission.linkUrl));
                         });
 
-                final boolean imageDimensAvailable = !finalLink.preview.images.isEmpty();
+                post.getImageObservable()
+                        .subscribe(image -> {
+                            final boolean imageDimensAvailable = image.getWidth() > 0 && image.getHeight() > 0;
 
-                Glide.with(context)
-                        .load(submission.linkUrl)
-                        .listener(new RequestListener<String, GlideDrawable>() {
-                            @Override
-                            public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
-                                holder.mediaImageProgress.setVisibility(View.GONE);
-                                return false;
+                            Glide.with(context)
+                                    .load(submission.linkUrl)
+                                    .listener(new RequestListener<String, GlideDrawable>() {
+                                        @Override
+                                        public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
+                                            holder.mediaImageProgress.setVisibility(View.GONE);
+                                            return false;
+                                        }
+
+                                        @Override
+                                        public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
+                                            holder.mediaImageProgress.setVisibility(View.GONE);
+                                            if (!imageDimensAvailable) {
+                                                final int imageWidth = resource.getIntrinsicWidth();
+                                                final int imageHeight = resource.getIntrinsicHeight();
+
+                                                image.setWidth(imageWidth);
+                                                image.setHeight(imageHeight);
+
+                                                post.setImageObservable(Observable.just(image));
+
+                                                holder.mediaImage.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
+                                            }
+                                            return false;
+                                        }
+                                    })
+                                    .into(holder.mediaImage);
+
+                            if (imageDimensAvailable) {
+                                holder.mediaImage.getLayoutParams().height = (int) ((float) width / image.getWidth() * image.getHeight());
                             }
-
-                            @Override
-                            public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
-                                holder.mediaImageProgress.setVisibility(View.GONE);
-                                if (!imageDimensAvailable) {
-                                    final com.veyndan.redditclient.api.reddit.model.Image image = new com.veyndan.redditclient.api.reddit.model.Image();
-                                    image.source.width = resource.getIntrinsicWidth();
-                                    image.source.height = resource.getIntrinsicHeight();
-                                    finalLink.preview.images.add(image);
-
-                                    holder.mediaImage.getLayoutParams().height = (int) ((float) width / image.source.width * image.source.height);
-                                }
-                                return false;
-                            }
-                        })
-                        .into(holder.mediaImage);
-                if (imageDimensAvailable) {
-                    final Source source = finalLink.preview.images.get(0).source;
-                    holder.mediaImage.getLayoutParams().height = (int) ((float) width / source.width * source.height);
-                }
+                        });
                 break;
             case TYPE_ALBUM:
                 assert holder.mediaContainer != null;

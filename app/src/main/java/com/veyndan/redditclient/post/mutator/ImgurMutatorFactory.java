@@ -3,8 +3,10 @@ package com.veyndan.redditclient.post.mutator;
 import com.veyndan.redditclient.api.reddit.model.Link;
 import com.veyndan.redditclient.api.reddit.model.PostHint;
 import com.veyndan.redditclient.post.model.Post;
+import com.veyndan.redditclient.post.model.media.Image;
 
 import okhttp3.HttpUrl;
+import rx.Observable;
 
 final class ImgurMutatorFactory implements MutatorFactory {
 
@@ -28,6 +30,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
             // TODO .gifv links are HTML 5 videos so the PostHint should be set accordingly.
             if (!post.submission.linkUrl.endsWith(".gifv")) {
                 post.submission.linkUrl = singleImageUrlToDirectImageUrl(post.submission.linkUrl);
+                post.setImageObservable(Observable.just(new Image(post.submission.linkUrl)));
                 ((Link) post.submission).setPostHint(PostHint.IMAGE);
             }
         }
