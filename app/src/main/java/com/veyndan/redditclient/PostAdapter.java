@@ -252,7 +252,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             case TYPE_LINK_IMAGE:
                 Link link = (Link) submission;
 
-                final View mediaContainer = inflater.inflate(R.layout.post_media_link_image, holder.mediaContainer, false);
+                View mediaContainer = inflater.inflate(R.layout.post_media_link_image, holder.mediaContainer, false);
                 holder.mediaContainer.addView(mediaContainer);
 
                 final ImageView mediaImage = ButterKnife.findById(mediaContainer, R.id.post_media_image);
@@ -294,8 +294,10 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             case TYPE_LINK:
                 link = (Link) submission;
 
-                mediaUrl = (TextView) inflater.inflate(R.layout.post_media_link, holder.mediaContainer, false);
-                holder.mediaContainer.addView(mediaUrl);
+                mediaContainer = inflater.inflate(R.layout.post_media_link, holder.mediaContainer, false);
+                holder.mediaContainer.addView(mediaContainer);
+
+                mediaUrl = ButterKnife.findById(mediaContainer, R.id.post_media_url);
 
                 if (customTabsClient != null) {
                     final CustomTabsSession session = customTabsClient.newSession(null);
