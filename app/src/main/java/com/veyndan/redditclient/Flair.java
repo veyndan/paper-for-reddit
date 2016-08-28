@@ -127,7 +127,6 @@ public final class Flair {
             final float textOffset = (textHeight / 2) - textPaint.descent();
 
             if (icon != null) {
-                Timber.d("Subtext: %s\tx: %s\ty: %s\ttop: %s\tbottom: %s\ttextHeight: %s\ttextOffset: %s\tascent: %s\tdescent: %s", text.subSequence(start, end), x, y, top, bottom, textHeight, textOffset, textPaint.ascent(), textPaint.descent());
                 final Rect paddedRect = new Rect((int) rect.left + paddingHorizontal, (int) rect.top + paddingVertical, (int) rect.right - paddingHorizontal, (int) rect.bottom - paddingVertical);
                 icon.setBounds(paddedRect.left, (int) (paddedRect.top + textPaint.descent()), paddedRect.left + icon.getIntrinsicWidth(), (int) (paddedRect.top + textPaint.descent() + icon.getIntrinsicHeight()));
                 icon.draw(canvas);
