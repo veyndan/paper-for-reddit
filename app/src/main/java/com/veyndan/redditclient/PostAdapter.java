@@ -125,7 +125,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
     protected PostViewHolder onCreateContentViewHolder(final ViewGroup parent, final int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-        final View cardView = inflater.inflate(R.layout.post_item_link, parent, false);
+        final View cardView = inflater.inflate(R.layout.post_item, parent, false);
         final PostViewHolder holder = new PostViewHolder(cardView);
 
         ButterKnife.bind(this, parent);
