@@ -16,7 +16,8 @@ public final class Mutators {
      * Note that the order of the mutator factories is the order in which the post will be mutated.
      */
     private static final List<MutatorFactory> MUTATOR_FACTORIES = ImmutableList.of(
-            ImgurMutatorFactory.create()
+            ImgurMutatorFactory.create(),
+            XkcdMutatorFactory.create()
     );
 
     /**
