@@ -9,7 +9,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsCallback;
 import android.support.customtabs.CustomTabsClient;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.customtabs.CustomTabsServiceConnection;
@@ -79,8 +78,7 @@ import timber.log.Timber;
 public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
     private static final int TYPE_SELF = 0;
-    private static final int TYPE_IMAGE = 1;
-    private static final int TYPE_ALBUM = 2;
+    private static final int TYPE_IMAGES = 1;
     private static final int TYPE_LINK = 3;
     private static final int TYPE_LINK_IMAGE = 4;
     private static final int TYPE_TWEET = 5;
@@ -142,11 +140,8 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         switch (viewType) {
             case TYPE_SELF:
                 break;
-            case TYPE_IMAGE:
-                holder.container.addView(inflater.inflate(R.layout.post_media_image, holder.container, false), 1);
-                break;
-            case TYPE_ALBUM:
-                holder.container.addView(inflater.inflate(R.layout.post_media_album, holder.container, false), 1);
+            case TYPE_IMAGES:
+                holder.container.addView(inflater.inflate(R.layout.post_media_images, holder.container, false), 1);
                 break;
             case TYPE_LINK:
                 holder.container.addView(inflater.inflate(R.layout.post_media_link, holder.container, false), 1);
@@ -216,64 +211,11 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         switch (viewType) {
             case TYPE_SELF:
                 break;
-            case TYPE_IMAGE:
-                assert holder.mediaContainer != null;
-                assert holder.mediaImage != null;
-                assert holder.mediaImageProgress != null;
-
-                holder.mediaImageProgress.setVisibility(View.VISIBLE);
-
-                if (customTabsClient != null) {
-                    final CustomTabsSession session = customTabsClient.newSession(new CustomTabsCallback());
-                    session.mayLaunchUrl(Uri.parse(submission.linkUrl), null, null);
-                }
-
-                RxView.clicks(holder.mediaContainer)
-                        .subscribe(aVoid -> {
-                            customTabsIntent.launchUrl(activity, Uri.parse(submission.linkUrl));
-                        });
-
-                post.getImageObservable()
-                        .subscribe(image -> {
-                            final boolean imageDimensAvailable = image.getWidth() > 0 && image.getHeight() > 0;
-
-                            Glide.with(context)
-                                    .load(submission.linkUrl)
-                                    .listener(new RequestListener<String, GlideDrawable>() {
-                                        @Override
-                                        public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
-                                            holder.mediaImageProgress.setVisibility(View.GONE);
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
-                                            holder.mediaImageProgress.setVisibility(View.GONE);
-                                            if (!imageDimensAvailable) {
-                                                final int imageWidth = resource.getIntrinsicWidth();
-                                                final int imageHeight = resource.getIntrinsicHeight();
-
-                                                image.setWidth(imageWidth);
-                                                image.setHeight(imageHeight);
-
-                                                post.setImageObservable(Observable.just(image));
-
-                                                holder.mediaImage.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
-                                            }
-                                            return false;
-                                        }
-                                    })
-                                    .into(holder.mediaImage);
-
-                            if (imageDimensAvailable) {
-                                holder.mediaImage.getLayoutParams().height = (int) ((float) width / image.getWidth() * image.getHeight());
-                            }
-                        });
-                break;
-            case TYPE_ALBUM:
+            case TYPE_IMAGES:
                 assert holder.mediaContainer != null;
 
                 final LinearLayout linearLayout = (LinearLayout) holder.mediaContainer;
+                linearLayout.removeAllViews();
 
                 final LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -299,28 +241,39 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                                         customTabsIntent.launchUrl(activity, Uri.parse(image.getUrl()));
                                     });
 
+                            final boolean imageDimensAvailable = image.getWidth() > 0 && image.getHeight() > 0;
+
                             Glide.with(context)
                                     .load(image.getUrl())
                                     .listener(new RequestListener<String, GlideDrawable>() {
                                         @Override
-                                        public boolean onException(final Exception e, final String model,
-                                                                   final Target<GlideDrawable> target,
-                                                                   final boolean isFirstResource) {
+                                        public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
                                             mediaImageProgress.setVisibility(View.GONE);
                                             return false;
                                         }
 
                                         @Override
-                                        public boolean onResourceReady(final GlideDrawable resource, final String model,
-                                                                       final Target<GlideDrawable> target,
-                                                                       final boolean isFromMemoryCache,
-                                                                       final boolean isFirstResource) {
+                                        public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
                                             mediaImageProgress.setVisibility(View.GONE);
+                                            if (!imageDimensAvailable) {
+                                                final int imageWidth = resource.getIntrinsicWidth();
+                                                final int imageHeight = resource.getIntrinsicHeight();
+
+                                                image.setWidth(imageWidth);
+                                                image.setHeight(imageHeight);
+
+                                                post.setImageObservable(Observable.just(image));
+
+                                                mediaImage.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
+                                            }
                                             return false;
                                         }
                                     })
                                     .into(mediaImage);
-                            mediaImage.getLayoutParams().height = (int) ((float) width / image.getWidth() * image.getHeight());
+
+                            if (imageDimensAvailable) {
+                                mediaImage.getLayoutParams().height = (int) ((float) width / image.getWidth() * image.getHeight());
+                            }
                         });
                 break;
             case TYPE_TWEET:
@@ -575,10 +528,8 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             viewType = TYPE_SELF;
         } else if (submission instanceof Link && UrlMatcher.Twitter.tweetId(submission.linkUrl) != null) {
             viewType = TYPE_TWEET;
-        } else if (submission instanceof Link && (submission.linkUrl.contains("/a/") || submission.linkUrl.contains("/gallery/"))) {
-            viewType = TYPE_ALBUM;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.IMAGE)) {
-            viewType = TYPE_IMAGE;
+            viewType = TYPE_IMAGES;
         } else if (submission instanceof Link && !((Link) submission).preview.images.isEmpty()) {
             viewType = TYPE_LINK_IMAGE;
         } else {
@@ -605,11 +556,9 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         // Media: Link Image
         @Nullable @BindView(R.id.post_media_container) View mediaContainer;
 
-        // Media: Image
         // Media: Link Image
         @Nullable @BindView(R.id.post_media_image) ImageView mediaImage;
 
-        // Media: Image
         // Media: Link Image
         @Nullable @BindView(R.id.post_media_image_progress) ProgressBar mediaImageProgress;
 
