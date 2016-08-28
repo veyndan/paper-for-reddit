@@ -16,7 +16,6 @@ import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.customtabs.CustomTabsSession;
 import android.support.design.widget.CheckableImageButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.TextPaint;
@@ -277,15 +276,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             case TYPE_ALBUM:
                 assert holder.mediaContainer != null;
 
-                final RecyclerView recyclerView = (RecyclerView) holder.mediaContainer;
-
-                final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
-                recyclerView.setLayoutManager(layoutManager);
-
-                final List<Image> images = new ArrayList<>();
-
-                final AlbumAdapter albumAdapter = new AlbumAdapter(activity, images, width, customTabsClient, customTabsIntent);
-                recyclerView.setAdapter(albumAdapter);
+                final LinearLayout linearLayout = (LinearLayout) holder.mediaContainer;
 
                 final OkHttpClient client = new OkHttpClient.Builder()
                         .addInterceptor(chain -> {
@@ -305,15 +296,54 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
                 final ImgurService imgurService = retrofit.create(ImgurService.class);
 
+                final LayoutInflater inflater = LayoutInflater.from(context);
+
                 imgurService.album(submission.linkUrl.split("/a/")[1])
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .flatMap(basic -> Observable.from(basic.data.images))
                         .map(image -> new Image(image.link, image.width, image.height))
-                        .toList()
-                        .subscribe(images1 -> {
-                            images.addAll(images1);
-                            albumAdapter.notifyDataSetChanged();
+                        .subscribe(image -> {
+                            final ViewGroup mediaContainer = (ViewGroup) inflater.inflate(R.layout.post_media_image, linearLayout, false);
+                            final ImageView mediaImage = ButterKnife.findById(mediaContainer, R.id.post_media_image);
+                            final ProgressBar mediaImageProgress = ButterKnife.findById(mediaContainer, R.id.post_media_image_progress);
+
+                            linearLayout.addView(mediaContainer);
+
+                            mediaImageProgress.setVisibility(View.VISIBLE);
+
+                            if (customTabsClient != null) {
+                                final CustomTabsSession session = customTabsClient.newSession(null);
+                                session.mayLaunchUrl(Uri.parse(image.getUrl()), null, null);
+                            }
+
+                            RxView.clicks(mediaContainer)
+                                    .subscribe(aVoid -> {
+                                        customTabsIntent.launchUrl(activity, Uri.parse(image.getUrl()));
+                                    });
+
+                            Glide.with(context)
+                                    .load(image.getUrl())
+                                    .listener(new RequestListener<String, GlideDrawable>() {
+                                        @Override
+                                        public boolean onException(final Exception e, final String model,
+                                                                   final Target<GlideDrawable> target,
+                                                                   final boolean isFirstResource) {
+                                            mediaImageProgress.setVisibility(View.GONE);
+                                            return false;
+                                        }
+
+                                        @Override
+                                        public boolean onResourceReady(final GlideDrawable resource, final String model,
+                                                                       final Target<GlideDrawable> target,
+                                                                       final boolean isFromMemoryCache,
+                                                                       final boolean isFirstResource) {
+                                            mediaImageProgress.setVisibility(View.GONE);
+                                            return false;
+                                        }
+                                    })
+                                    .into(mediaImage);
+                            mediaImage.getLayoutParams().height = (int) ((float) width / image.getWidth() * image.getHeight());
                         });
                 break;
             case TYPE_TWEET:
