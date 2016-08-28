@@ -5,8 +5,7 @@ import com.veyndan.redditclient.post.model.Post;
 
 import java.util.List;
 
-import rx.Observable;
-import rx.functions.Func1;
+import rx.functions.Action1;
 
 public final class Mutators {
 
@@ -23,13 +22,11 @@ public final class Mutators {
     /**
      * Mutate a list of posts by all the available mutator factories.
      */
-    public Func1<List<Post>, Observable<List<Post>>> mutate() {
-        return posts -> Observable.from(posts)
-                .doOnNext(post -> {
-                    for (final MutatorFactory mutatorFactory : MUTATOR_FACTORIES) {
-                        if (mutatorFactory.applicable(post)) mutatorFactory.mutate(post);
-                    }
-                })
-                .toList();
+    public Action1<Post> mutate() {
+        return post -> {
+            for (final MutatorFactory mutatorFactory : MUTATOR_FACTORIES) {
+                if (mutatorFactory.applicable(post)) mutatorFactory.mutate(post);
+            }
+        };
     }
 }

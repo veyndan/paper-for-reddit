@@ -72,8 +72,8 @@ public class PostPresenter implements Presenter<PostMvpView> {
                     }
                     return post;
                 })
+                .doOnNext(mutators.mutate())
                 .toList()
-                .flatMap(mutators.mutate())
                 .subscribe(posts -> {
                     postMvpView.showPosts(posts);
                 });
