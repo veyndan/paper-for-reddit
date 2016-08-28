@@ -2,7 +2,6 @@
 <com.twitter.sdk.android.tweetui.TweetView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:twittersdk="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/post_media_container"
     style="@style/tw__TweetLightStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

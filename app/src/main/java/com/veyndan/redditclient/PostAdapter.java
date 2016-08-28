@@ -123,35 +123,9 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
     @Override
     protected PostViewHolder onCreateContentViewHolder(final ViewGroup parent, final int viewType) {
-        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-
-        final View cardView = inflater.inflate(R.layout.post_item, parent, false);
-        final PostViewHolder holder = new PostViewHolder(cardView);
-
         ButterKnife.bind(this, parent);
-
-        switch (viewType) {
-            case TYPE_SELF:
-                break;
-            case TYPE_IMAGES:
-                holder.container.addView(inflater.inflate(R.layout.post_media_images, holder.container, false), 1);
-                break;
-            case TYPE_LINK:
-                holder.container.addView(inflater.inflate(R.layout.post_media_link, holder.container, false), 1);
-                break;
-            case TYPE_LINK_IMAGE:
-                holder.container.addView(inflater.inflate(R.layout.post_media_link_image, holder.container, false), 1);
-                break;
-            case TYPE_TWEET:
-                holder.container.addView(inflater.inflate(R.layout.post_media_tweet, holder.container, false), 1);
-                break;
-            case TYPE_TEXT:
-                holder.container.addView(inflater.inflate(R.layout.post_media_text, holder.container, false), 1);
-                break;
-            default:
-                throw new IllegalStateException("Unknown viewType: " + viewType);
-        }
-
+        final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        final View cardView = inflater.inflate(R.layout.post_item, parent, false);
         return new PostViewHolder(cardView);
     }
 
@@ -201,26 +175,23 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
         holder.setHeader(submission.linkTitle, context.getString(R.string.subtitle, submission.author, age, submission.subreddit), flairs);
 
+        holder.mediaContainer.removeAllViews();
+
+        final LayoutInflater inflater = LayoutInflater.from(context);
+
         switch (viewType) {
             case TYPE_SELF:
                 break;
             case TYPE_IMAGES:
-                assert holder.mediaContainer != null;
-
-                final LinearLayout linearLayout = (LinearLayout) holder.mediaContainer;
-                linearLayout.removeAllViews();
-
-                final LayoutInflater inflater = LayoutInflater.from(context);
-
                 post.getImageObservable()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(image -> {
-                            final ViewGroup mediaContainer = (ViewGroup) inflater.inflate(R.layout.post_media_image, linearLayout, false);
+                            final ViewGroup mediaContainer = (ViewGroup) inflater.inflate(R.layout.post_media_image, holder.mediaContainer, false);
                             final ImageView mediaImage = ButterKnife.findById(mediaContainer, R.id.post_media_image);
                             final ProgressBar mediaImageProgress = ButterKnife.findById(mediaContainer, R.id.post_media_image_progress);
 
-                            linearLayout.addView(mediaContainer);
+                            holder.mediaContainer.addView(mediaContainer);
 
                             mediaImageProgress.setVisibility(View.VISIBLE);
 
@@ -270,22 +241,35 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         });
                 break;
             case TYPE_TWEET:
-                assert holder.mediaContainer != null;
+                final TweetView tweetView = (TweetView) inflater.inflate(R.layout.post_media_tweet, holder.mediaContainer, false);
+                holder.mediaContainer.addView(tweetView);
 
                 post.getTweetObservable()
-                        .subscribe(tweet -> {
-                            ((TweetView) holder.mediaContainer).setTweet(tweet);
-                        }, throwable -> {
+                        .subscribe(tweetView::setTweet, throwable -> {
                             Timber.e(throwable, "Load Tweet failure");
                         });
                 break;
             case TYPE_LINK_IMAGE:
                 Link link = (Link) submission;
 
-                assert holder.mediaImage != null;
-                assert holder.mediaImageProgress != null;
+                final View mediaContainer = inflater.inflate(R.layout.post_media_link_image, holder.mediaContainer, false);
+                holder.mediaContainer.addView(mediaContainer);
 
-                holder.mediaImageProgress.setVisibility(View.VISIBLE);
+                final ImageView mediaImage = ButterKnife.findById(mediaContainer, R.id.post_media_image);
+                final ProgressBar mediaImageProgress = ButterKnife.findById(mediaContainer, R.id.post_media_image_progress);
+                TextView mediaUrl = ButterKnife.findById(mediaContainer, R.id.post_media_url);
+
+                if (customTabsClient != null) {
+                    final CustomTabsSession session = customTabsClient.newSession(null);
+                    session.mayLaunchUrl(Uri.parse(submission.linkUrl), null, null);
+                }
+
+                RxView.clicks(mediaContainer)
+                        .subscribe(aVoid -> {
+                            customTabsIntent.launchUrl(activity, Uri.parse(submission.linkUrl));
+                        });
+
+                mediaImageProgress.setVisibility(View.VISIBLE);
 
                 final Source source = link.preview.images.get(0).source;
                 Glide.with(context)
@@ -293,22 +277,25 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         .listener(new RequestListener<String, GlideDrawable>() {
                             @Override
                             public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
-                                holder.mediaImageProgress.setVisibility(View.GONE);
+                                mediaImageProgress.setVisibility(View.GONE);
                                 return false;
                             }
 
                             @Override
                             public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
-                                holder.mediaImageProgress.setVisibility(View.GONE);
+                                mediaImageProgress.setVisibility(View.GONE);
                                 return false;
                             }
                         })
-                        .into(holder.mediaImage);
+                        .into(mediaImage);
+
+                mediaUrl.setText(link.domain);
+                break;
             case TYPE_LINK:
                 link = (Link) submission;
 
-                assert holder.mediaContainer != null;
-                assert holder.mediaUrl != null;
+                mediaUrl = (TextView) inflater.inflate(R.layout.post_media_link, holder.mediaContainer, false);
+                holder.mediaContainer.addView(mediaUrl);
 
                 if (customTabsClient != null) {
                     final CustomTabsSession session = customTabsClient.newSession(null);
@@ -316,20 +303,21 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                     session.mayLaunchUrl(Uri.parse(submission.linkUrl), null, null);
                 }
 
-                RxView.clicks(holder.mediaContainer)
+                RxView.clicks(mediaUrl)
                         .subscribe(aVoid -> {
                             customTabsIntent.launchUrl(activity, Uri.parse(submission.linkUrl));
                         });
 
-                holder.mediaUrl.setText(link.domain);
+                mediaUrl.setText(link.domain);
                 break;
             case TYPE_TEXT:
                 final Comment comment = (Comment) submission;
 
-                assert holder.mediaText != null;
+                final TextView mediaText = (TextView) inflater.inflate(R.layout.post_media_text, holder.mediaContainer, false);
+                holder.mediaContainer.addView(mediaText);
 
-                holder.mediaText.setText(trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(comment.bodyHtml))));
-                holder.mediaText.setMovementMethod(LinkMovementMethod.getInstance());
+                mediaText.setText(trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(comment.bodyHtml))));
+                mediaText.setMovementMethod(LinkMovementMethod.getInstance());
                 break;
         }
 
@@ -498,23 +486,19 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         final Post post = posts.get(position);
         final Submission submission = post.submission;
 
-        final int viewType;
-
         if (submission instanceof Comment) {
-            viewType = TYPE_TEXT;
+            return TYPE_TEXT;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.SELF)) {
-            viewType = TYPE_SELF;
+            return TYPE_SELF;
         } else if (post.getTweetObservable() != null) {
-            viewType = TYPE_TWEET;
+            return TYPE_TWEET;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.IMAGE)) {
-            viewType = TYPE_IMAGES;
+            return TYPE_IMAGES;
         } else if (submission instanceof Link && !((Link) submission).preview.images.isEmpty()) {
-            viewType = TYPE_LINK_IMAGE;
+            return TYPE_LINK_IMAGE;
         } else {
-            viewType = TYPE_LINK;
+            return TYPE_LINK;
         }
-
-        return viewType;
     }
 
     @Override
@@ -526,27 +510,8 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
         private final Context context;
 
-        @BindView(R.id.post_container) LinearLayout container;
         @BindView(R.id.post_title) TextView title;
-
-        // Media: Image
-        // Media: Link
-        // Media: Link Image
-        @Nullable @BindView(R.id.post_media_container) View mediaContainer;
-
-        // Media: Link Image
-        @Nullable @BindView(R.id.post_media_image) ImageView mediaImage;
-
-        // Media: Link Image
-        @Nullable @BindView(R.id.post_media_image_progress) ProgressBar mediaImageProgress;
-
-        // Media: Link
-        // Media: Link Image
-        @Nullable @BindView(R.id.post_media_url) TextView mediaUrl;
-
-        // Media: Text
-        @Nullable @BindView(R.id.post_media_text) TextView mediaText;
-
+        @BindView(R.id.post_media_container) LinearLayout mediaContainer;
         @BindView(R.id.post_score) TextView score;
         @BindView(R.id.post_upvote) CheckableImageButton upvote;
         @BindView(R.id.post_downvote) CheckableImageButton downvote;
