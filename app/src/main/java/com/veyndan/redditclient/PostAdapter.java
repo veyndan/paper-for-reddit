@@ -48,7 +48,6 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetUtils;
 import com.twitter.sdk.android.tweetui.TweetView;
-import com.veyndan.redditclient.api.imgur.network.ImgurService;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Link;
@@ -57,7 +56,6 @@ import com.veyndan.redditclient.api.reddit.model.Source;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 import com.veyndan.redditclient.post.model.Post;
-import com.veyndan.redditclient.post.model.media.Image;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -73,11 +71,6 @@ import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -282,31 +275,11 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
                 final LinearLayout linearLayout = (LinearLayout) holder.mediaContainer;
 
-                final OkHttpClient client = new OkHttpClient.Builder()
-                        .addInterceptor(chain -> {
-                            Request request = chain.request().newBuilder()
-                                    .addHeader("Authorization", "Client-ID " + Config.IMGUR_CLIENT_ID)
-                                    .build();
-                            return chain.proceed(request);
-                        })
-                        .build();
-
-                final Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("https://api.imgur.com/3/")
-                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .client(client)
-                        .build();
-
-                final ImgurService imgurService = retrofit.create(ImgurService.class);
-
                 final LayoutInflater inflater = LayoutInflater.from(context);
 
-                imgurService.album(submission.linkUrl.split("/a/")[1])
+                post.getImageObservable()
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .flatMap(basic -> Observable.from(basic.data.images))
-                        .map(image -> new Image(image.link, image.width, image.height))
                         .subscribe(image -> {
                             final ViewGroup mediaContainer = (ViewGroup) inflater.inflate(R.layout.post_media_image, linearLayout, false);
                             final ImageView mediaImage = ButterKnife.findById(mediaContainer, R.id.post_media_image);
@@ -602,10 +575,10 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             viewType = TYPE_SELF;
         } else if (submission instanceof Link && UrlMatcher.Twitter.tweetId(submission.linkUrl) != null) {
             viewType = TYPE_TWEET;
+        } else if (submission instanceof Link && (submission.linkUrl.contains("/a/") || submission.linkUrl.contains("/gallery/"))) {
+            viewType = TYPE_ALBUM;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.IMAGE)) {
             viewType = TYPE_IMAGE;
-        } else if (submission instanceof Link && submission.linkUrl.contains("/a/")) {
-            viewType = TYPE_ALBUM;
         } else if (submission instanceof Link && !((Link) submission).preview.images.isEmpty()) {
             viewType = TYPE_LINK_IMAGE;
         } else {
