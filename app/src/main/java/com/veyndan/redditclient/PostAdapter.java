@@ -61,8 +61,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindColor;
 import butterknife.BindDimen;
@@ -279,27 +277,22 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             case TYPE_TWEET:
                 assert holder.mediaContainer != null;
 
-                final Pattern pattern = Pattern.compile("https://twitter.com/\\w*/status/(\\d+)$");
-                final Matcher matcher = pattern.matcher(submission.linkUrl);
+                final Long tweetId = UrlMatcher.Twitter.tweetId(submission.linkUrl);
 
-                if (matcher.find()) {
-                    final Long tweetId = UrlMatcher.Twitter.tweetId(submission.linkUrl);
+                if (tweetId != null) {
+                    TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
+                        @Override
+                        public void success(final Result<Tweet> result) {
+                            ((TweetView) holder.mediaContainer).setTweet(result.data);
+                        }
 
-                    if (tweetId != null) {
-                        TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
-                            @Override
-                            public void success(final Result<Tweet> result) {
-                                ((TweetView) holder.mediaContainer).setTweet(result.data);
-                            }
-
-                            @Override
-                            public void failure(final TwitterException exception) {
-                                Timber.e(exception, "Load Tweet failure");
-                            }
-                        });
-                    } else {
-                        // TODO Show default link view as tweetId couldn't be parsed.
-                    }
+                        @Override
+                        public void failure(final TwitterException exception) {
+                            Timber.e(exception, "Load Tweet failure");
+                        }
+                    });
+                } else {
+                    // TODO Show default link view as tweetId couldn't be parsed.
                 }
                 break;
             case TYPE_LINK_IMAGE:
