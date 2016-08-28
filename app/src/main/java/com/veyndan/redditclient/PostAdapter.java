@@ -41,11 +41,6 @@ import com.bumptech.glide.request.target.Target;
 import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.models.Tweet;
-import com.twitter.sdk.android.tweetui.TweetUtils;
 import com.twitter.sdk.android.tweetui.TweetView;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Comment;
@@ -277,23 +272,12 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             case TYPE_TWEET:
                 assert holder.mediaContainer != null;
 
-                final Long tweetId = UrlMatcher.Twitter.tweetId(submission.linkUrl);
-
-                if (tweetId != null) {
-                    TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
-                        @Override
-                        public void success(final Result<Tweet> result) {
-                            ((TweetView) holder.mediaContainer).setTweet(result.data);
-                        }
-
-                        @Override
-                        public void failure(final TwitterException exception) {
-                            Timber.e(exception, "Load Tweet failure");
-                        }
-                    });
-                } else {
-                    // TODO Show default link view as tweetId couldn't be parsed.
-                }
+                post.getTweetObservable()
+                        .subscribe(tweet -> {
+                            ((TweetView) holder.mediaContainer).setTweet(tweet);
+                        }, throwable -> {
+                            Timber.e(throwable, "Load Tweet failure");
+                        });
                 break;
             case TYPE_LINK_IMAGE:
                 Link link = (Link) submission;
@@ -511,7 +495,8 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
     @Override
     public int getContentItemViewType(final int position) {
-        final Submission submission = (Submission) posts.get(position).submission;
+        final Post post = posts.get(position);
+        final Submission submission = post.submission;
 
         final int viewType;
 
@@ -519,7 +504,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
             viewType = TYPE_TEXT;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.SELF)) {
             viewType = TYPE_SELF;
-        } else if (submission instanceof Link && UrlMatcher.Twitter.tweetId(submission.linkUrl) != null) {
+        } else if (post.getTweetObservable() != null) {
             viewType = TYPE_TWEET;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.IMAGE)) {
             viewType = TYPE_IMAGES;
