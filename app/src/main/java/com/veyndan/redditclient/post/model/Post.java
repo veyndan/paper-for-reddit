@@ -14,53 +14,53 @@ public class Post {
 
     public final Submission submission;
 
-    private Observable<Text> textObservable;
-    private Observable<Link> linkObservable;
-    private Observable<LinkImage> linkImageObservable;
-    private Observable<Image> imageObservable;
-    private Observable<Tweet> tweetObservable;
+    private Observable<Object> textObservable = Observable.empty();
+    private Observable<Object> linkObservable = Observable.empty();
+    private Observable<Object> linkImageObservable = Observable.empty();
+    private Observable<Object> imageObservable = Observable.empty();
+    private Observable<Object> tweetObservable = Observable.empty();
 
     public Post(final RedditObject redditObject) {
         this.submission = (Submission) redditObject;
     }
 
-    public Observable<Text> getTextObservable() {
+    public Observable<Object> getTextObservable() {
         return textObservable;
     }
 
     public void setTextObservable(final Observable<Text> textObservable) {
-        this.textObservable = textObservable;
+        this.textObservable = textObservable.cast(Object.class);
     }
 
-    public Observable<Link> getLinkObservable() {
+    public Observable<Object> getLinkObservable() {
         return linkObservable;
     }
 
     public void setLinkObservable(final Observable<Link> linkObservable) {
-        this.linkObservable = linkObservable;
+        this.linkObservable = linkObservable.cast(Object.class);
     }
 
-    public Observable<LinkImage> getLinkImageObservable() {
+    public Observable<Object> getLinkImageObservable() {
         return linkImageObservable;
     }
 
     public void setLinkImageObservable(final Observable<LinkImage> linkImageObservable) {
-        this.linkImageObservable = linkImageObservable;
+        this.linkImageObservable = linkImageObservable.cast(Object.class);
     }
 
-    public Observable<Image> getImageObservable() {
+    public Observable<Object> getImageObservable() {
         return imageObservable;
     }
 
     public void setImageObservable(final Observable<Image> imageObservable) {
-        this.imageObservable = imageObservable;
+        this.imageObservable = imageObservable.cast(Object.class);
     }
 
-    public Observable<Tweet> getTweetObservable() {
+    public Observable<Object> getTweetObservable() {
         return tweetObservable;
     }
 
     public void setTweetObservable(final Observable<Tweet> tweetObservable) {
-        this.tweetObservable = tweetObservable;
+        this.tweetObservable = tweetObservable.cast(Object.class);
     }
 }

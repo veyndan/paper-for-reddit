@@ -48,6 +48,7 @@ import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -152,59 +153,20 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
         holder.setHeader(submission.linkTitle, context.getString(R.string.subtitle, submission.author, age, submission.subreddit), flairs);
 
-        // TODO Make list sequential as otherwise [Tweet, DirectImage] can become [DirectImage, Tweet]
-        // as direct image doesn't require a network request but tweet does, so direct image will
-        // finish before tweet naturally.
-
         final List<Object> items = new ArrayList<>();
 
         final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
                 activity, customTabsClient, customTabsIntent, post, width, items);
         holder.mediaView.setAdapter(postMediaAdapter);
 
-        if (post.getImageObservable() != null) {
-            post.getImageObservable()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(image -> {
-                        items.add(image);
-                        postMediaAdapter.notifyDataSetChanged();
-                    });
-        }
-
-        if (post.getTweetObservable() != null) {
-            post.getTweetObservable()
-                    .subscribe(tweet -> {
-                        items.add(tweet);
-                        postMediaAdapter.notifyDataSetChanged();
-                    }, throwable -> {
-                        Timber.e(throwable, "Load Tweet failure");
-                    });
-        }
-
-        if (post.getImageObservable() == null && post.getTweetObservable() == null && post.getLinkImageObservable() != null) {
-            post.getLinkImageObservable()
-                    .subscribe(linkImage -> {
-                        items.add(linkImage);
-                        postMediaAdapter.notifyDataSetChanged();
-                    });
-        }
-
-        if (post.getImageObservable() == null && post.getTweetObservable() == null && post.getLinkImageObservable() == null && post.getLinkObservable() != null) {
-            post.getLinkObservable()
-                    .subscribe(link -> {
-                        items.add(link);
-                        postMediaAdapter.notifyDataSetChanged();
-                    });
-        }
-
-        if (post.getImageObservable() == null && post.getTweetObservable() == null && post.getLinkImageObservable() == null && post.getLinkObservable() == null && post.getTextObservable() != null) {
-            post.getTextObservable()
-                    .subscribe(text -> {
-                        items.add(text);
-                        postMediaAdapter.notifyDataSetChanged();
-                    });
-        }
+        Observable.concat(post.getImageObservable(), post.getTweetObservable())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .switchIfEmpty(Observable.concat(post.getLinkImageObservable(), post.getLinkObservable(), post.getTextObservable()).first())
+                .subscribe(item -> {
+                    items.add(item);
+                    postMediaAdapter.notifyDataSetChanged();
+                }, throwable -> Timber.e(throwable, throwable.getMessage()));
 
         final String comments = context.getResources().getQuantityString(R.plurals.comments, submission instanceof Link ? ((Link) submission).numComments : 0, submission instanceof Link ? ((Link) submission).numComments : 0);
         holder.score.setText(context.getString(R.string.score, points, comments));
