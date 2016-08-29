@@ -118,8 +118,6 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 DateUtils.SECOND_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
 
-        final int viewType = holder.getItemViewType();
-
         final List<Flair> flairs = new ArrayList<>();
 
         if (submission.stickied) {
