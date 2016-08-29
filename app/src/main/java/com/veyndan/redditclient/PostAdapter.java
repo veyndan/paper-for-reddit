@@ -41,7 +41,7 @@ import com.bumptech.glide.request.target.Target;
 import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
-import com.twitter.sdk.android.tweetui.TweetView;
+import com.twitter.sdk.android.core.models.Tweet;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Link;
@@ -49,7 +49,9 @@ import com.veyndan.redditclient.api.reddit.model.PostHint;
 import com.veyndan.redditclient.api.reddit.model.Source;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
+import com.veyndan.redditclient.post.PostMediaAdapter;
 import com.veyndan.redditclient.post.model.Post;
+import com.veyndan.redditclient.post.model.media.Image;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -63,18 +65,14 @@ import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
-    private static final int TYPE_SELF = 0;
-    private static final int TYPE_IMAGES = 1;
     private static final int TYPE_LINK = 3;
     private static final int TYPE_LINK_IMAGE = 4;
-    private static final int TYPE_TWEET = 5;
     private static final int TYPE_TEXT = 6;
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
@@ -179,76 +177,38 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
         final LayoutInflater inflater = LayoutInflater.from(context);
 
+        // TODO Make list sequential as otherwise [Tweet, DirectImage] can become [DirectImage, Tweet]
+        // as direct image doesn't require a network request but tweet does, so direct image will
+        // finish before tweet naturally.
+
+        final List<Image> images = new ArrayList<>();
+        final List<Tweet> tweets = new ArrayList<>();
+
+        final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
+                activity, customTabsClient, customTabsIntent, post, width, images, tweets);
+        holder.mediaView.setAdapter(postMediaAdapter);
+
+        if (post.getImageObservable() != null) {
+            post.getImageObservable()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(image -> {
+                        images.add(image);
+                        postMediaAdapter.notifyDataSetChanged();
+                    });
+        }
+
+        if (post.getTweetObservable() != null) {
+            post.getTweetObservable()
+                    .subscribe(tweet -> {
+                        tweets.add(tweet);
+                        postMediaAdapter.notifyDataSetChanged();
+                    }, throwable -> {
+                        Timber.e(throwable, "Load Tweet failure");
+                    });
+        }
+
         switch (viewType) {
-            case TYPE_SELF:
-                break;
-            case TYPE_IMAGES:
-                post.getImageObservable()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(image -> {
-                            final ViewGroup mediaContainer = (ViewGroup) inflater.inflate(R.layout.post_media_image, holder.mediaContainer, false);
-                            final ImageView mediaImage = ButterKnife.findById(mediaContainer, R.id.post_media_image);
-                            final ProgressBar mediaImageProgress = ButterKnife.findById(mediaContainer, R.id.post_media_image_progress);
-
-                            holder.mediaContainer.addView(mediaContainer);
-
-                            mediaImageProgress.setVisibility(View.VISIBLE);
-
-                            if (customTabsClient != null) {
-                                final CustomTabsSession session = customTabsClient.newSession(null);
-                                session.mayLaunchUrl(Uri.parse(image.getUrl()), null, null);
-                            }
-
-                            RxView.clicks(mediaContainer)
-                                    .subscribe(aVoid -> {
-                                        customTabsIntent.launchUrl(activity, Uri.parse(image.getUrl()));
-                                    });
-
-                            final boolean imageDimensAvailable = image.getWidth() > 0 && image.getHeight() > 0;
-
-                            Glide.with(context)
-                                    .load(image.getUrl())
-                                    .listener(new RequestListener<String, GlideDrawable>() {
-                                        @Override
-                                        public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
-                                            mediaImageProgress.setVisibility(View.GONE);
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
-                                            mediaImageProgress.setVisibility(View.GONE);
-                                            if (!imageDimensAvailable) {
-                                                final int imageWidth = resource.getIntrinsicWidth();
-                                                final int imageHeight = resource.getIntrinsicHeight();
-
-                                                image.setWidth(imageWidth);
-                                                image.setHeight(imageHeight);
-
-                                                post.setImageObservable(Observable.just(image));
-
-                                                mediaImage.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
-                                            }
-                                            return false;
-                                        }
-                                    })
-                                    .into(mediaImage);
-
-                            if (imageDimensAvailable) {
-                                mediaImage.getLayoutParams().height = (int) ((float) width / image.getWidth() * image.getHeight());
-                            }
-                        });
-                break;
-            case TYPE_TWEET:
-                final TweetView tweetView = (TweetView) inflater.inflate(R.layout.post_media_tweet, holder.mediaContainer, false);
-                holder.mediaContainer.addView(tweetView);
-
-                post.getTweetObservable()
-                        .subscribe(tweetView::setTweet, throwable -> {
-                            Timber.e(throwable, "Load Tweet failure");
-                        });
-                break;
             case TYPE_LINK_IMAGE:
                 Link link = (Link) submission;
 
@@ -491,11 +451,11 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         if (submission instanceof Comment) {
             return TYPE_TEXT;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.SELF)) {
-            return TYPE_SELF;
+            return 100;
         } else if (post.getTweetObservable() != null) {
-            return TYPE_TWEET;
+            return 100;
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.IMAGE)) {
-            return TYPE_IMAGES;
+            return 100;
         } else if (submission instanceof Link && !((Link) submission).preview.images.isEmpty()) {
             return TYPE_LINK_IMAGE;
         } else {
@@ -514,6 +474,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
         @BindView(R.id.post_title) TextView title;
         @BindView(R.id.post_media_container) LinearLayout mediaContainer;
+        @BindView(R.id.post_media_view) RecyclerView mediaView;
         @BindView(R.id.post_score) TextView score;
         @BindView(R.id.post_upvote) CheckableImageButton upvote;
         @BindView(R.id.post_downvote) CheckableImageButton downvote;
