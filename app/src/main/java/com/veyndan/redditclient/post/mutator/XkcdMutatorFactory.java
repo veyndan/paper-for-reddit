@@ -16,7 +16,7 @@ import rx.Observable;
 
 final class XkcdMutatorFactory implements MutatorFactory {
 
-    private final Pattern pattern = Pattern.compile("^https?://(www\\.)?xkcd\\.com/(\\d+)/?$");
+    private final Pattern pattern = Pattern.compile("^https?://(?:www\\.)?xkcd\\.com/(\\d+)/?$");
 
     static XkcdMutatorFactory create() {
         return new XkcdMutatorFactory();
@@ -35,7 +35,7 @@ final class XkcdMutatorFactory implements MutatorFactory {
     public void mutate(final Post post) {
         final Matcher matcher = pattern.matcher(post.submission.linkUrl);
         if (matcher.matches()) {
-            final int comicNum = Integer.parseInt(matcher.group(2));
+            final int comicNum = Integer.parseInt(matcher.group(1));
 
             final Retrofit retrofit = new Retrofit.Builder()
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())

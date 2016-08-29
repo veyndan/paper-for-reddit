@@ -15,7 +15,7 @@ import rx.Observable;
 
 final class TwitterMutatorFactory implements MutatorFactory {
 
-    private final Pattern pattern = Pattern.compile("^https?://(www\\.)?twitter\\.com/\\w*/status/(\\d+)\\?.*$");
+    private final Pattern pattern = Pattern.compile("^https?://(?:www\\.)?twitter\\.com/\\w*/status/(\\d+)\\?.*$");
 
     static TwitterMutatorFactory create() {
         return new TwitterMutatorFactory();
@@ -34,7 +34,7 @@ final class TwitterMutatorFactory implements MutatorFactory {
     public void mutate(final Post post) {
         final Matcher matcher = pattern.matcher(post.submission.linkUrl);
         if (matcher.matches()) {
-            final Long tweetId = Long.parseLong(matcher.group(2));
+            final Long tweetId = Long.parseLong(matcher.group(1));
             // TODO Replace Observable.create with an Observable returned by Retrofit.
             post.setMediaObservable(Observable.create(subscriber -> {
                 TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {

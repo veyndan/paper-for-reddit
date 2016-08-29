@@ -21,9 +21,9 @@ import rx.Observable;
 
 final class ImgurMutatorFactory implements MutatorFactory {
 
-    private final Pattern pattern = Pattern.compile("^https?://(www\\.)?(i\\.)?imgur\\.com/.*$");
-    private final Pattern albumPattern = Pattern.compile("^https?://(www\\.)?imgur\\.com/(a|gallery)/(.*)$");
-    private final Pattern directImagePattern = Pattern.compile("^https?://(www\\.)?i.imgur.com/.*$");
+    private final Pattern pattern = Pattern.compile("^https?://(?:www\\.)?(?:i\\.)?imgur\\.com/.*$");
+    private final Pattern albumPattern = Pattern.compile("^https?://(?:www\\.)?imgur\\.com/(?:a|gallery)/(.*)$");
+    private final Pattern directImagePattern = Pattern.compile("^https?://(?:www\\.)?i.imgur.com/.*$");
 
     static ImgurMutatorFactory create() {
         return new ImgurMutatorFactory();
@@ -74,7 +74,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
             final ImgurService imgurService = retrofit.create(ImgurService.class);
 
-            final String id = albumMatcher.group(3);
+            final String id = albumMatcher.group(1);
 
             post.setMediaObservable(
                     imgurService.album(id)
