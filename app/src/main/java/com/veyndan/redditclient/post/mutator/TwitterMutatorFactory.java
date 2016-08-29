@@ -15,7 +15,7 @@ import rx.Observable;
 
 final class TwitterMutatorFactory implements MutatorFactory {
 
-    private final Pattern pattern = Pattern.compile("^https?://(www\\.)?twitter\\.com/\\w*/status/(\\d+)$");
+    private final Pattern pattern = Pattern.compile("^https?://(www\\.)?twitter\\.com/\\w*/status/(\\d+)\\?.*$");
 
     static TwitterMutatorFactory create() {
         return new TwitterMutatorFactory();
