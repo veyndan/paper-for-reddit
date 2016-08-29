@@ -27,17 +27,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.binaryfork.spanny.Spanny;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
@@ -45,7 +39,6 @@ import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Link;
 import com.veyndan.redditclient.api.reddit.model.PostHint;
-import com.veyndan.redditclient.api.reddit.model.Source;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 import com.veyndan.redditclient.post.PostMediaAdapter;
@@ -70,7 +63,6 @@ import timber.log.Timber;
 public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
     private static final int TYPE_LINK = 3;
-    private static final int TYPE_LINK_IMAGE = 4;
     private static final int TYPE_TEXT = 6;
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
@@ -205,56 +197,22 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                     });
         }
 
+        if (post.getImageObservable() == null && post.getTweetObservable() == null && post.getLinkImageObservable() != null) {
+            post.getLinkImageObservable()
+                    .subscribe(linkImage -> {
+                        items.add(linkImage);
+                        postMediaAdapter.notifyDataSetChanged();
+                    });
+        }
+
         switch (viewType) {
-            case TYPE_LINK_IMAGE:
-                Link link = (Link) submission;
-
-                View mediaContainer = inflater.inflate(R.layout.post_media_link_image, holder.mediaContainer, false);
-                holder.mediaContainer.addView(mediaContainer);
-
-                final ImageView mediaImage = ButterKnife.findById(mediaContainer, R.id.post_media_image);
-                final ProgressBar mediaImageProgress = ButterKnife.findById(mediaContainer, R.id.post_media_image_progress);
-                TextView mediaUrl = ButterKnife.findById(mediaContainer, R.id.post_media_url);
-
-                if (customTabsClient != null) {
-                    final CustomTabsSession session = customTabsClient.newSession(null);
-                    session.mayLaunchUrl(Uri.parse(submission.linkUrl), null, null);
-                }
-
-                RxView.clicks(mediaContainer)
-                        .subscribe(aVoid -> {
-                            customTabsIntent.launchUrl(activity, Uri.parse(submission.linkUrl));
-                        });
-
-                mediaImageProgress.setVisibility(View.VISIBLE);
-
-                final Source source = link.preview.images.get(0).source;
-                Glide.with(context)
-                        .load(source.url)
-                        .listener(new RequestListener<String, GlideDrawable>() {
-                            @Override
-                            public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
-                                mediaImageProgress.setVisibility(View.GONE);
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
-                                mediaImageProgress.setVisibility(View.GONE);
-                                return false;
-                            }
-                        })
-                        .into(mediaImage);
-
-                mediaUrl.setText(link.domain);
-                break;
             case TYPE_LINK:
-                link = (Link) submission;
+                final Link link = (Link) submission;
 
-                mediaContainer = inflater.inflate(R.layout.post_media_link, holder.mediaContainer, false);
+                final View mediaContainer = inflater.inflate(R.layout.post_media_link, holder.mediaContainer, false);
                 holder.mediaContainer.addView(mediaContainer);
 
-                mediaUrl = ButterKnife.findById(mediaContainer, R.id.post_media_url);
+                final TextView mediaUrl = ButterKnife.findById(mediaContainer, R.id.post_media_url);
 
                 if (customTabsClient != null) {
                     final CustomTabsSession session = customTabsClient.newSession(null);
@@ -454,7 +412,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.IMAGE)) {
             return 100;
         } else if (submission instanceof Link && !((Link) submission).preview.images.isEmpty()) {
-            return TYPE_LINK_IMAGE;
+            return 100;
         } else {
             return TYPE_LINK;
         }

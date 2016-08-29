@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegatesManager;
 import com.veyndan.redditclient.post.delegate.ImageAdapterDelegate;
+import com.veyndan.redditclient.post.delegate.LinkImageAdapterDelegate;
 import com.veyndan.redditclient.post.delegate.TweetAdapterDelegate;
 import com.veyndan.redditclient.post.model.Post;
 
@@ -28,6 +29,7 @@ public class PostMediaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         // AdapterDelegatesManager internally assigns view types integers
         delegatesManager
+                .addDelegate(new LinkImageAdapterDelegate(activity, customTabsClient, customTabsIntent, post))
                 .addDelegate(new ImageAdapterDelegate(activity, customTabsClient, customTabsIntent, post, width))
                 .addDelegate(new TweetAdapterDelegate());
     }
