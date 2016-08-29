@@ -21,8 +21,7 @@ import rx.Observable;
 
 final class ImgurMutatorFactory implements MutatorFactory {
 
-    private final Pattern pattern = Pattern.compile("^https?://(?:www\\.)?(i\\.)?imgur\\.com/.*$");
-    private final Pattern albumPattern = Pattern.compile("^https?://(?:www\\.)?imgur\\.com/(?:a|gallery)/(.*)$");
+    private final Pattern pattern = Pattern.compile("^https?://(?:www\\.)?(i\\.)?imgur\\.com/(a/|gallery/)?(.*)$");
 
     static ImgurMutatorFactory create() {
         return new ImgurMutatorFactory();
@@ -43,8 +42,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
             throw new IllegalStateException("Should match as matches in applicable()");
         }
 
-        final Matcher albumMatcher = albumPattern.matcher(post.submission.linkUrl);
-        final boolean isAlbum = albumMatcher.matches();
+        final boolean isAlbum = matcher.group(2) != null;
         final boolean isDirectImage = matcher.group(1) != null;
 
         if (!isAlbum && !isDirectImage) {
@@ -77,7 +75,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
             final ImgurService imgurService = retrofit.create(ImgurService.class);
 
-            final String id = albumMatcher.group(1);
+            final String id = matcher.group(3);
 
             post.setMediaObservable(
                     imgurService.album(id)
