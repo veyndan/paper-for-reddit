@@ -29,6 +29,7 @@ public final class Mutators {
             TwitterMutatorFactory.create(),
             XkcdMutatorFactory.create(),
             ImgurMutatorFactory.create(),
+            ImageMutatorFactory.create(),
             TextMutatorFactory.create(),
             LinkImageMutatorFactory.create(),
             LinkMutatorFactory.create()

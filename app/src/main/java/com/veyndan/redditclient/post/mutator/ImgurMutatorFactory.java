@@ -4,6 +4,7 @@ import com.veyndan.redditclient.Config;
 import com.veyndan.redditclient.api.imgur.network.ImgurService;
 import com.veyndan.redditclient.api.reddit.model.Link;
 import com.veyndan.redditclient.api.reddit.model.PostHint;
+import com.veyndan.redditclient.api.reddit.model.Source;
 import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.post.model.media.Image;
 
@@ -47,7 +48,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
             // TODO .gifv links are HTML 5 videos so the PostHint should be set accordingly.
             if (!post.submission.linkUrl.endsWith(".gifv")) {
                 post.submission.linkUrl = singleImageUrlToDirectImageUrl(post.submission.linkUrl);
-                post.setMediaObservable(Observable.just(new Image(post.submission.linkUrl)));
+
                 ((Link) post.submission).setPostHint(PostHint.IMAGE);
             }
         }
@@ -80,6 +81,19 @@ final class ImgurMutatorFactory implements MutatorFactory {
                             .flatMap(basic -> Observable.from(basic.data.images))
                             .map(image -> new Image(image.link, image.width, image.height))
             );
+        } else {
+            final boolean imageDimensAvailable = !((Link) post.submission).preview.images.isEmpty();
+
+            int width = 0;
+            int height = 0;
+            if (imageDimensAvailable) {
+                final Source source = ((Link) post.submission).preview.images.get(0).source;
+                width = source.width;
+                height = source.height;
+            }
+
+            final Image image = new Image(post.submission.linkUrl, width, height);
+            post.setMediaObservable(Observable.just(image));
         }
     }
 
