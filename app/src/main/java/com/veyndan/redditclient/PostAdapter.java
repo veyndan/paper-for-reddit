@@ -41,7 +41,6 @@ import com.bumptech.glide.request.target.Target;
 import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
-import com.twitter.sdk.android.core.models.Tweet;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Link;
@@ -51,7 +50,6 @@ import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 import com.veyndan.redditclient.post.PostMediaAdapter;
 import com.veyndan.redditclient.post.model.Post;
-import com.veyndan.redditclient.post.model.media.Image;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -181,11 +179,10 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         // as direct image doesn't require a network request but tweet does, so direct image will
         // finish before tweet naturally.
 
-        final List<Image> images = new ArrayList<>();
-        final List<Tweet> tweets = new ArrayList<>();
+        final List<Object> items = new ArrayList<>();
 
         final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
-                activity, customTabsClient, customTabsIntent, post, width, images, tweets);
+                activity, customTabsClient, customTabsIntent, post, width, items);
         holder.mediaView.setAdapter(postMediaAdapter);
 
         if (post.getImageObservable() != null) {
@@ -193,7 +190,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(image -> {
-                        images.add(image);
+                        items.add(image);
                         postMediaAdapter.notifyDataSetChanged();
                     });
         }
@@ -201,7 +198,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         if (post.getTweetObservable() != null) {
             post.getTweetObservable()
                     .subscribe(tweet -> {
-                        tweets.add(tweet);
+                        items.add(tweet);
                         postMediaAdapter.notifyDataSetChanged();
                     }, throwable -> {
                         Timber.e(throwable, "Load Tweet failure");

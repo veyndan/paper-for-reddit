@@ -38,6 +38,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
 
+    // Adapter Delegates
+    compile 'com.hannesdorfmann:adapterdelegates2:2.0.1'
+
     // Apache Commons
     compile 'org.apache.commons:commons-lang3:3.4'
 
