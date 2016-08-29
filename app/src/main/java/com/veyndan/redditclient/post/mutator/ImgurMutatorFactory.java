@@ -7,6 +7,9 @@ import com.veyndan.redditclient.api.reddit.model.PostHint;
 import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.post.model.media.Image;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -17,6 +20,10 @@ import rx.Observable;
 
 final class ImgurMutatorFactory implements MutatorFactory {
 
+    private final Pattern pattern = Pattern.compile("^https?://(www\\.)?(i\\.)?imgur\\.com/.*$");
+    private final Pattern albumPattern = Pattern.compile("^https?://(www\\.)?imgur\\.com/(a|gallery)/(.*)$");
+    private final Pattern directImagePattern = Pattern.compile("^https?://(www\\.)?i.imgur.com/.*$");
+
     static ImgurMutatorFactory create() {
         return new ImgurMutatorFactory();
     }
@@ -26,14 +33,17 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
     @Override
     public boolean applicable(final Post post) {
-        final String urlHost = HttpUrl.parse(post.submission.linkUrl).host();
-        return post.submission instanceof Link &&
-                urlHost.equals("imgur.com") || urlHost.equals("i.imgur.com");
+        return post.submission instanceof Link && pattern.matcher(post.submission.linkUrl).matches();
     }
 
     @Override
     public void mutate(final Post post) {
-        if (!isAlbum(post.submission.linkUrl) && !isDirectImage(post.submission.linkUrl)) {
+        final Matcher albumMatcher = albumPattern.matcher(post.submission.linkUrl);
+        final boolean isAlbum = albumMatcher.matches();
+
+        final boolean isDirectImage = directImagePattern.matcher(post.submission.linkUrl).matches();
+
+        if (!isAlbum && !isDirectImage) {
             // TODO .gifv links are HTML 5 videos so the PostHint should be set accordingly.
             if (!post.submission.linkUrl.endsWith(".gifv")) {
                 post.submission.linkUrl = singleImageUrlToDirectImageUrl(post.submission.linkUrl);
@@ -42,7 +52,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
             }
         }
 
-        if (isAlbum(post.submission.linkUrl)) {
+        if (isAlbum) {
             ((Link) post.submission).setPostHint(PostHint.IMAGE);
 
             final OkHttpClient client = new OkHttpClient.Builder()
@@ -63,14 +73,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
             final ImgurService imgurService = retrofit.create(ImgurService.class);
 
-            final String id;
-            if (post.submission.linkUrl.contains("/a/")) {
-                id = post.submission.linkUrl.split("/a/")[1];
-            } else if (post.submission.linkUrl.contains("/gallery/")) {
-                id = post.submission.linkUrl.split("/gallery/")[1];
-            } else {
-                throw new IllegalStateException();
-            }
+            final String id = albumMatcher.group(3);
 
             post.setImageObservable(
                     imgurService.album(id)
@@ -78,15 +81,6 @@ final class ImgurMutatorFactory implements MutatorFactory {
                             .map(image -> new Image(image.link, image.width, image.height))
             );
         }
-    }
-
-    private boolean isDirectImage(final String url) {
-        final String urlHost = HttpUrl.parse(url).host();
-        return urlHost.equals("i.imgur.com");
-    }
-
-    private boolean isAlbum(final String url) {
-        return url.contains("/a/") || url.contains("/gallery/");
     }
 
     /**
