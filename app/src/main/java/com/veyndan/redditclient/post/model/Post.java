@@ -6,6 +6,7 @@ import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.post.model.media.Image;
 import com.veyndan.redditclient.post.model.media.Link;
 import com.veyndan.redditclient.post.model.media.LinkImage;
+import com.veyndan.redditclient.post.model.media.Text;
 
 import rx.Observable;
 
@@ -13,6 +14,7 @@ public class Post {
 
     public final Submission submission;
 
+    private Observable<Text> textObservable;
     private Observable<Link> linkObservable;
     private Observable<LinkImage> linkImageObservable;
     private Observable<Image> imageObservable;
@@ -20,6 +22,14 @@ public class Post {
 
     public Post(final RedditObject redditObject) {
         this.submission = (Submission) redditObject;
+    }
+
+    public Observable<Text> getTextObservable() {
+        return textObservable;
+    }
+
+    public void setTextObservable(final Observable<Text> textObservable) {
+        this.textObservable = textObservable;
     }
 
     public Observable<Link> getLinkObservable() {

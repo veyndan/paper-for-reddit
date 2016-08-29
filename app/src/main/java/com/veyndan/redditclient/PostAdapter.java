@@ -15,18 +15,15 @@ import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.design.widget.CheckableImageButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.text.method.LinkMovementMethod;
 import android.text.style.LineHeightSpan;
 import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -35,14 +32,11 @@ import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
 import com.veyndan.redditclient.api.reddit.Reddit;
-import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Link;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 import com.veyndan.redditclient.post.PostMediaAdapter;
 import com.veyndan.redditclient.post.model.Post;
-
-import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +53,6 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
-
-    private static final int TYPE_TEXT = 6;
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
@@ -160,10 +152,6 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
         holder.setHeader(submission.linkTitle, context.getString(R.string.subtitle, submission.author, age, submission.subreddit), flairs);
 
-        holder.mediaContainer.removeAllViews();
-
-        final LayoutInflater inflater = LayoutInflater.from(context);
-
         // TODO Make list sequential as otherwise [Tweet, DirectImage] can become [DirectImage, Tweet]
         // as direct image doesn't require a network request but tweet does, so direct image will
         // finish before tweet naturally.
@@ -210,16 +198,12 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                     });
         }
 
-        switch (viewType) {
-            case TYPE_TEXT:
-                final Comment comment = (Comment) submission;
-
-                final TextView mediaText = (TextView) inflater.inflate(R.layout.post_media_text, holder.mediaContainer, false);
-                holder.mediaContainer.addView(mediaText);
-
-                mediaText.setText(trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(comment.bodyHtml))));
-                mediaText.setMovementMethod(LinkMovementMethod.getInstance());
-                break;
+        if (post.getImageObservable() == null && post.getTweetObservable() == null && post.getLinkImageObservable() == null && post.getLinkObservable() == null && post.getTextObservable() != null) {
+            post.getTextObservable()
+                    .subscribe(text -> {
+                        items.add(text);
+                        postMediaAdapter.notifyDataSetChanged();
+                    });
         }
 
         final String comments = context.getResources().getQuantityString(R.plurals.comments, submission instanceof Link ? ((Link) submission).numComments : 0, submission instanceof Link ? ((Link) submission).numComments : 0);
@@ -371,27 +355,9 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 });
     }
 
-    private CharSequence trimTrailingWhitespace(@NonNull final CharSequence source) {
-        int i = source.length();
-
-        // loop back to the first non-whitespace character
-        do {
-            i--;
-        } while (i > 0 && Character.isWhitespace(source.charAt(i)));
-
-        return source.subSequence(0, i + 1);
-    }
-
     @Override
     public int getContentItemViewType(final int position) {
-        final Post post = posts.get(position);
-        final Submission submission = post.submission;
-
-        if (submission instanceof Comment) {
-            return TYPE_TEXT;
-        } else {
-            return 100;
-        }
+        return 0;
     }
 
     @Override
@@ -404,7 +370,6 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         private final Context context;
 
         @BindView(R.id.post_title) TextView title;
-        @BindView(R.id.post_media_container) LinearLayout mediaContainer;
         @BindView(R.id.post_media_view) RecyclerView mediaView;
         @BindView(R.id.post_score) TextView score;
         @BindView(R.id.post_upvote) CheckableImageButton upvote;
