@@ -18,12 +18,12 @@ public class MarginItemDecoration extends RecyclerView.ItemDecoration {
                                final RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
 
-        outRect.bottom += margin;
-        outRect.left += margin;
-        outRect.right += margin;
+        outRect.bottom = margin;
+        outRect.left = margin;
+        outRect.right = margin;
 
         if (parent.getChildAdapterPosition(view) == 0) {
-            outRect.top += margin;
+            outRect.top = margin;
         }
     }
 }
