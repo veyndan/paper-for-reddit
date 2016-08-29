@@ -24,6 +24,6 @@ final class LinkMutatorFactory implements MutatorFactory {
     @Override
     public void mutate(final Post post) {
         final com.veyndan.redditclient.api.reddit.model.Link link = (com.veyndan.redditclient.api.reddit.model.Link) post.submission;
-        post.setLinkObservable(Observable.just(new Link(link.domain)));
+        post.setMediaObservable(Observable.just(new Link(link.domain)));
     }
 }

@@ -50,7 +50,7 @@ final class XkcdMutatorFactory implements MutatorFactory {
 
             ((Link) post.submission).setPostHint(PostHint.IMAGE);
 
-            post.setImageObservable(imageObservable);
+            post.setMediaObservable(imageObservable);
         }
     }
 }

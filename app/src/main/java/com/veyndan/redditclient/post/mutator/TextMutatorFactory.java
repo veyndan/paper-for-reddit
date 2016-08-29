@@ -23,6 +23,6 @@ final class TextMutatorFactory implements MutatorFactory {
     @Override
     public void mutate(final Post post) {
         final Comment comment = (Comment) post.submission;
-        post.setTextObservable(Observable.just(new Text(comment.bodyHtml)));
+        post.setMediaObservable(Observable.just(new Text(comment.bodyHtml)));
     }
 }

@@ -28,6 +28,6 @@ final class LinkImageMutatorFactory implements MutatorFactory {
 
         final LinkImage linkImage = new LinkImage(source.url, link.domain);
 
-        post.setLinkImageObservable(Observable.just(linkImage));
+        post.setMediaObservable(Observable.just(linkImage));
     }
 }

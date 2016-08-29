@@ -47,7 +47,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
             // TODO .gifv links are HTML 5 videos so the PostHint should be set accordingly.
             if (!post.submission.linkUrl.endsWith(".gifv")) {
                 post.submission.linkUrl = singleImageUrlToDirectImageUrl(post.submission.linkUrl);
-                post.setImageObservable(Observable.just(new Image(post.submission.linkUrl)));
+                post.setMediaObservable(Observable.just(new Image(post.submission.linkUrl)));
                 ((Link) post.submission).setPostHint(PostHint.IMAGE);
             }
         }
@@ -75,7 +75,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
             final String id = albumMatcher.group(3);
 
-            post.setImageObservable(
+            post.setMediaObservable(
                     imgurService.album(id)
                             .flatMap(basic -> Observable.from(basic.data.images))
                             .map(image -> new Image(image.link, image.width, image.height))

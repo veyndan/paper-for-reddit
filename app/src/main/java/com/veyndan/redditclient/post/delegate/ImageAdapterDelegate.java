@@ -102,7 +102,7 @@ public class ImageAdapterDelegate implements AdapterDelegate<List<Object>> {
                             image.setWidth(imageWidth);
                             image.setHeight(imageHeight);
 
-                            post.setImageObservable(Observable.just(image));
+                            post.setMediaObservable(Observable.just(image));
 
                             imageViewHolder.imageView.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
                         }

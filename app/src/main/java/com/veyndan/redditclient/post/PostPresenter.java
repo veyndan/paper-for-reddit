@@ -68,7 +68,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                         }
 
                         final Image image = new Image(post.submission.linkUrl, width, height);
-                        post.setImageObservable(Observable.just(image));
+                        post.setMediaObservable(Observable.just(image));
                     }
                     return post;
                 })

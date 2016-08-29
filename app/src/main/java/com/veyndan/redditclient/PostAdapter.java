@@ -48,7 +48,6 @@ import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -157,10 +156,9 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 activity, customTabsClient, customTabsIntent, post, width, items);
         holder.mediaView.setAdapter(postMediaAdapter);
 
-        Observable.concat(post.getImageObservable(), post.getTweetObservable())
+        post.getMediaObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .switchIfEmpty(Observable.concat(post.getLinkImageObservable(), post.getLinkObservable(), post.getTextObservable()).first())
                 .subscribe(item -> {
                     items.add(item);
                     postMediaAdapter.notifyDataSetChanged();

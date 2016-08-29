@@ -36,7 +36,7 @@ final class TwitterMutatorFactory implements MutatorFactory {
         if (matcher.matches()) {
             final Long tweetId = Long.parseLong(matcher.group(2));
             // TODO Replace Observable.create with an Observable returned by Retrofit.
-            post.setTweetObservable(Observable.create(subscriber -> {
+            post.setMediaObservable(Observable.create(subscriber -> {
                 TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
                     @Override
                     public void success(final Result<Tweet> result) {
