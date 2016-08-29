@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsClient;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.customtabs.CustomTabsServiceConnection;
-import android.support.customtabs.CustomTabsSession;
 import android.support.design.widget.CheckableImageButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -38,7 +37,6 @@ import com.jakewharton.rxbinding.widget.RxPopupMenu;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Link;
-import com.veyndan.redditclient.api.reddit.model.PostHint;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 import com.veyndan.redditclient.post.PostMediaAdapter;
@@ -62,7 +60,6 @@ import timber.log.Timber;
 
 public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
-    private static final int TYPE_LINK = 3;
     private static final int TYPE_TEXT = 6;
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
@@ -205,28 +202,15 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                     });
         }
 
+        if (post.getImageObservable() == null && post.getTweetObservable() == null && post.getLinkImageObservable() == null && post.getLinkObservable() != null) {
+            post.getLinkObservable()
+                    .subscribe(link -> {
+                        items.add(link);
+                        postMediaAdapter.notifyDataSetChanged();
+                    });
+        }
+
         switch (viewType) {
-            case TYPE_LINK:
-                final Link link = (Link) submission;
-
-                final View mediaContainer = inflater.inflate(R.layout.post_media_link, holder.mediaContainer, false);
-                holder.mediaContainer.addView(mediaContainer);
-
-                final TextView mediaUrl = ButterKnife.findById(mediaContainer, R.id.post_media_url);
-
-                if (customTabsClient != null) {
-                    final CustomTabsSession session = customTabsClient.newSession(null);
-
-                    session.mayLaunchUrl(Uri.parse(submission.linkUrl), null, null);
-                }
-
-                RxView.clicks(mediaUrl)
-                        .subscribe(aVoid -> {
-                            customTabsIntent.launchUrl(activity, Uri.parse(submission.linkUrl));
-                        });
-
-                mediaUrl.setText(link.domain);
-                break;
             case TYPE_TEXT:
                 final Comment comment = (Comment) submission;
 
@@ -405,16 +389,8 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
         if (submission instanceof Comment) {
             return TYPE_TEXT;
-        } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.SELF)) {
-            return 100;
-        } else if (post.getTweetObservable() != null) {
-            return 100;
-        } else if (submission instanceof Link && ((Link) submission).getPostHint().equals(PostHint.IMAGE)) {
-            return 100;
-        } else if (submission instanceof Link && !((Link) submission).preview.images.isEmpty()) {
-            return 100;
         } else {
-            return TYPE_LINK;
+            return 100;
         }
     }
 
