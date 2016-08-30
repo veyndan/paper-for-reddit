@@ -41,10 +41,7 @@ public final class Mutators {
     public Action1<Post> mutate() {
         return post -> {
             for (final MutatorFactory mutatorFactory : MUTATOR_FACTORIES) {
-                if (mutatorFactory.applicable(post)) {
-                    mutatorFactory.mutate(post);
-                    return;
-                }
+                if (mutatorFactory.mutate(post)) return;
             }
         };
     }

@@ -26,15 +26,12 @@ final class XkcdMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public boolean applicable(final Post post) {
+    public boolean mutate(final Post post) {
         final Matcher matcher = pattern.matcher(post.submission.linkUrl);
-        return post.submission instanceof Link && matcher.matches();
-    }
 
-    @Override
-    public void mutate(final Post post) {
-        final Matcher matcher = pattern.matcher(post.submission.linkUrl);
-        if (matcher.matches()) {
+        if (post.submission instanceof Link && matcher.matches()) {
+            final Link link = (Link) post.submission;
+
             final int comicNum = Integer.parseInt(matcher.group(1));
 
             final Retrofit retrofit = new Retrofit.Builder()
@@ -48,9 +45,12 @@ final class XkcdMutatorFactory implements MutatorFactory {
             final Observable<Image> imageObservable = xkcdService.num(comicNum)
                     .map(comic -> new Image(comic.getImg()));
 
-            ((Link) post.submission).setPostHint(PostHint.IMAGE);
+            link.setPostHint(PostHint.IMAGE);
 
             post.setMediaObservable(imageObservable);
+            return true;
         }
+
+        return false;
     }
 }

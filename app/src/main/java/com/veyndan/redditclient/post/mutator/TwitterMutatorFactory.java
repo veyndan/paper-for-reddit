@@ -25,15 +25,10 @@ final class TwitterMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public boolean applicable(final Post post) {
+    public boolean mutate(final Post post) {
         final Matcher matcher = pattern.matcher(post.submission.linkUrl);
-        return post.submission instanceof Link && matcher.matches();
-    }
 
-    @Override
-    public void mutate(final Post post) {
-        final Matcher matcher = pattern.matcher(post.submission.linkUrl);
-        if (matcher.matches()) {
+        if (post.submission instanceof Link && matcher.matches()) {
             final Long tweetId = Long.parseLong(matcher.group(1));
             // TODO Replace Observable.create with an Observable returned by Retrofit.
             post.setMediaObservable(Observable.create(subscriber -> {
@@ -52,6 +47,9 @@ final class TwitterMutatorFactory implements MutatorFactory {
                     }
                 });
             }));
+            return true;
         }
+
+        return false;
     }
 }

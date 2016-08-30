@@ -5,12 +5,9 @@ import com.veyndan.redditclient.post.model.Post;
 interface MutatorFactory {
 
     /**
-     * @return {@code true} if MutatorFactory should mutate the post.
-     */
-    boolean applicable(Post post);
-
-    /**
      * Mutate the post according to the mutators function.
+     *
+     * @return {@code true} if the MutatorFactory mutated the post.
      */
-    void mutate(Post post);
+    boolean mutate(Post post);
 }

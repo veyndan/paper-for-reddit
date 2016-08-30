@@ -17,17 +17,20 @@ final class LinkImageMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public boolean applicable(final Post post) {
-        return post.submission instanceof Link && !((Link) post.submission).preview.images.isEmpty();
-    }
+    public boolean mutate(final Post post) {
+        if (post.submission instanceof Link) {
+            final Link link = (Link) post.submission;
 
-    @Override
-    public void mutate(final Post post) {
-        final Link link = (Link) post.submission;
-        final Source source = link.preview.images.get(0).source;
+            if (!link.preview.images.isEmpty()) {
+                final Source source = link.preview.images.get(0).source;
 
-        final LinkImage linkImage = new LinkImage(source.url, link.domain);
+                final LinkImage linkImage = new LinkImage(source.url, link.domain);
 
-        post.setMediaObservable(Observable.just(linkImage));
+                post.setMediaObservable(Observable.just(linkImage));
+                return true;
+            }
+        }
+
+        return false;
     }
 }
