@@ -15,7 +15,7 @@ import rx.Observable;
 
 final class TwitterMutatorFactory implements MutatorFactory {
 
-    private final Pattern pattern = Pattern.compile("^https?://(?:www\\.)?twitter\\.com/\\w*/status/(\\d+)\\?.*$");
+    private static final Pattern PATTERN = Pattern.compile("^https?://(?:www\\.)?twitter\\.com/\\w*/status/(\\d+)\\?.*$");
 
     static TwitterMutatorFactory create() {
         return new TwitterMutatorFactory();
@@ -26,7 +26,7 @@ final class TwitterMutatorFactory implements MutatorFactory {
 
     @Override
     public boolean mutate(final Post post) {
-        final Matcher matcher = pattern.matcher(post.submission.linkUrl);
+        final Matcher matcher = PATTERN.matcher(post.submission.linkUrl);
 
         if (post.submission instanceof Link && matcher.matches()) {
             final Long tweetId = Long.parseLong(matcher.group(1));

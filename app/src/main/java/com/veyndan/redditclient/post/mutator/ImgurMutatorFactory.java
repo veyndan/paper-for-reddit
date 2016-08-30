@@ -21,7 +21,7 @@ import rx.Observable;
 
 final class ImgurMutatorFactory implements MutatorFactory {
 
-    private final Pattern pattern = Pattern.compile("^https?://(?:www\\.)?(i\\.)?imgur\\.com/(a/|gallery/)?(.*)$");
+    private static final Pattern PATTERN = Pattern.compile("^https?://(?:www\\.)?(i\\.)?imgur\\.com/(a/|gallery/)?(.*)$");
 
     static ImgurMutatorFactory create() {
         return new ImgurMutatorFactory();
@@ -32,7 +32,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
     @Override
     public boolean mutate(final Post post) {
-        final Matcher matcher = pattern.matcher(post.submission.linkUrl);
+        final Matcher matcher = PATTERN.matcher(post.submission.linkUrl);
 
         if (post.submission instanceof Link && matcher.matches()) {
             final Link link = (Link) post.submission;

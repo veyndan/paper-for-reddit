@@ -16,7 +16,7 @@ import rx.Observable;
 
 final class XkcdMutatorFactory implements MutatorFactory {
 
-    private final Pattern pattern = Pattern.compile("^https?://(?:www\\.)?xkcd\\.com/(\\d+)/?$");
+    private static final Pattern PATTERN = Pattern.compile("^https?://(?:www\\.)?xkcd\\.com/(\\d+)/?$");
 
     static XkcdMutatorFactory create() {
         return new XkcdMutatorFactory();
@@ -27,7 +27,7 @@ final class XkcdMutatorFactory implements MutatorFactory {
 
     @Override
     public boolean mutate(final Post post) {
-        final Matcher matcher = pattern.matcher(post.submission.linkUrl);
+        final Matcher matcher = PATTERN.matcher(post.submission.linkUrl);
 
         if (post.submission instanceof Link && matcher.matches()) {
             final Link link = (Link) post.submission;
