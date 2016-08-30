@@ -49,7 +49,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                 .map(thing -> thing.data.children)
                 .flatMap(Observable::from)
                 .map(Post::new)
-                .doOnNext(Mutators.mutate())
+                .flatMap(Mutators.mutate())
                 .toList()
                 .subscribe(posts -> {
                     postMvpView.showPosts(posts);

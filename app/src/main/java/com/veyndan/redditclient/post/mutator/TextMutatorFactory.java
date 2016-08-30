@@ -16,13 +16,13 @@ final class TextMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public boolean mutate(final Post post) {
-        if (post.submission instanceof Comment) {
-            final Comment comment = (Comment) post.submission;
-            post.setMediaObservable(Observable.just(new Text(comment.bodyHtml)));
-            return true;
-        }
-
-        return false;
+    public Observable<Post> mutate(final Post post) {
+        return Observable.just(post)
+                .filter(post1 -> post1.submission instanceof Comment)
+                .map(post1 -> {
+                    final Comment comment = (Comment) post1.submission;
+                    post1.setMediaObservable(Observable.just(new Text(comment.bodyHtml)));
+                    return post1;
+                });
     }
 }

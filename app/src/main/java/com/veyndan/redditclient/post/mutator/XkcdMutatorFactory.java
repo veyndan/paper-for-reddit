@@ -26,31 +26,31 @@ final class XkcdMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public boolean mutate(final Post post) {
+    public Observable<Post> mutate(final Post post) {
         final Matcher matcher = PATTERN.matcher(post.submission.linkUrl);
 
-        if (post.submission instanceof Link && matcher.matches()) {
-            final Link link = (Link) post.submission;
+        return Observable.just(post)
+                .filter(post1 -> post1.submission instanceof Link && matcher.matches())
+                .map(post1 -> {
+                    final Link link = (Link) post1.submission;
 
-            final int comicNum = Integer.parseInt(matcher.group(1));
+                    final int comicNum = Integer.parseInt(matcher.group(1));
 
-            final Retrofit retrofit = new Retrofit.Builder()
-                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl("https://xkcd.com")
-                    .build();
+                    final Retrofit retrofit = new Retrofit.Builder()
+                            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .baseUrl("https://xkcd.com")
+                            .build();
 
-            final XkcdService xkcdService = retrofit.create(XkcdService.class);
+                    final XkcdService xkcdService = retrofit.create(XkcdService.class);
 
-            final Observable<Image> imageObservable = xkcdService.num(comicNum)
-                    .map(comic -> new Image(comic.getImg()));
+                    final Observable<Image> imageObservable = xkcdService.num(comicNum)
+                            .map(comic -> new Image(comic.getImg()));
 
-            link.setPostHint(PostHint.IMAGE);
+                    link.setPostHint(PostHint.IMAGE);
 
-            post.setMediaObservable(imageObservable);
-            return true;
-        }
-
-        return false;
+                    post1.setMediaObservable(imageObservable);
+                    return post1;
+                });
     }
 }

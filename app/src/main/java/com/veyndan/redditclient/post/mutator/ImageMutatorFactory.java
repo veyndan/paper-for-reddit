@@ -18,27 +18,29 @@ public final class ImageMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public boolean mutate(final Post post) {
-        if (post.submission instanceof Link) {
-            final Link link = (Link) post.submission;
+    public Observable<Post> mutate(final Post post) {
+        return Observable.just(post)
+                .filter(post1 -> post1.submission instanceof Link)
+                .filter(post1 -> {
+                    final Link link = (Link) post1.submission;
+                    return link.getPostHint().equals(PostHint.IMAGE);
+                })
+                .map(post1 -> {
+                    final Link link = (Link) post1.submission;
 
-            if (link.getPostHint().equals(PostHint.IMAGE)) {
-                final boolean imageDimensAvailable = !link.preview.images.isEmpty();
+                    final boolean imageDimensAvailable = !link.preview.images.isEmpty();
 
-                int width = 0;
-                int height = 0;
-                if (imageDimensAvailable) {
-                    final Source source = link.preview.images.get(0).source;
-                    width = source.width;
-                    height = source.height;
-                }
+                    int width = 0;
+                    int height = 0;
+                    if (imageDimensAvailable) {
+                        final Source source = link.preview.images.get(0).source;
+                        width = source.width;
+                        height = source.height;
+                    }
 
-                final Image image = new Image(post.submission.linkUrl, width, height);
-                post.setMediaObservable(Observable.just(image));
-                return true;
-            }
-        }
-
-        return false;
+                    final Image image = new Image(post1.submission.linkUrl, width, height);
+                    post1.setMediaObservable(Observable.just(image));
+                    return post1;
+                });
     }
 }

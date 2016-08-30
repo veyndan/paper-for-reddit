@@ -16,16 +16,17 @@ final class LinkMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public boolean mutate(final Post post) {
-        if (post.submission instanceof com.veyndan.redditclient.api.reddit.model.Link) {
-            final com.veyndan.redditclient.api.reddit.model.Link link = (com.veyndan.redditclient.api.reddit.model.Link) post.submission;
-
-            if (!link.getPostHint().equals(PostHint.SELF)) {
-                post.setMediaObservable(Observable.just(new Link(link.domain)));
-                return true;
-            }
-        }
-
-        return false;
+    public Observable<Post> mutate(final Post post) {
+        return Observable.just(post)
+                .filter(post1 -> post1.submission instanceof com.veyndan.redditclient.api.reddit.model.Link)
+                .filter(post1 -> {
+                    final com.veyndan.redditclient.api.reddit.model.Link link = (com.veyndan.redditclient.api.reddit.model.Link) post1.submission;
+                    return !link.getPostHint().equals(PostHint.SELF);
+                })
+                .map(post1 -> {
+                    final com.veyndan.redditclient.api.reddit.model.Link link = (com.veyndan.redditclient.api.reddit.model.Link) post1.submission;
+                    post1.setMediaObservable(Observable.just(new Link(link.domain)));
+                    return post1;
+                });
     }
 }

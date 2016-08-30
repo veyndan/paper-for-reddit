@@ -3,9 +3,11 @@ package com.veyndan.redditclient.post.mutator;
 import com.google.common.collect.ImmutableList;
 import com.veyndan.redditclient.post.model.Post;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import rx.functions.Action1;
+import rx.Observable;
+import rx.functions.Func1;
 
 public final class Mutators {
 
@@ -39,11 +41,13 @@ public final class Mutators {
     /**
      * Mutate a list of posts by the first mutator which is applicable to mutate the post.
      */
-    public static Action1<Post> mutate() {
+    public static Func1<Post, Observable<Post>> mutate() {
         return post -> {
+            final List<Observable<Post>> observables = new ArrayList<>();
             for (final MutatorFactory mutatorFactory : MUTATOR_FACTORIES) {
-                if (mutatorFactory.mutate(post)) return;
+                observables.add(mutatorFactory.mutate(post));
             }
+            return Observable.concat(observables).firstOrDefault(post);
         };
     }
 }

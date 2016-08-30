@@ -25,31 +25,31 @@ final class TwitterMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public boolean mutate(final Post post) {
+    public Observable<Post> mutate(final Post post) {
         final Matcher matcher = PATTERN.matcher(post.submission.linkUrl);
 
-        if (post.submission instanceof Link && matcher.matches()) {
-            final Long tweetId = Long.parseLong(matcher.group(1));
-            // TODO Replace Observable.create with an Observable returned by Retrofit.
-            post.setMediaObservable(Observable.create(subscriber -> {
-                TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
-                    @Override
-                    public void success(final Result<Tweet> result) {
-                        if (!subscriber.isUnsubscribed()) {
-                            subscriber.onNext(result.data);
-                            subscriber.onCompleted();
-                        }
-                    }
+        return Observable.just(post)
+                .filter(post1 -> post1.submission instanceof Link && matcher.matches())
+                .map(post1 -> {
+                    final Long tweetId = Long.parseLong(matcher.group(1));
+                    // TODO Replace Observable.create with an Observable returned by Retrofit.
+                    post1.setMediaObservable(Observable.create(subscriber -> {
+                        TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
+                            @Override
+                            public void success(final Result<Tweet> result) {
+                                if (!subscriber.isUnsubscribed()) {
+                                    subscriber.onNext(result.data);
+                                    subscriber.onCompleted();
+                                }
+                            }
 
-                    @Override
-                    public void failure(final TwitterException exception) {
-                        subscriber.onError(exception);
-                    }
+                            @Override
+                            public void failure(final TwitterException exception) {
+                                subscriber.onError(exception);
+                            }
+                        });
+                    }));
+                    return post1;
                 });
-            }));
-            return true;
-        }
-
-        return false;
     }
 }

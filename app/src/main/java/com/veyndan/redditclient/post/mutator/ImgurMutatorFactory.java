@@ -31,70 +31,70 @@ final class ImgurMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public boolean mutate(final Post post) {
+    public Observable<Post> mutate(final Post post) {
         final Matcher matcher = PATTERN.matcher(post.submission.linkUrl);
 
-        if (post.submission instanceof Link && matcher.matches()) {
-            final Link link = (Link) post.submission;
+        return Observable.just(post)
+                .filter(post1 -> post1.submission instanceof Link && matcher.matches())
+                .map(post1 -> {
+                    final Link link = (Link) post1.submission;
 
-            final boolean isAlbum = matcher.group(2) != null;
-            final boolean isDirectImage = matcher.group(1) != null;
+                    final boolean isAlbum = matcher.group(2) != null;
+                    final boolean isDirectImage = matcher.group(1) != null;
 
-            if (!isAlbum && !isDirectImage) {
-                // TODO .gifv links are HTML 5 videos so the PostHint should be set accordingly.
-                if (!post.submission.linkUrl.endsWith(".gifv")) {
-                    post.submission.linkUrl = singleImageUrlToDirectImageUrl(post.submission.linkUrl);
+                    if (!isAlbum && !isDirectImage) {
+                        // TODO .gifv links are HTML 5 videos so the PostHint should be set accordingly.
+                        if (!post1.submission.linkUrl.endsWith(".gifv")) {
+                            post1.submission.linkUrl = singleImageUrlToDirectImageUrl(post1.submission.linkUrl);
 
-                    link.setPostHint(PostHint.IMAGE);
-                }
-            }
+                            link.setPostHint(PostHint.IMAGE);
+                        }
+                    }
 
-            if (isAlbum) {
-                link.setPostHint(PostHint.IMAGE);
+                    if (isAlbum) {
+                        link.setPostHint(PostHint.IMAGE);
 
-                final OkHttpClient client = new OkHttpClient.Builder()
-                        .addInterceptor(chain -> {
-                            Request request = chain.request().newBuilder()
-                                    .addHeader("Authorization", "Client-ID " + Config.IMGUR_CLIENT_ID)
-                                    .build();
-                            return chain.proceed(request);
-                        })
-                        .build();
+                        final OkHttpClient client = new OkHttpClient.Builder()
+                                .addInterceptor(chain -> {
+                                    Request request = chain.request().newBuilder()
+                                            .addHeader("Authorization", "Client-ID " + Config.IMGUR_CLIENT_ID)
+                                            .build();
+                                    return chain.proceed(request);
+                                })
+                                .build();
 
-                final Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("https://api.imgur.com/3/")
-                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .client(client)
-                        .build();
+                        final Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl("https://api.imgur.com/3/")
+                                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .client(client)
+                                .build();
 
-                final ImgurService imgurService = retrofit.create(ImgurService.class);
+                        final ImgurService imgurService = retrofit.create(ImgurService.class);
 
-                final String id = matcher.group(3);
+                        final String id = matcher.group(3);
 
-                post.setMediaObservable(
-                        imgurService.album(id)
-                                .flatMap(basic -> Observable.from(basic.data.images))
-                                .map(image -> new Image(image.link, image.width, image.height))
-                );
-            } else {
-                final boolean imageDimensAvailable = !link.preview.images.isEmpty();
+                        post1.setMediaObservable(
+                                imgurService.album(id)
+                                        .flatMap(basic -> Observable.from(basic.data.images))
+                                        .map(image -> new Image(image.link, image.width, image.height))
+                        );
+                    } else {
+                        final boolean imageDimensAvailable = !link.preview.images.isEmpty();
 
-                int width = 0;
-                int height = 0;
-                if (imageDimensAvailable) {
-                    final Source source = link.preview.images.get(0).source;
-                    width = source.width;
-                    height = source.height;
-                }
+                        int width = 0;
+                        int height = 0;
+                        if (imageDimensAvailable) {
+                            final Source source = link.preview.images.get(0).source;
+                            width = source.width;
+                            height = source.height;
+                        }
 
-                final Image image = new Image(post.submission.linkUrl, width, height);
-                post.setMediaObservable(Observable.just(image));
-            }
-            return true;
-        }
-
-        return false;
+                        final Image image = new Image(post1.submission.linkUrl, width, height);
+                        post1.setMediaObservable(Observable.just(image));
+                    }
+                    return post1;
+                });
     }
 
     /**

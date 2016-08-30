@@ -20,15 +20,15 @@ final class ImgflipMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public boolean mutate(final Post post) {
+    public Observable<Post> mutate(final Post post) {
         final Matcher matcher = PATTERN.matcher(post.submission.linkUrl);
 
-        if (matcher.matches()) {
-            final String directImageUrl = "https://i.imgflip.com/" + matcher.group(1) + ".jpg";
-            post.setMediaObservable(Observable.just(new Image(directImageUrl)));
-            return true;
-        }
-
-        return false;
+        return Observable.just(post)
+                .filter(post1 -> matcher.matches())
+                .map(post1 -> {
+                    final String directImageUrl = "https://i.imgflip.com/" + matcher.group(1) + ".jpg";
+                    post1.setMediaObservable(Observable.just(new Image(directImageUrl)));
+                    return post1;
+                });
     }
 }
