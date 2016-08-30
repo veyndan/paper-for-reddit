@@ -42,7 +42,7 @@ public class TextAdapterDelegate implements AdapterDelegate<List<Object>> {
         textViewHolder.textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
-    private CharSequence trimTrailingWhitespace(@NonNull final CharSequence source) {
+    private static CharSequence trimTrailingWhitespace(@NonNull final CharSequence source) {
         int i = source.length();
 
         // loop back to the first non-whitespace character

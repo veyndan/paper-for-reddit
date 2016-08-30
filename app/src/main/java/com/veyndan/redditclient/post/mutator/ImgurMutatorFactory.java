@@ -105,7 +105,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
      * @param url The single image url.
      * @return The direct image url.
      */
-    private String singleImageUrlToDirectImageUrl(final String url) {
+    private static String singleImageUrlToDirectImageUrl(final String url) {
         return HttpUrl.parse(url).newBuilder().host("i.imgur.com").build().toString() + ".png";
     }
 }

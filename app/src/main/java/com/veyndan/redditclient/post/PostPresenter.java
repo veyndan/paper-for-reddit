@@ -19,8 +19,6 @@ public class PostPresenter implements Presenter<PostMvpView> {
 
     private final Reddit reddit;
 
-    private final Mutators mutators = new Mutators();
-
     public PostPresenter() {
         final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID_RAWJAVA, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
         reddit = new Reddit.Builder(credentials).build();
@@ -51,7 +49,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                 .map(thing -> thing.data.children)
                 .flatMap(Observable::from)
                 .map(Post::new)
-                .doOnNext(mutators.mutate())
+                .doOnNext(Mutators.mutate())
                 .toList()
                 .subscribe(posts -> {
                     postMvpView.showPosts(posts);

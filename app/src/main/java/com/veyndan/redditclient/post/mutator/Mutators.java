@@ -38,7 +38,7 @@ public final class Mutators {
     /**
      * Mutate a list of posts by the first mutator which is applicable to mutate the post.
      */
-    public Action1<Post> mutate() {
+    public static Action1<Post> mutate() {
         return post -> {
             for (final MutatorFactory mutatorFactory : MUTATOR_FACTORIES) {
                 if (mutatorFactory.mutate(post)) return;
