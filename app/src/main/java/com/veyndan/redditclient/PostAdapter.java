@@ -162,7 +162,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 .subscribe(item -> {
                     items.add(item);
                     postMediaAdapter.notifyDataSetChanged();
-                }, throwable -> Timber.e(throwable, throwable.getMessage()));
+                }, Timber::e);
 
         final String comments = context.getResources().getQuantityString(R.plurals.comments, submission instanceof Link ? ((Link) submission).numComments : 0, submission instanceof Link ? ((Link) submission).numComments : 0);
         holder.score.setText(context.getString(R.string.score, points, comments));
