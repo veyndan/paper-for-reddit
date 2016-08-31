@@ -22,7 +22,7 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.binaryfork.spanny.Spanny;
-import com.veyndan.redditclient.Flair;
+import com.veyndan.redditclient.post.Flair;
 import com.veyndan.redditclient.R;
 
 import java.util.List;

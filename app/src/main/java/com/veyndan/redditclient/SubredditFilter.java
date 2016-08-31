@@ -5,6 +5,7 @@ import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.api.reddit.network.QueryBuilder;
 import com.veyndan.redditclient.api.reddit.network.Sort;
+import com.veyndan.redditclient.post.PostsFilter;
 
 import retrofit2.Response;
 import rx.Observable;

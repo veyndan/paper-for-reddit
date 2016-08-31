@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import com.veyndan.redditclient.api.reddit.network.QueryBuilder;
 import com.veyndan.redditclient.api.reddit.network.Sort;
 import com.veyndan.redditclient.api.reddit.network.TimePeriod;
+import com.veyndan.redditclient.post.PostsFragment;
 
 import java.util.Map;
 

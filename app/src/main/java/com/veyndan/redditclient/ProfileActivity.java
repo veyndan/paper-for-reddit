@@ -21,6 +21,7 @@ import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.api.reddit.model.Trophy;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.api.reddit.network.User;
+import com.veyndan.redditclient.post.PostsFragment;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;

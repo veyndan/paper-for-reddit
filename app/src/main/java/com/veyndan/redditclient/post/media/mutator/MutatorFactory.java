@@ -1,4 +1,4 @@
-package com.veyndan.redditclient.post.mutator;
+package com.veyndan.redditclient.post.media.mutator;
 
 import com.veyndan.redditclient.post.model.Post;
 

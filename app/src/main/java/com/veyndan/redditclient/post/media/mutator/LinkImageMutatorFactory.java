@@ -1,8 +1,8 @@
-package com.veyndan.redditclient.post.mutator;
+package com.veyndan.redditclient.post.media.mutator;
 
 import com.veyndan.redditclient.api.reddit.model.Source;
 import com.veyndan.redditclient.post.model.Post;
-import com.veyndan.redditclient.post.model.media.LinkImage;
+import com.veyndan.redditclient.post.media.model.LinkImage;
 
 import rx.Observable;
 

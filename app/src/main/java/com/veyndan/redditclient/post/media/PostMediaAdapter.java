@@ -1,4 +1,4 @@
-package com.veyndan.redditclient.post;
+package com.veyndan.redditclient.post.media;
 
 import android.app.Activity;
 import android.support.customtabs.CustomTabsClient;
@@ -7,11 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegatesManager;
-import com.veyndan.redditclient.post.delegate.ImageAdapterDelegate;
-import com.veyndan.redditclient.post.delegate.LinkAdapterDelegate;
-import com.veyndan.redditclient.post.delegate.LinkImageAdapterDelegate;
-import com.veyndan.redditclient.post.delegate.TextAdapterDelegate;
-import com.veyndan.redditclient.post.delegate.TweetAdapterDelegate;
+import com.veyndan.redditclient.post.media.delegate.ImageAdapterDelegate;
+import com.veyndan.redditclient.post.media.delegate.LinkAdapterDelegate;
+import com.veyndan.redditclient.post.media.delegate.LinkImageAdapterDelegate;
+import com.veyndan.redditclient.post.media.delegate.TextAdapterDelegate;
+import com.veyndan.redditclient.post.media.delegate.TweetAdapterDelegate;
 import com.veyndan.redditclient.post.model.Post;
 
 import java.util.List;

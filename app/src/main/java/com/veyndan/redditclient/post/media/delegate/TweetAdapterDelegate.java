@@ -1,4 +1,4 @@
-package com.veyndan.redditclient.post.delegate;
+package com.veyndan.redditclient.post.media.delegate;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

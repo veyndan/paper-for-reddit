@@ -1,4 +1,4 @@
-package com.veyndan.redditclient.post.delegate;
+package com.veyndan.redditclient.post.media.delegate;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
 import com.veyndan.redditclient.R;
-import com.veyndan.redditclient.post.model.media.Text;
+import com.veyndan.redditclient.post.media.model.Text;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 

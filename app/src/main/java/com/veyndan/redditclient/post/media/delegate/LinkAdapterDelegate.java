@@ -1,4 +1,4 @@
-package com.veyndan.redditclient.post.delegate;
+package com.veyndan.redditclient.post.media.delegate;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -16,7 +16,7 @@ import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
 import com.jakewharton.rxbinding.view.RxView;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.post.model.Post;
-import com.veyndan.redditclient.post.model.media.Link;
+import com.veyndan.redditclient.post.media.model.Link;
 
 import java.util.List;
 

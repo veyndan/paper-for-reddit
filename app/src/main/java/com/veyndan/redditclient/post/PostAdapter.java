@@ -1,4 +1,4 @@
-package com.veyndan.redditclient;
+package com.veyndan.redditclient.post;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -23,9 +23,12 @@ import android.widget.TextView;
 import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
+import com.veyndan.redditclient.MainActivity;
+import com.veyndan.redditclient.ProfileActivity;
+import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
-import com.veyndan.redditclient.post.PostMediaAdapter;
+import com.veyndan.redditclient.post.media.PostMediaAdapter;
 import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.ui.widget.PostHeaderView;
 

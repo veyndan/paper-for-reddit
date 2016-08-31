@@ -1,4 +1,4 @@
-package com.veyndan.redditclient.post.mutator;
+package com.veyndan.redditclient.post.media.mutator;
 
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;

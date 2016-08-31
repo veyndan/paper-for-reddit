@@ -1,12 +1,11 @@
 package com.veyndan.redditclient.post;
 
 import com.veyndan.redditclient.Config;
-import com.veyndan.redditclient.PostsFilter;
 import com.veyndan.redditclient.Presenter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.post.model.Post;
-import com.veyndan.redditclient.post.mutator.Mutators;
+import com.veyndan.redditclient.post.media.mutator.Mutators;
 
 import retrofit2.Response;
 import rx.Observable;

@@ -1,7 +1,7 @@
-package com.veyndan.redditclient.post.mutator;
+package com.veyndan.redditclient.post.media.mutator;
 
 import com.veyndan.redditclient.post.model.Post;
-import com.veyndan.redditclient.post.model.media.Image;
+import com.veyndan.redditclient.post.media.model.Image;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

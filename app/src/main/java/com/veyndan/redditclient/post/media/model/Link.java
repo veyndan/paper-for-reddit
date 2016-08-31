@@ -1,4 +1,4 @@
-package com.veyndan.redditclient.post.model.media;
+package com.veyndan.redditclient.post.media.model;
 
 public class Link {
 

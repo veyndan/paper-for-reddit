@@ -1,4 +1,4 @@
-package com.veyndan.redditclient;
+package com.veyndan.redditclient.post;
 
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Listing;

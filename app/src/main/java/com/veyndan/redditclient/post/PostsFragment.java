@@ -1,4 +1,4 @@
-package com.veyndan.redditclient;
+package com.veyndan.redditclient.post;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -12,10 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
+import com.veyndan.redditclient.Config;
+import com.veyndan.redditclient.MarginItemDecoration;
+import com.veyndan.redditclient.R;
+import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
-import com.veyndan.redditclient.post.PostMvpView;
-import com.veyndan.redditclient.post.PostPresenter;
 import com.veyndan.redditclient.post.model.Post;
 
 import java.util.ArrayList;

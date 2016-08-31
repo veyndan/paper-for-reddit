@@ -1,4 +1,4 @@
-package com.veyndan.redditclient;
+package com.veyndan.redditclient.post;
 
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
