@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsClient;
 import android.support.customtabs.CustomTabsIntent;
@@ -15,11 +13,8 @@ import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.design.widget.CheckableImageButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.text.style.LineHeightSpan;
-import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +22,6 @@ import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.binaryfork.spanny.Spanny;
 import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
@@ -37,13 +31,13 @@ import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 import com.veyndan.redditclient.post.PostMediaAdapter;
 import com.veyndan.redditclient.post.model.Post;
+import com.veyndan.redditclient.ui.widget.PostHeaderView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.BindColor;
-import butterknife.BindDimen;
 import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -148,7 +142,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                 ? scoreHiddenText
                 : context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
 
-        holder.setHeader(submission.linkTitle, context.getString(R.string.subtitle, submission.author, age, submission.subreddit), flairs);
+        holder.header.setHeader(submission.linkTitle, context.getString(R.string.subtitle, submission.author, age, submission.subreddit), flairs);
 
         final List<Object> items = new ArrayList<>();
 
@@ -325,9 +319,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
 
-        private final Context context;
-
-        @BindView(R.id.post_title) TextView title;
+        @BindView(R.id.post_header) PostHeaderView header;
         @BindView(R.id.post_media_view) RecyclerView mediaView;
         @BindView(R.id.post_score) TextView score;
         @BindView(R.id.post_upvote) CheckableImageButton upvote;
@@ -335,77 +327,9 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         @BindView(R.id.post_save) CheckableImageButton save;
         @BindView(R.id.post_other) ImageButton other;
 
-        @BindDimen(R.dimen.post_title_subtitle_spacing) int titleSubtitleSpacing;
-        @BindDimen(R.dimen.post_subtitle_flair_spacing) int subtitleFlairSpacing;
-
         public PostViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
-
-            context = itemView.getContext();
-        }
-
-        void setHeader(final String title, final String subtitle, @NonNull final List<Flair> flairs) {
-            final TextAppearanceSpan titleTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostTitleTextAppearance);
-
-            final TextAppearanceSpan subtitleTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostSubtitleTextAppearance);
-            final LineHeightSpan subtitleLineHeightSpan = new LineHeightSpan.WithDensity() {
-                @Override
-                public void chooseHeight(final CharSequence text, final int start, final int end, final int spanstartv, final int v, final Paint.FontMetricsInt fm, final TextPaint paint) {
-                    fm.ascent -= titleSubtitleSpacing;
-                    fm.top -= titleSubtitleSpacing;
-
-                    if (!flairs.isEmpty()) {
-                        fm.descent += subtitleFlairSpacing;
-                        fm.bottom += subtitleFlairSpacing;
-                    }
-                }
-
-                @Override
-                public void chooseHeight(final CharSequence text, final int start, final int end, final int spanstartv, final int v, final Paint.FontMetricsInt fm) {
-                    chooseHeight(text, start, end, spanstartv, v, fm, null);
-                }
-            };
-
-            final Spanny spanny = new Spanny(title, titleTextAppearanceSpan)
-                    .append("\n")
-                    .append(subtitle, subtitleTextAppearanceSpan, subtitleLineHeightSpan);
-
-            if (!flairs.isEmpty()) {
-                spanny.append("\n");
-
-                final Spanny flairsSpanny = new Spanny();
-
-                String divider = "";
-                for (final Flair flair : flairs) {
-                    flairsSpanny.append(divider);
-                    if (divider.isEmpty()) {
-                        divider = "   "; // TODO Replace with margin left and right of 4dp
-                    }
-
-                    flairsSpanny.append(flair.getSpannable(context));
-                }
-
-                spanny.append(flairsSpanny, new LineHeightSpan.WithDensity() {
-                    @Override
-                    public void chooseHeight(final CharSequence text, final int start, final int end, final int spanstartv, final int v, final Paint.FontMetricsInt fm, final TextPaint paint) {
-                        // Reset titleSubtitleSpacing.
-                        fm.ascent += titleSubtitleSpacing;
-                        fm.top += titleSubtitleSpacing;
-
-                        // Reset subtitleFlairSpacing.
-                        fm.descent -= subtitleFlairSpacing;
-                        fm.bottom -= subtitleFlairSpacing;
-                    }
-
-                    @Override
-                    public void chooseHeight(final CharSequence text, final int start, final int end, final int spanstartv, final int v, final Paint.FontMetricsInt fm) {
-                        chooseHeight(text, start, end, spanstartv, v, fm, null);
-                    }
-                });
-            }
-
-            this.title.setText(spanny);
         }
     }
 }
