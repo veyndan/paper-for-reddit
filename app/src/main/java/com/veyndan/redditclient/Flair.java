@@ -26,6 +26,7 @@ public final class Flair {
         return icon;
     }
 
+    @ColorInt
     public int getBackgroundColor() {
         return backgroundColor;
     }
