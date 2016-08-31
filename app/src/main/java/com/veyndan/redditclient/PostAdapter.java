@@ -301,7 +301,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         return posts.size();
     }
 
-    public static class PostViewHolder extends RecyclerView.ViewHolder {
+    static class PostViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.post_header) PostHeaderView header;
         @BindView(R.id.post_media_view) RecyclerView mediaView;
@@ -311,7 +311,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         @BindView(R.id.post_save) CheckableImageButton save;
         @BindView(R.id.post_other) ImageButton other;
 
-        public PostViewHolder(final View itemView) {
+        PostViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
