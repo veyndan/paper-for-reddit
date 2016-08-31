@@ -5,7 +5,6 @@ import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetUtils;
-import com.veyndan.redditclient.api.reddit.model.Link;
 import com.veyndan.redditclient.post.model.Post;
 
 import java.util.regex.Matcher;
@@ -26,10 +25,10 @@ final class TwitterMutatorFactory implements MutatorFactory {
 
     @Override
     public Observable<Post> mutate(final Post post) {
-        final Matcher matcher = PATTERN.matcher(post.submission.linkUrl);
+        final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
         return Observable.just(post)
-                .filter(post1 -> post1.submission instanceof Link && matcher.matches())
+                .filter(post1 -> post1.isLink() && matcher.matches())
                 .map(post1 -> {
                     final Long tweetId = Long.parseLong(matcher.group(1));
                     // TODO Replace Observable.create with an Observable returned by Retrofit.

@@ -2,7 +2,6 @@ package com.veyndan.redditclient.post.mutator;
 
 import com.veyndan.redditclient.Config;
 import com.veyndan.redditclient.api.imgur.network.ImgurService;
-import com.veyndan.redditclient.api.reddit.model.Link;
 import com.veyndan.redditclient.api.reddit.model.PostHint;
 import com.veyndan.redditclient.api.reddit.model.Source;
 import com.veyndan.redditclient.post.model.Post;
@@ -32,27 +31,25 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
     @Override
     public Observable<Post> mutate(final Post post) {
-        final Matcher matcher = PATTERN.matcher(post.submission.linkUrl);
+        final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
         return Observable.just(post)
-                .filter(post1 -> post1.submission instanceof Link && matcher.matches())
+                .filter(post1 -> post1.isLink() && matcher.matches())
                 .map(post1 -> {
-                    final Link link = (Link) post1.submission;
-
                     final boolean isAlbum = matcher.group(2) != null;
                     final boolean isDirectImage = matcher.group(1) != null;
 
                     if (!isAlbum && !isDirectImage) {
                         // TODO .gifv links are HTML 5 videos so the PostHint should be set accordingly.
-                        if (!post1.submission.linkUrl.endsWith(".gifv")) {
-                            post1.submission.linkUrl = singleImageUrlToDirectImageUrl(post1.submission.linkUrl);
+                        if (!post1.getLinkUrl().endsWith(".gifv")) {
+                            post1.setLinkUrl(singleImageUrlToDirectImageUrl(post1.getLinkUrl()));
 
-                            link.setPostHint(PostHint.IMAGE);
+                            post.setPostHint(PostHint.IMAGE);
                         }
                     }
 
                     if (isAlbum) {
-                        link.setPostHint(PostHint.IMAGE);
+                        post.setPostHint(PostHint.IMAGE);
 
                         final OkHttpClient client = new OkHttpClient.Builder()
                                 .addInterceptor(chain -> {
@@ -80,17 +77,17 @@ final class ImgurMutatorFactory implements MutatorFactory {
                                         .map(image -> new Image(image.link, image.width, image.height))
                         );
                     } else {
-                        final boolean imageDimensAvailable = !link.preview.images.isEmpty();
+                        final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
 
                         int width = 0;
                         int height = 0;
                         if (imageDimensAvailable) {
-                            final Source source = link.preview.images.get(0).source;
+                            final Source source = post.getPreview().images.get(0).source;
                             width = source.width;
                             height = source.height;
                         }
 
-                        final Image image = new Image(post1.submission.linkUrl, width, height);
+                        final Image image = new Image(post.getLinkUrl(), width, height);
                         post1.setMediaObservable(Observable.just(image));
                     }
                     return post1;

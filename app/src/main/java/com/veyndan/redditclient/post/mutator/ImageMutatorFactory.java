@@ -1,6 +1,5 @@
 package com.veyndan.redditclient.post.mutator;
 
-import com.veyndan.redditclient.api.reddit.model.Link;
 import com.veyndan.redditclient.api.reddit.model.PostHint;
 import com.veyndan.redditclient.api.reddit.model.Source;
 import com.veyndan.redditclient.post.model.Post;
@@ -20,25 +19,20 @@ public final class ImageMutatorFactory implements MutatorFactory {
     @Override
     public Observable<Post> mutate(final Post post) {
         return Observable.just(post)
-                .filter(post1 -> post1.submission instanceof Link)
-                .filter(post1 -> {
-                    final Link link = (Link) post1.submission;
-                    return link.getPostHint().equals(PostHint.IMAGE);
-                })
+                .filter(Post::isLink)
+                .filter(post1 -> post1.getPostHint().equals(PostHint.IMAGE))
                 .map(post1 -> {
-                    final Link link = (Link) post1.submission;
-
-                    final boolean imageDimensAvailable = !link.preview.images.isEmpty();
+                    final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
 
                     int width = 0;
                     int height = 0;
                     if (imageDimensAvailable) {
-                        final Source source = link.preview.images.get(0).source;
+                        final Source source = post.getPreview().images.get(0).source;
                         width = source.width;
                         height = source.height;
                     }
 
-                    final Image image = new Image(post1.submission.linkUrl, width, height);
+                    final Image image = new Image(post1.getLinkUrl(), width, height);
                     post1.setMediaObservable(Observable.just(image));
                     return post1;
                 });

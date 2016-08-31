@@ -1,6 +1,5 @@
 package com.veyndan.redditclient.post.mutator;
 
-import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.post.model.media.Text;
 
@@ -18,10 +17,9 @@ final class TextMutatorFactory implements MutatorFactory {
     @Override
     public Observable<Post> mutate(final Post post) {
         return Observable.just(post)
-                .filter(post1 -> post1.submission instanceof Comment)
+                .filter(Post::isComment)
                 .map(post1 -> {
-                    final Comment comment = (Comment) post1.submission;
-                    post1.setMediaObservable(Observable.just(new Text(comment.bodyHtml)));
+                    post1.setMediaObservable(Observable.just(new Text(post1.getBodyHtml())));
                     return post1;
                 });
     }

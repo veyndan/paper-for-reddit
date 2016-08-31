@@ -60,12 +60,12 @@ public class LinkAdapterDelegate implements AdapterDelegate<List<Object>> {
         if (customTabsClient != null) {
             final CustomTabsSession session = customTabsClient.newSession(null);
 
-            session.mayLaunchUrl(Uri.parse(post.submission.linkUrl), null, null);
+            session.mayLaunchUrl(Uri.parse(post.getLinkUrl()), null, null);
         }
 
         RxView.clicks(linkViewHolder.urlView)
                 .subscribe(aVoid -> {
-                    customTabsIntent.launchUrl(activity, Uri.parse(post.submission.linkUrl));
+                    customTabsIntent.launchUrl(activity, Uri.parse(post.getLinkUrl()));
                 });
 
         linkViewHolder.urlView.setText(link.getDomain());

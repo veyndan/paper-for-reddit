@@ -21,7 +21,7 @@ final class ImgflipMutatorFactory implements MutatorFactory {
 
     @Override
     public Observable<Post> mutate(final Post post) {
-        final Matcher matcher = PATTERN.matcher(post.submission.linkUrl);
+        final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
         return Observable.just(post)
                 .filter(post1 -> matcher.matches())

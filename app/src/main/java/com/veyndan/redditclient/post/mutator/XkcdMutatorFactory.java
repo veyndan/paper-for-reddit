@@ -1,6 +1,5 @@
 package com.veyndan.redditclient.post.mutator;
 
-import com.veyndan.redditclient.api.reddit.model.Link;
 import com.veyndan.redditclient.api.reddit.model.PostHint;
 import com.veyndan.redditclient.api.xkcd.network.XkcdService;
 import com.veyndan.redditclient.post.model.Post;
@@ -27,13 +26,11 @@ final class XkcdMutatorFactory implements MutatorFactory {
 
     @Override
     public Observable<Post> mutate(final Post post) {
-        final Matcher matcher = PATTERN.matcher(post.submission.linkUrl);
+        final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
         return Observable.just(post)
-                .filter(post1 -> post1.submission instanceof Link && matcher.matches())
+                .filter(post1 -> post1.isLink() && matcher.matches())
                 .map(post1 -> {
-                    final Link link = (Link) post1.submission;
-
                     final int comicNum = Integer.parseInt(matcher.group(1));
 
                     final Retrofit retrofit = new Retrofit.Builder()
@@ -47,7 +44,7 @@ final class XkcdMutatorFactory implements MutatorFactory {
                     final Observable<Image> imageObservable = xkcdService.num(comicNum)
                             .map(comic -> new Image(comic.getImg()));
 
-                    link.setPostHint(PostHint.IMAGE);
+                    post.setPostHint(PostHint.IMAGE);
 
                     post1.setMediaObservable(imageObservable);
                     return post1;

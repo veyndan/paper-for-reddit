@@ -68,12 +68,12 @@ public class LinkImageAdapterDelegate implements AdapterDelegate<List<Object>> {
 
         if (customTabsClient != null) {
             final CustomTabsSession session = customTabsClient.newSession(null);
-            session.mayLaunchUrl(Uri.parse(post.submission.linkUrl), null, null);
+            session.mayLaunchUrl(Uri.parse(post.getLinkUrl()), null, null);
         }
 
         RxView.clicks(linkImageViewHolder.itemView)
                 .subscribe(aVoid -> {
-                    customTabsIntent.launchUrl(activity, Uri.parse(post.submission.linkUrl));
+                    customTabsIntent.launchUrl(activity, Uri.parse(post.getLinkUrl()));
                 });
 
         linkImageViewHolder.imageProgressView.setVisibility(View.VISIBLE);

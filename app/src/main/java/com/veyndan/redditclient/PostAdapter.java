@@ -13,8 +13,6 @@ import android.support.customtabs.CustomTabsServiceConnection;
 import android.support.design.widget.CheckableImageButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +24,6 @@ import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
 import com.veyndan.redditclient.api.reddit.Reddit;
-import com.veyndan.redditclient.api.reddit.model.Link;
-import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 import com.veyndan.redditclient.post.PostMediaAdapter;
 import com.veyndan.redditclient.post.model.Post;
@@ -35,7 +31,6 @@ import com.veyndan.redditclient.ui.widget.PostHeaderView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import butterknife.BindColor;
 import butterknife.BindDrawable;
@@ -104,45 +99,37 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
     protected void onBindContentViewHolder(final PostViewHolder holder, final int position) {
         final Context context = holder.itemView.getContext();
         final Post post = posts.get(position);
-        final Submission submission = post.submission;
-
-        final CharSequence age = DateUtils.getRelativeTimeSpanString(
-                TimeUnit.SECONDS.toMillis(submission.createdUtc), System.currentTimeMillis(),
-                DateUtils.SECOND_IN_MILLIS,
-                DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
 
         final List<Flair> flairs = new ArrayList<>();
 
-        if (submission.stickied) {
+        if (post.isStickied()) {
             flairs.add(new Flair.Builder(flairStickiedColor)
                     .text(flairStickiedText)
                     .build());
         }
 
-        if (submission instanceof Link && ((Link) submission).over18) {
+        if (post.isNsfw()) {
             flairs.add(new Flair.Builder(flairNsfwColor)
                     .text(flairNsfwText)
                     .build());
         }
 
-        if (submission instanceof Link && !TextUtils.isEmpty(((Link) submission).linkFlairText)) {
+        if (post.hasLinkFlair()) {
             flairs.add(new Flair.Builder(flairLinkColor)
-                    .text(((Link) submission).linkFlairText)
+                    .text(post.getLinkFlair())
                     .build());
         }
 
-        if (submission.gilded != 0) {
+        if (post.isGilded()) {
             flairs.add(new Flair.Builder(flairGildedColor)
-                    .text(String.valueOf(submission.gilded))
+                    .text(String.valueOf(post.getGildedCount()))
                     .icon(flairGildedIcon)
                     .build());
         }
 
-        final String points = submission.scoreHidden
-                ? scoreHiddenText
-                : context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
-
-        holder.header.setHeader(submission.linkTitle, context.getString(R.string.subtitle, submission.author, age, submission.subreddit), flairs);
+        final String subtitle = context.getString(R.string.subtitle, post.getAuthor(),
+                post.getDisplayAge(), post.getSubreddit());
+        holder.header.setHeader(post.getLinkTitle(), subtitle, flairs);
 
         final List<Object> items = new ArrayList<>();
 
@@ -158,10 +145,11 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                     postMediaAdapter.notifyDataSetChanged();
                 }, Timber::e);
 
-        final String comments = context.getResources().getQuantityString(R.plurals.comments, submission instanceof Link ? ((Link) submission).numComments : 0, submission instanceof Link ? ((Link) submission).numComments : 0);
+        final String points = post.getDisplayPoints(context, scoreHiddenText);
+        final String comments = post.getDisplayComments(context);
         holder.score.setText(context.getString(R.string.score, points, comments));
 
-        final VoteDirection likes = submission.getLikes();
+        final VoteDirection likes = post.getLikes();
 
         holder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
         RxView.clicks(holder.upvote)
@@ -174,19 +162,17 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         holder.downvote.setChecked(false);
                     }
 
-                    submission.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
-                    if (!submission.archived) {
-                        reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, submission.getFullname())
+                    post.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
+                    if (!post.isArchived()) {
+                        reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.getFullname())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
 
-                        submission.score += isChecked ? 1 : -1;
+                        post.setPoints(post.getPoints() + (isChecked ? 1 : -1));
 
-                        final String points1 = submission.scoreHidden
-                                ? scoreHiddenText
-                                : context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
-                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, submission instanceof Link ? ((Link) submission).numComments : 0, submission instanceof Link ? ((Link) submission).numComments : 0);
+                        final String points1 = post.getDisplayPoints(context, scoreHiddenText);
+                        final String comments1 = post.getDisplayComments(context);
                         holder.score.setText(context.getString(R.string.score, points1, comments1));
                     }
                 });
@@ -202,37 +188,35 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                         holder.upvote.setChecked(false);
                     }
 
-                    submission.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
-                    if (!submission.archived) {
-                        reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, submission.getFullname())
+                    post.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
+                    if (!post.isArchived()) {
+                        reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.getFullname())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
 
-                        submission.score += isChecked ? -1 : 1;
+                        post.setPoints(post.getPoints() + (isChecked ? -1 : 1));
 
-                        final String points1 = submission.scoreHidden
-                                ? scoreHiddenText
-                                : context.getResources().getQuantityString(R.plurals.points, submission.score, submission.score);
-                        final String comments1 = context.getResources().getQuantityString(R.plurals.comments, submission instanceof Link ? ((Link) submission).numComments : 0, submission instanceof Link ? ((Link) submission).numComments : 0);
+                        final String points1 = post.getDisplayPoints(context, scoreHiddenText);
+                        final String comments1 = post.getDisplayComments(context);
                         holder.score.setText(context.getString(R.string.score, points1, comments1));
                     }
                 });
 
-        holder.save.setChecked(submission.saved);
+        holder.save.setChecked(post.isSaved());
         RxView.clicks(holder.save)
                 .subscribe(aVoid -> {
                     holder.save.toggle();
                     final boolean isChecked = holder.save.isChecked();
 
-                    submission.saved = isChecked;
+                    post.setSaved(isChecked);
                     if (isChecked) {
-                        reddit.save("", submission.getFullname())
+                        reddit.save("", post.getFullname())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
                     } else {
-                        reddit.unsave(submission.getFullname())
+                        reddit.unsave(post.getFullname())
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
@@ -267,7 +251,7 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                                         if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
                                             // Chance to undo post hiding has gone, so follow through with
                                             // hiding network request.
-                                            reddit.hide(submission.getFullname())
+                                            reddit.hide(post.getFullname())
                                                     .subscribeOn(Schedulers.io())
                                                     .observeOn(AndroidSchedulers.mainThread())
                                                     .subscribe();
@@ -283,22 +267,22 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
                             break;
                         case R.id.action_post_share:
                             Intent intent = new Intent(Intent.ACTION_SEND);
-                            intent.putExtra(Intent.EXTRA_TEXT, submission.getPermalink());
+                            intent.putExtra(Intent.EXTRA_TEXT, post.getPermalink());
                             intent.setType("text/plain");
                             context.startActivity(intent);
                             break;
                         case R.id.action_post_profile:
                             intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
-                            intent.putExtra("username", submission.author);
+                            intent.putExtra("username", post.getAuthor());
                             context.startActivity(intent);
                             break;
                         case R.id.action_post_subreddit:
                             intent = new Intent(context.getApplicationContext(), MainActivity.class);
-                            intent.putExtra("subreddit", submission.subreddit);
+                            intent.putExtra("subreddit", post.getSubreddit());
                             context.startActivity(intent);
                             break;
                         case R.id.action_post_browser:
-                            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(submission.linkUrl));
+                            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.getLinkUrl()));
                             context.startActivity(intent);
                             break;
                         case R.id.action_post_report:
