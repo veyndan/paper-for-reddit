@@ -2,7 +2,6 @@ package com.veyndan.redditclient.api.reddit.model;
 
 import com.google.common.collect.ImmutableList;
 
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 import okhttp3.HttpUrl;
@@ -137,10 +136,6 @@ public class Link extends Submission {
             postHint = PostHint.IMAGE;
         }
         return postHint;
-    }
-
-    public void setPostHint(final PostHint postHint) {
-        this.postHint = Objects.requireNonNull(postHint, "postHint mustn't be null");
     }
 
     /**

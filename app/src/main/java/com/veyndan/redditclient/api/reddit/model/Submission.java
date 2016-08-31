@@ -27,22 +27,6 @@ public abstract class Submission extends RedditObject {
         return likes ? VoteDirection.UPVOTE : VoteDirection.DOWNVOTE;
     }
 
-    public void setLikes(final VoteDirection voteDirection) {
-        switch (voteDirection) {
-            case UPVOTE:
-                likes = true;
-                break;
-            case DOWNVOTE:
-                likes = false;
-                break;
-            case UNVOTE:
-                likes = null;
-                break;
-            default:
-                throw new IllegalStateException("Unknown vote direction");
-        }
-    }
-
     // Created
     public long created;
     public long createdUtc;

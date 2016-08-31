@@ -2,6 +2,7 @@ package com.veyndan.redditclient.post.model;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
@@ -24,8 +25,20 @@ public class Post {
 
     private Observable<Object> mediaObservable = Observable.empty();
 
+    private String linkUrl;
+    private int points;
+    private VoteDirection likes;
+    private boolean saved;
+    private PostHint postHint;
+
     public Post(final RedditObject redditObject) {
         this.submission = (Submission) redditObject;
+
+        linkUrl = submission.linkUrl;
+        points = submission.score;
+        likes = submission.getLikes();
+        saved = submission.saved;
+        postHint = submission instanceof Link ? ((Link) submission).getPostHint() : null;
     }
 
     public Observable<Object> getMediaObservable() {
@@ -49,11 +62,11 @@ public class Post {
     }
 
     public String getLinkUrl() {
-        return submission.linkUrl;
+        return linkUrl;
     }
 
     public void setLinkUrl(final String linkUrl) {
-        submission.linkUrl = linkUrl;
+        this.linkUrl = linkUrl;
     }
 
     public String getAuthor() {
@@ -97,11 +110,11 @@ public class Post {
     }
 
     public int getPoints() {
-        return submission.score;
+        return points;
     }
 
     public void setPoints(final int points) {
-        submission.score = points;
+        this.points = points;
     }
 
     public String getDisplayPoints(final Context context, final String scoreHiddenText) {
@@ -109,7 +122,6 @@ public class Post {
             return scoreHiddenText;
         } else {
             final Resources resources = context.getResources();
-            final int points = submission.score;
             return resources.getQuantityString(R.plurals.points, points, points);
         }
     }
@@ -121,11 +133,11 @@ public class Post {
     }
 
     public VoteDirection getLikes() {
-        return submission.getLikes();
+        return likes;
     }
 
-    public void setLikes(final VoteDirection voteDirection) {
-        submission.setLikes(voteDirection);
+    public void setLikes(final VoteDirection likes) {
+        this.likes = likes;
     }
 
     public boolean isArchived() {
@@ -137,11 +149,11 @@ public class Post {
     }
 
     public boolean isSaved() {
-        return submission.saved;
+        return saved;
     }
 
     public void setSaved(final boolean saved) {
-        submission.saved = saved;
+        this.saved = saved;
     }
 
     public boolean getPermalink() {
@@ -153,13 +165,11 @@ public class Post {
     }
 
     public PostHint getPostHint() {
-        return submission instanceof Link ? ((Link) submission).getPostHint() : null;
+        return postHint;
     }
 
-    public void setPostHint(final PostHint postHint) {
-        if (submission instanceof Link) {
-            ((Link) submission).setPostHint(postHint);
-        }
+    public void setPostHint(@NonNull final PostHint postHint) {
+        if (submission instanceof Link) this.postHint = postHint;
     }
 
     public Preview getPreview() {
