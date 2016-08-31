@@ -45,8 +45,8 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.4'
 
     // Butterknife
-    compile 'com.jakewharton:butterknife:8.2.1'
-    apt 'com.jakewharton:butterknife-compiler:8.2.1'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
 
     // Deep Link Dispatch
     compile 'com.airbnb:deeplinkdispatch:2.0.1'
@@ -93,7 +93,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:24.2.0'
 
     // Timber
-    compile 'com.jakewharton.timber:timber:4.2.0'
+    compile 'com.jakewharton.timber:timber:4.3.0'
 
     // Twitter
     compile('com.twitter.sdk.android:twitter:2.0.0@aar') {
