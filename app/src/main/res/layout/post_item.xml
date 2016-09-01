@@ -50,21 +50,25 @@
                 android:layout_weight="1"
                 tools:text="@string/placeholder_post_score"/>
 
-            <android.support.design.widget.CheckableImageButton
-                android:id="@+id/post_upvote"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="@string/post_content_description_upvote"
-                app:srcCompat="@drawable/ic_arrow_upward_black_24dp"/>
+            <RadioGroup
+                android:id="@+id/post_vote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-            <android.support.design.widget.CheckableImageButton
-                android:id="@+id/post_downvote"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="@string/post_content_description_downvote"
-                app:srcCompat="@drawable/ic_arrow_downward_black_24dp"/>
+                <com.veyndan.redditclient.ui.widget.ToggleableRadioButton
+                    android:id="@+id/post_upvote_new"
+                    style="@style/ImageRadioButton"
+                    android:contentDescription="@string/post_content_description_upvote"
+                    android:drawableRight="@drawable/ic_arrow_upward_black_24dp"/>
+
+                <com.veyndan.redditclient.ui.widget.ToggleableRadioButton
+                    android:id="@+id/post_downvote_new"
+                    style="@style/ImageRadioButton"
+                    android:contentDescription="@string/post_content_description_downvote"
+                    android:drawableRight="@drawable/ic_arrow_downward_black_24dp"/>
+
+            </RadioGroup>
 
             <android.support.design.widget.CheckableImageButton
                 android:id="@+id/post_save"

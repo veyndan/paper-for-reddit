@@ -19,11 +19,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
 import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
+import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
 import com.veyndan.redditclient.MainActivity;
 import com.veyndan.redditclient.ProfileActivity;
@@ -167,16 +170,12 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
         final VoteDirection likes = post.getLikes();
 
         postHolder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
-        RxView.clicks(postHolder.upvote)
-                .subscribe(aVoid -> {
-                    postHolder.upvote.toggle();
-                    final boolean isChecked = postHolder.upvote.isChecked();
-
-                    // Ensure that downvote and upvote aren't checked at the same time.
-                    if (isChecked) {
-                        postHolder.downvote.setChecked(false);
-                    }
-
+        RxCompoundButton.checkedChanges(postHolder.upvote)
+                // checkedChanges emits the checked state on subscription. As the voted state of
+                // the Reddit post is the same as the checked state of the button initially,
+                // skipping the initial emission means no unnecessary network requests occur.
+                .skip(1)
+                .subscribe(isChecked -> {
                     post.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
                     if (!post.isArchived()) {
                         reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.getFullname())
@@ -193,16 +192,12 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
                 });
 
         postHolder.downvote.setChecked(likes.equals(VoteDirection.DOWNVOTE));
-        RxView.clicks(postHolder.downvote)
-                .subscribe(aVoid -> {
-                    postHolder.downvote.toggle();
-                    final boolean isChecked = postHolder.downvote.isChecked();
-
-                    // Ensure that downvote and upvote aren't checked at the same time.
-                    if (isChecked) {
-                        postHolder.upvote.setChecked(false);
-                    }
-
+        RxCompoundButton.checkedChanges(postHolder.downvote)
+                // checkedChanges emits the checked state on subscription. As the voted state of
+                // the Reddit post is the same as the checked state of the button initially,
+                // skipping the initial emission means no unnecessary network requests occur.
+                .skip(1)
+                .subscribe(isChecked -> {
                     post.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
                     if (!post.isArchived()) {
                         reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.getFullname())
@@ -311,8 +306,9 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
         @BindView(R.id.post_header) PostHeaderView header;
         @BindView(R.id.post_media_view) RecyclerView mediaView;
         @BindView(R.id.post_score) TextView score;
-        @BindView(R.id.post_upvote) CheckableImageButton upvote;
-        @BindView(R.id.post_downvote) CheckableImageButton downvote;
+        @BindView(R.id.post_vote) RadioGroup voteGroup;
+        @BindView(R.id.post_upvote_new) RadioButton upvote;
+        @BindView(R.id.post_downvote_new) RadioButton downvote;
         @BindView(R.id.post_save) CheckableImageButton save;
         @BindView(R.id.post_other) ImageButton other;
 
