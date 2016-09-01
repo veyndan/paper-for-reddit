@@ -18,11 +18,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
+import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
 import com.jakewharton.rxbinding.view.RxView;
 import com.veyndan.redditclient.R;
-import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.post.media.model.Image;
+import com.veyndan.redditclient.post.model.Post;
 
 import java.util.List;
 
@@ -30,7 +30,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 
-public class ImageAdapterDelegate implements AdapterDelegate<List<Object>> {
+public class ImageAdapterDelegate
+        extends AbsListItemAdapterDelegate<Image, Object, ImageAdapterDelegate.ImageViewHolder> {
 
     private final Activity activity;
     private final CustomTabsClient customTabsClient;
@@ -49,34 +50,32 @@ public class ImageAdapterDelegate implements AdapterDelegate<List<Object>> {
     }
 
     @Override
-    public boolean isForViewType(@NonNull final List<Object> items, final int position) {
-        return items.get(position) instanceof Image;
+    protected boolean isForViewType(@NonNull final Object item, final List<Object> items,
+                                    final int position) {
+        return item instanceof Image;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent) {
+    public ImageViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final View view = inflater.inflate(R.layout.post_media_image, parent, false);
         return new ImageViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final List<Object> items, final int position,
-                                 @NonNull final RecyclerView.ViewHolder holder) {
+    protected void onBindViewHolder(@NonNull final Image image,
+                                    @NonNull final ImageViewHolder holder) {
         final Context context = holder.itemView.getContext();
 
-        final ImageViewHolder imageViewHolder = (ImageViewHolder) holder;
-        final Image image = (Image) items.get(position);
-
-        imageViewHolder.imageProgressView.setVisibility(View.VISIBLE);
+        holder.imageProgressView.setVisibility(View.VISIBLE);
 
         if (customTabsClient != null) {
             final CustomTabsSession session = customTabsClient.newSession(null);
             session.mayLaunchUrl(Uri.parse(image.getUrl()), null, null);
         }
 
-        RxView.clicks(imageViewHolder.itemView)
+        RxView.clicks(holder.itemView)
                 .subscribe(aVoid -> {
                     customTabsIntent.launchUrl(activity, Uri.parse(image.getUrl()));
                 });
@@ -88,13 +87,13 @@ public class ImageAdapterDelegate implements AdapterDelegate<List<Object>> {
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
-                        imageViewHolder.imageProgressView.setVisibility(View.GONE);
+                        holder.imageProgressView.setVisibility(View.GONE);
                         return false;
                     }
 
                     @Override
                     public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
-                        imageViewHolder.imageProgressView.setVisibility(View.GONE);
+                        holder.imageProgressView.setVisibility(View.GONE);
                         if (!imageDimensAvailable) {
                             final int imageWidth = resource.getIntrinsicWidth();
                             final int imageHeight = resource.getIntrinsicHeight();
@@ -104,15 +103,15 @@ public class ImageAdapterDelegate implements AdapterDelegate<List<Object>> {
 
                             post.setMediaObservable(Observable.just(image));
 
-                            imageViewHolder.imageView.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
+                            holder.imageView.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
                         }
                         return false;
                     }
                 })
-                .into(imageViewHolder.imageView);
+                .into(holder.imageView);
 
         if (imageDimensAvailable) {
-            imageViewHolder.imageView.getLayoutParams().height = (int) ((float) width / image.getWidth() * image.getHeight());
+            holder.imageView.getLayoutParams().height = (int) ((float) width / image.getWidth() * image.getHeight());
         }
     }
 

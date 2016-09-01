@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
+import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.post.media.model.Text;
 
@@ -17,29 +17,28 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.List;
 
-public class TextAdapterDelegate implements AdapterDelegate<List<Object>> {
+public class TextAdapterDelegate
+        extends AbsListItemAdapterDelegate<Text, Object, TextAdapterDelegate.TextViewHolder> {
 
     @Override
-    public boolean isForViewType(@NonNull final List<Object> items, final int position) {
-        return items.get(position) instanceof Text;
+    protected boolean isForViewType(@NonNull final Object item, final List<Object> items,
+                                    final int position) {
+        return item instanceof Text;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent) {
+    public TextViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final View view = inflater.inflate(R.layout.post_media_text, parent, false);
         return new TextViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final List<Object> items, final int position,
-                                 @NonNull final RecyclerView.ViewHolder holder) {
-        final TextViewHolder textViewHolder = (TextViewHolder) holder;
-        final Text text = (Text) items.get(position);
-
-        textViewHolder.textView.setText(trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(text.getBodyHtml()))));
-        textViewHolder.textView.setMovementMethod(LinkMovementMethod.getInstance());
+    protected void onBindViewHolder(@NonNull final Text text,
+                                    @NonNull final TextViewHolder holder) {
+        holder.textView.setText(trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(text.getBodyHtml()))));
+        holder.textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     private static CharSequence trimTrailingWhitespace(@NonNull final CharSequence source) {
@@ -53,7 +52,7 @@ public class TextAdapterDelegate implements AdapterDelegate<List<Object>> {
         return source.subSequence(0, i + 1);
     }
 
-    private static class TextViewHolder extends RecyclerView.ViewHolder {
+    static class TextViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView textView;
 

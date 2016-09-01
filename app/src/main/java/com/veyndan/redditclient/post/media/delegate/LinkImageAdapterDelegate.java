@@ -19,18 +19,19 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
+import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
 import com.jakewharton.rxbinding.view.RxView;
 import com.veyndan.redditclient.R;
-import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.post.media.model.LinkImage;
+import com.veyndan.redditclient.post.model.Post;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class LinkImageAdapterDelegate implements AdapterDelegate<List<Object>> {
+public class LinkImageAdapterDelegate
+        extends AbsListItemAdapterDelegate<LinkImage, Object, LinkImageAdapterDelegate.LinkImageViewHolder> {
 
     private final Activity activity;
     private final CustomTabsClient customTabsClient;
@@ -46,56 +47,54 @@ public class LinkImageAdapterDelegate implements AdapterDelegate<List<Object>> {
     }
 
     @Override
-    public boolean isForViewType(@NonNull final List<Object> items, final int position) {
-        return items.get(position) instanceof LinkImage;
+    protected boolean isForViewType(@NonNull final Object item, final List<Object> items,
+                                    final int position) {
+        return item instanceof LinkImage;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent) {
+    public LinkImageViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final View view = inflater.inflate(R.layout.post_media_link_image, parent, false);
         return new LinkImageViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final List<Object> items, final int position,
-                                 @NonNull final RecyclerView.ViewHolder holder) {
+    protected void onBindViewHolder(@NonNull final LinkImage linkImage,
+                                    @NonNull final LinkImageViewHolder holder) {
         final Context context = holder.itemView.getContext();
-
-        final LinkImageViewHolder linkImageViewHolder = (LinkImageViewHolder) holder;
-        final LinkImage linkImage = (LinkImage) items.get(position);
 
         if (customTabsClient != null) {
             final CustomTabsSession session = customTabsClient.newSession(null);
             session.mayLaunchUrl(Uri.parse(post.getLinkUrl()), null, null);
         }
 
-        RxView.clicks(linkImageViewHolder.itemView)
+        RxView.clicks(holder.itemView)
                 .subscribe(aVoid -> {
                     customTabsIntent.launchUrl(activity, Uri.parse(post.getLinkUrl()));
                 });
 
-        linkImageViewHolder.imageProgressView.setVisibility(View.VISIBLE);
+        holder.imageProgressView.setVisibility(View.VISIBLE);
 
         Glide.with(context)
                 .load(linkImage.getUrl())
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
-                        linkImageViewHolder.imageProgressView.setVisibility(View.GONE);
+                        holder.imageProgressView.setVisibility(View.GONE);
                         return false;
                     }
 
                     @Override
                     public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
-                        linkImageViewHolder.imageProgressView.setVisibility(View.GONE);
+                        holder.imageProgressView.setVisibility(View.GONE);
                         return false;
                     }
                 })
-                .into(linkImageViewHolder.imageView);
+                .into(holder.imageView);
 
-        linkImageViewHolder.urlView.setText(linkImage.getDomain());
+        holder.urlView.setText(linkImage.getDomain());
     }
 
     // ButterKnife requires that binding occurs in non private classes.

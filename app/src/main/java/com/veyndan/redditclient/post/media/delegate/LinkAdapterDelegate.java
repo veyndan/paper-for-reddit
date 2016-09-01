@@ -12,18 +12,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
+import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
 import com.jakewharton.rxbinding.view.RxView;
 import com.veyndan.redditclient.R;
-import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.post.media.model.Link;
+import com.veyndan.redditclient.post.model.Post;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class LinkAdapterDelegate implements AdapterDelegate<List<Object>> {
+public class LinkAdapterDelegate
+        extends AbsListItemAdapterDelegate<Link, Object, LinkAdapterDelegate.LinkViewHolder> {
 
     private final Activity activity;
     private final CustomTabsClient customTabsClient;
@@ -39,36 +40,33 @@ public class LinkAdapterDelegate implements AdapterDelegate<List<Object>> {
     }
 
     @Override
-    public boolean isForViewType(@NonNull final List<Object> items, final int position) {
-        return items.get(position) instanceof Link;
+    protected boolean isForViewType(@NonNull final Object item, final List<Object> items,
+                                    final int position) {
+        return item instanceof Link;
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent) {
+    public LinkViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final View view = inflater.inflate(R.layout.post_media_link, parent, false);
         return new LinkViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final List<Object> items, final int position,
-                                 @NonNull final RecyclerView.ViewHolder holder) {
-        final LinkViewHolder linkViewHolder = (LinkViewHolder) holder;
-        final Link link = (Link) items.get(position);
-
+    protected void onBindViewHolder(@NonNull final Link link, @NonNull final LinkViewHolder holder) {
         if (customTabsClient != null) {
             final CustomTabsSession session = customTabsClient.newSession(null);
 
             session.mayLaunchUrl(Uri.parse(post.getLinkUrl()), null, null);
         }
 
-        RxView.clicks(linkViewHolder.urlView)
+        RxView.clicks(holder.urlView)
                 .subscribe(aVoid -> {
                     customTabsIntent.launchUrl(activity, Uri.parse(post.getLinkUrl()));
                 });
 
-        linkViewHolder.urlView.setText(link.getDomain());
+        holder.urlView.setText(link.getDomain());
     }
 
     // ButterKnife requires that binding occurs in non private classes.
