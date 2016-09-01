@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
@@ -44,9 +45,14 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
+public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
+
+    private static final int TYPE_POST = 0;
+    private static final int TYPE_PROGRESS = 1;
+
+    private static final int FOOTER_SIZE = 1;
 
     private final Activity activity;
     private final List<Post> posts;
@@ -91,217 +97,234 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
     }
 
     @Override
-    protected PostViewHolder onCreateContentViewHolder(final ViewGroup parent, final int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
         ButterKnife.bind(this, parent);
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final View cardView = inflater.inflate(R.layout.post_item, parent, false);
-        return new PostViewHolder(cardView);
+
+        switch (viewType) {
+            case TYPE_POST:
+                final View postView = inflater.inflate(R.layout.post_item, parent, false);
+                return new PostViewHolder(postView);
+            case TYPE_PROGRESS:
+                final View progressView = inflater.inflate(R.layout.progress_item, parent, false);
+                return new ProgressViewHolder(progressView);
+            default:
+                throw new IllegalStateException("Unknown view type: " + viewType);
+        }
     }
 
     @Override
-    protected void onBindContentViewHolder(final PostViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
         final Context context = holder.itemView.getContext();
-        final Post post = posts.get(position);
 
-        final List<Flair> flairs = new ArrayList<>();
+        switch (holder.getItemViewType()) {
+            case TYPE_POST:
+                final PostViewHolder postHolder = (PostViewHolder) holder;
+                final Post post = posts.get(position);
 
-        if (post.isStickied()) {
-            flairs.add(new Flair.Builder(flairStickiedColor)
-                    .text(flairStickiedText)
-                    .build());
+                final List<Flair> flairs = new ArrayList<>();
+
+                if (post.isStickied()) {
+                    flairs.add(new Flair.Builder(flairStickiedColor)
+                            .text(flairStickiedText)
+                            .build());
+                }
+
+                if (post.isNsfw()) {
+                    flairs.add(new Flair.Builder(flairNsfwColor)
+                            .text(flairNsfwText)
+                            .build());
+                }
+
+                if (post.hasLinkFlair()) {
+                    flairs.add(new Flair.Builder(flairLinkColor)
+                            .text(post.getLinkFlair())
+                            .build());
+                }
+
+                if (post.isGilded()) {
+                    flairs.add(new Flair.Builder(flairGildedColor)
+                            .text(String.valueOf(post.getGildedCount()))
+                            .icon(flairGildedIcon)
+                            .build());
+                }
+
+                final String subtitle = context.getString(R.string.subtitle, post.getAuthor(),
+                        post.getDisplayAge(), post.getSubreddit());
+                postHolder.header.setHeader(post.getLinkTitle(), subtitle, flairs);
+
+                final List<Object> items = new ArrayList<>();
+
+                final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
+                        activity, customTabsClient, customTabsIntent, post, width, items);
+                postHolder.mediaView.setAdapter(postMediaAdapter);
+
+                post.getMediaObservable()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(item -> {
+                            items.add(item);
+                            postMediaAdapter.notifyDataSetChanged();
+                        }, Timber::e);
+
+                final String points = post.getDisplayPoints(context, scoreHiddenText);
+                final String comments = post.getDisplayComments(context);
+                postHolder.score.setText(context.getString(R.string.score, points, comments));
+
+                final VoteDirection likes = post.getLikes();
+
+                postHolder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
+                RxView.clicks(postHolder.upvote)
+                        .subscribe(aVoid -> {
+                            postHolder.upvote.toggle();
+                            final boolean isChecked = postHolder.upvote.isChecked();
+
+                            // Ensure that downvote and upvote aren't checked at the same time.
+                            if (isChecked) {
+                                postHolder.downvote.setChecked(false);
+                            }
+
+                            post.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
+                            if (!post.isArchived()) {
+                                reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.getFullname())
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe();
+
+                                post.setPoints(post.getPoints() + (isChecked ? 1 : -1));
+
+                                final String points1 = post.getDisplayPoints(context, scoreHiddenText);
+                                final String comments1 = post.getDisplayComments(context);
+                                postHolder.score.setText(context.getString(R.string.score, points1, comments1));
+                            }
+                        });
+
+                postHolder.downvote.setChecked(likes.equals(VoteDirection.DOWNVOTE));
+                RxView.clicks(postHolder.downvote)
+                        .subscribe(aVoid -> {
+                            postHolder.downvote.toggle();
+                            final boolean isChecked = postHolder.downvote.isChecked();
+
+                            // Ensure that downvote and upvote aren't checked at the same time.
+                            if (isChecked) {
+                                postHolder.upvote.setChecked(false);
+                            }
+
+                            post.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
+                            if (!post.isArchived()) {
+                                reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.getFullname())
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe();
+
+                                post.setPoints(post.getPoints() + (isChecked ? -1 : 1));
+
+                                final String points1 = post.getDisplayPoints(context, scoreHiddenText);
+                                final String comments1 = post.getDisplayComments(context);
+                                postHolder.score.setText(context.getString(R.string.score, points1, comments1));
+                            }
+                        });
+
+                postHolder.save.setChecked(post.isSaved());
+                RxView.clicks(postHolder.save)
+                        .subscribe(aVoid -> {
+                            postHolder.save.toggle();
+                            final boolean isChecked = postHolder.save.isChecked();
+
+                            post.setSaved(isChecked);
+                            if (isChecked) {
+                                reddit.save("", post.getFullname())
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe();
+                            } else {
+                                reddit.unsave(post.getFullname())
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe();
+                            }
+                        });
+
+                final PopupMenu otherMenu = new PopupMenu(context, postHolder.other);
+                otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
+
+                RxView.clicks(postHolder.other)
+                        .subscribe(aVoid -> otherMenu.show());
+
+                RxPopupMenu.itemClicks(otherMenu)
+                        .subscribe(menuItem -> {
+                            final int adapterPosition = postHolder.getAdapterPosition();
+
+                            switch (menuItem.getItemId()) {
+                                case R.id.action_post_hide:
+                                    final View.OnClickListener undoClickListener = view -> {
+                                        // If undo pressed, then don't follow through with request to hide
+                                        // the post.
+                                        posts.add(adapterPosition, post);
+                                        notifyItemInserted(adapterPosition);
+                                    };
+
+                                    final Snackbar snackbar = Snackbar.make(postHolder.itemView, R.string.notify_post_hidden, Snackbar.LENGTH_LONG)
+                                            .setAction(R.string.notify_post_hidden_undo, undoClickListener);
+
+                                    RxSnackbar.dismisses(snackbar)
+                                            .subscribe(event -> {
+                                                // If undo pressed, don't hide post.
+                                                if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                                    // Chance to undo post hiding has gone, so follow through with
+                                                    // hiding network request.
+                                                    reddit.hide(post.getFullname())
+                                                            .subscribeOn(Schedulers.io())
+                                                            .observeOn(AndroidSchedulers.mainThread())
+                                                            .subscribe();
+                                                }
+                                            });
+
+                                    snackbar.show();
+
+                                    // Hide post from list, but make no network request yet. Outcome of the
+                                    // user's interaction with the snackbar handling will determine this.
+                                    posts.remove(adapterPosition);
+                                    notifyItemRemoved(adapterPosition);
+                                    break;
+                                case R.id.action_post_share:
+                                    Intent intent = new Intent(Intent.ACTION_SEND);
+                                    intent.putExtra(Intent.EXTRA_TEXT, post.getPermalink());
+                                    intent.setType("text/plain");
+                                    context.startActivity(intent);
+                                    break;
+                                case R.id.action_post_profile:
+                                    intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
+                                    intent.putExtra("username", post.getAuthor());
+                                    context.startActivity(intent);
+                                    break;
+                                case R.id.action_post_subreddit:
+                                    intent = new Intent(context.getApplicationContext(), MainActivity.class);
+                                    intent.putExtra("subreddit", post.getSubreddit());
+                                    context.startActivity(intent);
+                                    break;
+                                case R.id.action_post_browser:
+                                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.getLinkUrl()));
+                                    context.startActivity(intent);
+                                    break;
+                                case R.id.action_post_report:
+                                    break;
+                            }
+                        });
+                break;
+            case TYPE_PROGRESS:
+                break;
         }
-
-        if (post.isNsfw()) {
-            flairs.add(new Flair.Builder(flairNsfwColor)
-                    .text(flairNsfwText)
-                    .build());
-        }
-
-        if (post.hasLinkFlair()) {
-            flairs.add(new Flair.Builder(flairLinkColor)
-                    .text(post.getLinkFlair())
-                    .build());
-        }
-
-        if (post.isGilded()) {
-            flairs.add(new Flair.Builder(flairGildedColor)
-                    .text(String.valueOf(post.getGildedCount()))
-                    .icon(flairGildedIcon)
-                    .build());
-        }
-
-        final String subtitle = context.getString(R.string.subtitle, post.getAuthor(),
-                post.getDisplayAge(), post.getSubreddit());
-        holder.header.setHeader(post.getLinkTitle(), subtitle, flairs);
-
-        final List<Object> items = new ArrayList<>();
-
-        final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
-                activity, customTabsClient, customTabsIntent, post, width, items);
-        holder.mediaView.setAdapter(postMediaAdapter);
-
-        post.getMediaObservable()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(item -> {
-                    items.add(item);
-                    postMediaAdapter.notifyDataSetChanged();
-                }, Timber::e);
-
-        final String points = post.getDisplayPoints(context, scoreHiddenText);
-        final String comments = post.getDisplayComments(context);
-        holder.score.setText(context.getString(R.string.score, points, comments));
-
-        final VoteDirection likes = post.getLikes();
-
-        holder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
-        RxView.clicks(holder.upvote)
-                .subscribe(aVoid -> {
-                    holder.upvote.toggle();
-                    final boolean isChecked = holder.upvote.isChecked();
-
-                    // Ensure that downvote and upvote aren't checked at the same time.
-                    if (isChecked) {
-                        holder.downvote.setChecked(false);
-                    }
-
-                    post.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
-                    if (!post.isArchived()) {
-                        reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.getFullname())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe();
-
-                        post.setPoints(post.getPoints() + (isChecked ? 1 : -1));
-
-                        final String points1 = post.getDisplayPoints(context, scoreHiddenText);
-                        final String comments1 = post.getDisplayComments(context);
-                        holder.score.setText(context.getString(R.string.score, points1, comments1));
-                    }
-                });
-
-        holder.downvote.setChecked(likes.equals(VoteDirection.DOWNVOTE));
-        RxView.clicks(holder.downvote)
-                .subscribe(aVoid -> {
-                    holder.downvote.toggle();
-                    final boolean isChecked = holder.downvote.isChecked();
-
-                    // Ensure that downvote and upvote aren't checked at the same time.
-                    if (isChecked) {
-                        holder.upvote.setChecked(false);
-                    }
-
-                    post.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
-                    if (!post.isArchived()) {
-                        reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.getFullname())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe();
-
-                        post.setPoints(post.getPoints() + (isChecked ? -1 : 1));
-
-                        final String points1 = post.getDisplayPoints(context, scoreHiddenText);
-                        final String comments1 = post.getDisplayComments(context);
-                        holder.score.setText(context.getString(R.string.score, points1, comments1));
-                    }
-                });
-
-        holder.save.setChecked(post.isSaved());
-        RxView.clicks(holder.save)
-                .subscribe(aVoid -> {
-                    holder.save.toggle();
-                    final boolean isChecked = holder.save.isChecked();
-
-                    post.setSaved(isChecked);
-                    if (isChecked) {
-                        reddit.save("", post.getFullname())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe();
-                    } else {
-                        reddit.unsave(post.getFullname())
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe();
-                    }
-                });
-
-        final PopupMenu otherMenu = new PopupMenu(context, holder.other);
-        otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
-
-        RxView.clicks(holder.other)
-                .subscribe(aVoid -> otherMenu.show());
-
-        RxPopupMenu.itemClicks(otherMenu)
-                .subscribe(menuItem -> {
-                    final int adapterPosition = holder.getAdapterPosition();
-
-                    switch (menuItem.getItemId()) {
-                        case R.id.action_post_hide:
-                            final View.OnClickListener undoClickListener = view -> {
-                                // If undo pressed, then don't follow through with request to hide
-                                // the post.
-                                posts.add(adapterPosition, post);
-                                notifyItemInserted(adapterPosition);
-                            };
-
-                            final Snackbar snackbar = Snackbar.make(holder.itemView, R.string.notify_post_hidden, Snackbar.LENGTH_LONG)
-                                    .setAction(R.string.notify_post_hidden_undo, undoClickListener);
-
-                            RxSnackbar.dismisses(snackbar)
-                                    .subscribe(event -> {
-                                        // If undo pressed, don't hide post.
-                                        if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                                            // Chance to undo post hiding has gone, so follow through with
-                                            // hiding network request.
-                                            reddit.hide(post.getFullname())
-                                                    .subscribeOn(Schedulers.io())
-                                                    .observeOn(AndroidSchedulers.mainThread())
-                                                    .subscribe();
-                                        }
-                                    });
-
-                            snackbar.show();
-
-                            // Hide post from list, but make no network request yet. Outcome of the
-                            // user's interaction with the snackbar handling will determine this.
-                            posts.remove(adapterPosition);
-                            notifyItemRemoved(adapterPosition);
-                            break;
-                        case R.id.action_post_share:
-                            Intent intent = new Intent(Intent.ACTION_SEND);
-                            intent.putExtra(Intent.EXTRA_TEXT, post.getPermalink());
-                            intent.setType("text/plain");
-                            context.startActivity(intent);
-                            break;
-                        case R.id.action_post_profile:
-                            intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
-                            intent.putExtra("username", post.getAuthor());
-                            context.startActivity(intent);
-                            break;
-                        case R.id.action_post_subreddit:
-                            intent = new Intent(context.getApplicationContext(), MainActivity.class);
-                            intent.putExtra("subreddit", post.getSubreddit());
-                            context.startActivity(intent);
-                            break;
-                        case R.id.action_post_browser:
-                            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.getLinkUrl()));
-                            context.startActivity(intent);
-                            break;
-                        case R.id.action_post_report:
-                            break;
-                    }
-                });
     }
 
     @Override
-    public int getContentItemViewType(final int position) {
-        return 0;
+    public int getItemViewType(final int position) {
+        return position == getItemCount() - 1 ? TYPE_PROGRESS : TYPE_POST;
     }
 
     @Override
-    protected int getContentItemCount() {
-        return posts.size();
+    public int getItemCount() {
+        return posts.size() + FOOTER_SIZE;
     }
 
     static class PostViewHolder extends RecyclerView.ViewHolder {
@@ -317,6 +340,16 @@ public class PostAdapter extends ProgressAdapter<PostAdapter.PostViewHolder> {
         PostViewHolder(final View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+    }
+
+    private final static class ProgressViewHolder extends RecyclerView.ViewHolder {
+
+        final ProgressBar progress;
+
+        ProgressViewHolder(final View itemView) {
+            super(itemView);
+            progress = (ProgressBar) itemView;
         }
     }
 }
