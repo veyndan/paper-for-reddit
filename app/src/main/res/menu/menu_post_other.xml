@@ -2,10 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/action_post_hide"
-        android:title="@string/action_post_hide"/>
-
-    <item
         android:id="@+id/action_post_share"
         android:title="@string/action_post_share"/>
 

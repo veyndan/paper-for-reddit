@@ -17,7 +17,6 @@
 
     <!-- Post overflow titles -->
     <string name="action_post_share">Share</string>
-    <string name="action_post_hide">Hide</string>
     <string name="action_post_profile">View Profile</string>
     <string name="action_post_subreddit">View Subreddit</string>
     <string name="action_post_browser">Open in Browser</string>

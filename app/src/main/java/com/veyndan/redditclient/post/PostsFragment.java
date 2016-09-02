@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.post.model.Post;
+import com.veyndan.redditclient.ui.recyclerview.SwipeItemTouchHelperCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,6 +108,10 @@ public class PostsFragment extends Fragment implements PostMvpView {
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         postAdapter = new PostAdapter(getActivity(), posts, reddit, metrics.widthPixels);
         recyclerView.setAdapter(postAdapter);
+
+        final ItemTouchHelper.Callback swipeCallback = new SwipeItemTouchHelperCallback();
+        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
 
         final Bundle args = getArguments();
         if (args != null) {
