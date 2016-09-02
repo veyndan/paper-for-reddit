@@ -1,6 +1,7 @@
 package com.veyndan.redditclient.ui.widget;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -14,16 +15,22 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.TextPaint;
+import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.text.style.LineHeightSpan;
 import android.text.style.ReplacementSpan;
 import android.text.style.StyleSpan;
 import android.text.style.TextAppearanceSpan;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.TextView;
 
 import com.binaryfork.spanny.Spanny;
-import com.veyndan.redditclient.post.Flair;
+import com.veyndan.redditclient.MainActivity;
+import com.veyndan.redditclient.ProfileActivity;
 import com.veyndan.redditclient.R;
+import com.veyndan.redditclient.post.Flair;
 
 import java.util.List;
 
@@ -63,8 +70,8 @@ public class PostHeaderView extends TextView {
         flairTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostFlairTextAppearance);
     }
 
-    public void setHeader(final String title, final String subtitle,
-                          @NonNull final List<Flair> flairs) {
+    public void setHeader(final String title, final String author, final CharSequence age,
+                          final String subreddit, @NonNull final List<Flair> flairs) {
         final LineHeightSpan subtitleLineHeightSpan = new LineHeightSpan.WithDensity() {
             @Override
             public void chooseHeight(final CharSequence text, final int start, final int end,
@@ -86,6 +93,33 @@ public class PostHeaderView extends TextView {
                 chooseHeight(text, start, end, spanstartv, v, fm, null);
             }
         };
+
+        setMovementMethod(LinkMovementMethod.getInstance());
+
+        final SpannableString authorLink = Spanny.spanText(author, new ClickableSpan() {
+            @Override
+            public void onClick(final View widget) {
+                final Intent intent = new Intent(context, ProfileActivity.class);
+                intent.putExtra("username", author);
+                context.startActivity(intent);
+            }
+        });
+
+        final SpannableString subredditLink = Spanny.spanText(subreddit, new ClickableSpan() {
+            @Override
+            public void onClick(final View widget) {
+                final Intent intent = new Intent(context, MainActivity.class);
+                intent.putExtra("subreddit", subreddit);
+                context.startActivity(intent);
+            }
+        });
+
+        final String delimiter = " · ";
+        // Appending space to end of subtitle as no span is associated with it. This fixes a bug
+        // where the subreddit clickable span spans the rest of the line, instead of being confined
+        // to it's textual boundaries. TODO Figure out why this happens and fix it.
+        final CharSequence subtitle = TextUtils.concat(
+                authorLink, delimiter, age, delimiter, subredditLink, " ");
 
         final Spanny spanny = new Spanny(title, titleTextAppearanceSpan)
                 .append("\n")
@@ -157,7 +191,7 @@ public class PostHeaderView extends TextView {
         private final int paddingDrawable;
 
         private FlairBackgroundSpan(final Context context, @ColorInt final int backgroundColor,
-                            @Nullable final Drawable icon) {
+                                    @Nullable final Drawable icon) {
             this.backgroundColor = backgroundColor;
             textColor = ContextCompat.getColor(context, android.R.color.white);
             this.icon = icon;

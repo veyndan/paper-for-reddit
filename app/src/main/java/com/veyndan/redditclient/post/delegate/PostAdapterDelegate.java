@@ -28,8 +28,6 @@ import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
-import com.veyndan.redditclient.MainActivity;
-import com.veyndan.redditclient.ProfileActivity;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
@@ -146,9 +144,8 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
                     .build());
         }
 
-        final String subtitle = context.getString(R.string.subtitle, post.getAuthor(),
-                post.getDisplayAge(), post.getSubreddit());
-        postHolder.header.setHeader(post.getLinkTitle(), subtitle, flairs);
+        postHolder.header.setHeader(post.getLinkTitle(), post.getAuthor(), post.getDisplayAge(),
+                post.getSubreddit(), flairs);
 
         final List<Object> items = new ArrayList<>();
 
@@ -247,16 +244,6 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
                             Intent intent = new Intent(Intent.ACTION_SEND);
                             intent.putExtra(Intent.EXTRA_TEXT, post.getPermalink());
                             intent.setType("text/plain");
-                            context.startActivity(intent);
-                            break;
-                        case R.id.action_post_profile:
-                            intent = new Intent(context.getApplicationContext(), ProfileActivity.class);
-                            intent.putExtra("username", post.getAuthor());
-                            context.startActivity(intent);
-                            break;
-                        case R.id.action_post_subreddit:
-                            intent = new Intent(context.getApplicationContext(), MainActivity.class);
-                            intent.putExtra("subreddit", post.getSubreddit());
                             context.startActivity(intent);
                             break;
                         case R.id.action_post_browser:
