@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -33,6 +34,8 @@ import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.post.Flair;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.BindDimen;
 import butterknife.ButterKnife;
@@ -124,6 +127,33 @@ public class PostHeaderView extends TextView {
         final Spanny spanny = new Spanny(title, titleTextAppearanceSpan)
                 .append("\n")
                 .append(subtitle, subtitleTextAppearanceSpan, subtitleLineHeightSpan);
+
+        // https://www.reddit.com/r/modhelp/comments/1gd1at/name_rules_when_trying_to_create_a_subreddit/cajcylg
+        final Pattern pattern = Pattern.compile("/?(r|u|R|U)/([A-Za-z0-9]\\w{1,20})");
+        final Matcher matcher = pattern.matcher(title);
+
+        while (matcher.find()) {
+            final String group1 = matcher.group(1);
+            final String group2 = matcher.group(2);
+
+            spanny.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(final View widget) {
+                    switch (group1) {
+                        case "r":
+                            final Intent subredditIntent = new Intent(context.getApplicationContext(), MainActivity.class);
+                            subredditIntent.putExtra("subreddit", group2);
+                            context.startActivity(subredditIntent);
+                            break;
+                        case "u":
+                            final Intent profileIntent = new Intent(context.getApplicationContext(), ProfileActivity.class);
+                            profileIntent.putExtra("username", group2);
+                            context.startActivity(profileIntent);
+                            break;
+                    }
+                }
+            }, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
 
         if (!flairs.isEmpty()) {
             spanny.append("\n");
