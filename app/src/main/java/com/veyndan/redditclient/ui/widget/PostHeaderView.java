@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -153,6 +154,24 @@ public class PostHeaderView extends TextView {
                     }
                 }
             }, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        // https://support.twitter.com/articles/101299
+        final Pattern twitterPattern = Pattern.compile("@(\\w{1,15})");
+        final Matcher twitterMatcher = twitterPattern.matcher(title);
+
+        while (twitterMatcher.find()) {
+            final String twitterUsername = twitterMatcher.group(1);
+
+            spanny.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(final View widget) {
+                    final String url = "https://twitter.com/" + twitterUsername;
+                    final Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    context.startActivity(intent);
+                }
+            }, twitterMatcher.start(), twitterMatcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
 
         if (!flairs.isEmpty()) {
