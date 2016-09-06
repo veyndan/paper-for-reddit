@@ -40,7 +40,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                 .map(Response::body)
                 // Paginate the posts
                 .doOnNext(thing -> postMvpView.getNextPageTrigger()
-                        .filter(Boolean::booleanValue)
+                        .takeFirst(Boolean::booleanValue)
                         .subscribe(aBoolean -> {
                             postsFilter.setAfter(thing.data.after);
                             loadPosts(postsFilter);
