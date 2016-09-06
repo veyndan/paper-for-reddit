@@ -11,5 +11,7 @@ public interface PostMvpView extends MvpView {
 
     void showPosts(List<Post> posts);
 
+    void removeProgressBar();
+
     Observable<Boolean> getNextPageTrigger();
 }

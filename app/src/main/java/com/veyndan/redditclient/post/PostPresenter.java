@@ -4,8 +4,8 @@ import com.veyndan.redditclient.Config;
 import com.veyndan.redditclient.Presenter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
-import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
+import com.veyndan.redditclient.post.model.Post;
 
 import retrofit2.Response;
 import rx.Observable;
@@ -42,8 +42,12 @@ public class PostPresenter implements Presenter<PostMvpView> {
                 .doOnNext(thing -> postMvpView.getNextPageTrigger()
                         .takeFirst(Boolean::booleanValue)
                         .subscribe(aBoolean -> {
-                            postsFilter.setAfter(thing.data.after);
-                            loadPosts(postsFilter);
+                            if (thing.data.after == null) {
+                                postMvpView.removeProgressBar();
+                            } else {
+                                postsFilter.setAfter(thing.data.after);
+                                loadPosts(postsFilter);
+                            }
                         }))
                 .map(thing -> thing.data.children)
                 .flatMap(Observable::from)

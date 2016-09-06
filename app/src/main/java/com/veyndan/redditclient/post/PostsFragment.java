@@ -132,6 +132,13 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     @Override
+    public void removeProgressBar() {
+        final int progressBarIndex = posts.size() - 1;
+        posts.remove(progressBarIndex);
+        postAdapter.notifyItemRemoved(progressBarIndex);
+    }
+
+    @Override
     public Observable<Boolean> getNextPageTrigger() {
         return RxRecyclerView.scrollEvents(recyclerView)
                 .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
