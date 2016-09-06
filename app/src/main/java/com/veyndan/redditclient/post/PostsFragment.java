@@ -27,7 +27,6 @@ import java.util.List;
 import butterknife.BindDimen;
 import butterknife.ButterKnife;
 import rx.Observable;
-import timber.log.Timber;
 
 public class PostsFragment extends Fragment implements PostMvpView {
 
@@ -126,7 +125,6 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     @Override
     public void showPosts(final List<Post> posts) {
-        Timber.d(String.valueOf(this.posts.size()));
         final int positionStart = this.posts.size();
         this.posts.addAll(this.posts.size() - 1, posts);
         postAdapter.notifyItemRangeInserted(positionStart, posts.size());
