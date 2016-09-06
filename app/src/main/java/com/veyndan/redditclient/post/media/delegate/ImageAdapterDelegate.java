@@ -37,16 +37,13 @@ public class ImageAdapterDelegate
     private final CustomTabsClient customTabsClient;
     private final CustomTabsIntent customTabsIntent;
     private final Post post;
-    private final int width;
 
     public ImageAdapterDelegate(final Activity activity, final CustomTabsClient customTabsClient,
-                                final CustomTabsIntent customTabsIntent, final Post post,
-                                final int width) {
+                                final CustomTabsIntent customTabsIntent, final Post post) {
         this.activity = activity;
         this.customTabsClient = customTabsClient;
         this.customTabsIntent = customTabsIntent;
         this.post = post;
-        this.width = width;
     }
 
     @Override
@@ -82,37 +79,44 @@ public class ImageAdapterDelegate
 
         final boolean imageDimensAvailable = image.getWidth() > 0 && image.getHeight() > 0;
 
-        Glide.with(context)
-                .load(image.getUrl())
-                .listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
-                        holder.imageProgressView.setVisibility(View.GONE);
-                        return false;
+        // TODO Once media adapter is shared between posts, width can be calculated in the holder constructor.
+        RxView.layoutChanges(holder.itemView)
+                .take(1)
+                .subscribe(aVoid -> {
+                    final int width = holder.itemView.getWidth();
+
+                    Glide.with(context)
+                            .load(image.getUrl())
+                            .listener(new RequestListener<String, GlideDrawable>() {
+                                @Override
+                                public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
+                                    holder.imageProgressView.setVisibility(View.GONE);
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
+                                    holder.imageProgressView.setVisibility(View.GONE);
+                                    if (!imageDimensAvailable) {
+                                        final int imageWidth = resource.getIntrinsicWidth();
+                                        final int imageHeight = resource.getIntrinsicHeight();
+
+                                        image.setWidth(imageWidth);
+                                        image.setHeight(imageHeight);
+
+                                        post.setMediaObservable(Observable.just(image));
+
+                                        holder.imageView.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
+                                    }
+                                    return false;
+                                }
+                            })
+                            .into(holder.imageView);
+
+                    if (imageDimensAvailable) {
+                        holder.imageView.getLayoutParams().height = (int) ((float) width / image.getWidth() * image.getHeight());
                     }
-
-                    @Override
-                    public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
-                        holder.imageProgressView.setVisibility(View.GONE);
-                        if (!imageDimensAvailable) {
-                            final int imageWidth = resource.getIntrinsicWidth();
-                            final int imageHeight = resource.getIntrinsicHeight();
-
-                            image.setWidth(imageWidth);
-                            image.setHeight(imageHeight);
-
-                            post.setMediaObservable(Observable.just(image));
-
-                            holder.imageView.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
-                        }
-                        return false;
-                    }
-                })
-                .into(holder.imageView);
-
-        if (imageDimensAvailable) {
-            holder.imageView.getLayoutParams().height = (int) ((float) width / image.getWidth() * image.getHeight());
-        }
+                });
     }
 
     // ButterKnife requires that binding occurs in non private classes.

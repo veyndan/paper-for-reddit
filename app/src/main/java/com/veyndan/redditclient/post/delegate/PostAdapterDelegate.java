@@ -68,17 +68,15 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
     private final PostAdapter adapter;
     private final Activity activity;
     private final Reddit reddit;
-    private final int width;
 
     private final CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
     private final CustomTabsIntent customTabsIntent = builder.build();
     @Nullable private CustomTabsClient customTabsClient;
 
-    public PostAdapterDelegate(final PostAdapter adapter, final Activity activity, final Reddit reddit, final int width) {
+    public PostAdapterDelegate(final PostAdapter adapter, final Activity activity, final Reddit reddit) {
         this.adapter = adapter;
         this.activity = activity;
         this.reddit = reddit;
-        this.width = width;
 
         CustomTabsClient.bindCustomTabsService(activity, CUSTOM_TAB_PACKAGE_NAME, new CustomTabsServiceConnection() {
             @Override
@@ -150,7 +148,7 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
         final List<Object> items = new ArrayList<>();
 
         final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
-                activity, customTabsClient, customTabsIntent, post, width, items);
+                activity, customTabsClient, customTabsIntent, post, items);
         postHolder.mediaView.setAdapter(postMediaAdapter);
 
         post.getMediaObservable()

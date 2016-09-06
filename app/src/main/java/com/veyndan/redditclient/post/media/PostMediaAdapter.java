@@ -18,12 +18,12 @@ public class PostMediaAdapter extends ListDelegationAdapter<List<Object>> {
 
     public PostMediaAdapter(final Activity activity, final CustomTabsClient customTabsClient,
                             final CustomTabsIntent customTabsIntent, final Post post,
-                            final int width, final List<Object> items) {
+                            final List<Object> items) {
         delegatesManager
                 .addDelegate(new TextAdapterDelegate())
                 .addDelegate(new LinkAdapterDelegate(activity, customTabsClient, customTabsIntent, post))
                 .addDelegate(new LinkImageAdapterDelegate(activity, customTabsClient, customTabsIntent, post))
-                .addDelegate(new ImageAdapterDelegate(activity, customTabsClient, customTabsIntent, post, width))
+                .addDelegate(new ImageAdapterDelegate(activity, customTabsClient, customTabsIntent, post))
                 .addDelegate(new TweetAdapterDelegate());
 
         setItems(items);

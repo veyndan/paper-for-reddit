@@ -12,10 +12,9 @@ import java.util.List;
 
 public class PostAdapter extends ListDelegationAdapter<List<Post>> {
 
-    public PostAdapter(final Activity activity, final List<Post> posts, final Reddit reddit,
-                       final int width) {
+    public PostAdapter(final Activity activity, final List<Post> posts, final Reddit reddit) {
         delegatesManager
-                .addDelegate(new PostAdapterDelegate(this, activity, reddit, width))
+                .addDelegate(new PostAdapterDelegate(this, activity, reddit))
                 .addDelegate(new ProgressAdapterDelegate());
 
         setItems(posts);

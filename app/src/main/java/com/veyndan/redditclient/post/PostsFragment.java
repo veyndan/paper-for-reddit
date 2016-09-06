@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,9 +103,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new MarginItemDecoration(cardViewMargin));
-        final DisplayMetrics metrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        postAdapter = new PostAdapter(getActivity(), posts, reddit, metrics.widthPixels);
+        postAdapter = new PostAdapter(getActivity(), posts, reddit);
         recyclerView.setAdapter(postAdapter);
 
         final ItemTouchHelper.Callback swipeCallback = new SwipeItemTouchHelperCallback();
