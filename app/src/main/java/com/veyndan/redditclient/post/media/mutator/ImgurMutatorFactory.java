@@ -20,7 +20,7 @@ import rx.Observable;
 
 final class ImgurMutatorFactory implements MutatorFactory {
 
-    private static final Pattern PATTERN = Pattern.compile("^https?://(?:www\\.)?(i\\.)?imgur\\.com/(a/|gallery/)?(.*)$");
+    private static final Pattern PATTERN = Pattern.compile("^https?://(?:m\\.|www\\.)?(i\\.)?imgur\\.com/(a/|gallery/)?(.*)$");
 
     static ImgurMutatorFactory create() {
         return new ImgurMutatorFactory();
