@@ -8,7 +8,6 @@ import com.google.gson.GsonBuilder;
 import com.veyndan.redditclient.api.reddit.model.Account2;
 import com.veyndan.redditclient.api.reddit.model.CaptchaNew;
 import com.veyndan.redditclient.api.reddit.model.Categories;
-import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Karma;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.Prefs;
@@ -56,7 +55,6 @@ public final class Reddit {
         final Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(RedditObject.class, new RedditObjectDeserializer())
-                .registerTypeAdapter(Comment.class, new CommentDeserializer())
                 .create();
 
         final OkHttpClient.Builder authenticationClientBuilder = new OkHttpClient.Builder()
