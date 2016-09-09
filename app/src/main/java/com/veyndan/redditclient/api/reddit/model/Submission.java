@@ -32,6 +32,19 @@ public abstract class Submission extends RedditObject {
     public long createdUtc;
 
     /**
+     * Returns the submissions's parent ID. If the Submission is a Link, then {@code null} is
+     * returned, as no logical parent is available.
+     *
+     * @return Submission's parent ID.
+     */
+    public abstract String getParentId();
+
+    /**
+     * The comment nodes/leaves exactly one below the current Submission.
+     */
+    public abstract Thing<Listing> getReplies();
+
+    /**
      * The account name of the poster. {@code null} if this is a promotional link.
      */
     public String author;
@@ -198,4 +211,9 @@ public abstract class Submission extends RedditObject {
      * If it is a {@link Link} then this is the self text if available. {@code null} if not present.
      */
     @SerializedName(value = "body_html", alternate = "selftext_html") public String bodyHtml;
+
+    /**
+     * #undocumented
+     */
+    public abstract int getControversiality();
 }

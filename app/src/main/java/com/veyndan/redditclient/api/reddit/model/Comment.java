@@ -4,21 +4,21 @@ import java.util.Objects;
 
 public class Comment extends Submission {
 
-    // Documented
+    private int controversiality;
     private String linkAuthor;
     private String linkId;
-    public String parentId;
+    private String parentId;
     private Thing<Listing> replies;
 
-    /**
-     * The comment nodes/leaves exactly one below the current Comment.
-     */
+    @Override
     public Thing<Listing> getReplies() {
         return Objects.requireNonNull(replies);
     }
 
-    // Undocumented
-    public int controversiality;
+    @Override
+    public String getParentId() {
+        return parentId;
+    }
 
     @Override
     public String getLinkAuthor() {
@@ -40,6 +40,11 @@ public class Comment extends Submission {
     @Override
     public String getLinkId() {
         return linkId;
+    }
+
+    @Override
+    public int getControversiality() {
+        return controversiality;
     }
 
     @Override

@@ -75,6 +75,16 @@ public class Link extends Submission {
     private String permalink;
 
     @Override
+    public String getParentId() {
+        return null;
+    }
+
+    @Override
+    public Thing<Listing> getReplies() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public String getLinkAuthor() {
         return author;
     }
@@ -87,6 +97,11 @@ public class Link extends Submission {
     @Override
     public String getLinkId() {
         return id;
+    }
+
+    @Override
+    public int getControversiality() {
+        throw new UnsupportedOperationException("Method intention unknown");
     }
 
     /**
