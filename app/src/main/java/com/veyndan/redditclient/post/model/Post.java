@@ -38,7 +38,9 @@ public class Post {
         points = submission.score;
         likes = submission.getLikes();
         saved = submission.saved;
-        postHint = submission instanceof Link ? ((Link) submission).getPostHint() : null;
+
+        if (submission instanceof Link) postHint = ((Link) submission).getPostHint();
+        else if (submission instanceof Comment) postHint = PostHint.SELF;
     }
 
     public Observable<Object> getMediaObservable() {
