@@ -187,7 +187,7 @@ public abstract class Submission extends RedditObject {
      * <p>
      * If it is a {@link Link} then this is the self text if available. Empty if not present.
      */
-    @SerializedName(value = "body", alternate = "self_text") public String body;
+    @SerializedName(value = "body", alternate = "selftext") public String body;
 
     /**
      * The formatted HTML text as displayed on reddit. For example, text that is emphasised by *
@@ -197,5 +197,5 @@ public abstract class Submission extends RedditObject {
      * <p>
      * If it is a {@link Link} then this is the self text if available. {@code null} if not present.
      */
-    @SerializedName(value = "body_html", alternate = "self_text_html") public String bodyHtml;
+    @SerializedName(value = "body_html", alternate = "selftext_html") public String bodyHtml;
 }
