@@ -11,6 +11,11 @@ import rx.functions.Func1;
 
 public final class Mutators {
 
+    // Suppress default constructor for noninstantiability
+    private Mutators() {
+        throw new AssertionError();
+    }
+
     /**
      * All available mutator factories.
      * <p>
