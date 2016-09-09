@@ -1,7 +1,6 @@
 package com.veyndan.redditclient;
 
 import android.app.Fragment;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +18,7 @@ import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.post.PostAdapter;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
 import com.veyndan.redditclient.post.model.Post;
+import com.veyndan.redditclient.ui.recyclerview.itemdecoration.TreeInsetItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +51,11 @@ public class CommentsFragment extends Fragment {
         final Reddit reddit = new Reddit.Builder(credentials).build();
 
         final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(layoutManager);
+        final TreeInsetItemDecoration treeInsetItemDecoration = new TreeInsetItemDecoration(childInsetMultiplier);
         final PostAdapter postAdapter = new PostAdapter(getActivity(), posts, reddit);
+
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(treeInsetItemDecoration);
         recyclerView.setAdapter(postAdapter);
 
         EventBus.INSTANCE.toObserverable()
@@ -79,16 +82,8 @@ public class CommentsFragment extends Fragment {
 
                     final List<Integer> depths = tree.toFlattenedDepthList();
 
-                    recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-                        @Override
-                        public void getItemOffsets(final Rect outRect, final View view,
-                                                   final RecyclerView parent,
-                                                   final RecyclerView.State state) {
-                            final int position = ((RecyclerView.LayoutParams) view.getLayoutParams()).getViewLayoutPosition();
-                            final int inset = depths.get(position) * childInsetMultiplier;
-                            outRect.set(inset, 0, 0, 0);
-                        }
-                    });
+                    treeInsetItemDecoration.setInsets(depths);
+                    recyclerView.invalidateItemDecorations();
 
                     Observable.from(tree.toFlattenedDataList())
                             .ofType(Submission.class)
