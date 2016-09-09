@@ -28,6 +28,7 @@ import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
+import com.veyndan.redditclient.EventBus;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
@@ -114,6 +115,11 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
         final Context context = holder.itemView.getContext();
         final PostViewHolder postHolder = (PostViewHolder) holder;
         final Post post = posts.get(position);
+
+        RxView.clicks(postHolder.itemView)
+                .subscribe(aVoid -> {
+                    EventBus.getInstance().send(post);
+                });
 
         final List<Flair> flairs = new ArrayList<>();
 

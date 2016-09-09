@@ -6,6 +6,8 @@
     <dimen name="card_view_margin">8dp</dimen>
 
     <!-- Post -->
+    <dimen name="post_child_inset_multiplier">24dp</dimen>
+
     <dimen name="post_title_subtitle_spacing">12dp</dimen>
     <dimen name="post_subtitle_flair_spacing">16dp</dimen>
 

@@ -41,4 +41,9 @@ public class Comment extends Submission {
     public String getLinkId() {
         return linkId;
     }
+
+    @Override
+    public String toString() {
+        return author;
+    }
 }

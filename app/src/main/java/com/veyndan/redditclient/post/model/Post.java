@@ -62,7 +62,7 @@ public class Post {
     }
 
     public String getLinkUrl() {
-        return linkUrl;
+        return linkUrl == null ? "" : linkUrl;
     }
 
     public void setLinkUrl(final String linkUrl) {
@@ -70,7 +70,7 @@ public class Post {
     }
 
     public String getAuthor() {
-        return submission.author;
+        return submission.author == null ? "" : submission.author;
     }
 
     public CharSequence getDisplayAge() {

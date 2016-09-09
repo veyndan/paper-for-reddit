@@ -125,54 +125,59 @@ public class PostHeaderView extends TextView {
         final CharSequence subtitle = TextUtils.concat(
                 authorLink, delimiter, age, delimiter, subredditLink, " ");
 
-        final Spanny spanny = new Spanny(title, titleTextAppearanceSpan)
-                .append("\n")
-                .append(subtitle, subtitleTextAppearanceSpan, subtitleLineHeightSpan);
+        final Spanny spanny = new Spanny();
 
-        // https://www.reddit.com/r/modhelp/comments/1gd1at/name_rules_when_trying_to_create_a_subreddit/cajcylg
-        final Pattern pattern = Pattern.compile("/?(r|u|R|U)/([A-Za-z0-9]\\w{1,20})");
-        final Matcher matcher = pattern.matcher(title);
+        if (title != null) {
+            spanny.append(title, titleTextAppearanceSpan)
+                    .append("\n");
 
-        while (matcher.find()) {
-            final String group1 = matcher.group(1);
-            final String group2 = matcher.group(2);
+            // https://www.reddit.com/r/modhelp/comments/1gd1at/name_rules_when_trying_to_create_a_subreddit/cajcylg
+            final Pattern pattern = Pattern.compile("/?(r|u|R|U)/([A-Za-z0-9]\\w{1,20})");
+            final Matcher matcher = pattern.matcher(title);
 
-            spanny.setSpan(new ClickableSpan() {
-                @Override
-                public void onClick(final View widget) {
-                    switch (group1) {
-                        case "r":
-                            final Intent subredditIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                            subredditIntent.putExtra("subreddit", group2);
-                            context.startActivity(subredditIntent);
-                            break;
-                        case "u":
-                            final Intent profileIntent = new Intent(context.getApplicationContext(), ProfileActivity.class);
-                            profileIntent.putExtra("username", group2);
-                            context.startActivity(profileIntent);
-                            break;
+            while (matcher.find()) {
+                final String group1 = matcher.group(1);
+                final String group2 = matcher.group(2);
+
+                spanny.setSpan(new ClickableSpan() {
+                    @Override
+                    public void onClick(final View widget) {
+                        switch (group1) {
+                            case "r":
+                                final Intent subredditIntent = new Intent(context.getApplicationContext(), MainActivity.class);
+                                subredditIntent.putExtra("subreddit", group2);
+                                context.startActivity(subredditIntent);
+                                break;
+                            case "u":
+                                final Intent profileIntent = new Intent(context.getApplicationContext(), ProfileActivity.class);
+                                profileIntent.putExtra("username", group2);
+                                context.startActivity(profileIntent);
+                                break;
+                        }
                     }
-                }
-            }, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+            // https://support.twitter.com/articles/101299
+            final Pattern twitterPattern = Pattern.compile("@(\\w{1,15})");
+            final Matcher twitterMatcher = twitterPattern.matcher(title);
+
+            while (twitterMatcher.find()) {
+                final String twitterUsername = twitterMatcher.group(1);
+
+                spanny.setSpan(new ClickableSpan() {
+                    @Override
+                    public void onClick(final View widget) {
+                        final String url = "https://twitter.com/" + twitterUsername;
+                        final Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(url));
+                        context.startActivity(intent);
+                    }
+                }, twitterMatcher.start(), twitterMatcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
         }
 
-        // https://support.twitter.com/articles/101299
-        final Pattern twitterPattern = Pattern.compile("@(\\w{1,15})");
-        final Matcher twitterMatcher = twitterPattern.matcher(title);
-
-        while (twitterMatcher.find()) {
-            final String twitterUsername = twitterMatcher.group(1);
-
-            spanny.setSpan(new ClickableSpan() {
-                @Override
-                public void onClick(final View widget) {
-                    final String url = "https://twitter.com/" + twitterUsername;
-                    final Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(url));
-                    context.startActivity(intent);
-                }
-            }, twitterMatcher.start(), twitterMatcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
+        spanny.append(subtitle, subtitleTextAppearanceSpan, subtitleLineHeightSpan);
 
         if (!flairs.isEmpty()) {
             spanny.append("\n");
