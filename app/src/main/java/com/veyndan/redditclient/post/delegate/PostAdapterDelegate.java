@@ -118,7 +118,7 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
 
         RxView.clicks(postHolder.itemView)
                 .subscribe(aVoid -> {
-                    EventBus.getInstance().send(post);
+                    EventBus.INSTANCE.send(post);
                 });
 
         final List<Flair> flairs = new ArrayList<>();

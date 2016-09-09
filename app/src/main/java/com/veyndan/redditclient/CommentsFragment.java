@@ -55,7 +55,7 @@ public class CommentsFragment extends Fragment {
         final PostAdapter postAdapter = new PostAdapter(getActivity(), posts, reddit);
         recyclerView.setAdapter(postAdapter);
 
-        EventBus.getInstance().toObserverable()
+        EventBus.INSTANCE.toObserverable()
                 .ofType(Post.class)
                 .flatMap(post -> {
                     final String subreddit = post.getSubreddit();

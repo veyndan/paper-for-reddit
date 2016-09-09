@@ -5,18 +5,11 @@ import rx.subjects.PublishSubject;
 import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
 
-public final class EventBus {
+public enum EventBus {
 
-    private static final EventBus INSTANCE = new EventBus();
+    INSTANCE;
 
     private final Subject<Object, Object> bus = new SerializedSubject<>(PublishSubject.create());
-
-    private EventBus() {
-    }
-
-    public static EventBus getInstance() {
-        return INSTANCE;
-    }
 
     public void send(final Object o) {
         bus.onNext(o);
