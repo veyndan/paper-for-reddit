@@ -21,26 +21,65 @@ import rx.Observable;
 
 public class Post {
 
-    private final Submission submission;
-
     private Observable<Object> mediaObservable = Observable.empty();
 
-    private String linkUrl;
-    private int points;
+    private final boolean isLink;
+    private final boolean isComment;
+
+    private final boolean archived;
+    private final String author;
+    private final String bodyHtml;
+    private final int commentCount;
+    private final long createdUtc;
+    private final String domain;
+    private final String fullname;
+    private final int gildedCount;
     private VoteDirection likes;
-    private boolean saved;
+    private final boolean hasLinkFlair; // TODO Probably don't want this.
+    private final String linkFlair;
+    private final String linkTitle;
+    private String linkUrl;
+    private final boolean nsfw;
+    private final String permalink;
+    private int points;
     private PostHint postHint;
+    private final Preview preview;
+    private boolean saved;
+    private final boolean scoreHidden;
+    private final boolean stickied;
+    private final String subreddit;
 
     public Post(final RedditObject redditObject) {
-        this.submission = (Submission) redditObject;
+        final Submission submission = (Submission) redditObject;
 
-        linkUrl = submission.linkUrl;
-        points = submission.score;
+        isLink = submission instanceof Link;
+        isComment = submission instanceof Comment;
+
+        archived = submission.archived;
+        author = submission.author == null ? "" : submission.author;
+        bodyHtml = submission.bodyHtml;
+        commentCount = isLink ? ((Link) submission).numComments : 0;
+        createdUtc = submission.createdUtc;
+        domain = isLink ? ((Link) submission).domain : null;
+        fullname = submission.getFullname();
+        gildedCount = submission.gilded;
         likes = submission.getLikes();
-        saved = submission.saved;
+        hasLinkFlair = isLink && !TextUtils.isEmpty(((Link) submission).linkFlairText);
+        linkFlair = hasLinkFlair ? ((Link) submission).linkFlairText : null;
+        linkTitle = submission.linkTitle;
+        linkUrl = submission.linkUrl == null ? "" : submission.linkUrl;
+        nsfw = isLink && ((Link) submission).over18;
+        permalink = submission.getPermalink();
+        points = submission.score;
 
-        if (submission instanceof Link) postHint = ((Link) submission).getPostHint();
-        else if (submission instanceof Comment) postHint = PostHint.SELF;
+        if (isLink) postHint = ((Link) submission).getPostHint();
+        else if (isComment) postHint = PostHint.SELF;
+
+        preview = submission instanceof Link ? ((Link) submission).preview : null;
+        saved = submission.saved;
+        scoreHidden = submission.scoreHidden;
+        stickied = submission.stickied;
+        subreddit = submission.subreddit;
     }
 
     public Observable<Object> getMediaObservable() {
@@ -52,86 +91,39 @@ public class Post {
     }
 
     public boolean isLink() {
-        return submission instanceof Link;
+        return isLink;
     }
 
     public boolean isComment() {
-        return submission instanceof Comment;
+        return isComment;
     }
 
-    public String getLinkTitle() {
-        return submission.linkTitle;
-    }
-
-    public String getLinkUrl() {
-        return linkUrl == null ? "" : linkUrl;
-    }
-
-    public void setLinkUrl(final String linkUrl) {
-        this.linkUrl = linkUrl;
+    public boolean isArchived() {
+        return archived;
     }
 
     public String getAuthor() {
-        return submission.author == null ? "" : submission.author;
+        return author;
     }
 
-    public CharSequence getDisplayAge() {
-        return DateUtils.getRelativeTimeSpanString(
-                TimeUnit.SECONDS.toMillis(submission.createdUtc), System.currentTimeMillis(),
-                DateUtils.SECOND_IN_MILLIS,
-                DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON
-                        | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
+    public String getBodyHtml() {
+        return bodyHtml;
     }
 
-    public String getSubreddit() {
-        return submission.subreddit;
+    public String getDomain() {
+        return domain;
     }
 
-    public boolean isStickied() {
-        return submission.stickied;
-    }
-
-    public boolean isNsfw() {
-        return submission instanceof Link && ((Link) submission).over18;
-    }
-
-    public boolean hasLinkFlair() {
-        return submission instanceof Link && !TextUtils.isEmpty(((Link) submission).linkFlairText);
-    }
-
-    public String getLinkFlair() {
-        return hasLinkFlair() ? ((Link) submission).linkFlairText : null;
+    public String getFullname() {
+        return fullname;
     }
 
     public boolean isGilded() {
-        return submission.gilded > 0;
+        return gildedCount > 0;
     }
 
     public int getGildedCount() {
-        return submission.gilded;
-    }
-
-    public int getPoints() {
-        return points;
-    }
-
-    public void setPoints(final int points) {
-        this.points = points;
-    }
-
-    public String getDisplayPoints(final Context context, final String scoreHiddenText) {
-        if (submission.scoreHidden) {
-            return scoreHiddenText;
-        } else {
-            final Resources resources = context.getResources();
-            return resources.getQuantityString(R.plurals.points, points, points);
-        }
-    }
-
-    public String getDisplayComments(final Context context) {
-        final Resources resources = context.getResources();
-        final int commentCount = submission instanceof Link ? ((Link) submission).numComments : 0;
-        return resources.getQuantityString(R.plurals.comments, commentCount, commentCount);
+        return gildedCount;
     }
 
     public VoteDirection getLikes() {
@@ -142,12 +134,48 @@ public class Post {
         this.likes = likes;
     }
 
-    public boolean isArchived() {
-        return submission.archived;
+    public boolean hasLinkFlair() {
+        return hasLinkFlair;
     }
 
-    public String getFullname() {
-        return submission.getFullname();
+    public String getLinkFlair() {
+        return linkFlair;
+    }
+
+    public String getLinkTitle() {
+        return linkTitle;
+    }
+
+    public String getLinkUrl() {
+        return linkUrl;
+    }
+
+    public boolean isNsfw() {
+        return nsfw;
+    }
+
+    public String getPermalink() {
+        return permalink;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(final int points) {
+        this.points = points;
+    }
+
+    public PostHint getPostHint() {
+        return postHint;
+    }
+
+    public void setPostHint(@NonNull final PostHint postHint) {
+        this.postHint = postHint;
+    }
+
+    public Preview getPreview() {
+        return preview;
     }
 
     public boolean isSaved() {
@@ -158,27 +186,37 @@ public class Post {
         this.saved = saved;
     }
 
-    public boolean getPermalink() {
-        return submission.saved;
+    public boolean isStickied() {
+        return stickied;
     }
 
-    public String getBodyHtml() {
-        return submission.bodyHtml;
+    public String getSubreddit() {
+        return subreddit;
     }
 
-    public PostHint getPostHint() {
-        return postHint;
+    public void setLinkUrl(final String linkUrl) {
+        this.linkUrl = linkUrl;
     }
 
-    public void setPostHint(@NonNull final PostHint postHint) {
-        if (submission instanceof Link) this.postHint = postHint;
+    public CharSequence getDisplayAge() {
+        return DateUtils.getRelativeTimeSpanString(
+                TimeUnit.SECONDS.toMillis(createdUtc), System.currentTimeMillis(),
+                DateUtils.SECOND_IN_MILLIS,
+                DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON
+                        | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
     }
 
-    public Preview getPreview() {
-        return submission instanceof Link ? ((Link) submission).preview : null;
+    public String getDisplayComments(final Context context) {
+        final Resources resources = context.getResources();
+        return resources.getQuantityString(R.plurals.comments, commentCount, commentCount);
     }
 
-    public String getDomain() {
-        return submission instanceof Link ? ((Link) submission).domain : null;
+    public String getDisplayPoints(final Context context, final String scoreHiddenText) {
+        if (scoreHidden) {
+            return scoreHiddenText;
+        } else {
+            final Resources resources = context.getResources();
+            return resources.getQuantityString(R.plurals.points, points, points);
+        }
     }
 }
