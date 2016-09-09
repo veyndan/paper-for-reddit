@@ -36,9 +36,9 @@ public class PostPresenter implements Presenter<PostMvpView> {
     public void loadPosts(final PostsFilter postsFilter) {
         postsFilter.getRequestObservable(reddit)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .map(Response::body)
                 // Paginate the posts
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(thing -> postMvpView.getNextPageTrigger()
                         .takeFirst(Boolean::booleanValue)
                         .subscribe(aBoolean -> {
@@ -49,11 +49,13 @@ public class PostPresenter implements Presenter<PostMvpView> {
                                 loadPosts(postsFilter);
                             }
                         }))
+                .observeOn(Schedulers.computation())
                 .map(thing -> thing.data.children)
                 .flatMap(Observable::from)
                 .map(Post::new)
                 .flatMap(Mutators.mutate())
                 .toList()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(posts -> {
                     postMvpView.showPosts(posts);
                 });

@@ -182,7 +182,6 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
                     if (!post.isArchived()) {
                         reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.getFullname())
                                 .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
 
                         post.setPoints(post.getPoints() + (isChecked ? 1 : -1));
@@ -204,7 +203,6 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
                     if (!post.isArchived()) {
                         reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.getFullname())
                                 .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
 
                         post.setPoints(post.getPoints() + (isChecked ? -1 : 1));
@@ -225,12 +223,10 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
                     if (isChecked) {
                         reddit.save("", post.getFullname())
                                 .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
                     } else {
                         reddit.unsave(post.getFullname())
                                 .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe();
                     }
                 });
@@ -305,7 +301,6 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
                             // hiding network request.
                             reddit.hide(post.getFullname())
                                     .subscribeOn(Schedulers.io())
-                                    .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe();
                         }
                     });

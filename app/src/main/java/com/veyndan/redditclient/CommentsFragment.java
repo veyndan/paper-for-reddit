@@ -60,12 +60,13 @@ public class CommentsFragment extends Fragment {
 
         EventBus.INSTANCE.toObserverable()
                 .ofType(Post.class)
+                .observeOn(Schedulers.io())
                 .flatMap(post -> {
                     final String subreddit = post.getSubreddit();
                     final String fullname = post.getFullname();
                     final String article = fullname.substring(3, fullname.length());
 
-                    return reddit.subredditComments(subreddit, article).subscribeOn(Schedulers.io());
+                    return reddit.subredditComments(subreddit, article);
                 })
                 .map(Response::body)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -87,9 +88,11 @@ public class CommentsFragment extends Fragment {
 
                     Observable.from(tree.toFlattenedDataList())
                             .ofType(Submission.class)
+                            .observeOn(Schedulers.computation())
                             .map(Post::new)
                             .flatMap(Mutators.mutate())
                             .toList()
+                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(ps -> {
                                 posts.addAll(ps);
                                 postAdapter.notifyDataSetChanged();
