@@ -58,24 +58,23 @@ public class Post {
         archived = submission.archived;
         author = submission.author == null ? "" : submission.author;
         bodyHtml = submission.bodyHtml;
-        commentCount = isLink ? ((Link) submission).numComments : 0;
+        commentCount = submission.getNumComments();
         createdUtc = submission.createdUtc;
-        domain = isLink ? ((Link) submission).domain : null;
+        domain = submission.getDomain();
         fullname = submission.getFullname();
         gildedCount = submission.gilded;
         likes = submission.getLikes();
-        hasLinkFlair = isLink && !TextUtils.isEmpty(((Link) submission).linkFlairText);
-        linkFlair = hasLinkFlair ? ((Link) submission).linkFlairText : null;
+        hasLinkFlair = isLink && !TextUtils.isEmpty(submission.getLinkFlairText());
+        linkFlair = hasLinkFlair ? submission.getLinkFlairText() : null;
         linkTitle = submission.linkTitle;
         linkUrl = submission.linkUrl == null ? "" : submission.linkUrl;
-        nsfw = isLink && ((Link) submission).over18;
+        nsfw = submission.isOver18();
         permalink = submission.getPermalink();
         points = submission.score;
 
-        if (isLink) postHint = ((Link) submission).getPostHint();
-        else if (isComment) postHint = PostHint.SELF;
+        postHint = submission.getPostHint();
 
-        preview = submission instanceof Link ? ((Link) submission).preview : null;
+        preview = submission.getPreview();
         saved = submission.saved;
         scoreHidden = submission.scoreHidden;
         stickied = submission.stickied;

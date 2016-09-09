@@ -32,6 +32,130 @@ public abstract class Submission extends RedditObject {
     public long createdUtc;
 
     /**
+     * Returns {@code true} if the Submission has been clicked on before, else {@code false}.
+     * Probably always returns {@code false}. If the submission is a comment, then {@code false}
+     * is returned.
+     * <p>
+     * #inferred
+     */
+    public abstract boolean isClicked();
+
+    /**
+     * The domain of this submission. {@code self} posts will be {@code self.<subreddit>} while
+     * other examples include {@code en.wikipedia.org} and {@code s3.amazon.com}. If the submission
+     * is a comment, then {@code null} is returned.
+     */
+    public abstract String getDomain();
+
+    /**
+     * {@code true} if the submission is hidden by the logged in user. {@code false} if not logged
+     * in or not hidden. If the submission is a comment, then {@code false} is returned as Reddit
+     * doesn't support comment hiding (as of yet).
+     */
+    public abstract boolean isHidden();
+
+    /**
+     * The CSS class of the link's flair. If the submission is a Comment, then {@code null} is
+     * returned.
+     */
+    public abstract String getLinkFlairCssClass();
+
+    /**
+     * The text of the link's flair. If the submission is a Comment, then {@code null} is returned.
+     */
+    public abstract String getLinkFlairText();
+
+    /**
+     * Whether the submission is locked (closed to new comments) or not. If the submission is a
+     * comment, then {@code false} is returned.
+     */
+    public abstract boolean isLocked();
+
+    /**
+     * Used for streaming video. Detailed information about the video and it's origins are placed
+     * here. If the submission is a Comment, then {@code null} is returned.
+     */
+    public abstract Media getMedia();
+
+    /**
+     * Used for streaming video. Technical embed specific information is found here. If the
+     * submission is a Comment, then {@code null} is returned.
+     */
+    public abstract MediaEmbed getMediaEmbed();
+
+    /**
+     * The number of comments that belong to this link. includes removed comments. If the submission
+     * is a Comment, then {@code 0} is returned.
+     */
+    public abstract int getNumComments();
+
+    /**
+     * {@code true} if the post is tagged as NSFW. {@code false} if otherwise. If the submission is
+     * a Comment, then {@code false} is returned.
+     */
+    public abstract boolean isOver18();
+
+    /**
+     * Full URL to the thumbnail for this link. "self" if this is a self post. "default" if a
+     * thumbnail is not available. If the submission is a Comment, then {@code null} is returned.
+     */
+    public abstract String getThumbnail();
+
+    /**
+     * #undocumented
+     */
+    public abstract Object getSuggestedSort();
+
+    /**
+     * #undocumented
+     */
+    public abstract Media getSecureMedia();
+
+    /**
+     * #undocumented
+     */
+    public abstract Object getFromKind();
+
+    /**
+     * #undocumented
+     */
+    public abstract Preview getPreview();
+
+    /**
+     * #undocumented
+     */
+    public abstract MediaEmbed getSecureMediaEmbed();
+
+    /**
+     * Returns a string that suggests the content of this link. As a hint, this is lossy and may be
+     * inaccurate in some cases. If the submission is a Comment, then {@link PostHint#SELF} is
+     * returned.
+     * <p>
+     * #inferred ({@code "post_hint"} defined at <a href="https://github.com/reddit/reddit/blob/b423fe2bf873919b27c4eab885551c8ee325b9af/r2/r2/models/link.py#L896">https://github.com/reddit/reddit/blob/b423fe2bf873919b27c4eab885551c8ee325b9af/r2/r2/models/link.py#L896</a>
+     */
+    public abstract PostHint getPostHint();
+
+    /**
+     * #undocumented
+     */
+    public abstract Object from();
+
+    /**
+     * #undocumented
+     */
+    public abstract Object fromId();
+
+    /**
+     * #undocumented
+     */
+    public abstract boolean quarantine();
+
+    /**
+     * #undocumented
+     */
+    public abstract boolean visited();
+
+    /**
      * Returns the submissions's parent ID. If the Submission is a Link, then {@code null} is
      * returned, as no logical parent is available.
      *
