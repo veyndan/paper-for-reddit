@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 import com.veyndan.redditclient.Config;
-import com.veyndan.redditclient.MarginItemDecoration;
+import com.veyndan.redditclient.ui.recyclerview.itemdecoration.MarginItemDecoration;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;

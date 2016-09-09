@@ -1,4 +1,4 @@
-package com.veyndan.redditclient;
+package com.veyndan.redditclient.ui.recyclerview.itemdecoration;
 
 import android.graphics.Rect;
 import android.support.annotation.Px;
