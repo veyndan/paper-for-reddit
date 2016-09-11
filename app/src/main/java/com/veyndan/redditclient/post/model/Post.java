@@ -3,6 +3,8 @@ package com.veyndan.redditclient.post.model;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.Html;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
@@ -14,6 +16,8 @@ import com.veyndan.redditclient.api.reddit.model.Preview;
 import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
+
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -103,10 +107,6 @@ public class Post {
 
     public String getAuthor() {
         return author;
-    }
-
-    public String getBodyHtml() {
-        return bodyHtml;
     }
 
     public String getDomain() {
@@ -203,6 +203,23 @@ public class Post {
                 DateUtils.SECOND_IN_MILLIS,
                 DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON
                         | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
+    }
+
+    @Nullable
+    public CharSequence getDisplayBody() {
+        if (TextUtils.isEmpty(bodyHtml)) return null;
+        return trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(bodyHtml)));
+    }
+
+    private static CharSequence trimTrailingWhitespace(@NonNull final CharSequence source) {
+        int i = source.length();
+
+        // loop back to the first non-whitespace character
+        do {
+            i--;
+        } while (i > 0 && Character.isWhitespace(source.charAt(i)));
+
+        return source.subSequence(0, i + 1);
     }
 
     public String getDisplayComments(final Context context) {

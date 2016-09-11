@@ -2,13 +2,13 @@ package com.veyndan.redditclient.post.media.model;
 
 public class Text {
 
-    private final String bodyHtml;
+    private final CharSequence body;
 
-    public Text(final String bodyHtml) {
-        this.bodyHtml = bodyHtml;
+    public Text(final CharSequence body) {
+        this.body = body;
     }
 
-    public String getBodyHtml() {
-        return bodyHtml;
+    public CharSequence getBody() {
+        return body;
     }
 }
