@@ -13,19 +13,17 @@ import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 import com.veyndan.redditclient.Config;
-import com.veyndan.redditclient.ui.recyclerview.itemdecoration.MarginItemDecoration;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.ui.recyclerview.SwipeItemTouchHelperCallback;
+import com.veyndan.redditclient.ui.recyclerview.itemdecoration.MarginItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindDimen;
-import butterknife.ButterKnife;
 import rx.Observable;
 
 public class PostsFragment extends Fragment implements PostMvpView {
@@ -33,8 +31,6 @@ public class PostsFragment extends Fragment implements PostMvpView {
     private static final String ARG_USER_FILTER = "user_filter";
 
     private final PostPresenter postPresenter = new PostPresenter();
-
-    @BindDimen(R.dimen.card_view_margin) int cardViewMargin;
 
     private RecyclerView recyclerView;
 
@@ -97,11 +93,10 @@ public class PostsFragment extends Fragment implements PostMvpView {
                              final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
-        ButterKnife.bind(this, recyclerView);
 
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new MarginItemDecoration(cardViewMargin));
+        recyclerView.addItemDecoration(new MarginItemDecoration(getActivity(), R.dimen.card_view_margin));
         postAdapter = new PostAdapter(getActivity(), posts, reddit);
         recyclerView.setAdapter(postAdapter);
 
