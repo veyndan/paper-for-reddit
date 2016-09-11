@@ -16,14 +16,9 @@ public class MarginItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent,
                                final RecyclerView.State state) {
-        super.getItemOffsets(outRect, view, parent, state);
-
-        outRect.bottom = margin;
-        outRect.left = margin;
-        outRect.right = margin;
-
-        if (parent.getChildAdapterPosition(view) == 0) {
-            outRect.top = margin;
-        }
+        final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) view.getLayoutParams();
+        final int position = params.getViewLayoutPosition();
+        final int marginTop = position == 0 ? margin : 0;
+        outRect.set(margin, marginTop, margin, margin);
     }
 }
