@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 import com.veyndan.redditclient.Config;
 import com.veyndan.redditclient.R;
+import com.veyndan.redditclient.Tree;
 import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
@@ -34,7 +35,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     private RecyclerView recyclerView;
 
-    private final List<Post> posts = new ArrayList<>();
+    private final List<Tree.Node<Post>> nodes = new ArrayList<>();
 
     private PostAdapter postAdapter;
 
@@ -76,13 +77,13 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     public void setFilter(final PostsFilter filter) {
         clearPosts();
-        posts.add(null);
+        nodes.add(new Tree.Node<>(null, true));
         postPresenter.loadPosts(filter, getNextPageTrigger());
     }
 
     public void clearPosts() {
-        final int postsSize = this.posts.size();
-        this.posts.clear();
+        final int postsSize = this.nodes.size();
+        this.nodes.clear();
         if (postAdapter != null) {
             postAdapter.notifyItemRangeRemoved(0, postsSize);
         }
@@ -97,7 +98,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new MarginItemDecoration(getActivity(), R.dimen.card_view_margin));
-        postAdapter = new PostAdapter(getActivity(), posts, reddit);
+        postAdapter = new PostAdapter(getActivity(), nodes, reddit);
         recyclerView.setAdapter(postAdapter);
 
         final ItemTouchHelper.Callback swipeCallback = new SwipeItemTouchHelperCallback();
@@ -119,17 +120,17 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     @Override
-    public void showPosts(final List<Post> posts) {
-        final int positionStart = this.posts.size();
-        this.posts.addAll(this.posts.size() - 1, posts);
-        postAdapter.notifyItemRangeInserted(positionStart, posts.size());
+    public void showPosts(final List<Tree.Node<Post>> nodes) {
+        final int positionStart = this.nodes.size();
+        this.nodes.addAll(this.nodes.size() - 1, nodes);
+        postAdapter.notifyItemRangeInserted(positionStart, nodes.size());
         loadingPosts = false;
     }
 
     @Override
     public void removeProgressBar() {
-        final int progressBarIndex = posts.size() - 1;
-        posts.remove(progressBarIndex);
+        final int progressBarIndex = nodes.size() - 1;
+        nodes.remove(progressBarIndex);
         postAdapter.notifyItemRemoved(progressBarIndex);
     }
 

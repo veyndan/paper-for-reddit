@@ -2,6 +2,7 @@ package com.veyndan.redditclient.post;
 
 import com.veyndan.redditclient.Config;
 import com.veyndan.redditclient.Presenter;
+import com.veyndan.redditclient.Tree;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
@@ -54,6 +55,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                 .flatMap(Observable::from)
                 .map(Post::new)
                 .flatMap(Mutators.mutate())
+                .map(post -> new Tree.Node<>(post, false))
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(posts -> {

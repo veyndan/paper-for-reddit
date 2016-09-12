@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.More;
 import com.veyndan.redditclient.api.reddit.model.RedditObject;
-import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.post.PostAdapter;
@@ -45,14 +45,14 @@ public class CommentsFragment extends Fragment {
         final RecyclerView recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
         ButterKnife.bind(this, recyclerView);
 
-        final List<Post> posts = new ArrayList<>();
+        final List<Tree.Node<Post>> nodes = new ArrayList<>();
 
         final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID_RAWJAVA, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
         final Reddit reddit = new Reddit.Builder(credentials).build();
 
         final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         final TreeInsetItemDecoration treeInsetItemDecoration = new TreeInsetItemDecoration(childInsetMultiplier);
-        final PostAdapter postAdapter = new PostAdapter(getActivity(), posts, reddit);
+        final PostAdapter postAdapter = new PostAdapter(getActivity(), nodes, reddit);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(treeInsetItemDecoration);
@@ -74,7 +74,7 @@ public class CommentsFragment extends Fragment {
                     // No data is lost as both things.get(0) and things.get(1), which is all the
                     // things, has null set to before, after, and modhash in the Listing.
                     // things.get(0).data.children contains the Link.java only
-                    final Tree<RedditObject> tree = new Tree<>(things.get(0).data.children.get(0), new ArrayList<>());
+                    final Tree<RedditObject> tree = new Tree<>(new Tree.Node<>(things.get(0).data.children.get(0), false), new ArrayList<>());
                     makeTree(tree, things.get(1));
 
                     for (final Tree<RedditObject> child : tree.getChildren()) {
@@ -86,15 +86,22 @@ public class CommentsFragment extends Fragment {
                     treeInsetItemDecoration.setInsets(depths);
                     recyclerView.invalidateItemDecorations();
 
-                    Observable.from(tree.toFlattenedDataList())
-                            .ofType(Submission.class)
-                            .observeOn(Schedulers.computation())
-                            .map(Post::new)
-                            .flatMap(Mutators.mutate())
+                    Observable.from(tree.toFlattenedNodeList())
+                            .concatMap(node -> {
+                                if (node.isStub()) {
+                                    return Observable.just(new Tree.Node<Post>(null, node.isStub()));
+                                } else {
+                                    return Observable.just(node)
+                                            .map(Tree.Node::getData)
+                                            .map(Post::new)
+                                            .flatMap(Mutators.mutate())
+                                            .map(post -> new Tree.Node<>(post, node.isStub()));
+                                }
+                            })
                             .toList()
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(ps -> {
-                                posts.addAll(ps);
+                                nodes.addAll(ps);
                                 postAdapter.notifyDataSetChanged();
                             }, Timber::e);
                 }, Timber::e);
@@ -104,7 +111,8 @@ public class CommentsFragment extends Fragment {
 
     private static void makeTree(final Tree<RedditObject> tree, final Thing<Listing> thing) {
         for (final RedditObject childData : thing.data.children) {
-            final Tree<RedditObject> childTree = new Tree<>(childData, new ArrayList<>());
+            final boolean stub = childData instanceof More;
+            final Tree<RedditObject> childTree = new Tree<>(new Tree.Node<>(childData, stub), new ArrayList<>());
             tree.getChildren().add(childTree);
 
             if (childData instanceof Comment) {

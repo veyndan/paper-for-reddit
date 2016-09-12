@@ -30,6 +30,7 @@ import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
 import com.veyndan.redditclient.EventBus;
 import com.veyndan.redditclient.R;
+import com.veyndan.redditclient.Tree;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 import com.veyndan.redditclient.post.Flair;
@@ -51,7 +52,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
+public class PostAdapterDelegate implements AdapterDelegate<List<Tree.Node<Post>>> {
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
@@ -96,8 +97,8 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
     }
 
     @Override
-    public boolean isForViewType(@NonNull final List<Post> posts, final int position) {
-        return posts.get(position) != null;
+    public boolean isForViewType(@NonNull final List<Tree.Node<Post>> nodes, final int position) {
+        return !nodes.get(position).isStub();
     }
 
     @NonNull
@@ -110,11 +111,11 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final List<Post> posts, final int position,
+    public void onBindViewHolder(@NonNull final List<Tree.Node<Post>> nodes, final int position,
                                  @NonNull final RecyclerView.ViewHolder holder) {
         final Context context = holder.itemView.getContext();
         final PostViewHolder postHolder = (PostViewHolder) holder;
-        final Post post = posts.get(position);
+        final Post post = nodes.get(position).getData();
 
         RxView.clicks(postHolder.itemView)
                 .subscribe(aVoid -> {
@@ -281,12 +282,13 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Post>> {
         @Override
         public void onSwipe() {
             final int position = getAdapterPosition();
-            final Post post = adapter.getItems().get(position);
+            final Tree.Node<Post> node = adapter.getItems().get(position);
+            final Post post = node.getData();
 
             final View.OnClickListener undoClickListener = view -> {
                 // If undo pressed, then don't follow through with request to hide
                 // the post.
-                adapter.getItems().add(position, post);
+                adapter.getItems().add(position, node);
                 adapter.notifyItemInserted(position);
             };
 

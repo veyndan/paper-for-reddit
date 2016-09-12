@@ -2,9 +2,12 @@ package com.veyndan.redditclient;
 
 import android.support.annotation.NonNull;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.TreeTraverser;
 
 import java.util.List;
+
+import static android.R.attr.data;
 
 public class Tree<T> {
 
@@ -15,26 +18,26 @@ public class Tree<T> {
         }
     };
 
-    private final T data;
+    private final Node<T> node;
     private final List<Tree<T>> children;
 
     private int depth;
 
-    public Tree(final T data, final List<Tree<T>> children) {
-        this.data = data;
+    public Tree(final Node<T> node, final List<Tree<T>> children) {
+        this.node = node;
         this.children = children;
     }
 
-    public T getData() {
-        return data;
+    public Node<T> getNode() {
+        return node;
     }
 
     public List<Tree<T>> getChildren() {
         return children;
     }
 
-    public List<T> toFlattenedDataList() {
-        return treeTraverser.preOrderTraversal(this).transform(input -> input.data).toList();
+    public ImmutableList<Node<T>> toFlattenedNodeList() {
+        return treeTraverser.preOrderTraversal(this).transform(input -> input.node).toList();
     }
 
     public List<Integer> toFlattenedDepthList() {
@@ -49,6 +52,25 @@ public class Tree<T> {
         tree.depth = depth;
         for (final Tree<T> child : tree.children) {
             generateDepths(child, depth + 1);
+        }
+    }
+
+    public static class Node<T> {
+
+        private final T data;
+        private final boolean stub;
+
+        public Node(final T data, final boolean stub) {
+            this.data = data;
+            this.stub = stub;
+        }
+
+        public T getData() {
+            return data;
+        }
+
+        public boolean isStub() {
+            return stub;
         }
     }
 
