@@ -33,20 +33,20 @@ public class PostPresenter implements Presenter<PostMvpView> {
         postMvpView = null;
     }
 
-    public void loadPosts(final PostsFilter postsFilter) {
+    public void loadPosts(final PostsFilter postsFilter, final Observable<Boolean> nextPageTrigger) {
         postsFilter.getRequestObservable(reddit)
                 .subscribeOn(Schedulers.io())
                 .map(Response::body)
                 // Paginate the posts
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(thing -> postMvpView.getNextPageTrigger()
+                .doOnNext(thing -> nextPageTrigger
                         .takeFirst(Boolean::booleanValue)
                         .subscribe(aBoolean -> {
                             if (thing.data.after == null) {
                                 postMvpView.removeProgressBar();
                             } else {
                                 postsFilter.setAfter(thing.data.after);
-                                loadPosts(postsFilter);
+                                loadPosts(postsFilter, nextPageTrigger);
                             }
                         }))
                 .observeOn(Schedulers.computation())

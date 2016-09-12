@@ -77,7 +77,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
     public void setFilter(final PostsFilter filter) {
         clearPosts();
         posts.add(null);
-        postPresenter.loadPosts(filter);
+        postPresenter.loadPosts(filter, getNextPageTrigger());
     }
 
     public void clearPosts() {
@@ -133,7 +133,6 @@ public class PostsFragment extends Fragment implements PostMvpView {
         postAdapter.notifyItemRemoved(progressBarIndex);
     }
 
-    @Override
     public Observable<Boolean> getNextPageTrigger() {
         return RxRecyclerView.scrollEvents(recyclerView)
                 .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
