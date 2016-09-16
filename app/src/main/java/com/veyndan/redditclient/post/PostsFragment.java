@@ -42,7 +42,6 @@ public class PostsFragment extends Fragment implements PostMvpView {
     private LinearLayoutManager layoutManager;
 
     private boolean loadingPosts;
-    private int pastVisiblesItems, visibleItemCount, totalItemCount;
 
     private Reddit reddit;
 
@@ -137,13 +136,13 @@ public class PostsFragment extends Fragment implements PostMvpView {
     public Observable<Boolean> getNextPageTrigger() {
         return RxRecyclerView.scrollEvents(recyclerView)
                 .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
-                .map(scrollEvent -> {
-                    visibleItemCount = layoutManager.getChildCount();
-                    totalItemCount = layoutManager.getItemCount();
-                    pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
-                    return scrollEvent;
+                .filter(scrollEvent -> !loadingPosts)
+                .filter(scrollEvent -> {
+                    final int visibleItemCount = recyclerView.getChildCount();
+                    final int totalItemCount = layoutManager.getItemCount();
+                    final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+                    return totalItemCount - visibleItemCount <= firstVisibleItem;
                 })
-                .filter(scrollEvent -> !loadingPosts && visibleItemCount + pastVisiblesItems >= totalItemCount)
                 .map(scrollEvent -> {
                     loadingPosts = true;
                     return true;
