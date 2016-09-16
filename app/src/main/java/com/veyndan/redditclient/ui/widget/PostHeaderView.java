@@ -132,7 +132,7 @@ public class PostHeaderView extends TextView {
                     .append("\n");
 
             // https://www.reddit.com/r/modhelp/comments/1gd1at/name_rules_when_trying_to_create_a_subreddit/cajcylg
-            final Pattern pattern = Pattern.compile("/?(r|u|R|U)/([A-Za-z0-9]\\w{1,20})");
+            final Pattern pattern = Pattern.compile("[^\\w]/?(r|u|R|U)/([A-Za-z0-9]\\w{1,20})");
             final Matcher matcher = pattern.matcher(title);
 
             while (matcher.find()) {
