@@ -19,7 +19,6 @@ import com.airbnb.deeplinkdispatch.DeepLink;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.api.reddit.model.Trophy;
-import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.api.reddit.network.User;
 import com.veyndan.redditclient.post.PostsFragment;
 
@@ -64,8 +63,7 @@ public class ProfileActivity extends BaseActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(username);
 
-        final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID_RAWJAVA, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
-        final Reddit reddit = new Reddit.Builder(credentials).build();
+        final Reddit reddit = new Reddit.Builder(Config.REDDIT_CREDENTIALS).build();
 
         reddit.userAbout(username)
                 .subscribeOn(Schedulers.io())

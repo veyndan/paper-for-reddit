@@ -17,7 +17,6 @@ import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.Tree;
 import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
-import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.ui.recyclerview.SwipeItemTouchHelperCallback;
 import com.veyndan.redditclient.ui.recyclerview.itemdecoration.MarginItemDecoration;
@@ -64,8 +63,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
         super.onAttach(context);
         postPresenter.attachView(this);
 
-        final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID_RAWJAVA, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
-        reddit = new Reddit.Builder(credentials).build();
+        reddit = new Reddit.Builder(Config.REDDIT_CREDENTIALS).build();
     }
 
     @Override

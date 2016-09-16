@@ -14,7 +14,6 @@ import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.More;
 import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.model.Thing;
-import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.post.PostAdapter;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
 import com.veyndan.redditclient.post.model.Post;
@@ -47,8 +46,7 @@ public class CommentsFragment extends Fragment {
 
         final List<Tree.Node<Post>> nodes = new ArrayList<>();
 
-        final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID_RAWJAVA, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
-        final Reddit reddit = new Reddit.Builder(credentials).build();
+        final Reddit reddit = new Reddit.Builder(Config.REDDIT_CREDENTIALS).build();
 
         final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         final TreeInsetItemDecoration treeInsetItemDecoration = new TreeInsetItemDecoration(childInsetMultiplier);

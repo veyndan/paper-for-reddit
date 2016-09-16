@@ -4,7 +4,6 @@ import com.veyndan.redditclient.Config;
 import com.veyndan.redditclient.Presenter;
 import com.veyndan.redditclient.Tree;
 import com.veyndan.redditclient.api.reddit.Reddit;
-import com.veyndan.redditclient.api.reddit.network.Credentials;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
 import com.veyndan.redditclient.post.model.Post;
 
@@ -20,8 +19,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
     private final Reddit reddit;
 
     public PostPresenter() {
-        final Credentials credentials = new Credentials(Config.REDDIT_CLIENT_ID_RAWJAVA, Config.REDDIT_CLIENT_SECRET, Config.REDDIT_USER_AGENT, Config.REDDIT_USERNAME, Config.REDDIT_PASSWORD);
-        reddit = new Reddit.Builder(credentials).build();
+        reddit = new Reddit.Builder(Config.REDDIT_CREDENTIALS).build();
     }
 
     @Override
