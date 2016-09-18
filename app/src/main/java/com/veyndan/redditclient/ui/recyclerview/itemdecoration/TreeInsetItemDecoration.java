@@ -27,7 +27,7 @@ public class TreeInsetItemDecoration extends RecyclerView.ItemDecoration {
                                final RecyclerView parent,
                                final RecyclerView.State state) {
         final int position = ((RecyclerView.LayoutParams) view.getLayoutParams()).getViewLayoutPosition();
-        final int inset = insets.get(position) * childInsetMultiplier;
+        final int inset = insets.isEmpty() ? 0 : insets.get(position) * childInsetMultiplier;
         outRect.set(inset, 0, 0, 0);
     }
 }

@@ -47,7 +47,7 @@ public class Tree<T> {
         return treeTraverser.preOrderTraversal(this).transform(input -> input.depth).toList();
     }
 
-    void generateDepths() {
+    public void generateDepths() {
         generateDepths(this, 0);
     }
 

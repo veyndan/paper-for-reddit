@@ -17,18 +17,33 @@ import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.Tree;
 import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
+import com.veyndan.redditclient.api.reddit.model.Comment;
+import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.More;
+import com.veyndan.redditclient.api.reddit.model.RedditObject;
+import com.veyndan.redditclient.api.reddit.model.Thing;
+import com.veyndan.redditclient.post.media.mutator.Mutators;
 import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.ui.recyclerview.SwipeItemTouchHelperCallback;
 import com.veyndan.redditclient.ui.recyclerview.itemdecoration.MarginItemDecoration;
+import com.veyndan.redditclient.ui.recyclerview.itemdecoration.TreeInsetItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindDimen;
+import butterknife.ButterKnife;
+import retrofit2.Response;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class PostsFragment extends Fragment implements PostMvpView {
 
     private static final String ARG_USER_FILTER = "user_filter";
+
+    @BindDimen(R.dimen.post_child_inset_multiplier) int childInsetMultiplier;
 
     private final PostPresenter postPresenter = new PostPresenter();
 
@@ -39,6 +54,8 @@ public class PostsFragment extends Fragment implements PostMvpView {
     private PostAdapter postAdapter;
 
     private LinearLayoutManager layoutManager;
+
+    private TreeInsetItemDecoration treeInsetItemDecoration;
 
     private boolean loadingPosts;
 
@@ -77,16 +94,79 @@ public class PostsFragment extends Fragment implements PostMvpView {
         postPresenter.loadNodes(filter, getTrigger());
     }
 
+    public void setCommentRequest(final Observable<Response<List<Thing<Listing>>>> commentRequest) {
+        commentRequest
+                .subscribeOn(Schedulers.io())
+                .map(Response::body)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(things -> {
+                    // No data is lost as both things.get(0) and things.get(1), which is all the
+                    // things, has null set to before, after, and modhash in the Listing.
+                    // things.get(0).data.children contains the Link.java only
+                    final Tree<RedditObject> tree = new Tree<>(new Tree.Node<>(things.get(0).data.children.get(0), Tree.Node.TYPE_CONTENT), new ArrayList<>());
+                    makeTree(tree, things.get(1));
+
+                    for (final Tree<RedditObject> child : tree.getChildren()) {
+                        child.generateDepths();
+                    }
+
+                    final List<Integer> depths = tree.toFlattenedDepthList();
+
+                    treeInsetItemDecoration.setInsets(depths);
+                    recyclerView.invalidateItemDecorations();
+
+                    Observable.from(tree.toFlattenedNodeList())
+                            .concatMap(node -> {
+                                switch (node.getType()) {
+                                    case Tree.Node.TYPE_CONTENT:
+                                        return Observable.just(node)
+                                                .map(Tree.Node::getData)
+                                                .map(Post::new)
+                                                .flatMap(Mutators.mutate())
+                                                .map(p -> new Tree.Node<>(p, node.getType()));
+                                    case Tree.Node.TYPE_MORE:
+                                    case Tree.Node.TYPE_PROGRESS:
+                                        return Observable.just(new Tree.Node<Post>(null, node.getType()));
+                                    default:
+                                        return Observable.error(new IllegalStateException("Unknown node type: " + node.getType()));
+                                }
+                            })
+                            .toList()
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(ps -> {
+                                nodes.addAll(ps);
+                                postAdapter.notifyDataSetChanged();
+                            }, Timber::e);
+                }, Timber::e);
+    }
+
+    private static void makeTree(final Tree<RedditObject> tree, final Thing<Listing> thing) {
+        for (final RedditObject childData : thing.data.children) {
+            @Tree.Node.Type final int type = childData instanceof More ? Tree.Node.TYPE_MORE : Tree.Node.TYPE_CONTENT;
+            final Tree<RedditObject> childTree = new Tree<>(new Tree.Node<>(childData, type), new ArrayList<>());
+            tree.getChildren().add(childTree);
+
+            if (childData instanceof Comment) {
+                final Comment childComment = (Comment) childData;
+                makeTree(childTree, childComment.getReplies());
+            }
+        }
+    }
+
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
+        ButterKnife.bind(this, recyclerView);
 
         layoutManager = new LinearLayoutManager(getActivity());
+        treeInsetItemDecoration = new TreeInsetItemDecoration(childInsetMultiplier);
+        postAdapter = new PostAdapter(getActivity(), nodes, reddit);
+
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new MarginItemDecoration(getActivity(), R.dimen.card_view_margin));
-        postAdapter = new PostAdapter(getActivity(), nodes, reddit);
+        recyclerView.addItemDecoration(treeInsetItemDecoration);
         recyclerView.setAdapter(postAdapter);
 
         final ItemTouchHelper.Callback swipeCallback = new SwipeItemTouchHelperCallback();

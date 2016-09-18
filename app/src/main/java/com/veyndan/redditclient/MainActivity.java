@@ -63,7 +63,7 @@ public class MainActivity extends BaseActivity {
 
         postsFragment.setFilter(new SubredditFilter(subreddit, Sort.HOT));
 
-        final CommentsFragment commentsFragment = (CommentsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_comments);
+        final PostsFragment commentsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_comments);
 
         final Reddit reddit = new Reddit.Builder(Config.REDDIT_CREDENTIALS).build();
 

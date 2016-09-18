@@ -42,11 +42,11 @@
 
         <fragment
             android:id="@+id/main_fragment_comments"
-            android:name="com.veyndan.redditclient.CommentsFragment"
+            android:name="com.veyndan.redditclient.post.PostsFragment"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="16"
-            tools:layout="@layout/fragment_comments"/>
+            tools:layout="@layout/fragment_posts"/>
 
     </LinearLayout>
 
