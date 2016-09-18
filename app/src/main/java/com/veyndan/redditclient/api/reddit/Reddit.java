@@ -10,6 +10,7 @@ import com.veyndan.redditclient.api.reddit.model.CaptchaNew;
 import com.veyndan.redditclient.api.reddit.model.Categories;
 import com.veyndan.redditclient.api.reddit.model.Karma;
 import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.MoreChildren;
 import com.veyndan.redditclient.api.reddit.model.Prefs;
 import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.model.Subreddit;
@@ -142,6 +143,10 @@ public final class Reddit {
 
     public Observable<Response<ResponseBody>> hide(final List<String> ids) {
         return redditService.hide(TextUtils.join(",", ids));
+    }
+
+    public Observable<MoreChildren> moreChildren(final List<String> children, final String linkId) {
+        return redditService.moreChildren("json", TextUtils.join(",", children), linkId);
     }
 
     public Observable<Response<ResponseBody>> save(final String category, final String id) {

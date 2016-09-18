@@ -5,6 +5,7 @@ import com.veyndan.redditclient.api.reddit.model.CaptchaNew;
 import com.veyndan.redditclient.api.reddit.model.Categories;
 import com.veyndan.redditclient.api.reddit.model.Karma;
 import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.MoreChildren;
 import com.veyndan.redditclient.api.reddit.model.Prefs;
 import com.veyndan.redditclient.api.reddit.model.Subreddit;
 import com.veyndan.redditclient.api.reddit.model.Thing;
@@ -20,6 +21,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 import rx.Observable;
 
@@ -59,6 +61,11 @@ public interface RedditService {
     @FormUrlEncoded
     @POST("api/hide")
     Observable<Response<ResponseBody>> hide(@Field("id") String ids);
+
+    @GET("api/morechildren")
+    Observable<MoreChildren> moreChildren(@Query("api_type") String apiType,
+                                          @Query("children") String children,
+                                          @Query("link_id") String linkId);
 
     @FormUrlEncoded
     @POST("api/save")
