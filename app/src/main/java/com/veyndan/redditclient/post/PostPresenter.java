@@ -1,5 +1,7 @@
 package com.veyndan.redditclient.post;
 
+import android.util.Pair;
+
 import com.veyndan.redditclient.Config;
 import com.veyndan.redditclient.Presenter;
 import com.veyndan.redditclient.Tree;
@@ -7,11 +9,12 @@ import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
 import com.veyndan.redditclient.post.model.Post;
 
+import java.util.List;
+
 import retrofit2.Response;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class PostPresenter implements Presenter<PostMvpView> {
 
@@ -33,32 +36,31 @@ public class PostPresenter implements Presenter<PostMvpView> {
         postMvpView = null;
     }
 
-    public void loadPosts(final PostsFilter postsFilter, final Observable<Boolean> nextPageTrigger) {
-        postsFilter.getRequestObservable(reddit)
-                .subscribeOn(Schedulers.io())
-                .map(Response::body)
-                // Paginate the posts
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(thing -> nextPageTrigger
-                        .takeFirst(Boolean::booleanValue)
-                        .subscribe(aBoolean -> {
-                            if (thing.data.after == null) {
-                                postMvpView.popNode();
-                            } else {
-                                postsFilter.setAfter(thing.data.after);
-                                loadPosts(postsFilter, nextPageTrigger);
-                            }
-                        }))
+    public void loadNodes(final PostsFilter filter, final Observable<Boolean> trigger) {
+        postMvpView.appendNode(new Tree.Node<>(null, true));
+
+        trigger.takeFirst(Boolean::booleanValue)
+                .flatMap(aBoolean -> filter.getRequestObservable(reddit).subscribeOn(Schedulers.io()))
                 .observeOn(Schedulers.computation())
-                .map(thing -> thing.data.children)
-                .flatMap(Observable::from)
-                .map(Post::new)
-                .flatMap(Mutators.mutate())
-                .map(post -> new Tree.Node<>(post, false))
-                .toList()
+                .map(Response::body)
+                .flatMap(thing -> Observable.from(thing.data.children)
+                                .map(Post::new)
+                                .flatMap(Mutators.mutate())
+                                .map(post -> new Tree.Node<>(post, false))
+                                .toList(),
+                        (thing, nodes) -> new Pair<>(thing.data.after, nodes))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(posts -> {
-                    postMvpView.appendNodes(posts);
+                .subscribe(pair -> {
+                    final String after = pair.first;
+                    final List<Tree.Node<Post>> nodes = pair.second;
+
+                    postMvpView.popNode();
+                    postMvpView.appendNodes(nodes);
+
+                    if (after != null) {
+                        filter.setAfter(after);
+                        loadNodes(filter, trigger);
+                    }
                 });
     }
 }

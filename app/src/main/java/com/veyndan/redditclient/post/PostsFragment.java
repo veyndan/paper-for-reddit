@@ -74,8 +74,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     public void setFilter(final PostsFilter filter) {
         clearNodes();
-        nodes.add(new Tree.Node<>(null, true));
-        postPresenter.loadPosts(filter, getNextPageTrigger());
+        postPresenter.loadNodes(filter, getTrigger());
     }
 
     @Override
@@ -109,9 +108,15 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     @Override
+    public void appendNode(final Tree.Node<Post> node) {
+        nodes.add(node);
+        postAdapter.notifyItemInserted(nodes.size() - 1);
+    }
+
+    @Override
     public void appendNodes(final List<Tree.Node<Post>> nodes) {
         final int positionStart = this.nodes.size();
-        this.nodes.addAll(this.nodes.size() - 1, nodes);
+        this.nodes.addAll(nodes);
         postAdapter.notifyItemRangeInserted(positionStart, nodes.size());
         loadingPosts = false;
     }
@@ -136,7 +141,15 @@ public class PostsFragment extends Fragment implements PostMvpView {
         postAdapter.notifyItemRangeRemoved(0, nodesSize);
     }
 
-    public Observable<Boolean> getNextPageTrigger() {
+    private Observable<Boolean> getTrigger() {
+        return Observable.concat(getFirstPageTrigger(), getNextPageTrigger());
+    }
+
+    private Observable<Boolean> getFirstPageTrigger() {
+        return Observable.from(nodes).count().map(integer -> integer == 1);
+    }
+
+    private Observable<Boolean> getNextPageTrigger() {
         return RxRecyclerView.scrollEvents(recyclerView)
                 .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
                 .filter(scrollEvent -> !loadingPosts)

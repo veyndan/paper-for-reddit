@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface PostMvpView extends MvpView {
 
+    void appendNode(Tree.Node<Post> node);
+
     void appendNodes(List<Tree.Node<Post>> nodes);
 
     Tree.Node<Post> popNode();
