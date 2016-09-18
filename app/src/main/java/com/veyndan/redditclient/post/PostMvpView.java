@@ -8,7 +8,11 @@ import java.util.List;
 
 public interface PostMvpView extends MvpView {
 
-    void showPosts(List<Tree.Node<Post>> nodes);
+    void appendNodes(List<Tree.Node<Post>> nodes);
 
-    void removeProgressBar();
+    Tree.Node<Post> popNode();
+
+    Tree.Node<Post> popNode(int index);
+
+    void clearNodes();
 }

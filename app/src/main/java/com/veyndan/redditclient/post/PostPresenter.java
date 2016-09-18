@@ -11,6 +11,7 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class PostPresenter implements Presenter<PostMvpView> {
 
@@ -42,7 +43,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                         .takeFirst(Boolean::booleanValue)
                         .subscribe(aBoolean -> {
                             if (thing.data.after == null) {
-                                postMvpView.removeProgressBar();
+                                postMvpView.popNode();
                             } else {
                                 postsFilter.setAfter(thing.data.after);
                                 loadPosts(postsFilter, nextPageTrigger);
@@ -57,7 +58,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(posts -> {
-                    postMvpView.showPosts(posts);
+                    postMvpView.appendNodes(posts);
                 });
     }
 }

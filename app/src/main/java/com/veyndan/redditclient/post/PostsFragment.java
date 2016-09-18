@@ -73,17 +73,9 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     public void setFilter(final PostsFilter filter) {
-        clearPosts();
+        clearNodes();
         nodes.add(new Tree.Node<>(null, true));
         postPresenter.loadPosts(filter, getNextPageTrigger());
-    }
-
-    public void clearPosts() {
-        final int postsSize = this.nodes.size();
-        this.nodes.clear();
-        if (postAdapter != null) {
-            postAdapter.notifyItemRangeRemoved(0, postsSize);
-        }
     }
 
     @Override
@@ -117,7 +109,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     @Override
-    public void showPosts(final List<Tree.Node<Post>> nodes) {
+    public void appendNodes(final List<Tree.Node<Post>> nodes) {
         final int positionStart = this.nodes.size();
         this.nodes.addAll(this.nodes.size() - 1, nodes);
         postAdapter.notifyItemRangeInserted(positionStart, nodes.size());
@@ -125,10 +117,23 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     @Override
-    public void removeProgressBar() {
-        final int progressBarIndex = nodes.size() - 1;
-        nodes.remove(progressBarIndex);
-        postAdapter.notifyItemRemoved(progressBarIndex);
+    public Tree.Node<Post> popNode() {
+        return popNode(nodes.size() - 1);
+    }
+
+    @Override
+    public Tree.Node<Post> popNode(final int index) {
+        final Tree.Node<Post> poppedNode = nodes.get(index);
+        nodes.remove(index);
+        postAdapter.notifyItemRemoved(index);
+        return poppedNode;
+    }
+
+    @Override
+    public void clearNodes() {
+        final int nodesSize = this.nodes.size();
+        this.nodes.clear();
+        postAdapter.notifyItemRangeRemoved(0, nodesSize);
     }
 
     public Observable<Boolean> getNextPageTrigger() {
