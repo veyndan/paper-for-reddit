@@ -37,7 +37,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
     }
 
     public void loadNodes(final PostsFilter filter, final Observable<Boolean> trigger) {
-        postMvpView.appendNode(new Tree.Node<>(null, true));
+        postMvpView.appendNode(new Tree.Node<>(null, Tree.Node.TYPE_PROGRESS));
 
         trigger.takeFirst(Boolean::booleanValue)
                 .flatMap(aBoolean -> filter.getRequestObservable(reddit).subscribeOn(Schedulers.io()))
@@ -46,7 +46,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                 .flatMap(thing -> Observable.from(thing.data.children)
                                 .map(Post::new)
                                 .flatMap(Mutators.mutate())
-                                .map(post -> new Tree.Node<>(post, false))
+                                .map(post -> new Tree.Node<>(post, Tree.Node.TYPE_CONTENT))
                                 .toList(),
                         (thing, nodes) -> new Pair<>(thing.data.after, nodes))
                 .observeOn(AndroidSchedulers.mainThread())

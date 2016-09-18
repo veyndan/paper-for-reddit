@@ -1,10 +1,13 @@
 package com.veyndan.redditclient;
 
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.TreeTraverser;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 import static android.R.attr.data;
@@ -57,20 +60,29 @@ public class Tree<T> {
 
     public static class Node<T> {
 
-        private final T data;
-        private final boolean stub;
+        @Retention(RetentionPolicy.SOURCE)
+        @IntDef({TYPE_CONTENT, TYPE_PROGRESS, TYPE_MORE})
+        public @interface Type {}
 
-        public Node(final T data, final boolean stub) {
+        public static final int TYPE_CONTENT = 0;
+        public static final int TYPE_PROGRESS = 1;
+        public static final int TYPE_MORE = 2;
+
+        private final T data;
+        @Type private final int type;
+
+        public Node(final T data, @Type final int type) {
             this.data = data;
-            this.stub = stub;
+            this.type = type;
         }
 
         public T getData() {
             return data;
         }
 
-        public boolean isStub() {
-            return stub;
+        @Type
+        public int getType() {
+            return type;
         }
     }
 

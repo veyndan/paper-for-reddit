@@ -72,7 +72,7 @@ public class CommentsFragment extends Fragment {
                     // No data is lost as both things.get(0) and things.get(1), which is all the
                     // things, has null set to before, after, and modhash in the Listing.
                     // things.get(0).data.children contains the Link.java only
-                    final Tree<RedditObject> tree = new Tree<>(new Tree.Node<>(things.get(0).data.children.get(0), false), new ArrayList<>());
+                    final Tree<RedditObject> tree = new Tree<>(new Tree.Node<>(things.get(0).data.children.get(0), Tree.Node.TYPE_CONTENT), new ArrayList<>());
                     makeTree(tree, things.get(1));
 
                     for (final Tree<RedditObject> child : tree.getChildren()) {
@@ -86,14 +86,18 @@ public class CommentsFragment extends Fragment {
 
                     Observable.from(tree.toFlattenedNodeList())
                             .concatMap(node -> {
-                                if (node.isStub()) {
-                                    return Observable.just(new Tree.Node<Post>(null, node.isStub()));
-                                } else {
-                                    return Observable.just(node)
-                                            .map(Tree.Node::getData)
-                                            .map(Post::new)
-                                            .flatMap(Mutators.mutate())
-                                            .map(post -> new Tree.Node<>(post, node.isStub()));
+                                switch (node.getType()) {
+                                    case Tree.Node.TYPE_CONTENT:
+                                        return Observable.just(node)
+                                                .map(Tree.Node::getData)
+                                                .map(Post::new)
+                                                .flatMap(Mutators.mutate())
+                                                .map(post -> new Tree.Node<>(post, node.getType()));
+                                    case Tree.Node.TYPE_MORE:
+                                    case Tree.Node.TYPE_PROGRESS:
+                                        return Observable.just(new Tree.Node<Post>(null, node.getType()));
+                                    default:
+                                        return Observable.error(new IllegalStateException("Unknown node type: " + node.getType()));
                                 }
                             })
                             .toList()
@@ -109,8 +113,8 @@ public class CommentsFragment extends Fragment {
 
     private static void makeTree(final Tree<RedditObject> tree, final Thing<Listing> thing) {
         for (final RedditObject childData : thing.data.children) {
-            final boolean stub = childData instanceof More;
-            final Tree<RedditObject> childTree = new Tree<>(new Tree.Node<>(childData, stub), new ArrayList<>());
+            @Tree.Node.Type final int type = childData instanceof More ? Tree.Node.TYPE_MORE : Tree.Node.TYPE_CONTENT;
+            final Tree<RedditObject> childTree = new Tree<>(new Tree.Node<>(childData, type), new ArrayList<>());
             tree.getChildren().add(childTree);
 
             if (childData instanceof Comment) {

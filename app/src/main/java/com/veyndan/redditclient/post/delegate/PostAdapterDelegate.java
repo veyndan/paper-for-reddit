@@ -98,7 +98,7 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Tree.Node<Post>
 
     @Override
     public boolean isForViewType(@NonNull final List<Tree.Node<Post>> nodes, final int position) {
-        return !nodes.get(position).isStub();
+        return nodes.get(position).getType() == Tree.Node.TYPE_CONTENT;
     }
 
     @NonNull
