@@ -6,14 +6,19 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.common.collect.ImmutableMap;
+import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.QueryBuilder;
 import com.veyndan.redditclient.api.reddit.network.Sort;
 import com.veyndan.redditclient.api.reddit.network.TimePeriod;
 import com.veyndan.redditclient.post.PostsFragment;
+import com.veyndan.redditclient.post.model.Post;
 
 import java.util.Map;
 
 import butterknife.ButterKnife;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class MainActivity extends BaseActivity {
 
@@ -57,6 +62,22 @@ public class MainActivity extends BaseActivity {
                 .build();
 
         postsFragment.setFilter(new SubredditFilter(subreddit, Sort.HOT));
+
+        final CommentsFragment commentsFragment = (CommentsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_comments);
+
+        final Reddit reddit = new Reddit.Builder(Config.REDDIT_CREDENTIALS).build();
+
+        EventBus.INSTANCE.toObserverable()
+                .subscribeOn(Schedulers.io())
+                .ofType(Post.class)
+                .filter(post -> commentsFragment != null && commentsFragment.isVisible())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(post -> {
+                    final String fullname = post.getFullname();
+                    final String article = fullname.substring(3, fullname.length());
+
+                    commentsFragment.setCommentRequest(reddit.subredditComments(post.getSubreddit(), article));
+                }, Timber::e);
     }
 
     @Override

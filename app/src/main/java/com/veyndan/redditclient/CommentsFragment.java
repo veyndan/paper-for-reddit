@@ -1,7 +1,7 @@
 package com.veyndan.redditclient;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -32,40 +32,25 @@ import timber.log.Timber;
 
 public class CommentsFragment extends Fragment {
 
+    private RecyclerView recyclerView;
+
     @BindDimen(R.dimen.post_child_inset_multiplier) int childInsetMultiplier;
+
+    final Reddit reddit = new Reddit.Builder(Config.REDDIT_CREDENTIALS).build();
+
+    final List<Tree.Node<Post>> nodes = new ArrayList<>();
+
+    PostAdapter postAdapter;
+
+    TreeInsetItemDecoration treeInsetItemDecoration;
 
     public CommentsFragment() {
         // Required empty public constructor
     }
 
-    @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
-        final RecyclerView recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
-        ButterKnife.bind(this, recyclerView);
-
-        final List<Tree.Node<Post>> nodes = new ArrayList<>();
-
-        final Reddit reddit = new Reddit.Builder(Config.REDDIT_CREDENTIALS).build();
-
-        final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        final TreeInsetItemDecoration treeInsetItemDecoration = new TreeInsetItemDecoration(childInsetMultiplier);
-        final PostAdapter postAdapter = new PostAdapter(getActivity(), nodes, reddit);
-
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(treeInsetItemDecoration);
-        recyclerView.setAdapter(postAdapter);
-
-        EventBus.INSTANCE.toObserverable()
-                .ofType(Post.class)
-                .observeOn(Schedulers.io())
-                .flatMap(post -> {
-                    final String subreddit = post.getSubreddit();
-                    final String fullname = post.getFullname();
-                    final String article = fullname.substring(3, fullname.length());
-
-                    return reddit.subredditComments(subreddit, article);
-                })
+    public void setCommentRequest(final Observable<Response<List<Thing<Listing>>>> commentRequest) {
+        commentRequest
+                .subscribeOn(Schedulers.io())
                 .map(Response::body)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(things -> {
@@ -92,7 +77,7 @@ public class CommentsFragment extends Fragment {
                                                 .map(Tree.Node::getData)
                                                 .map(Post::new)
                                                 .flatMap(Mutators.mutate())
-                                                .map(post -> new Tree.Node<>(post, node.getType()));
+                                                .map(p -> new Tree.Node<>(p, node.getType()));
                                     case Tree.Node.TYPE_MORE:
                                     case Tree.Node.TYPE_PROGRESS:
                                         return Observable.just(new Tree.Node<Post>(null, node.getType()));
@@ -107,6 +92,21 @@ public class CommentsFragment extends Fragment {
                                 postAdapter.notifyDataSetChanged();
                             }, Timber::e);
                 }, Timber::e);
+    }
+
+    @Override
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
+        recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
+        ButterKnife.bind(this, recyclerView);
+
+        final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        postAdapter = new PostAdapter(getActivity(), nodes, reddit);
+        treeInsetItemDecoration = new TreeInsetItemDecoration(childInsetMultiplier);
+
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(postAdapter);
+        recyclerView.addItemDecoration(treeInsetItemDecoration);
 
         return recyclerView;
     }
