@@ -1,5 +1,6 @@
 package com.veyndan.redditclient.post.delegate;
 
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,16 +11,16 @@ import android.widget.TextView;
 import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.Tree;
-import com.veyndan.redditclient.post.model.Post;
+import com.veyndan.redditclient.post.model.Stub;
 
 import java.util.List;
 
-public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Tree.Node<Post>, Tree.Node<Post>, MoreAdapterDelegate.MoreViewHolder> {
+public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Tree.Node<Stub>, Tree.Node<?>, MoreAdapterDelegate.MoreViewHolder> {
 
     @Override
-    protected boolean isForViewType(@NonNull final Tree.Node<Post> node,
-                                    final List<Tree.Node<Post>> nodes, final int position) {
-        return node.getType() == Tree.Node.TYPE_MORE;
+    protected boolean isForViewType(@NonNull final Tree.Node<?> node,
+                                    final List<Tree.Node<?>> nodes, final int position) {
+        return node.getData() instanceof Stub && ((Stub) node.getData()).isChildCountAvailable();
     }
 
     @NonNull
@@ -31,8 +32,13 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Tree.Node<Po
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final Tree.Node<Post> node,
+    protected void onBindViewHolder(@NonNull final Tree.Node<Stub> node,
                                     @NonNull final MoreViewHolder holder) {
+        final Stub stub = node.getData();
+        final int count = stub.getChildCount();
+        final Resources resources = holder.itemView.getResources();
+
+        holder.textView.setText(resources.getQuantityString(R.plurals.children, count, count));
     }
 
     class MoreViewHolder extends RecyclerView.ViewHolder {

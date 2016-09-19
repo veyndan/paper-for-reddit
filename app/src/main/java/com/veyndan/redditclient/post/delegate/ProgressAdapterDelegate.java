@@ -10,17 +10,17 @@ import android.widget.ProgressBar;
 import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.Tree;
-import com.veyndan.redditclient.post.model.Post;
+import com.veyndan.redditclient.post.model.Stub;
 
 import java.util.List;
 
 public class ProgressAdapterDelegate
-        extends AbsListItemAdapterDelegate<Tree.Node<Post>, Tree.Node<Post>, ProgressAdapterDelegate.ProgressViewHolder> {
+        extends AbsListItemAdapterDelegate<Tree.Node<Stub>, Tree.Node<?>, ProgressAdapterDelegate.ProgressViewHolder> {
 
     @Override
-    protected boolean isForViewType(@NonNull final Tree.Node<Post> node,
-                                    final List<Tree.Node<Post>> nodes, final int position) {
-        return node.getType() == Tree.Node.TYPE_PROGRESS;
+    protected boolean isForViewType(@NonNull final Tree.Node<?> node,
+                                    final List<Tree.Node<?>> nodes, final int position) {
+        return node.getData() instanceof Stub && !((Stub) node.getData()).isChildCountAvailable();
     }
 
     @NonNull
@@ -32,7 +32,7 @@ public class ProgressAdapterDelegate
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final Tree.Node<Post> node,
+    protected void onBindViewHolder(@NonNull final Tree.Node<Stub> node,
                                     @NonNull final ProgressViewHolder holder) {
     }
 

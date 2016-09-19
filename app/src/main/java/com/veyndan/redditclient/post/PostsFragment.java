@@ -19,7 +19,6 @@ import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.Thing;
-import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.ui.recyclerview.SwipeItemTouchHelperCallback;
 import com.veyndan.redditclient.ui.recyclerview.itemdecoration.MarginItemDecoration;
 import com.veyndan.redditclient.ui.recyclerview.itemdecoration.TreeInsetItemDecoration;
@@ -39,7 +38,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     private RecyclerView recyclerView;
 
-    private final List<Tree.Node<Post>> nodes = new ArrayList<>();
+    private final List<Tree.Node<?>> nodes = new ArrayList<>();
 
     private PostAdapter postAdapter;
 
@@ -121,13 +120,13 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     @Override
-    public void appendNode(final Tree.Node<Post> node) {
+    public void appendNode(final Tree.Node<?> node) {
         nodes.add(node);
         postAdapter.notifyItemInserted(nodes.size() - 1);
     }
 
     @Override
-    public void appendNodes(final List<Tree.Node<Post>> nodes) {
+    public void appendNodes(final List<? extends Tree.Node<?>> nodes) {
         final int positionStart = this.nodes.size();
         this.nodes.addAll(nodes);
         postAdapter.notifyItemRangeInserted(positionStart, nodes.size());
@@ -135,13 +134,13 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     @Override
-    public Tree.Node<Post> popNode() {
+    public Tree.Node<?> popNode() {
         return popNode(nodes.size() - 1);
     }
 
     @Override
-    public Tree.Node<Post> popNode(final int index) {
-        final Tree.Node<Post> poppedNode = nodes.get(index);
+    public Tree.Node<?> popNode(final int index) {
+        final Tree.Node<?> poppedNode = nodes.get(index);
         nodes.remove(index);
         postAdapter.notifyItemRemoved(index);
         return poppedNode;

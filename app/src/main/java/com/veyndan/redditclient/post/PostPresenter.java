@@ -10,9 +10,11 @@ import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.More;
 import com.veyndan.redditclient.api.reddit.model.RedditObject;
+import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
 import com.veyndan.redditclient.post.model.Post;
+import com.veyndan.redditclient.post.model.Stub;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +46,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
     }
 
     public void loadNodes(final PostsFilter filter, final Observable<Boolean> trigger) {
-        postMvpView.appendNode(new Tree.Node<>(null, Tree.Node.TYPE_PROGRESS));
+        postMvpView.appendNode(new Tree.Node<>(new Stub()));
 
         trigger.takeFirst(Boolean::booleanValue)
                 .flatMap(aBoolean -> filter.getRequestObservable(reddit).subscribeOn(Schedulers.io()))
@@ -53,7 +55,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                 .flatMap(thing -> Observable.from(thing.data.children)
                                 .map(Post::new)
                                 .flatMap(Mutators.mutate())
-                                .map(post -> new Tree.Node<>(post, Tree.Node.TYPE_CONTENT))
+                                .map(Tree.Node::new)
                                 .toList(),
                         (thing, nodes) -> new Pair<>(thing.data.after, nodes))
                 .observeOn(AndroidSchedulers.mainThread())
@@ -72,7 +74,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
     }
 
     public void loadNodes(final Observable<Response<List<Thing<Listing>>>> commentRequest) {
-        postMvpView.appendNode(new Tree.Node<>(null, Tree.Node.TYPE_PROGRESS));
+        postMvpView.appendNode(new Tree.Node<>(new Stub()));
 
         commentRequest
                 .subscribeOn(Schedulers.io())
@@ -82,7 +84,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                     // No data is lost as both things.get(0) and things.get(1), which is all the
                     // things, has null set to before, after, and modhash in the Listing.
                     // things.get(0).data.children contains the Link.java only
-                    final Tree<RedditObject> tree = new Tree<>(new Tree.Node<>(things.get(0).data.children.get(0), Tree.Node.TYPE_CONTENT), new ArrayList<>());
+                    final Tree<RedditObject> tree = new Tree<>(new Tree.Node<>(things.get(0).data.children.get(0)), new ArrayList<>());
                     makeTree(tree, things.get(1));
 
                     for (final Tree<RedditObject> child : tree.getChildren()) {
@@ -91,18 +93,17 @@ public class PostPresenter implements Presenter<PostMvpView> {
 
                     Observable.from(tree.toFlattenedNodeList())
                             .concatMap(node -> {
-                                switch (node.getType()) {
-                                    case Tree.Node.TYPE_CONTENT:
-                                        return Observable.just(node)
-                                                .map(Tree.Node::getData)
-                                                .map(Post::new)
-                                                .flatMap(Mutators.mutate())
-                                                .map(p -> new Tree.Node<>(p, node.getType(), node.getDepth()));
-                                    case Tree.Node.TYPE_MORE:
-                                    case Tree.Node.TYPE_PROGRESS:
-                                        return Observable.just(new Tree.Node<Post>(null, node.getType(), node.getDepth()));
-                                    default:
-                                        return Observable.error(new IllegalStateException("Unknown node type: " + node.getType()));
+                                if (node.getData() instanceof Submission) {
+                                    return Observable.just(node)
+                                            .map(Tree.Node::getData)
+                                            .map(Post::new)
+                                            .flatMap(Mutators.mutate())
+                                            .map(p -> new Tree.Node<>(p, node.getDepth()));
+                                } else if (node.getData() instanceof More) {
+                                    final More more = (More) node.getData();
+                                    return Observable.just(new Tree.Node<>(new Stub(more.count), node.getDepth()));
+                                } else {
+                                    return Observable.error(new IllegalStateException("Unknown node class: " + node.getData()));
                                 }
                             })
                             .toList()
@@ -116,8 +117,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
 
     private static void makeTree(final Tree<RedditObject> tree, final Thing<Listing> thing) {
         for (final RedditObject childData : thing.data.children) {
-            @Tree.Node.Type final int type = childData instanceof More ? Tree.Node.TYPE_MORE : Tree.Node.TYPE_CONTENT;
-            final Tree<RedditObject> childTree = new Tree<>(new Tree.Node<>(childData, type), new ArrayList<>());
+            final Tree<RedditObject> childTree = new Tree<>(new Tree.Node<>(childData), new ArrayList<>());
             tree.getChildren().add(childTree);
 
             if (childData instanceof Comment) {
