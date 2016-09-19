@@ -25,7 +25,7 @@ import rx.Observable;
 
 public class Post {
 
-    private Observable<Object> mediaObservable = Observable.empty();
+    private Observable<?> mediaObservable = Observable.empty();
 
     private final boolean isLink;
     private final boolean isComment;
@@ -85,12 +85,12 @@ public class Post {
         subreddit = submission.subreddit;
     }
 
-    public Observable<Object> getMediaObservable() {
+    public Observable<?> getMediaObservable() {
         return mediaObservable;
     }
 
-    public <T> void setMediaObservable(final Observable<T> mediaObservable) {
-        this.mediaObservable = mediaObservable.cast(Object.class);
+    public void setMediaObservable(final Observable<?> mediaObservable) {
+        this.mediaObservable = mediaObservable;
     }
 
     public boolean isLink() {
