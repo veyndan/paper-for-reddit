@@ -76,7 +76,7 @@ public class MainActivity extends BaseActivity {
                     final String fullname = post.getFullname();
                     final String article = fullname.substring(3, fullname.length());
 
-                    commentsFragment.setCommentRequest(reddit.subredditComments(post.getSubreddit(), article));
+                    commentsFragment.setFilter(reddit.subredditComments(post.getSubreddit(), article));
                 }, Timber::e);
     }
 
