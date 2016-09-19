@@ -84,45 +84,40 @@ public class PostPresenter implements Presenter<PostMvpView> {
                     // No data is lost as both things.get(0) and things.get(1), which is all the
                     // things, has null set to before, after, and modhash in the Listing.
                     // things.get(0).data.children contains the Link.java only
-                    final Tree<RedditObject> tree = new Tree<>(new Tree.Node<>(things.get(0).data.children.get(0)), new ArrayList<>());
+                    final Tree<Object> tree = new Tree<>(new Tree.Node<>(new Post(things.get(0).data.children.get(0))), new ArrayList<>());
                     makeTree(tree, things.get(1));
 
-                    for (final Tree<RedditObject> child : tree.getChildren()) {
+                    for (final Tree<Object> child : tree.getChildren()) {
                         child.generateDepths();
                     }
 
-                    Observable.from(tree.toFlattenedNodeList())
-                            .concatMap(node -> {
-                                if (node.getData() instanceof Submission) {
-                                    return Observable.just(node)
-                                            .map(Tree.Node::getData)
-                                            .map(Post::new)
-                                            .flatMap(Mutators.mutate())
-                                            .map(p -> new Tree.Node<>(p, node.getDepth()));
-                                } else if (node.getData() instanceof More) {
-                                    final More more = (More) node.getData();
-                                    return Observable.just(new Tree.Node<>(new Stub(more.count), node.getDepth()));
-                                } else {
-                                    return Observable.error(new IllegalStateException("Unknown node class: " + node.getData()));
-                                }
-                            })
-                            .toList()
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(posts -> {
-                                postMvpView.popNode();
-                                postMvpView.appendNodes(posts);
-                            }, Timber::e);
+                    postMvpView.popNode();
+                    postMvpView.appendNodes(tree.toFlattenedNodeList());
                 }, Timber::e);
     }
 
-    private static void makeTree(final Tree<RedditObject> tree, final Thing<Listing> thing) {
+    private static void makeTree(final Tree<Object> tree, final Thing<Listing> thing) {
         for (final RedditObject childData : thing.data.children) {
-            final Tree<RedditObject> childTree = new Tree<>(new Tree.Node<>(childData), new ArrayList<>());
-            tree.getChildren().add(childTree);
+            if (childData instanceof Submission) {
+                Observable.just(childData)
+                        .map(Post::new)
+                        .flatMap(Mutators.mutate())
+                        .subscribe(post -> {
+                            final Tree<Object> childTree = new Tree<>(new Tree.Node<>(post), new ArrayList<>());
+                            tree.getChildren().add(childTree);
 
-            if (childData instanceof Comment) {
-                final Comment childComment = (Comment) childData;
-                makeTree(childTree, childComment.getReplies());
+                            if (childData instanceof Comment) {
+                                final Comment childComment = (Comment) childData;
+                                makeTree(childTree, childComment.getReplies());
+                            }
+                        });
+            } else if (childData instanceof More) {
+                final More more = (More) childData;
+
+                final Tree<Object> childTree = new Tree<>(new Tree.Node<>(new Stub(more.count)), new ArrayList<>());
+                tree.getChildren().add(childTree);
+            } else {
+                throw new IllegalStateException("Unknown node class: " + childData);
             }
         }
     }
