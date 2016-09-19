@@ -3,14 +3,16 @@ package com.veyndan.redditclient.ui.recyclerview.itemdecoration;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.annotation.DimenRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.Px;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 public class MarginItemDecoration extends RecyclerView.ItemDecoration {
 
-    private final int margin;
+    @Px private final int margin;
 
-    public MarginItemDecoration(final Context context, @DimenRes final int marginRes) {
+    public MarginItemDecoration(@NonNull final Context context, @DimenRes final int marginRes) {
         margin = context.getResources().getDimensionPixelOffset(marginRes);
     }
 
