@@ -24,9 +24,12 @@ public class TreeInsetItemDecoration extends RecyclerView.ItemDecoration {
                                final RecyclerView.State state) {
         if (parent.getAdapter() instanceof DepthCalculatorDelegate) {
             final DepthCalculatorDelegate depthCalculatorDelegate = (DepthCalculatorDelegate) parent.getAdapter();
-            final RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) view.getLayoutParams();
-            final int position = layoutParams.getViewLayoutPosition();
-            final int inset = depthCalculatorDelegate.depthForPosition(position) * childInsetMultiplier;
+            final int position = parent.getChildAdapterPosition(view);
+
+            final int inset = position == RecyclerView.NO_POSITION
+                    ? 0
+                    : depthCalculatorDelegate.depthForPosition(position) * childInsetMultiplier;
+
             outRect.set(inset, 0, 0, 0);
         } else {
             throw new IllegalStateException("RecyclerView's Adapter must implement " +
