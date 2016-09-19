@@ -31,7 +31,6 @@ import com.veyndan.redditclient.ui.recyclerview.itemdecoration.TreeInsetItemDeco
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindDimen;
 import butterknife.ButterKnife;
 import retrofit2.Response;
 import rx.Observable;
@@ -42,8 +41,6 @@ import timber.log.Timber;
 public class PostsFragment extends Fragment implements PostMvpView {
 
     private static final String ARG_USER_FILTER = "user_filter";
-
-    @BindDimen(R.dimen.post_child_inset_multiplier) int childInsetMultiplier;
 
     private final PostPresenter postPresenter = new PostPresenter();
 
@@ -158,7 +155,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new MarginItemDecoration(getActivity(), R.dimen.card_view_margin));
-        recyclerView.addItemDecoration(new TreeInsetItemDecoration(childInsetMultiplier));
+        recyclerView.addItemDecoration(new TreeInsetItemDecoration(getActivity(), R.dimen.post_child_inset_multiplier));
         recyclerView.setAdapter(postAdapter);
 
         final ItemTouchHelper.Callback swipeCallback = new SwipeItemTouchHelperCallback();

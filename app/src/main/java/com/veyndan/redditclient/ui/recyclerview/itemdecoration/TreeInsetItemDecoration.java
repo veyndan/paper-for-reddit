@@ -1,6 +1,9 @@
 package com.veyndan.redditclient.ui.recyclerview.itemdecoration;
 
+import android.content.Context;
 import android.graphics.Rect;
+import android.support.annotation.DimenRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.Px;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -9,10 +12,11 @@ import com.veyndan.redditclient.post.DepthCalculatorDelegate;
 
 public class TreeInsetItemDecoration extends RecyclerView.ItemDecoration {
 
-    private final int childInsetMultiplier;
+    @Px private final int childInsetMultiplier;
 
-    public TreeInsetItemDecoration(@Px final int childInsetMultiplier) {
-        this.childInsetMultiplier = childInsetMultiplier;
+    public TreeInsetItemDecoration(@NonNull final Context context,
+                                   @DimenRes final int childInsetMultiplierRes) {
+        childInsetMultiplier = context.getResources().getDimensionPixelOffset(childInsetMultiplierRes);
     }
 
     @Override
