@@ -5,29 +5,29 @@ import android.support.annotation.Px;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.veyndan.redditclient.post.DepthCalculatorDelegate;
 
 public class TreeInsetItemDecoration extends RecyclerView.ItemDecoration {
 
-    private final List<Integer> insets = new ArrayList<>();
     private final int childInsetMultiplier;
 
     public TreeInsetItemDecoration(@Px final int childInsetMultiplier) {
         this.childInsetMultiplier = childInsetMultiplier;
     }
 
-    public void setInsets(final List<Integer> insets) {
-        this.insets.clear();
-        this.insets.addAll(insets);
-    }
-
     @Override
-    public void getItemOffsets(final Rect outRect, final View view,
-                               final RecyclerView parent,
+    public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent,
                                final RecyclerView.State state) {
-        final int position = ((RecyclerView.LayoutParams) view.getLayoutParams()).getViewLayoutPosition();
-        final int inset = insets.isEmpty() ? 0 : insets.get(position) * childInsetMultiplier;
-        outRect.set(inset, 0, 0, 0);
+        if (parent.getAdapter() instanceof DepthCalculatorDelegate) {
+            final DepthCalculatorDelegate depthCalculatorDelegate = (DepthCalculatorDelegate) parent.getAdapter();
+            final RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) view.getLayoutParams();
+            final int position = layoutParams.getViewLayoutPosition();
+            final int inset = depthCalculatorDelegate.depthForPosition(position) * childInsetMultiplier;
+            outRect.set(inset, 0, 0, 0);
+        } else {
+            throw new IllegalStateException("RecyclerView's Adapter must implement " +
+                    "DepthCalculatorDelegate in order for TreeInsetItemDecoration to be used as " +
+                    "a decoration");
+        }
     }
 }

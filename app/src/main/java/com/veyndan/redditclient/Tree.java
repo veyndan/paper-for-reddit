@@ -1,6 +1,7 @@
 package com.veyndan.redditclient;
 
 import android.support.annotation.IntDef;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 import com.google.common.collect.ImmutableList;
@@ -24,8 +25,6 @@ public class Tree<T> {
     private final Node<T> node;
     private final List<Tree<T>> children;
 
-    private int depth;
-
     public Tree(final Node<T> node, final List<Tree<T>> children) {
         this.node = node;
         this.children = children;
@@ -43,16 +42,12 @@ public class Tree<T> {
         return treeTraverser.preOrderTraversal(this).transform(input -> input.node).toList();
     }
 
-    public List<Integer> toFlattenedDepthList() {
-        return treeTraverser.preOrderTraversal(this).transform(input -> input.depth).toList();
-    }
-
     public void generateDepths() {
         generateDepths(this, 0);
     }
 
     private void generateDepths(final Tree<T> tree, final int depth) {
-        tree.depth = depth;
+        tree.node.depth = depth;
         for (final Tree<T> child : tree.children) {
             generateDepths(child, depth + 1);
         }
@@ -70,10 +65,16 @@ public class Tree<T> {
 
         private final T data;
         @Type private final int type;
+        @IntRange(from = 0) private int depth;
 
         public Node(final T data, @Type final int type) {
+            this(data, type, 0);
+        }
+
+        public Node(final T data, @Type final int type, @IntRange(from = 0) final int depth) {
             this.data = data;
             this.type = type;
+            this.depth = depth;
         }
 
         public T getData() {
@@ -83,6 +84,11 @@ public class Tree<T> {
         @Type
         public int getType() {
             return type;
+        }
+
+        @IntRange(from = 0)
+        public int getDepth() {
+            return depth;
         }
     }
 

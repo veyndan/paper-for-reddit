@@ -1,6 +1,7 @@
 package com.veyndan.redditclient.post;
 
 import android.app.Activity;
+import android.support.annotation.IntRange;
 
 import com.hannesdorfmann.adapterdelegates2.ListDelegationAdapter;
 import com.veyndan.redditclient.Tree;
@@ -12,7 +13,8 @@ import com.veyndan.redditclient.post.model.Post;
 
 import java.util.List;
 
-public class PostAdapter extends ListDelegationAdapter<List<Tree.Node<Post>>> {
+public class PostAdapter extends ListDelegationAdapter<List<Tree.Node<Post>>>
+        implements DepthCalculatorDelegate {
 
     public PostAdapter(final Activity activity, final List<Tree.Node<Post>> posts, final Reddit reddit) {
         delegatesManager
@@ -21,5 +23,11 @@ public class PostAdapter extends ListDelegationAdapter<List<Tree.Node<Post>>> {
                 .addDelegate(new MoreAdapterDelegate());
 
         setItems(posts);
+    }
+
+    @Override
+    @IntRange(from = 0)
+    public int depthForPosition(@IntRange(from = 0) final int position) {
+        return items.get(position).getDepth();
     }
 }

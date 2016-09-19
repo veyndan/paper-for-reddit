@@ -55,8 +55,6 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     private LinearLayoutManager layoutManager;
 
-    private TreeInsetItemDecoration treeInsetItemDecoration;
-
     private boolean loadingPosts;
 
     private Reddit reddit;
@@ -110,11 +108,6 @@ public class PostsFragment extends Fragment implements PostMvpView {
                         child.generateDepths();
                     }
 
-                    final List<Integer> depths = tree.toFlattenedDepthList();
-
-                    treeInsetItemDecoration.setInsets(depths);
-                    recyclerView.invalidateItemDecorations();
-
                     Observable.from(tree.toFlattenedNodeList())
                             .concatMap(node -> {
                                 switch (node.getType()) {
@@ -123,10 +116,10 @@ public class PostsFragment extends Fragment implements PostMvpView {
                                                 .map(Tree.Node::getData)
                                                 .map(Post::new)
                                                 .flatMap(Mutators.mutate())
-                                                .map(p -> new Tree.Node<>(p, node.getType()));
+                                                .map(p -> new Tree.Node<>(p, node.getType(), node.getDepth()));
                                     case Tree.Node.TYPE_MORE:
                                     case Tree.Node.TYPE_PROGRESS:
-                                        return Observable.just(new Tree.Node<Post>(null, node.getType()));
+                                        return Observable.just(new Tree.Node<Post>(null, node.getType(), node.getDepth()));
                                     default:
                                         return Observable.error(new IllegalStateException("Unknown node type: " + node.getType()));
                                 }
@@ -161,12 +154,11 @@ public class PostsFragment extends Fragment implements PostMvpView {
         ButterKnife.bind(this, recyclerView);
 
         layoutManager = new LinearLayoutManager(getActivity());
-        treeInsetItemDecoration = new TreeInsetItemDecoration(childInsetMultiplier);
         postAdapter = new PostAdapter(getActivity(), nodes, reddit);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new MarginItemDecoration(getActivity(), R.dimen.card_view_margin));
-        recyclerView.addItemDecoration(treeInsetItemDecoration);
+        recyclerView.addItemDecoration(new TreeInsetItemDecoration(childInsetMultiplier));
         recyclerView.setAdapter(postAdapter);
 
         final ItemTouchHelper.Callback swipeCallback = new SwipeItemTouchHelperCallback();
