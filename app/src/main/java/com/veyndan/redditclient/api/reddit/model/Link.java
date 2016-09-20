@@ -154,7 +154,9 @@ public class Link extends Submission {
 
     @Override
     public Thing<Listing> getReplies() {
-        throw new UnsupportedOperationException();
+        final Thing<Listing> thing = new Thing<>();
+        thing.data = new Listing();
+        return thing;
     }
 
     @Override

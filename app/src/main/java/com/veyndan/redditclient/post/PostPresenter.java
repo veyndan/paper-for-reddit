@@ -83,9 +83,15 @@ public class PostPresenter implements Presenter<PostMvpView> {
                 .subscribe(things -> {
                     // No data is lost as both things.get(0) and things.get(1), which is all the
                     // things, has null set to before, after, and modhash in the Listing.
-                    // things.get(0).data.children contains the Link.java only
-                    final Tree<Object> tree = new Tree<>(new Tree.Node<>(new Post(things.get(0).data.children.get(0))), new ArrayList<>());
-                    makeTree(tree, things.get(1));
+                    // things.get(0).data.children contains the Link.java only.
+
+                    // Here I am setting an actual tree where the link is the root node, and
+                    // the root comments are the children of the link.
+                    final Post root = new Post(things.get(0).data.children.get(0));
+                    root.getReplies().data.children.addAll(things.get(1).data.children);
+
+                    final Tree<Object> tree = new Tree<>(new Tree.Node<>(root), new ArrayList<>());
+                    makeTree(tree, root.getReplies());
 
                     for (final Tree<Object> child : tree.getChildren()) {
                         child.generateDepths();
