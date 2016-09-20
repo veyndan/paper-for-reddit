@@ -29,8 +29,8 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
 import com.veyndan.redditclient.EventBus;
+import com.veyndan.redditclient.util.Node;
 import com.veyndan.redditclient.R;
-import com.veyndan.redditclient.Tree;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 import com.veyndan.redditclient.post.Flair;
@@ -52,7 +52,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PostAdapterDelegate implements AdapterDelegate<List<Tree.Node<?>>> {
+public class PostAdapterDelegate implements AdapterDelegate<List<Node<?>>> {
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
@@ -97,7 +97,7 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Tree.Node<?>>> 
     }
 
     @Override
-    public boolean isForViewType(@NonNull final List<Tree.Node<?>> nodes, final int position) {
+    public boolean isForViewType(@NonNull final List<Node<?>> nodes, final int position) {
         return nodes.get(position).getData() instanceof Post;
     }
 
@@ -111,7 +111,7 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Tree.Node<?>>> 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final List<Tree.Node<?>> nodes, final int position,
+    public void onBindViewHolder(@NonNull final List<Node<?>> nodes, final int position,
                                  @NonNull final RecyclerView.ViewHolder holder) {
         final Context context = holder.itemView.getContext();
         final PostViewHolder postHolder = (PostViewHolder) holder;
@@ -282,7 +282,7 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Tree.Node<?>>> 
         @Override
         public void onSwipe() {
             final int position = getAdapterPosition();
-            final Tree.Node<?> node = adapter.getItems().get(position);
+            final Node<?> node = adapter.getItems().get(position);
             final Post post = (Post) node.getData();
 
             final View.OnClickListener undoClickListener = view -> {

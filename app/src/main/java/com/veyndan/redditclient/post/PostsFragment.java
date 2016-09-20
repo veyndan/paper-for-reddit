@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 import com.veyndan.redditclient.Config;
+import com.veyndan.redditclient.util.Node;
 import com.veyndan.redditclient.R;
-import com.veyndan.redditclient.Tree;
 import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Listing;
@@ -38,7 +38,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     private RecyclerView recyclerView;
 
-    private final List<Tree.Node<?>> nodes = new ArrayList<>();
+    private final List<Node<?>> nodes = new ArrayList<>();
 
     private PostAdapter postAdapter;
 
@@ -120,13 +120,13 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     @Override
-    public void appendNode(final Tree.Node<?> node) {
+    public void appendNode(final Node<?>node) {
         nodes.add(node);
         postAdapter.notifyItemInserted(nodes.size() - 1);
     }
 
     @Override
-    public void appendNodes(final List<? extends Tree.Node<?>> nodes) {
+    public void appendNodes(final List<? extends Node<?>> nodes) {
         final int positionStart = this.nodes.size();
         this.nodes.addAll(nodes);
         postAdapter.notifyItemRangeInserted(positionStart, nodes.size());
@@ -134,13 +134,13 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     @Override
-    public Tree.Node<?> popNode() {
+    public Node<?> popNode() {
         return popNode(nodes.size() - 1);
     }
 
     @Override
-    public Tree.Node<?> popNode(final int index) {
-        final Tree.Node<?> poppedNode = nodes.get(index);
+    public Node<?> popNode(final int index) {
+        final Node<?> poppedNode = nodes.get(index);
         nodes.remove(index);
         postAdapter.notifyItemRemoved(index);
         return poppedNode;

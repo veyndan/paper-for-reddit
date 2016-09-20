@@ -1,19 +1,19 @@
 package com.veyndan.redditclient.post;
 
 import com.veyndan.redditclient.MvpView;
-import com.veyndan.redditclient.Tree;
+import com.veyndan.redditclient.util.Node;
 
 import java.util.List;
 
 public interface PostMvpView extends MvpView {
 
-    void appendNode(Tree.Node<?> node);
+    void appendNode(Node<?> node);
 
-    void appendNodes(List<? extends Tree.Node<?>> nodes);
+    void appendNodes(List<? extends Node<?>> nodes);
 
-    Tree.Node<?> popNode();
+    Node<?> popNode();
 
-    Tree.Node<?> popNode(int index);
+    Node<?> popNode(int index);
 
     void clearNodes();
 }

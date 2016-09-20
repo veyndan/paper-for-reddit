@@ -11,15 +11,18 @@ import android.text.format.DateUtils;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Link;
-import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.More;
 import com.veyndan.redditclient.api.reddit.model.PostHint;
 import com.veyndan.redditclient.api.reddit.model.Preview;
+import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.model.Submission;
-import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
+import com.veyndan.redditclient.post.media.mutator.Mutators;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
@@ -31,7 +34,7 @@ public class Post {
     private final boolean isLink;
     private final boolean isComment;
 
-    private final Thing<Listing> replies;
+    private final List<Object> replies;
 
     private final boolean archived;
     private final String author;
@@ -60,7 +63,21 @@ public class Post {
         isLink = submission instanceof Link;
         isComment = submission instanceof Comment;
 
-        replies = submission.getReplies();
+        replies = new ArrayList<>();
+        for (final RedditObject child : submission.getReplies().data.children) {
+            if (child instanceof Submission) {
+                Observable.just(child)
+                        .cast(Submission.class)
+                        .map(Post::new)
+                        .flatMap(Mutators.mutate())
+                        .subscribe(replies::add);
+            } else if (child instanceof More) {
+                final More more = (More) child;
+                replies.add(new Stub(more.count));
+            } else {
+                throw new IllegalStateException("Unknown node class: " + child);
+            }
+        }
 
         archived = submission.archived;
         author = submission.author == null ? "" : submission.author;
@@ -104,7 +121,7 @@ public class Post {
         return isComment;
     }
 
-    public Thing<Listing> getReplies() {
+    public List<Object> getReplies() {
         return replies;
     }
 

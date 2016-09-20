@@ -9,17 +9,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
+import com.veyndan.redditclient.util.Node;
 import com.veyndan.redditclient.R;
-import com.veyndan.redditclient.Tree;
 import com.veyndan.redditclient.post.model.Stub;
 
 import java.util.List;
 
-public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Tree.Node<Stub>, Tree.Node<?>, MoreAdapterDelegate.MoreViewHolder> {
+public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Node<Stub>, Node<?>, MoreAdapterDelegate.MoreViewHolder> {
 
     @Override
-    protected boolean isForViewType(@NonNull final Tree.Node<?> node,
-                                    final List<Tree.Node<?>> nodes, final int position) {
+    protected boolean isForViewType(@NonNull final Node<?> node,
+                                    final List<Node<?>> nodes, final int position) {
         return node.getData() instanceof Stub && ((Stub) node.getData()).isChildCountAvailable();
     }
 
@@ -32,7 +32,7 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Tree.Node<St
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final Tree.Node<Stub> node,
+    protected void onBindViewHolder(@NonNull final Node<Stub> node,
                                     @NonNull final MoreViewHolder holder) {
         final Stub stub = node.getData();
         final int count = stub.getChildCount();
