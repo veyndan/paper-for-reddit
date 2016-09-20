@@ -14,7 +14,6 @@ import com.veyndan.redditclient.api.reddit.model.Link;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.PostHint;
 import com.veyndan.redditclient.api.reddit.model.Preview;
-import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
@@ -57,9 +56,7 @@ public class Post {
     private final boolean stickied;
     private final String subreddit;
 
-    public Post(final RedditObject redditObject) {
-        final Submission submission = (Submission) redditObject;
-
+    public Post(@NonNull final Submission submission) {
         isLink = submission instanceof Link;
         isComment = submission instanceof Comment;
 

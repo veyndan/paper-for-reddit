@@ -6,7 +6,6 @@ import com.veyndan.redditclient.Config;
 import com.veyndan.redditclient.Presenter;
 import com.veyndan.redditclient.Tree;
 import com.veyndan.redditclient.api.reddit.Reddit;
-import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.More;
 import com.veyndan.redditclient.api.reddit.model.RedditObject;
@@ -53,6 +52,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                 .observeOn(Schedulers.computation())
                 .map(Response::body)
                 .flatMap(thing -> Observable.from(thing.data.children)
+                                .cast(Submission.class)
                                 .map(Post::new)
                                 .flatMap(Mutators.mutate())
                                 .map(Tree.Node::new)
@@ -87,7 +87,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
 
                     // Here I am setting an actual tree where the link is the root node, and
                     // the root comments are the children of the link.
-                    final Post root = new Post(things.get(0).data.children.get(0));
+                    final Post root = new Post((Submission) things.get(0).data.children.get(0));
                     root.getReplies().data.children.addAll(things.get(1).data.children);
 
                     final Tree<Object> tree = new Tree<>(new Tree.Node<>(root), new ArrayList<>());
@@ -102,16 +102,13 @@ public class PostPresenter implements Presenter<PostMvpView> {
         for (final RedditObject childData : thing.data.children) {
             if (childData instanceof Submission) {
                 Observable.just(childData)
+                        .cast(Submission.class)
                         .map(Post::new)
                         .flatMap(Mutators.mutate())
                         .subscribe(post -> {
                             final Tree<Object> childTree = new Tree<>(new Tree.Node<>(post), new ArrayList<>());
                             tree.getChildren().add(childTree);
-
-                            if (childData instanceof Comment) {
-                                final Comment childComment = (Comment) childData;
-                                makeTree(childTree, childComment.getReplies());
-                            }
+                            makeTree(childTree, post.getReplies());
                         });
             } else if (childData instanceof More) {
                 final More more = (More) childData;
