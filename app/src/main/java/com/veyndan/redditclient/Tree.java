@@ -4,13 +4,13 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.TreeTraverser;
+import com.veyndan.redditclient.util.DepthTreeTraverser;
 
 import java.util.List;
 
 public class Tree<T> {
 
-    private final TreeTraverser<Tree<T>> treeTraverser = new TreeTraverser<Tree<T>>() {
+    private final DepthTreeTraverser<Tree<T>> treeTraverser = new DepthTreeTraverser<Tree<T>>() {
         @Override
         public Iterable<Tree<T>> children(@NonNull final Tree<T> root) {
             return root.children;
@@ -37,17 +37,6 @@ public class Tree<T> {
         return treeTraverser.preOrderTraversal(this).transform(input -> input.node).toList();
     }
 
-    public void generateDepths() {
-        generateDepths(this, 0);
-    }
-
-    private void generateDepths(final Tree<T> tree, final int depth) {
-        tree.node.depth = depth;
-        for (final Tree<T> child : tree.children) {
-            generateDepths(child, depth + 1);
-        }
-    }
-
     public static class Node<T> {
 
         @NonNull private final T data;
@@ -70,6 +59,10 @@ public class Tree<T> {
         @IntRange(from = 0)
         public int getDepth() {
             return depth;
+        }
+
+        public void setDepth(@IntRange(from = 0) final int depth) {
+            this.depth = depth;
         }
     }
 

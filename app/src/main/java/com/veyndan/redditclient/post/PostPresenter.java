@@ -93,10 +93,6 @@ public class PostPresenter implements Presenter<PostMvpView> {
                     final Tree<Object> tree = new Tree<>(new Tree.Node<>(root), new ArrayList<>());
                     makeTree(tree, root.getReplies());
 
-                    for (final Tree<Object> child : tree.getChildren()) {
-                        child.generateDepths();
-                    }
-
                     postMvpView.popNode();
                     postMvpView.appendNodes(tree.toFlattenedNodeList());
                 }, Timber::e);
