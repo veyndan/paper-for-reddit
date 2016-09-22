@@ -262,4 +262,10 @@ public class Post extends Node {
     public List<Node> getChildren() {
         return replies;
     }
+
+    @NonNull
+    @Override
+    public Observable<Boolean> getTrigger() {
+        return Observable.empty();
+    }
 }

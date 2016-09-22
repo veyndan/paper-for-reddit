@@ -45,10 +45,10 @@ public class PostPresenter implements Presenter<PostMvpView> {
         postMvpView = null;
     }
 
-    public void loadNodes(final PostsFilter filter, final Stub stub) {
-        postMvpView.appendNode(stub);
+    public void loadNodes(final PostsFilter filter, final Node node) {
+        postMvpView.appendNode(node);
 
-        stub.getTrigger().takeFirst(Boolean::booleanValue)
+        node.getTrigger().takeFirst(Boolean::booleanValue)
                 .flatMap(aBoolean -> filter.getRequestObservable(reddit).subscribeOn(Schedulers.io()))
                 .observeOn(Schedulers.computation())
                 .map(Response::body)
@@ -68,16 +68,16 @@ public class PostPresenter implements Presenter<PostMvpView> {
 
                     if (after != null) {
                         filter.setAfter(after);
-                        loadNodes(filter, stub);
+                        loadNodes(filter, node);
                     }
                 });
     }
 
     public void loadNodes(final Observable<Response<List<Thing<Listing>>>> commentRequest,
-                          final Stub stub) {
-        postMvpView.appendNode(stub);
+                          final Node node) {
+        postMvpView.appendNode(node);
 
-        stub.getTrigger().takeFirst(Boolean::booleanValue)
+        node.getTrigger().takeFirst(Boolean::booleanValue)
                 .flatMap(aBoolean -> commentRequest.subscribeOn(Schedulers.io()))
                 .map(Response::body)
                 .observeOn(AndroidSchedulers.mainThread())

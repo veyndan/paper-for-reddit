@@ -33,6 +33,7 @@ public final class Stub extends Node {
         return childCount != UNKNOWN_CHILD_COUNT;
     }
 
+    @Override
     @NonNull
     public Observable<Boolean> getTrigger() {
         return trigger;

@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import rx.Observable;
+
 public abstract class Node {
 
     @IntRange(from = 0) private int depth;
@@ -28,4 +30,7 @@ public abstract class Node {
 
     @NonNull
     public abstract List<Node> getChildren();
+
+    @NonNull
+    public abstract Observable<Boolean> getTrigger();
 }
