@@ -12,10 +12,10 @@ import com.veyndan.redditclient.post.delegate.ProgressAdapterDelegate;
 
 import java.util.List;
 
-public class PostAdapter extends ListDelegationAdapter<List<Node<?>>>
+public class PostAdapter extends ListDelegationAdapter<List<Node>>
         implements DepthCalculatorDelegate {
 
-    public PostAdapter(final Activity activity, final List<Node<?>> posts, final Reddit reddit) {
+    public PostAdapter(final Activity activity, final List<Node> posts, final Reddit reddit) {
         delegatesManager
                 .addDelegate(new PostAdapterDelegate(this, activity, reddit))
                 .addDelegate(new ProgressAdapterDelegate())

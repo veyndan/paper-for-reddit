@@ -3,27 +3,29 @@ package com.veyndan.redditclient.util;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
-public class Node<T> {
+import java.util.List;
 
-    @NonNull private final T data;
-    @IntRange(from = 0) private final int depth;
+public abstract class Node {
 
-    public Node(@NonNull final T data) {
-        this(data, 0);
+    @IntRange(from = 0) private int depth;
+
+    public Node() {
+        this(0);
     }
 
-    public Node(@NonNull final T data, @IntRange(from = 0) final int depth) {
-        this.data = data;
+    public Node(@IntRange(from = 0) final int depth) {
         this.depth = depth;
-    }
-
-    @NonNull
-    public T getData() {
-        return data;
     }
 
     @IntRange(from = 0)
     public int getDepth() {
         return depth;
     }
+
+    public void setDepth(@IntRange(from = 0) final int depth) {
+        this.depth = depth;
+    }
+
+    @NonNull
+    public abstract List<Node> getChildren();
 }

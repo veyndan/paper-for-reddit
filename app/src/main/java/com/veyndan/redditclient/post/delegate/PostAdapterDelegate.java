@@ -52,7 +52,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PostAdapterDelegate implements AdapterDelegate<List<Node<?>>> {
+public class PostAdapterDelegate implements AdapterDelegate<List<Node>> {
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
@@ -97,8 +97,8 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Node<?>>> {
     }
 
     @Override
-    public boolean isForViewType(@NonNull final List<Node<?>> nodes, final int position) {
-        return nodes.get(position).getData() instanceof Post;
+    public boolean isForViewType(@NonNull final List<Node> nodes, final int position) {
+        return nodes.get(position) instanceof Post;
     }
 
     @NonNull
@@ -111,11 +111,11 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Node<?>>> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final List<Node<?>> nodes, final int position,
+    public void onBindViewHolder(@NonNull final List<Node> nodes, final int position,
                                  @NonNull final RecyclerView.ViewHolder holder) {
         final Context context = holder.itemView.getContext();
         final PostViewHolder postHolder = (PostViewHolder) holder;
-        final Post post = (Post) nodes.get(position).getData();
+        final Post post = (Post) nodes.get(position);
 
         RxView.clicks(postHolder.itemView)
                 .subscribe(aVoid -> {
@@ -282,8 +282,8 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Node<?>>> {
         @Override
         public void onSwipe() {
             final int position = getAdapterPosition();
-            final Node<?> node = adapter.getItems().get(position);
-            final Post post = (Post) node.getData();
+            final Node node = adapter.getItems().get(position);
+            final Post post = (Post) node;
 
             final View.OnClickListener undoClickListener = view -> {
                 // If undo pressed, then don't follow through with request to hide

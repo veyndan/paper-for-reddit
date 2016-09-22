@@ -18,6 +18,7 @@ import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
+import com.veyndan.redditclient.util.Node;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
@@ -27,14 +28,14 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 
-public class Post {
+public class Post extends Node {
 
     private Observable<?> mediaObservable = Observable.empty();
 
     private final boolean isLink;
     private final boolean isComment;
 
-    private final List<Object> replies;
+    private final List<Node> replies;
 
     private final boolean archived;
     private final String author;
@@ -119,10 +120,6 @@ public class Post {
 
     public boolean isComment() {
         return isComment;
-    }
-
-    public List<Object> getReplies() {
-        return replies;
     }
 
     public boolean isArchived() {
@@ -258,5 +255,11 @@ public class Post {
             final Resources resources = context.getResources();
             return resources.getQuantityString(R.plurals.points, points, points);
         }
+    }
+
+    @NonNull
+    @Override
+    public List<Node> getChildren() {
+        return replies;
     }
 }

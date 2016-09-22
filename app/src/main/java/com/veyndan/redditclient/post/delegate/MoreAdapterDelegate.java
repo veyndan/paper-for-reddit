@@ -15,12 +15,12 @@ import com.veyndan.redditclient.post.model.Stub;
 
 import java.util.List;
 
-public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Node<Stub>, Node<?>, MoreAdapterDelegate.MoreViewHolder> {
+public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Stub, Node, MoreAdapterDelegate.MoreViewHolder> {
 
     @Override
-    protected boolean isForViewType(@NonNull final Node<?> node,
-                                    final List<Node<?>> nodes, final int position) {
-        return node.getData() instanceof Stub && ((Stub) node.getData()).isChildCountAvailable();
+    protected boolean isForViewType(@NonNull final Node node,
+                                    final List<Node> nodes, final int position) {
+        return node instanceof Stub && ((Stub) node).isChildCountAvailable();
     }
 
     @NonNull
@@ -32,9 +32,8 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Node<Stub>, 
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final Node<Stub> node,
+    protected void onBindViewHolder(@NonNull final Stub stub,
                                     @NonNull final MoreViewHolder holder) {
-        final Stub stub = node.getData();
         final int count = stub.getChildCount();
         final Resources resources = holder.itemView.getResources();
 

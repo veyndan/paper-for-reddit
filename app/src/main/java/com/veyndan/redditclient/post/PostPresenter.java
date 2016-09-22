@@ -17,7 +17,6 @@ import com.veyndan.redditclient.post.model.Stub;
 import com.veyndan.redditclient.util.DepthTreeTraverser;
 import com.veyndan.redditclient.util.Node;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Response;
@@ -47,7 +46,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
     }
 
     public void loadNodes(final PostsFilter filter, final Stub stub) {
-        postMvpView.appendNode(new Node<>(stub));
+        postMvpView.appendNode(stub);
 
         stub.getTrigger().takeFirst(Boolean::booleanValue)
                 .flatMap(aBoolean -> filter.getRequestObservable(reddit).subscribeOn(Schedulers.io()))
@@ -57,13 +56,12 @@ public class PostPresenter implements Presenter<PostMvpView> {
                                 .cast(Submission.class)
                                 .map(Post::new)
                                 .flatMap(Mutators.mutate())
-                                .map(Node::new)
                                 .toList(),
                         (thing, nodes) -> new Pair<>(thing.data.after, nodes))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(pair -> {
                     final String after = pair.first;
-                    final List<Node<Post>> nodes = pair.second;
+                    final List<Post> nodes = pair.second;
 
                     postMvpView.popNode();
                     postMvpView.appendNodes(nodes);
@@ -77,7 +75,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
 
     public void loadNodes(final Observable<Response<List<Thing<Listing>>>> commentRequest,
                           final Stub stub) {
-        postMvpView.appendNode(new Node<>(stub));
+        postMvpView.appendNode(stub);
 
         stub.getTrigger().takeFirst(Boolean::booleanValue)
                 .flatMap(aBoolean -> commentRequest.subscribeOn(Schedulers.io()))
@@ -92,7 +90,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                     // the root comments are the children of the link.
                     final Post root = new Post((Submission) things.get(0).data.children.get(0));
 
-                    root.getReplies().addAll(FluentIterable.from(things.get(1).data.children).transform(input -> {
+                    root.getChildren().addAll(FluentIterable.from(things.get(1).data.children).transform(input -> {
                         if (input instanceof Submission) {
                             final Post[] outerPost = new Post[1];
                             Observable.just(input)
@@ -111,21 +109,18 @@ public class PostPresenter implements Presenter<PostMvpView> {
                         }
                     }).toList());
 
-                    final DepthTreeTraverser<Object> treeTraverser = new DepthTreeTraverser<Object>() {
+                    final DepthTreeTraverser<Node> treeTraverser = new DepthTreeTraverser<Node>() {
                         @Override
-                        public Iterable<Object> children(@NonNull final Object root) {
-                            if (root instanceof Post) {
-                                return ((Post) root).getReplies();
-                            } else if (root instanceof Stub) {
-                                return new ArrayList<>();
-                            } else {
-                                throw new IllegalStateException("Unknown node class: " + root);
-                            }
+                        public Iterable<Node> children(@NonNull final Node root) {
+                            return root.getChildren();
                         }
                     };
 
                     postMvpView.popNode();
-                    postMvpView.appendNodes(treeTraverser.preOrderTraversal(root).toList());
+                    postMvpView.appendNodes(treeTraverser.preOrderTraversal(root).transform(input -> {
+                        input.first.setDepth(input.second);
+                        return input.first;
+                    }).toList());
                 }, Timber::e);
     }
 }

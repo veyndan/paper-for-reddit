@@ -1,6 +1,7 @@
 package com.veyndan.redditclient.util;
 
 import android.support.annotation.NonNull;
+import android.util.Pair;
 
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterators;
@@ -22,27 +23,27 @@ public abstract class DepthTreeTraverser<T> {
 
     public abstract Iterable<T> children(T root);
 
-    public final FluentIterable<Node<T>> preOrderTraversal(final T root) {
+    public final FluentIterable<Pair<T, Integer>> preOrderTraversal(final T root) {
         checkNotNull(root);
-        return new FluentIterable<Node<T>>() {
+        return new FluentIterable<Pair<T, Integer>>() {
             @Override
-            public UnmodifiableIterator<Node<T>> iterator() {
+            public UnmodifiableIterator<Pair<T, Integer>> iterator() {
                 return preOrderIterator(root);
             }
         };
     }
 
-    private UnmodifiableIterator<Node<T>> preOrderIterator(final T root) {
+    private UnmodifiableIterator<Pair<T, Integer>> preOrderIterator(final T root) {
         return new PreOrderIterator(root);
     }
 
-    private final class PreOrderIterator extends UnmodifiableIterator<Node<T>> {
+    private final class PreOrderIterator extends UnmodifiableIterator<Pair<T, Integer>> {
 
-        private final Deque<Node<Iterator<T>>> stack;
+        private final Deque<Pair<Iterator<T>, Integer>> stack;
 
         PreOrderIterator(@NonNull final T root) {
             this.stack = new ArrayDeque<>();
-            stack.addLast(new Node<>(Iterators.singletonIterator(checkNotNull(root)), 0));
+            stack.addLast(new Pair<>(Iterators.singletonIterator(checkNotNull(root)), 0));
         }
 
         @Override
@@ -51,22 +52,24 @@ public abstract class DepthTreeTraverser<T> {
         }
 
         @Override
-        public Node<T> next() {
-            final Node<Iterator<T>> itrNode = stack.getLast(); // throws NSEE if empty
-            final Iterator<T> itr = itrNode.getData();
-            final int depth = itrNode.getDepth();
+        public Pair<T, Integer> next() {
+            final Pair<Iterator<T>, Integer> itrPair = stack.getLast(); // throws NSEE if empty
+
+            final Iterator<T> itr = itrPair.first;
+            final int depth = itrPair.second;
+
             final T result = checkNotNull(itr.next());
-            final Node<T> node = new Node<>(result, depth);
+            final Pair<T, Integer> pair = new Pair<>(result, depth);
 
             if (!itr.hasNext()) {
                 stack.removeLast();
             }
             final Iterator<T> childItr = children(result).iterator();
             if (childItr.hasNext()) {
-                stack.addLast(new Node<>(childItr, depth + 1));
+                stack.addLast(new Pair<>(childItr, depth + 1));
             }
 
-            return node;
+            return pair;
         }
     }
 }

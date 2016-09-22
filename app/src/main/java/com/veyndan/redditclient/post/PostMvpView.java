@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface PostMvpView extends MvpView {
 
-    void appendNode(Node<?> node);
+    void appendNode(Node node);
 
-    void appendNodes(List<? extends Node<?>> nodes);
+    void appendNodes(List<? extends Node> nodes);
 
-    Node<?> popNode();
+    Node popNode();
 
-    Node<?> popNode(int index);
+    Node popNode(int index);
 
     void clearNodes();
 }

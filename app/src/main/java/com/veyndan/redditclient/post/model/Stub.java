@@ -3,9 +3,14 @@ package com.veyndan.redditclient.post.model;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
+import com.veyndan.redditclient.util.Node;
+
+import java.util.Collections;
+import java.util.List;
+
 import rx.Observable;
 
-public final class Stub {
+public final class Stub extends Node {
 
     private static final int UNKNOWN_CHILD_COUNT = -1;
 
@@ -31,6 +36,12 @@ public final class Stub {
     @NonNull
     public Observable<Boolean> getTrigger() {
         return trigger;
+    }
+
+    @NonNull
+    @Override
+    public List<Node> getChildren() {
+        return Collections.emptyList();
     }
 
     public static class Builder {
