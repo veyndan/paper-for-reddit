@@ -73,7 +73,7 @@ public class Post {
                         .subscribe(replies::add);
             } else if (child instanceof More) {
                 final More more = (More) child;
-                replies.add(new Stub(more.count));
+                replies.add(new Stub.Builder(Observable.just(true)).childCount(more.count).build());
             } else {
                 throw new IllegalStateException("Unknown node class: " + child);
             }

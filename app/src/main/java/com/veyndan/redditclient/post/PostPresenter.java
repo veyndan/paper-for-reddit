@@ -5,7 +5,6 @@ import android.util.Pair;
 
 import com.google.common.collect.FluentIterable;
 import com.veyndan.redditclient.Config;
-import com.veyndan.redditclient.util.Node;
 import com.veyndan.redditclient.Presenter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Listing;
@@ -16,6 +15,7 @@ import com.veyndan.redditclient.post.media.mutator.Mutators;
 import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.post.model.Stub;
 import com.veyndan.redditclient.util.DepthTreeTraverser;
+import com.veyndan.redditclient.util.Node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,10 +46,10 @@ public class PostPresenter implements Presenter<PostMvpView> {
         postMvpView = null;
     }
 
-    public void loadNodes(final PostsFilter filter, final Observable<Boolean> trigger) {
-        postMvpView.appendNode(new Node<>(new Stub()));
+    public void loadNodes(final PostsFilter filter, final Stub stub) {
+        postMvpView.appendNode(new Node<>(stub));
 
-        trigger.takeFirst(Boolean::booleanValue)
+        stub.getTrigger().takeFirst(Boolean::booleanValue)
                 .flatMap(aBoolean -> filter.getRequestObservable(reddit).subscribeOn(Schedulers.io()))
                 .observeOn(Schedulers.computation())
                 .map(Response::body)
@@ -70,16 +70,17 @@ public class PostPresenter implements Presenter<PostMvpView> {
 
                     if (after != null) {
                         filter.setAfter(after);
-                        loadNodes(filter, trigger);
+                        loadNodes(filter, stub);
                     }
                 });
     }
 
-    public void loadNodes(final Observable<Response<List<Thing<Listing>>>> commentRequest) {
-        postMvpView.appendNode(new Node<>(new Stub()));
+    public void loadNodes(final Observable<Response<List<Thing<Listing>>>> commentRequest,
+                          final Stub stub) {
+        postMvpView.appendNode(new Node<>(stub));
 
-        commentRequest
-                .subscribeOn(Schedulers.io())
+        stub.getTrigger().takeFirst(Boolean::booleanValue)
+                .flatMap(aBoolean -> commentRequest.subscribeOn(Schedulers.io()))
                 .map(Response::body)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(things -> {
@@ -104,7 +105,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                             return outerPost[0];
                         } else if (input instanceof More) {
                             final More more = (More) input;
-                            return new Stub(more.count);
+                            return new Stub.Builder(Observable.just(true)).childCount(more.count).build();
                         } else {
                             throw new IllegalStateException("Unknown node class: " + input);
                         }
