@@ -74,7 +74,7 @@ public class Post extends Node {
                         .subscribe(replies::add);
             } else if (child instanceof More) {
                 final More more = (More) child;
-                replies.add(new Stub.Builder(Observable.just(true)).childCount(more.count).build());
+                replies.add(new Node.Builder().stub(true).trigger(Observable.just(true)).childCount(more.count).build());
             } else {
                 throw new IllegalStateException("Unknown node class: " + child);
             }
@@ -261,11 +261,5 @@ public class Post extends Node {
     @Override
     public List<Node> getChildren() {
         return replies;
-    }
-
-    @NonNull
-    @Override
-    public Observable<Boolean> getTrigger() {
-        return Observable.empty();
     }
 }

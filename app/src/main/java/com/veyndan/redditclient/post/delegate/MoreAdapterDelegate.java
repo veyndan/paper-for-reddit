@@ -11,16 +11,15 @@ import android.widget.TextView;
 import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
 import com.veyndan.redditclient.util.Node;
 import com.veyndan.redditclient.R;
-import com.veyndan.redditclient.post.model.Stub;
 
 import java.util.List;
 
-public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Stub, Node, MoreAdapterDelegate.MoreViewHolder> {
+public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Node, Node, MoreAdapterDelegate.MoreViewHolder> {
 
     @Override
     protected boolean isForViewType(@NonNull final Node node,
                                     final List<Node> nodes, final int position) {
-        return node instanceof Stub && ((Stub) node).isChildCountAvailable();
+        return node.isStub() && node.isChildCountAvailable();
     }
 
     @NonNull
@@ -32,9 +31,9 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Stub, Node, 
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final Stub stub,
+    protected void onBindViewHolder(@NonNull final Node node,
                                     @NonNull final MoreViewHolder holder) {
-        final int count = stub.getChildCount();
+        final int count = node.getChildCount();
         final Resources resources = holder.itemView.getResources();
 
         holder.textView.setText(resources.getQuantityString(R.plurals.children, count, count));

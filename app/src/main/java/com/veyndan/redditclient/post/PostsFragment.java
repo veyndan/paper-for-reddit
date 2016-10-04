@@ -13,8 +13,6 @@ import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 import com.veyndan.redditclient.Config;
-import com.veyndan.redditclient.post.model.Stub;
-import com.veyndan.redditclient.util.Node;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
@@ -23,6 +21,7 @@ import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.ui.recyclerview.SwipeItemTouchHelperCallback;
 import com.veyndan.redditclient.ui.recyclerview.itemdecoration.MarginItemDecoration;
 import com.veyndan.redditclient.ui.recyclerview.itemdecoration.TreeInsetItemDecoration;
+import com.veyndan.redditclient.util.Node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,12 +78,12 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     public void setFilter(final PostsFilter filter) {
         clearNodes();
-        postPresenter.loadNodes(filter, new Stub.Builder(getTrigger()).build());
+        postPresenter.loadNodes(filter, new Node.Builder().stub(true).trigger(getTrigger()).build());
     }
 
     public void setFilter(final Observable<Response<List<Thing<Listing>>>> commentRequest) {
         clearNodes();
-        postPresenter.loadNodes(commentRequest, new Stub.Builder(Observable.just(true)).build());
+        postPresenter.loadNodes(commentRequest, new Node.Builder().stub(true).trigger(Observable.just(true)).build());
     }
 
     @Override

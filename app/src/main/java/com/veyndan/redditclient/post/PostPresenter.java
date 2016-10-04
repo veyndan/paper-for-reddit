@@ -13,7 +13,6 @@ import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
 import com.veyndan.redditclient.post.model.Post;
-import com.veyndan.redditclient.post.model.Stub;
 import com.veyndan.redditclient.util.DepthTreeTraverser;
 import com.veyndan.redditclient.util.Node;
 
@@ -103,7 +102,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                             return outerPost[0];
                         } else if (input instanceof More) {
                             final More more = (More) input;
-                            return new Stub.Builder(Observable.just(true)).childCount(more.count).build();
+                            return new Node.Builder().stub(true).trigger(Observable.just(true)).childCount(more.count).build();
                         } else {
                             throw new IllegalStateException("Unknown node class: " + input);
                         }
