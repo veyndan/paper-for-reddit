@@ -1,7 +1,6 @@
 package com.veyndan.redditclient.post;
 
 import android.support.annotation.NonNull;
-import android.util.Pair;
 
 import com.google.common.collect.FluentIterable;
 import com.veyndan.redditclient.Config;
@@ -48,27 +47,24 @@ public class PostPresenter implements Presenter<PostMvpView> {
         postMvpView.appendNode(node);
 
         node.getTrigger().takeFirst(Boolean::booleanValue)
-                .flatMap(aBoolean -> filter.getRequestObservable(reddit).subscribeOn(Schedulers.io()))
+                .flatMap(aBoolean -> filter.getRequestObservable(reddit)
+                        .switchIfEmpty(Observable.<Response<Thing<Listing>>>just(null)
+                                .doOnNext(response -> postMvpView.popNode())
+                                .filter(o -> o != null))
+                        .subscribeOn(Schedulers.io()))
                 .observeOn(Schedulers.computation())
                 .map(Response::body)
                 .flatMap(thing -> Observable.from(thing.data.children)
-                                .cast(Submission.class)
-                                .map(Post::new)
-                                .flatMap(Mutators.mutate())
-                                .toList(),
-                        (thing, nodes) -> new Pair<>(thing.data.after, nodes))
+                        .cast(Submission.class)
+                        .map(Post::new)
+                        .flatMap(Mutators.mutate())
+                        .toList())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(pair -> {
-                    final String after = pair.first;
-                    final List<Post> nodes = pair.second;
-
+                .subscribe(nodes -> {
                     postMvpView.popNode();
                     postMvpView.appendNodes(nodes);
 
-                    if (after != null) {
-                        filter.setAfter(after);
-                        loadNodes(filter, node);
-                    }
+                    loadNodes(filter, node);
                 });
     }
 

@@ -31,12 +31,11 @@ public class UserFilter implements Parcelable, PostsFilter {
 
     @Override
     public Observable<Response<Thing<Listing>>> getRequestObservable(final Reddit reddit) {
-        return reddit.user(username, user, query);
-    }
-
-    @Override
-    public void setAfter(final String after) {
-        query.after(after);
+        return Observable.just(query)
+                // TODO If the query has never been initialized, then we want it to pass.
+                .filter(query -> !query.build().containsKey("after") || query.build().get("after") != null)
+                .flatMap(query -> reddit.user(username, user, query))
+                .doOnNext(response -> query.after(response.body().data.after));
     }
 
     protected UserFilter(final Parcel in) {
