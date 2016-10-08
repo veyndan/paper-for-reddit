@@ -29,6 +29,8 @@ import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
 import com.veyndan.redditclient.EventBus;
+import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.util.Node;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.api.reddit.Reddit;
@@ -48,11 +50,12 @@ import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Response;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PostAdapterDelegate implements AdapterDelegate<List<Node>> {
+public class PostAdapterDelegate implements AdapterDelegate<List<Node<Response<Thing<Listing>>>>> {
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
@@ -97,7 +100,7 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Node>> {
     }
 
     @Override
-    public boolean isForViewType(@NonNull final List<Node> nodes, final int position) {
+    public boolean isForViewType(@NonNull final List<Node<Response<Thing<Listing>>>> nodes, final int position) {
         return nodes.get(position) instanceof Post;
     }
 
@@ -111,7 +114,7 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Node>> {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final List<Node> nodes, final int position,
+    public void onBindViewHolder(@NonNull final List<Node<Response<Thing<Listing>>>> nodes, final int position,
                                  @NonNull final RecyclerView.ViewHolder holder) {
         final Context context = holder.itemView.getContext();
         final PostViewHolder postHolder = (PostViewHolder) holder;
@@ -282,7 +285,7 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Node>> {
         @Override
         public void onSwipe() {
             final int position = getAdapterPosition();
-            final Node node = adapter.getItems().get(position);
+            final Node<Response<Thing<Listing>>> node = adapter.getItems().get(position);
             final Post post = (Post) node;
 
             final View.OnClickListener undoClickListener = view -> {

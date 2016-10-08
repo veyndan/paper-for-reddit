@@ -30,7 +30,7 @@ import butterknife.ButterKnife;
 import retrofit2.Response;
 import rx.Observable;
 
-public class PostsFragment extends Fragment implements PostMvpView {
+public class PostsFragment extends Fragment implements PostMvpView<Response<Thing<Listing>>> {
 
     private static final String ARG_USER_FILTER = "user_filter";
 
@@ -38,7 +38,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     private RecyclerView recyclerView;
 
-    private final List<Node> nodes = new ArrayList<>();
+    private final List<Node<Response<Thing<Listing>>>> nodes = new ArrayList<>();
 
     private PostAdapter postAdapter;
 
@@ -78,7 +78,7 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     public void setFilter(final PostsFilter filter) {
         clearNodes();
-        postPresenter.loadNodes(new Node.Builder()
+        postPresenter.loadNodes(new Node.Builder<Response<Thing<Listing>>>()
                 .trigger(getTrigger())
                 .request(filter.getRequestObservable(reddit))
                 .stub(true)
@@ -87,7 +87,10 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     public void setFilter(final Observable<Response<List<Thing<Listing>>>> commentRequest) {
         clearNodes();
-        postPresenter.loadNodes(commentRequest, new Node.Builder().stub(true).trigger(Observable.just(true)).build());
+        postPresenter.loadNodes(commentRequest, new Node.Builder<Response<Thing<Listing>>>()
+                .trigger(Observable.just(true))
+                .stub(true)
+                .build());
     }
 
     @Override
@@ -124,13 +127,13 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     @Override
-    public void appendNode(final Node node) {
+    public void appendNode(final Node<Response<Thing<Listing>>> node) {
         nodes.add(node);
         postAdapter.notifyItemInserted(nodes.size() - 1);
     }
 
     @Override
-    public void appendNodes(final List<? extends Node> nodes) {
+    public void appendNodes(final List<? extends Node<Response<Thing<Listing>>>> nodes) {
         final int positionStart = this.nodes.size();
         this.nodes.addAll(nodes);
         postAdapter.notifyItemRangeInserted(positionStart, nodes.size());
@@ -138,13 +141,13 @@ public class PostsFragment extends Fragment implements PostMvpView {
     }
 
     @Override
-    public Node popNode() {
+    public Node<Response<Thing<Listing>>> popNode() {
         return popNode(nodes.size() - 1);
     }
 
     @Override
-    public Node popNode(final int index) {
-        final Node poppedNode = nodes.get(index);
+    public Node<Response<Thing<Listing>>> popNode(final int index) {
+        final Node<Response<Thing<Listing>>> poppedNode = nodes.get(index);
         nodes.remove(index);
         postAdapter.notifyItemRemoved(index);
         return poppedNode;

@@ -9,16 +9,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
+import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.util.Node;
 import com.veyndan.redditclient.R;
 
 import java.util.List;
 
-public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Node, Node, MoreAdapterDelegate.MoreViewHolder> {
+import retrofit2.Response;
+
+public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Node<Response<Thing<Listing>>>, Node<Response<Thing<Listing>>>, MoreAdapterDelegate.MoreViewHolder> {
 
     @Override
-    protected boolean isForViewType(@NonNull final Node node,
-                                    final List<Node> nodes, final int position) {
+    protected boolean isForViewType(@NonNull final Node<Response<Thing<Listing>>> node,
+                                    final List<Node<Response<Thing<Listing>>>> nodes, final int position) {
         return node.isStub() && node.isChildCountAvailable();
     }
 
@@ -31,7 +35,7 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Node, Node, 
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final Node node,
+    protected void onBindViewHolder(@NonNull final Node<Response<Thing<Listing>>> node,
                                     @NonNull final MoreViewHolder holder) {
         final int count = node.getChildCount();
         final Resources resources = holder.itemView.getResources();

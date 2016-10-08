@@ -21,12 +21,12 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PostPresenter implements Presenter<PostMvpView> {
+public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listing>>>> {
 
-    private PostMvpView postMvpView;
+    private PostMvpView<Response<Thing<Listing>>> postMvpView;
 
     @Override
-    public void attachView(final PostMvpView view) {
+    public void attachView(final PostMvpView<Response<Thing<Listing>>> view) {
         postMvpView = view;
     }
 
@@ -35,7 +35,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
         postMvpView = null;
     }
 
-    public void loadNodes(final Node node) {
+    public void loadNodes(final Node<Response<Thing<Listing>>> node) {
         postMvpView.appendNode(node);
 
         node.getTrigger().takeFirst(Boolean::booleanValue)
@@ -61,7 +61,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
     }
 
     public void loadNodes(final Observable<Response<List<Thing<Listing>>>> commentRequest,
-                          final Node node) {
+                          final Node<Response<Thing<Listing>>> node) {
         postMvpView.appendNode(node);
 
         node.getTrigger().takeFirst(Boolean::booleanValue)
@@ -90,15 +90,15 @@ public class PostPresenter implements Presenter<PostMvpView> {
                             return outerPost[0];
                         } else if (input instanceof More) {
                             final More more = (More) input;
-                            return new Node.Builder().stub(true).trigger(Observable.just(true)).childCount(more.count).build();
+                            return new Node.Builder<Response<Thing<Listing>>>().stub(true).trigger(Observable.just(true)).childCount(more.count).build();
                         } else {
                             throw new IllegalStateException("Unknown node class: " + input);
                         }
                     }).toList());
 
-                    final DepthTreeTraverser<Node> treeTraverser = new DepthTreeTraverser<Node>() {
+                    final DepthTreeTraverser<Node<Response<Thing<Listing>>>> treeTraverser = new DepthTreeTraverser<Node<Response<Thing<Listing>>>>() {
                         @Override
-                        public Iterable<Node> children(@NonNull final Node root) {
+                        public Iterable<Node<Response<Thing<Listing>>>> children(@NonNull final Node<Response<Thing<Listing>>> root) {
                             return root.getChildren();
                         }
                     };

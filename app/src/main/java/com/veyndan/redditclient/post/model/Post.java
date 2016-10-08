@@ -11,11 +11,13 @@ import android.text.format.DateUtils;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.api.reddit.model.Comment;
 import com.veyndan.redditclient.api.reddit.model.Link;
+import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.More;
 import com.veyndan.redditclient.api.reddit.model.PostHint;
 import com.veyndan.redditclient.api.reddit.model.Preview;
 import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.model.Submission;
+import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
 import com.veyndan.redditclient.util.Node;
@@ -26,16 +28,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import retrofit2.Response;
 import rx.Observable;
 
-public class Post extends Node {
+public class Post extends Node<Response<Thing<Listing>>> {
 
     private Observable<?> mediaObservable = Observable.empty();
 
     private final boolean isLink;
     private final boolean isComment;
 
-    private final List<Node> replies;
+    private final List<Node<Response<Thing<Listing>>>> replies;
 
     private final boolean archived;
     private final String author;
@@ -74,7 +77,7 @@ public class Post extends Node {
                         .subscribe(replies::add);
             } else if (child instanceof More) {
                 final More more = (More) child;
-                replies.add(new Node.Builder().stub(true).trigger(Observable.just(true)).childCount(more.count).build());
+                replies.add(new Node.Builder<Response<Thing<Listing>>>().stub(true).trigger(Observable.just(true)).childCount(more.count).build());
             } else {
                 throw new IllegalStateException("Unknown node class: " + child);
             }
@@ -259,7 +262,7 @@ public class Post extends Node {
 
     @NonNull
     @Override
-    public List<Node> getChildren() {
+    public List<Node<Response<Thing<Listing>>>> getChildren() {
         return replies;
     }
 }

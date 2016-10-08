@@ -5,15 +5,15 @@ import com.veyndan.redditclient.util.Node;
 
 import java.util.List;
 
-public interface PostMvpView extends MvpView {
+public interface PostMvpView<T> extends MvpView {
 
-    void appendNode(Node node);
+    void appendNode(Node<T> node);
 
-    void appendNodes(List<? extends Node> nodes);
+    void appendNodes(List<? extends Node<T>> nodes);
 
-    Node popNode();
+    Node<T> popNode();
 
-    Node popNode(int index);
+    Node<T> popNode(int index);
 
     void clearNodes();
 }
