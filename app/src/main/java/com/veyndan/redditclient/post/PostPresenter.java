@@ -41,6 +41,7 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
         node.getTrigger().takeFirst(Boolean::booleanValue)
                 .flatMap(aBoolean -> node.getRequest()
                         .switchIfEmpty(Observable.<Response<Thing<Listing>>>just(null)
+                                .subscribeOn(AndroidSchedulers.mainThread())
                                 .doOnNext(response -> postMvpView.popNode())
                                 .filter(o -> o != null))
                         .subscribeOn(Schedulers.io()))
