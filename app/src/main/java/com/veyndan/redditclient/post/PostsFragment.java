@@ -78,7 +78,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
     public void setFilter(final PostsFilter filter) {
         clearNodes();
-        postPresenter.loadNodes(new Node.Builder<Response<Thing<Listing>>>()
+        postPresenter.loadNode(new Node.Builder<Response<Thing<Listing>>>()
                 .trigger(getTrigger())
                 .request(filter.getRequestObservable(reddit))
                 .stub(true)
@@ -87,7 +87,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
     public void setFilter(final Observable<Response<List<Thing<Listing>>>> commentRequest) {
         clearNodes();
-        postPresenter.loadNodes(commentRequest, new Node.Builder<Response<Thing<Listing>>>()
+        postPresenter.loadNode(commentRequest, new Node.Builder<Response<Thing<Listing>>>()
                 .trigger(Observable.just(true))
                 .stub(true)
                 .build());

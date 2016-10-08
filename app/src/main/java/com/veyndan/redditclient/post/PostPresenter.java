@@ -35,7 +35,7 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
         postMvpView = null;
     }
 
-    public void loadNodes(final Node<Response<Thing<Listing>>> node) {
+    public void loadNode(final Node<Response<Thing<Listing>>> node) {
         postMvpView.appendNode(node);
 
         node.getTrigger().takeFirst(Boolean::booleanValue)
@@ -56,12 +56,12 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
                     postMvpView.popNode();
                     postMvpView.appendNodes(nodes);
 
-                    loadNodes(node);
+                    loadNode(node);
                 });
     }
 
-    public void loadNodes(final Observable<Response<List<Thing<Listing>>>> commentRequest,
-                          final Node<Response<Thing<Listing>>> node) {
+    public void loadNode(final Observable<Response<List<Thing<Listing>>>> commentRequest,
+                         final Node<Response<Thing<Listing>>> node) {
         postMvpView.appendNode(node);
 
         node.getTrigger().takeFirst(Boolean::booleanValue)
