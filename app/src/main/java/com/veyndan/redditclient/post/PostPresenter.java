@@ -3,9 +3,7 @@ package com.veyndan.redditclient.post;
 import android.support.annotation.NonNull;
 
 import com.google.common.collect.FluentIterable;
-import com.veyndan.redditclient.Config;
 import com.veyndan.redditclient.Presenter;
-import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.More;
 import com.veyndan.redditclient.api.reddit.model.Submission;
@@ -27,12 +25,6 @@ public class PostPresenter implements Presenter<PostMvpView> {
 
     private PostMvpView postMvpView;
 
-    private final Reddit reddit;
-
-    public PostPresenter() {
-        reddit = new Reddit.Builder(Config.REDDIT_CREDENTIALS).build();
-    }
-
     @Override
     public void attachView(final PostMvpView view) {
         postMvpView = view;
@@ -43,11 +35,11 @@ public class PostPresenter implements Presenter<PostMvpView> {
         postMvpView = null;
     }
 
-    public void loadNodes(final PostsFilter filter, final Node node) {
+    public void loadNodes(final Node node) {
         postMvpView.appendNode(node);
 
         node.getTrigger().takeFirst(Boolean::booleanValue)
-                .flatMap(aBoolean -> filter.getRequestObservable(reddit)
+                .flatMap(aBoolean -> node.getRequest()
                         .switchIfEmpty(Observable.<Response<Thing<Listing>>>just(null)
                                 .doOnNext(response -> postMvpView.popNode())
                                 .filter(o -> o != null))
@@ -64,7 +56,7 @@ public class PostPresenter implements Presenter<PostMvpView> {
                     postMvpView.popNode();
                     postMvpView.appendNodes(nodes);
 
-                    loadNodes(filter, node);
+                    loadNodes(node);
                 });
     }
 

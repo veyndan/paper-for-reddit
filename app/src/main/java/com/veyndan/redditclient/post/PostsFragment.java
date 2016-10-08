@@ -78,7 +78,11 @@ public class PostsFragment extends Fragment implements PostMvpView {
 
     public void setFilter(final PostsFilter filter) {
         clearNodes();
-        postPresenter.loadNodes(filter, new Node.Builder().stub(true).trigger(getTrigger()).build());
+        postPresenter.loadNodes(new Node.Builder()
+                .trigger(getTrigger())
+                .request(filter.getRequestObservable(reddit))
+                .stub(true)
+                .build());
     }
 
     public void setFilter(final Observable<Response<List<Thing<Listing>>>> commentRequest) {

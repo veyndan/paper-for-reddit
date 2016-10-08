@@ -3,9 +3,13 @@ package com.veyndan.redditclient.util;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
+import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.Thing;
+
 import java.util.Collections;
 import java.util.List;
 
+import retrofit2.Response;
 import rx.Observable;
 
 public class Node {
@@ -16,6 +20,7 @@ public class Node {
     @NonNull private final List<Node> children;
     @IntRange(from = UNKNOWN_CHILD_COUNT) private final int childCount;
     @NonNull private final Observable<Boolean> trigger;
+    @NonNull private final Observable<Response<Thing<Listing>>> request;
     private final boolean stub;
 
     public Node() {
@@ -27,6 +32,7 @@ public class Node {
         children = builder.children;
         childCount = builder.childCount;
         trigger = builder.trigger;
+        request = builder.request;
         stub = builder.stub;
     }
 
@@ -60,6 +66,11 @@ public class Node {
         return trigger;
     }
 
+    @NonNull
+    public Observable<Response<Thing<Listing>>> getRequest() {
+        return request;
+    }
+
     public boolean isStub() {
         return stub;
     }
@@ -70,6 +81,7 @@ public class Node {
         @NonNull private List<Node> children = Collections.emptyList();
         @IntRange(from = UNKNOWN_CHILD_COUNT) private int childCount = UNKNOWN_CHILD_COUNT;
         @NonNull private Observable<Boolean> trigger = Observable.empty();
+        @NonNull private Observable<Response<Thing<Listing>>> request = Observable.empty();
         private boolean stub = false;
 
         @NonNull
@@ -96,6 +108,12 @@ public class Node {
         @NonNull
         public Builder trigger(@NonNull final Observable<Boolean> trigger) {
             this.trigger = trigger;
+            return this;
+        }
+
+        @NonNull
+        public Builder request(@NonNull final Observable<Response<Thing<Listing>>> request) {
+            this.request = request;
             return this;
         }
 
