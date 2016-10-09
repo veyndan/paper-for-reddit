@@ -9,6 +9,7 @@ import com.veyndan.redditclient.api.reddit.model.More;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
+import com.veyndan.redditclient.post.model.DeterminateProgress;
 import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.util.DepthTreeTraverser;
 import com.veyndan.redditclient.util.Node;
@@ -38,27 +39,14 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
     public void loadNode(final Node<Response<Thing<Listing>>> node) {
         postMvpView.appendNode(node);
 
-        node.getTrigger().takeFirst(Boolean::booleanValue)
-                .flatMap(aBoolean -> node.getRequest()
-                        .switchIfEmpty(Observable.<Response<Thing<Listing>>>just(null)
-                                .subscribeOn(AndroidSchedulers.mainThread())
-                                .doOnNext(response -> postMvpView.popNode())
-                                .filter(o -> o != null))
-                        .subscribeOn(Schedulers.io()))
-                .observeOn(Schedulers.computation())
-                .map(Response::body)
-                .flatMap(thing -> Observable.from(thing.data.children)
-                        .cast(Submission.class)
-                        .map(Post::new)
-                        .flatMap(Mutators.mutate())
-                        .toList())
+        node.asObservable()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(nodes -> {
-                    postMvpView.popNode();
-                    postMvpView.appendNodes(nodes);
-
-                    loadNode(node);
-                });
+                .toList()
+                .filter(nodes -> !nodes.isEmpty())
+                .doOnNext(nodes -> postMvpView.popNode())
+                .flatMap(Observable::from)
+                .subscribe(this::loadNode);
     }
 
     public void loadNode(final Observable<Response<List<Thing<Listing>>>> commentRequest,
@@ -91,7 +79,10 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
                             return outerPost[0];
                         } else if (input instanceof More) {
                             final More more = (More) input;
-                            return new Node.Builder<Response<Thing<Listing>>>().stub(true).trigger(Observable.just(true)).childCount(more.count).build();
+                            return new DeterminateProgress.Builder()
+                                    .trigger(Observable.just(true))
+                                    .childCount(more.count)
+                                    .build();
                         } else {
                             throw new IllegalStateException("Unknown node class: " + input);
                         }

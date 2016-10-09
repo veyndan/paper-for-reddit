@@ -8,22 +8,23 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
+import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.Thing;
+import com.veyndan.redditclient.post.model.IndeterminateProgress;
 import com.veyndan.redditclient.util.Node;
-import com.veyndan.redditclient.R;
 
 import java.util.List;
 
 import retrofit2.Response;
 
 public class ProgressAdapterDelegate
-        extends AbsListItemAdapterDelegate<Node<Response<Thing<Listing>>>, Node<Response<Thing<Listing>>>, ProgressAdapterDelegate.ProgressViewHolder> {
+        extends AbsListItemAdapterDelegate<IndeterminateProgress, Node<Response<Thing<Listing>>>, ProgressAdapterDelegate.ProgressViewHolder> {
 
     @Override
     protected boolean isForViewType(@NonNull final Node<Response<Thing<Listing>>> node,
                                     final List<Node<Response<Thing<Listing>>>> nodes, final int position) {
-        return node.isStub() && !node.isChildCountAvailable();
+        return node instanceof IndeterminateProgress;
     }
 
     @NonNull
@@ -35,7 +36,7 @@ public class ProgressAdapterDelegate
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final Node<Response<Thing<Listing>>> node,
+    protected void onBindViewHolder(@NonNull final IndeterminateProgress indeterminateProgress,
                                     @NonNull final ProgressViewHolder holder) {
     }
 

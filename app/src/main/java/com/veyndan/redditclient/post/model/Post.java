@@ -77,7 +77,10 @@ public class Post extends Node<Response<Thing<Listing>>> {
                         .subscribe(replies::add);
             } else if (child instanceof More) {
                 final More more = (More) child;
-                replies.add(new Node.Builder<Response<Thing<Listing>>>().stub(true).trigger(Observable.just(true)).childCount(more.count).build());
+                replies.add(new DeterminateProgress.Builder()
+                        .trigger(Observable.just(true))
+                        .childCount(more.count)
+                        .build());
             } else {
                 throw new IllegalStateException("Unknown node class: " + child);
             }
@@ -264,5 +267,11 @@ public class Post extends Node<Response<Thing<Listing>>> {
     @Override
     public List<Node<Response<Thing<Listing>>>> getChildren() {
         return replies;
+    }
+
+    @NonNull
+    @Override
+    public Observable<Node<Response<Thing<Listing>>>> asObservable() {
+        return Observable.empty();
     }
 }
