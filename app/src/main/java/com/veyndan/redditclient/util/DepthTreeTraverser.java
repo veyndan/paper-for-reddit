@@ -19,11 +19,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @see com.google.common.collect.TreeTraverser
  */
-public abstract class DepthTreeTraverser<T> {
+abstract class DepthTreeTraverser<T> {
 
     public abstract Iterable<T> children(T root);
 
-    public final FluentIterable<Pair<T, Integer>> preOrderTraversal(final T root) {
+    final FluentIterable<Pair<T, Integer>> preOrderTraversal(final T root) {
         checkNotNull(root);
         return new FluentIterable<Pair<T, Integer>>() {
             @Override

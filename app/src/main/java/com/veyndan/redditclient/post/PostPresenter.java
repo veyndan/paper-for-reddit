@@ -1,7 +1,5 @@
 package com.veyndan.redditclient.post;
 
-import android.support.annotation.NonNull;
-
 import com.google.common.collect.FluentIterable;
 import com.veyndan.redditclient.Presenter;
 import com.veyndan.redditclient.api.reddit.model.Listing;
@@ -11,8 +9,8 @@ import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
 import com.veyndan.redditclient.post.model.DeterminateProgress;
 import com.veyndan.redditclient.post.model.Post;
-import com.veyndan.redditclient.util.DepthTreeTraverser;
 import com.veyndan.redditclient.util.Node;
+import com.veyndan.redditclient.util.Tree;
 
 import java.util.List;
 
@@ -45,6 +43,8 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
                 .toList()
                 .filter(nodes -> !nodes.isEmpty())
                 .doOnNext(nodes -> postMvpView.popNode())
+                .flatMap(Observable::from)
+                .map(Tree::flattenFrom)
                 .flatMap(Observable::from)
                 .subscribe(this::loadNode);
     }
@@ -88,18 +88,8 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
                         }
                     }).toList());
 
-                    final DepthTreeTraverser<Node<Response<Thing<Listing>>>> treeTraverser = new DepthTreeTraverser<Node<Response<Thing<Listing>>>>() {
-                        @Override
-                        public Iterable<Node<Response<Thing<Listing>>>> children(@NonNull final Node<Response<Thing<Listing>>> root) {
-                            return root.getChildren();
-                        }
-                    };
-
                     postMvpView.popNode();
-                    postMvpView.appendNodes(treeTraverser.preOrderTraversal(root).transform(input -> {
-                        input.first.setDepth(input.second);
-                        return input.first;
-                    }).toList());
+                    postMvpView.appendNodes(Tree.flattenFrom(root));
                 }, Timber::e);
     }
 }
