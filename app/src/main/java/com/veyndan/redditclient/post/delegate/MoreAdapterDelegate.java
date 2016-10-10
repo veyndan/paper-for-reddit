@@ -9,22 +9,22 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
+import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.Thing;
-import com.veyndan.redditclient.post.model.DeterminateProgress;
+import com.veyndan.redditclient.post.model.Progress;
 import com.veyndan.redditclient.util.Node;
-import com.veyndan.redditclient.R;
 
 import java.util.List;
 
 import retrofit2.Response;
 
-public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<DeterminateProgress, Node<Response<Thing<Listing>>>, MoreAdapterDelegate.MoreViewHolder> {
+public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Progress, Node<Response<Thing<Listing>>>, MoreAdapterDelegate.MoreViewHolder> {
 
     @Override
     protected boolean isForViewType(@NonNull final Node<Response<Thing<Listing>>> node,
                                     final List<Node<Response<Thing<Listing>>>> nodes, final int position) {
-        return node instanceof DeterminateProgress;
+        return node instanceof Progress && ((Progress) node).isChildCountAvailable();
     }
 
     @NonNull
@@ -36,9 +36,9 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<DeterminateP
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final DeterminateProgress determinateProgress,
+    protected void onBindViewHolder(@NonNull final Progress progress,
                                     @NonNull final MoreViewHolder holder) {
-        final int count = determinateProgress.getChildCount();
+        final int count = progress.getChildCount();
         final Resources resources = holder.itemView.getResources();
 
         holder.textView.setText(resources.getQuantityString(R.plurals.children, count, count));

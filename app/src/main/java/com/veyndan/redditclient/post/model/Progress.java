@@ -1,5 +1,6 @@
 package com.veyndan.redditclient.post.model;
 
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 import com.veyndan.redditclient.api.reddit.model.Listing;
@@ -16,17 +17,33 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public final class IndeterminateProgress extends Node<Response<Thing<Listing>>> {
+public final class Progress extends Node<Response<Thing<Listing>>> {
+
+    private static final int UNKNOWN_CHILD_COUNT = -1;
+
+    @IntRange(from = UNKNOWN_CHILD_COUNT) private final int childCount;
 
     // Suppress default constructor for noninstantiability
     @SuppressWarnings("unused")
-    private IndeterminateProgress() {
+    private Progress() {
         throw new AssertionError();
     }
 
-    private IndeterminateProgress(@NonNull final Builder builder) {
+    private Progress(@NonNull final Builder builder) {
+        childCount = builder.childCount;
         setTrigger(builder.trigger);
         setRequest(builder.request);
+    }
+
+    @IntRange(from = 0)
+    public int getChildCount() {
+        if (!isChildCountAvailable()) throw new IllegalStateException("Check that " +
+                "Stub.isChildCountAvailable() before attempting to retrieve the child count");
+        return childCount;
+    }
+
+    public boolean isChildCountAvailable() {
+        return childCount != UNKNOWN_CHILD_COUNT;
     }
 
     @NonNull
@@ -48,7 +65,7 @@ public final class IndeterminateProgress extends Node<Response<Thing<Listing>>> 
                         .map(Post::new)
                         .flatMap(Mutators.mutate())
                         .map(post -> (Node<Response<Thing<Listing>>>) post) // TODO Eww
-                        .concatWith(Observable.just(new IndeterminateProgress.Builder()
+                        .concatWith(Observable.just(new Progress.Builder()
                                 .trigger(getTrigger())
                                 .request(getRequest())
                                 .build())));
@@ -56,8 +73,15 @@ public final class IndeterminateProgress extends Node<Response<Thing<Listing>>> 
 
     public static class Builder {
 
+        @IntRange(from = UNKNOWN_CHILD_COUNT) private int childCount = UNKNOWN_CHILD_COUNT;
         @NonNull private Observable<Boolean> trigger = Observable.empty();
         @NonNull private Observable<Response<Thing<Listing>>> request = Observable.empty();
+
+        @NonNull
+        public Builder childCount(@IntRange(from = 0) final int childCount) {
+            this.childCount = childCount;
+            return this;
+        }
 
         @NonNull
         public Builder trigger(@NonNull final Observable<Boolean> trigger) {
@@ -72,8 +96,8 @@ public final class IndeterminateProgress extends Node<Response<Thing<Listing>>> 
         }
 
         @NonNull
-        public IndeterminateProgress build() {
-            return new IndeterminateProgress(this);
+        public Progress build() {
+            return new Progress(this);
         }
     }
 }

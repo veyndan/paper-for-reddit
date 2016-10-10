@@ -11,7 +11,7 @@ import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.Thing;
-import com.veyndan.redditclient.post.model.IndeterminateProgress;
+import com.veyndan.redditclient.post.model.Progress;
 import com.veyndan.redditclient.util.Node;
 
 import java.util.List;
@@ -19,12 +19,12 @@ import java.util.List;
 import retrofit2.Response;
 
 public class ProgressAdapterDelegate
-        extends AbsListItemAdapterDelegate<IndeterminateProgress, Node<Response<Thing<Listing>>>, ProgressAdapterDelegate.ProgressViewHolder> {
+        extends AbsListItemAdapterDelegate<Progress, Node<Response<Thing<Listing>>>, ProgressAdapterDelegate.ProgressViewHolder> {
 
     @Override
     protected boolean isForViewType(@NonNull final Node<Response<Thing<Listing>>> node,
                                     final List<Node<Response<Thing<Listing>>>> nodes, final int position) {
-        return node instanceof IndeterminateProgress;
+        return node instanceof Progress && !((Progress) node).isChildCountAvailable();
     }
 
     @NonNull
@@ -36,7 +36,7 @@ public class ProgressAdapterDelegate
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final IndeterminateProgress indeterminateProgress,
+    protected void onBindViewHolder(@NonNull final Progress progress,
                                     @NonNull final ProgressViewHolder holder) {
     }
 

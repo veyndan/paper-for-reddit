@@ -18,7 +18,7 @@ import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.Thing;
-import com.veyndan.redditclient.post.model.IndeterminateProgress;
+import com.veyndan.redditclient.post.model.Progress;
 import com.veyndan.redditclient.ui.recyclerview.SwipeItemTouchHelperCallback;
 import com.veyndan.redditclient.ui.recyclerview.itemdecoration.MarginItemDecoration;
 import com.veyndan.redditclient.ui.recyclerview.itemdecoration.TreeInsetItemDecoration;
@@ -79,7 +79,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
     public void setFilter(final PostsFilter filter) {
         clearNodes();
-        postPresenter.loadNode(new IndeterminateProgress.Builder()
+        postPresenter.loadNode(new Progress.Builder()
                 .trigger(getTrigger())
                 .request(filter.getRequestObservable(reddit))
                 .build());
@@ -87,7 +87,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
     public void setFilter(final Observable<Response<List<Thing<Listing>>>> commentRequest) {
         clearNodes();
-        postPresenter.loadNode(commentRequest, new IndeterminateProgress.Builder()
+        postPresenter.loadNode(commentRequest, new Progress.Builder()
                 .trigger(Observable.just(true))
                 .build());
     }

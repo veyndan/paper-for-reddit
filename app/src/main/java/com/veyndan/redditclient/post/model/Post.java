@@ -77,7 +77,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
                         .subscribe(replies::add);
             } else if (child instanceof More) {
                 final More more = (More) child;
-                replies.add(new DeterminateProgress.Builder()
+                replies.add(new Progress.Builder()
                         .trigger(Observable.just(true))
                         .childCount(more.count)
                         .build());

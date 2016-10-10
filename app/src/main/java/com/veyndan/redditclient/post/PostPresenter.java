@@ -7,8 +7,8 @@ import com.veyndan.redditclient.api.reddit.model.More;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
-import com.veyndan.redditclient.post.model.DeterminateProgress;
 import com.veyndan.redditclient.post.model.Post;
+import com.veyndan.redditclient.post.model.Progress;
 import com.veyndan.redditclient.util.Node;
 import com.veyndan.redditclient.util.Tree;
 
@@ -84,7 +84,7 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
                             return outerPost[0];
                         } else if (input instanceof More) {
                             final More more = (More) input;
-                            return new DeterminateProgress.Builder()
+                            return new Progress.Builder()
                                     .trigger(Observable.just(true))
                                     .childCount(more.count)
                                     .build();
