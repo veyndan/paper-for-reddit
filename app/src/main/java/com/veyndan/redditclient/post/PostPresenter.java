@@ -12,6 +12,7 @@ import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.util.Node;
 import com.veyndan.redditclient.util.Tree;
 
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Response;
@@ -35,18 +36,22 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
     }
 
     public void loadNode(final Node<Response<Thing<Listing>>> node) {
-        postMvpView.appendNode(node);
+        loadNodes(Collections.singletonList(node));
+    }
 
-        node.asObservable()
+    public void loadNodes(final List<Node<Response<Thing<Listing>>>> nodes) {
+        postMvpView.appendNodes(nodes);
+
+        Observable.from(nodes)
+                .flatMap(Node::asObservable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .toList()
-                .filter(nodes -> !nodes.isEmpty())
-                .doOnNext(nodes -> postMvpView.popNode())
+                .filter(nodes1 -> !nodes1.isEmpty())
+                .doOnNext(nodes1 -> postMvpView.popNode())
                 .flatMap(Observable::from)
                 .map(Tree::flattenFrom)
-                .flatMap(Observable::from)
-                .subscribe(this::loadNode);
+                .subscribe(this::loadNodes);
     }
 
     public void loadNode(final Observable<Response<List<Thing<Listing>>>> commentRequest,
