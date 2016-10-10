@@ -154,7 +154,10 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
     }
 
     private Observable<Boolean> getTrigger() {
-        return Observable.concat(getFirstPageTrigger(), getNextPageTrigger());
+        return Observable.concat(getFirstPageTrigger(), getNextPageTrigger())
+                .filter(Boolean::booleanValue)
+                .filter(aBoolean -> !loadingPosts)
+                .doOnNext(aBoolean -> loadingPosts = true);
     }
 
     private Observable<Boolean> getFirstPageTrigger() {
@@ -164,16 +167,11 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
     private Observable<Boolean> getNextPageTrigger() {
         return RxRecyclerView.scrollEvents(recyclerView)
                 .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
-                .filter(scrollEvent -> !loadingPosts)
-                .filter(scrollEvent -> {
+                .map(scrollEvent -> {
                     final int visibleItemCount = recyclerView.getChildCount();
                     final int totalItemCount = layoutManager.getItemCount();
                     final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
                     return totalItemCount - visibleItemCount <= firstVisibleItem;
-                })
-                .map(scrollEvent -> {
-                    loadingPosts = true;
-                    return true;
                 });
     }
 }
