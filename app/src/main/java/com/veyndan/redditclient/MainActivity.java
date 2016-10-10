@@ -5,14 +5,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.common.collect.ImmutableMap;
 import com.veyndan.redditclient.api.reddit.network.QueryBuilder;
 import com.veyndan.redditclient.api.reddit.network.Sort;
 import com.veyndan.redditclient.api.reddit.network.TimePeriod;
 import com.veyndan.redditclient.post.PostsFragment;
 import com.veyndan.redditclient.post.model.Post;
-
-import java.util.Map;
 
 import butterknife.ButterKnife;
 import rx.android.schedulers.AndroidSchedulers;
@@ -21,9 +18,9 @@ import timber.log.Timber;
 
 public class MainActivity extends BaseActivity {
 
-    private Map<Integer, SubredditFilter> filters;
-
     private PostsFragment postsFragment;
+
+    private String subreddit;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -40,25 +37,7 @@ public class MainActivity extends BaseActivity {
             extras = new Bundle();
         }
 
-        final String subreddit = extras.getString("subreddit", "all");
-
-        filters = ImmutableMap.<Integer, SubredditFilter>builder()
-                .put(R.id.action_sort_hot, new SubredditFilter(subreddit, Sort.HOT))
-                .put(R.id.action_sort_new, new SubredditFilter(subreddit, Sort.NEW))
-                .put(R.id.action_sort_rising, new SubredditFilter(subreddit, Sort.RISING))
-                .put(R.id.action_sort_controversial_hour, new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.HOUR)))
-                .put(R.id.action_sort_controversial_day, new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.DAY)))
-                .put(R.id.action_sort_controversial_week, new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.WEEK)))
-                .put(R.id.action_sort_controversial_month, new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.MONTH)))
-                .put(R.id.action_sort_controversial_year, new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.YEAR)))
-                .put(R.id.action_sort_controversial_all, new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.ALL)))
-                .put(R.id.action_sort_top_hour, new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.HOUR)))
-                .put(R.id.action_sort_top_day, new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.DAY)))
-                .put(R.id.action_sort_top_week, new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.WEEK)))
-                .put(R.id.action_sort_top_month, new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.MONTH)))
-                .put(R.id.action_sort_top_year, new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.YEAR)))
-                .put(R.id.action_sort_top_all, new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.ALL)))
-                .build();
+        subreddit = extras.getString("subreddit", "all");
 
         postsFragment.setFilter(new SubredditFilter(subreddit, Sort.HOT));
 
@@ -85,21 +64,59 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        if (item.getItemId() == R.id.action_account_add) {
-            final Intent intent = new Intent(this, AuthenticationActivity.class);
-            startActivityForResult(intent, 0);
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_account_add:
+                final Intent intent = new Intent(this, AuthenticationActivity.class);
+                startActivityForResult(intent, 0);
+                return true;
+            case R.id.action_sort_hot:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.HOT));
+                return true;
+            case R.id.action_sort_new:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.NEW));
+                return true;
+            case R.id.action_sort_rising:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.RISING));
+                return true;
+            case R.id.action_sort_controversial_hour:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.HOUR)));
+                return true;
+            case R.id.action_sort_controversial_day:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.DAY)));
+                return true;
+            case R.id.action_sort_controversial_week:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.WEEK)));
+                return true;
+            case R.id.action_sort_controversial_month:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.MONTH)));
+                return true;
+            case R.id.action_sort_controversial_year:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.YEAR)));
+                return true;
+            case R.id.action_sort_controversial_all:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.ALL)));
+                return true;
+            case R.id.action_sort_top_hour:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.HOUR)));
+                return true;
+            case R.id.action_sort_top_day:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.DAY)));
+                return true;
+            case R.id.action_sort_top_week:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.WEEK)));
+                return true;
+            case R.id.action_sort_top_month:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.MONTH)));
+                return true;
+            case R.id.action_sort_top_year:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.YEAR)));
+                return true;
+            case R.id.action_sort_top_all:
+                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.ALL)));
+                return true;
+            default:
+                return false;
         }
-
-        final SubredditFilter filter = filters.get(item.getItemId());
-
-        // MenuItem id found in the list of handled filters
-        if (filter != null) {
-            postsFragment.setFilter(filter);
-            return true;
-        }
-
-        return false;
     }
 
     @Override
