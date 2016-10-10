@@ -6,7 +6,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.common.collect.ImmutableMap;
-import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.network.QueryBuilder;
 import com.veyndan.redditclient.api.reddit.network.Sort;
 import com.veyndan.redditclient.api.reddit.network.TimePeriod;
@@ -65,8 +64,6 @@ public class MainActivity extends BaseActivity {
 
         final PostsFragment commentsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_comments);
 
-        final Reddit reddit = new Reddit.Builder(Config.REDDIT_CREDENTIALS).build();
-
         EventBus.INSTANCE.toObserverable()
                 .subscribeOn(Schedulers.io())
                 .ofType(Post.class)
@@ -76,7 +73,7 @@ public class MainActivity extends BaseActivity {
                     final String fullname = post.getFullname();
                     final String article = fullname.substring(3, fullname.length());
 
-                    commentsFragment.setFilter(reddit.subredditComments(post.getSubreddit(), article));
+                    commentsFragment.setFilter(new CommentsFilter(post.getSubreddit(), article));
                 }, Timber::e);
     }
 

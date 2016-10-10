@@ -4,6 +4,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.More;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
@@ -61,11 +62,24 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
                 .observeOn(Schedulers.computation())
                 .map(Response::body)
                 .flatMap(thing -> Observable.from(thing.data.children)
-                        .cast(Submission.class)
-                        .map(Post::new)
-                        .flatMap(Mutators.mutate())
-                        .map(post -> (Node<Response<Thing<Listing>>>) post) // TODO Eww
-                        .concatWith(Observable.just(new Progress.Builder()
+                        .flatMap(redditObject -> {
+                            if (redditObject instanceof Submission) {
+                                return Observable.just(redditObject)
+                                        .cast(Submission.class)
+                                        .map(Post::new)
+                                        .flatMap(Mutators.mutate())
+                                        .map(post -> (Node<Response<Thing<Listing>>>) post); // TODO Eww
+                            } else if (redditObject instanceof More) {
+                                final More more = (More) redditObject;
+                                return Observable.just(new Builder()
+                                        .trigger(Observable.just(true))
+                                        .childCount(more.count)
+                                        .build());
+                            } else {
+                                throw new IllegalStateException("Unknown node class: " + redditObject);
+                            }
+                        })
+                        .concatWith(Observable.just(new Builder()
                                 .trigger(getTrigger())
                                 .request(getRequest())
                                 .build())));

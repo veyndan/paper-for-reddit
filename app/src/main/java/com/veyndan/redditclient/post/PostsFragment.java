@@ -85,13 +85,6 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
                 .build());
     }
 
-    public void setFilter(final Observable<Response<List<Thing<Listing>>>> commentRequest) {
-        clearNodes();
-        postPresenter.loadNode(commentRequest, new Progress.Builder()
-                .trigger(Observable.just(true))
-                .build());
-    }
-
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
@@ -113,7 +106,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
         final Bundle args = getArguments();
         if (args != null) {
-            setFilter((PostsFilter) args.getParcelable(ARG_USER_FILTER));
+            setFilter(args.getParcelable(ARG_USER_FILTER));
         }
 
         return recyclerView;
