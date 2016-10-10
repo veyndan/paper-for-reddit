@@ -51,10 +51,10 @@ public class MainActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setTitle(username);
 
-            postsFragment.setFilter(new UserFilter(username, User.OVERVIEW));
+            postsFragment.setRequest(Request.user(username, User.OVERVIEW));
         } else {
             subreddit = extras.getString("subreddit", "all");
-            postsFragment.setFilter(new SubredditFilter(subreddit, Sort.HOT));
+            postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));
         }
 
         final PostsFragment commentsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_comments);
@@ -68,7 +68,7 @@ public class MainActivity extends BaseActivity {
                     final String fullname = post.getFullname();
                     final String article = fullname.substring(3, fullname.length());
 
-                    commentsFragment.setFilter(new CommentsFilter(post.getSubreddit(), article));
+                    commentsFragment.setRequest(Request.comments(subreddit, article));
                 }, Timber::e);
     }
 
@@ -86,49 +86,49 @@ public class MainActivity extends BaseActivity {
                 startActivityForResult(intent, 0);
                 return true;
             case R.id.action_sort_hot:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.HOT));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));
                 return true;
             case R.id.action_sort_new:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.NEW));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.NEW));
                 return true;
             case R.id.action_sort_rising:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.RISING));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.RISING));
                 return true;
             case R.id.action_sort_controversial_hour:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.HOUR)));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.HOUR)));
                 return true;
             case R.id.action_sort_controversial_day:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.DAY)));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.DAY)));
                 return true;
             case R.id.action_sort_controversial_week:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.WEEK)));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.WEEK)));
                 return true;
             case R.id.action_sort_controversial_month:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.MONTH)));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.MONTH)));
                 return true;
             case R.id.action_sort_controversial_year:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.YEAR)));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.YEAR)));
                 return true;
             case R.id.action_sort_controversial_all:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.ALL)));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.ALL)));
                 return true;
             case R.id.action_sort_top_hour:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.HOUR)));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.HOUR)));
                 return true;
             case R.id.action_sort_top_day:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.DAY)));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.DAY)));
                 return true;
             case R.id.action_sort_top_week:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.WEEK)));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.WEEK)));
                 return true;
             case R.id.action_sort_top_month:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.MONTH)));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.MONTH)));
                 return true;
             case R.id.action_sort_top_year:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.YEAR)));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.YEAR)));
                 return true;
             case R.id.action_sort_top_all:
-                postsFragment.setFilter(new SubredditFilter(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.ALL)));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.ALL)));
                 return true;
             default:
                 return false;

@@ -64,11 +64,11 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         setRetainInstance(true);
     }
 
-    public void setFilter(final PostsFilter filter) {
+    public void setRequest(final Observable<Response<Thing<Listing>>> request) {
         clearNodes();
         postPresenter.loadNode(new Progress.Builder()
                 .trigger(getTrigger())
-                .request(filter.getRequestObservable(reddit))
+                .request(request)
                 .build());
     }
 
