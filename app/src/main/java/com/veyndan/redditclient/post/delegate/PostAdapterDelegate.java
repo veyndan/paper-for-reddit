@@ -23,17 +23,16 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.hannesdorfmann.adapterdelegates2.AdapterDelegate;
+import com.hannesdorfmann.adapterdelegates3.AdapterDelegate;
 import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
 import com.veyndan.redditclient.EventBus;
-import com.veyndan.redditclient.api.reddit.model.Listing;
-import com.veyndan.redditclient.api.reddit.model.Thing;
-import com.veyndan.redditclient.util.Node;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.api.reddit.Reddit;
+import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
 import com.veyndan.redditclient.post.Flair;
 import com.veyndan.redditclient.post.PostAdapter;
@@ -41,6 +40,7 @@ import com.veyndan.redditclient.post.media.PostMediaAdapter;
 import com.veyndan.redditclient.post.model.Post;
 import com.veyndan.redditclient.ui.recyclerview.Swipeable;
 import com.veyndan.redditclient.ui.widget.PostHeaderView;
+import com.veyndan.redditclient.util.Node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-public class PostAdapterDelegate implements AdapterDelegate<List<Node<Response<Thing<Listing>>>>> {
+public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thing<Listing>>>>> {
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
@@ -100,7 +100,8 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Node<Response<T
     }
 
     @Override
-    public boolean isForViewType(@NonNull final List<Node<Response<Thing<Listing>>>> nodes, final int position) {
+    public boolean isForViewType(@NonNull final List<Node<Response<Thing<Listing>>>> nodes,
+                                 final int position) {
         return nodes.get(position) instanceof Post;
     }
 
@@ -114,8 +115,10 @@ public class PostAdapterDelegate implements AdapterDelegate<List<Node<Response<T
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final List<Node<Response<Thing<Listing>>>> nodes, final int position,
-                                 @NonNull final RecyclerView.ViewHolder holder) {
+    protected void onBindViewHolder(@NonNull final List<Node<Response<Thing<Listing>>>> nodes,
+                                    final int position,
+                                    @NonNull final RecyclerView.ViewHolder holder,
+                                    @NonNull final List<Object> payloads) {
         final Context context = holder.itemView.getContext();
         final PostViewHolder postHolder = (PostViewHolder) holder;
         final Post post = (Post) nodes.get(position);

@@ -3,14 +3,14 @@ package com.veyndan.redditclient.post;
 import android.app.Activity;
 import android.support.annotation.IntRange;
 
-import com.hannesdorfmann.adapterdelegates2.ListDelegationAdapter;
+import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter;
+import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.Thing;
-import com.veyndan.redditclient.util.Node;
-import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.post.delegate.MoreAdapterDelegate;
 import com.veyndan.redditclient.post.delegate.PostAdapterDelegate;
 import com.veyndan.redditclient.post.delegate.ProgressAdapterDelegate;
+import com.veyndan.redditclient.util.Node;
 
 import java.util.List;
 

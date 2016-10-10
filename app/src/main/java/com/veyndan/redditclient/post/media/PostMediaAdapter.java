@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.support.customtabs.CustomTabsClient;
 import android.support.customtabs.CustomTabsIntent;
 
-import com.hannesdorfmann.adapterdelegates2.ListDelegationAdapter;
+import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter;
 import com.veyndan.redditclient.post.media.delegate.ImageAdapterDelegate;
 import com.veyndan.redditclient.post.media.delegate.LinkAdapterDelegate;
 import com.veyndan.redditclient.post.media.delegate.LinkImageAdapterDelegate;

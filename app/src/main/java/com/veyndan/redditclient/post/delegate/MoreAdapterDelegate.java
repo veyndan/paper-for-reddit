@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
+import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.Thing;
@@ -23,7 +23,8 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Progress, No
 
     @Override
     protected boolean isForViewType(@NonNull final Node<Response<Thing<Listing>>> node,
-                                    final List<Node<Response<Thing<Listing>>>> nodes, final int position) {
+                                    @NonNull final List<Node<Response<Thing<Listing>>>> nodes,
+                                    final int position) {
         return node instanceof Progress && ((Progress) node).isChildCountAvailable();
     }
 
@@ -37,7 +38,8 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Progress, No
 
     @Override
     protected void onBindViewHolder(@NonNull final Progress progress,
-                                    @NonNull final MoreViewHolder holder) {
+                                    @NonNull final MoreViewHolder holder,
+                                    @NonNull final List<Object> payloads) {
         final int count = progress.getChildCount();
         final Resources resources = holder.itemView.getResources();
 

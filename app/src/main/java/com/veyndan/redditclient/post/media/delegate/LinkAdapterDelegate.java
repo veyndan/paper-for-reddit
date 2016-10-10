@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
+import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
 import com.jakewharton.rxbinding.view.RxView;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.post.media.model.Link;
@@ -40,7 +40,7 @@ public class LinkAdapterDelegate
     }
 
     @Override
-    protected boolean isForViewType(@NonNull final Object item, final List<Object> items,
+    protected boolean isForViewType(@NonNull final Object item, @NonNull final List<Object> items,
                                     final int position) {
         return item instanceof Link;
     }
@@ -54,7 +54,9 @@ public class LinkAdapterDelegate
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final Link link, @NonNull final LinkViewHolder holder) {
+    protected void onBindViewHolder(@NonNull final Link link,
+                                    @NonNull final LinkViewHolder holder,
+                                    @NonNull final List<Object> payloads) {
         if (customTabsClient != null) {
             final CustomTabsSession session = customTabsClient.newSession(null);
 

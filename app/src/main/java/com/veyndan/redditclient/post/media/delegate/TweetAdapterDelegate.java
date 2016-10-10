@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
+import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetView;
 import com.veyndan.redditclient.R;
@@ -18,7 +18,7 @@ public class TweetAdapterDelegate
         extends AbsListItemAdapterDelegate<Tweet, Object, TweetAdapterDelegate.TweetViewHolder> {
 
     @Override
-    protected boolean isForViewType(@NonNull final Object item, final List<Object> items,
+    protected boolean isForViewType(@NonNull final Object item, @NonNull final List<Object> items,
                                     final int position) {
         return item instanceof Tweet;
     }
@@ -33,7 +33,8 @@ public class TweetAdapterDelegate
 
     @Override
     protected void onBindViewHolder(@NonNull final Tweet tweet,
-                                    @NonNull final TweetViewHolder holder) {
+                                    @NonNull final TweetViewHolder holder,
+                                    @NonNull final List<Object> payloads) {
         final Context context = holder.itemView.getContext();
 
         // Can't recycle TweetView as tweet must be specified on TweetView creation. Shit.

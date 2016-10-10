@@ -19,7 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
+import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
 import com.jakewharton.rxbinding.view.RxView;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.post.media.model.LinkImage;
@@ -47,7 +47,7 @@ public class LinkImageAdapterDelegate
     }
 
     @Override
-    protected boolean isForViewType(@NonNull final Object item, final List<Object> items,
+    protected boolean isForViewType(@NonNull final Object item, @NonNull final List<Object> items,
                                     final int position) {
         return item instanceof LinkImage;
     }
@@ -62,7 +62,8 @@ public class LinkImageAdapterDelegate
 
     @Override
     protected void onBindViewHolder(@NonNull final LinkImage linkImage,
-                                    @NonNull final LinkImageViewHolder holder) {
+                                    @NonNull final LinkImageViewHolder holder,
+                                    @NonNull final List<Object> payloads) {
         final Context context = holder.itemView.getContext();
 
         if (customTabsClient != null) {

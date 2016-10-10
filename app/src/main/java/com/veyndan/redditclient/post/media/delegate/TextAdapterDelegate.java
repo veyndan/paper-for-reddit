@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.hannesdorfmann.adapterdelegates2.AbsListItemAdapterDelegate;
+import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.post.media.model.Text;
 
@@ -18,7 +18,7 @@ public class TextAdapterDelegate
         extends AbsListItemAdapterDelegate<Text, Object, TextAdapterDelegate.TextViewHolder> {
 
     @Override
-    protected boolean isForViewType(@NonNull final Object item, final List<Object> items,
+    protected boolean isForViewType(@NonNull final Object item, @NonNull final List<Object> items,
                                     final int position) {
         return item instanceof Text;
     }
@@ -32,8 +32,8 @@ public class TextAdapterDelegate
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final Text text,
-                                    @NonNull final TextViewHolder holder) {
+    protected void onBindViewHolder(@NonNull final Text text, @NonNull final TextViewHolder holder,
+                                    @NonNull final List<Object> payloads) {
         holder.textView.setText(text.getBody());
         holder.textView.setMovementMethod(LinkMovementMethod.getInstance());
     }

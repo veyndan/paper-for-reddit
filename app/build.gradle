@@ -39,7 +39,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     // Adapter Delegates
-    compile 'com.hannesdorfmann:adapterdelegates2:2.0.1'
+    compile 'com.hannesdorfmann:adapterdelegates3:3.0.0'
 
     // Apache Commons
     compile 'org.apache.commons:commons-lang3:3.4'
