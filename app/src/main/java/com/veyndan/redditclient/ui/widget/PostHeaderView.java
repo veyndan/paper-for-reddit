@@ -30,7 +30,6 @@ import android.widget.TextView;
 
 import com.binaryfork.spanny.Spanny;
 import com.veyndan.redditclient.MainActivity;
-import com.veyndan.redditclient.ProfileActivity;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.post.Flair;
 
@@ -103,7 +102,7 @@ public class PostHeaderView extends TextView {
         final SpannableString authorLink = Spanny.spanText(author, new ClickableSpan() {
             @Override
             public void onClick(final View widget) {
-                final Intent intent = new Intent(context, ProfileActivity.class);
+                final Intent intent = new Intent(context, MainActivity.class);
                 intent.putExtra("username", author);
                 context.startActivity(intent);
             }
@@ -149,7 +148,7 @@ public class PostHeaderView extends TextView {
                                 context.startActivity(subredditIntent);
                                 break;
                             case "u":
-                                final Intent profileIntent = new Intent(context.getApplicationContext(), ProfileActivity.class);
+                                final Intent profileIntent = new Intent(context.getApplicationContext(), MainActivity.class);
                                 profileIntent.putExtra("username", group2);
                                 context.startActivity(profileIntent);
                                 break;

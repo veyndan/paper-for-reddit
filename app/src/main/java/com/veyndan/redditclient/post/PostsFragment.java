@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 import com.veyndan.redditclient.Config;
 import com.veyndan.redditclient.R;
-import com.veyndan.redditclient.UserFilter;
 import com.veyndan.redditclient.api.reddit.Reddit;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.Thing;
@@ -33,8 +32,6 @@ import rx.Observable;
 
 public class PostsFragment extends Fragment implements PostMvpView<Response<Thing<Listing>>> {
 
-    private static final String ARG_USER_FILTER = "user_filter";
-
     private final PostPresenter postPresenter = new PostPresenter();
 
     private RecyclerView recyclerView;
@@ -51,16 +48,6 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
     public PostsFragment() {
         // Required empty public constructor
-    }
-
-    public static PostsFragment newInstance(final UserFilter userFilter) {
-        final PostsFragment fragment = new PostsFragment();
-
-        final Bundle args = new Bundle();
-        args.putParcelable(ARG_USER_FILTER, userFilter);
-        fragment.setArguments(args);
-
-        return fragment;
     }
 
     @Override
@@ -103,11 +90,6 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         final ItemTouchHelper.Callback swipeCallback = new SwipeItemTouchHelperCallback();
         final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
-
-        final Bundle args = getArguments();
-        if (args != null) {
-            setFilter(args.getParcelable(ARG_USER_FILTER));
-        }
 
         return recyclerView;
     }

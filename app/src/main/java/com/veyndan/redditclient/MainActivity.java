@@ -2,12 +2,15 @@ package com.veyndan.redditclient;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.airbnb.deeplinkdispatch.DeepLink;
 import com.veyndan.redditclient.api.reddit.network.QueryBuilder;
 import com.veyndan.redditclient.api.reddit.network.Sort;
 import com.veyndan.redditclient.api.reddit.network.TimePeriod;
+import com.veyndan.redditclient.api.reddit.network.User;
 import com.veyndan.redditclient.post.PostsFragment;
 import com.veyndan.redditclient.post.model.Post;
 
@@ -16,6 +19,10 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
+@DeepLink({
+        "http://reddit.com/u/{username}",
+        "http://reddit.com/user/{username}"
+})
 public class MainActivity extends BaseActivity {
 
     private PostsFragment postsFragment;
@@ -37,9 +44,18 @@ public class MainActivity extends BaseActivity {
             extras = new Bundle();
         }
 
-        subreddit = extras.getString("subreddit", "all");
+        if (extras.containsKey("username")) {
+            final String username = extras.getString("username");
 
-        postsFragment.setFilter(new SubredditFilter(subreddit, Sort.HOT));
+            final ActionBar ab = getSupportActionBar();
+            ab.setDisplayHomeAsUpEnabled(true);
+            ab.setTitle(username);
+
+            postsFragment.setFilter(new UserFilter(username, User.OVERVIEW));
+        } else {
+            subreddit = extras.getString("subreddit", "all");
+            postsFragment.setFilter(new SubredditFilter(subreddit, Sort.HOT));
+        }
 
         final PostsFragment commentsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_comments);
 
