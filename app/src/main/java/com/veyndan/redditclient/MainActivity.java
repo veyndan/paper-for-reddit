@@ -49,8 +49,8 @@ public class MainActivity extends BaseActivity {
         // TODO Pass in the filters returned by the FilterFragments and have a method which merges the filters.
         // e.g. if it just a subreddit filter, then just do the standard endpoint, but if it is a subreddit and
         // author filter, then cloudsearch is needed, but the options would reduce. Maximise the options available.
-        if (extras.containsKey("username")) {
-            final String username = extras.getString("username");
+        if (extras.containsKey(Filter.USER_NAME)) {
+            final String username = extras.getString(Filter.USER_NAME);
 
             final ActionBar ab = getSupportActionBar();
             ab.setDisplayHomeAsUpEnabled(true);
@@ -63,15 +63,15 @@ public class MainActivity extends BaseActivity {
             final Bundle subredditFilter = filters.getBundle("subreddit_filter");
             final Bundle userFilters = filters.getBundle("user_filter");
 
-            final String subreddit = subredditFilter.getString("subreddit");
+            final String subreddit = subredditFilter.getString(Filter.SUBREDDIT_NAME);
 
             if (!TextUtils.isEmpty(subreddit)) {
                 postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));
             } else {
-                final String username = userFilters.getString("username");
-                final boolean comments = userFilters.getBoolean("comments");
-                final boolean submitted = userFilters.getBoolean("submitted");
-                final boolean gilded = userFilters.getBoolean("gilded");
+                final String username = userFilters.getString(Filter.USER_NAME);
+                final boolean comments = userFilters.getBoolean(Filter.USER_COMMENTS);
+                final boolean submitted = userFilters.getBoolean(Filter.USER_SUBMITTED);
+                final boolean gilded = userFilters.getBoolean(Filter.USER_GILDED);
 
                 final User user;
                 if ((comments == submitted) && gilded) {
@@ -91,7 +91,7 @@ public class MainActivity extends BaseActivity {
                 postsFragment.setRequest(Request.user(username, user));
             }
         } else {
-            subreddit = extras.getString("subreddit", "all");
+            subreddit = extras.getString(Filter.SUBREDDIT_NAME, "all");
             postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));
         }
 

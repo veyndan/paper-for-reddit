@@ -39,16 +39,16 @@ public class UserFilterFragment extends Fragment implements Filter {
         final Bundle bundle = new Bundle();
 
         final String username = formUsernameEditText.getText().toString();
-        bundle.putString("username", username);
+        bundle.putString(USER_NAME, username);
 
         final boolean comments = formCommentsCheckBox.isChecked();
-        bundle.putBoolean("comments", comments);
+        bundle.putBoolean(USER_COMMENTS, comments);
 
         final boolean submitted = formSubmittedCheckBox.isChecked();
-        bundle.putBoolean("submitted", submitted);
+        bundle.putBoolean(USER_SUBMITTED, submitted);
 
         final boolean gilded = formGildedCheckBox.isChecked();
-        bundle.putBoolean("gilded", gilded);
+        bundle.putBoolean(USER_GILDED, gilded);
 
         return bundle;
     }

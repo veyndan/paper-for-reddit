@@ -35,7 +35,7 @@ public class SubredditFilterFragment extends Fragment implements Filter {
         final Bundle bundle = new Bundle();
 
         final String subreddit = formSubreddit.getText().toString();
-        bundle.putString("subreddit", subreddit);
+        bundle.putString(SUBREDDIT_NAME, subreddit);
 
         return bundle;
     }

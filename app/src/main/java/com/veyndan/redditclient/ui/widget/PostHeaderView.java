@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.binaryfork.spanny.Spanny;
+import com.veyndan.redditclient.Filter;
 import com.veyndan.redditclient.MainActivity;
 import com.veyndan.redditclient.R;
 import com.veyndan.redditclient.post.Flair;
@@ -103,7 +104,7 @@ public class PostHeaderView extends TextView {
             @Override
             public void onClick(final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtra("username", author);
+                intent.putExtra(Filter.USER_NAME, author);
                 context.startActivity(intent);
             }
         });
@@ -112,7 +113,7 @@ public class PostHeaderView extends TextView {
             @Override
             public void onClick(final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtra("subreddit", subreddit);
+                intent.putExtra(Filter.SUBREDDIT_NAME, subreddit);
                 context.startActivity(intent);
             }
         });
@@ -144,12 +145,12 @@ public class PostHeaderView extends TextView {
                         switch (group1) {
                             case "r":
                                 final Intent subredditIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                                subredditIntent.putExtra("subreddit", group2);
+                                subredditIntent.putExtra(Filter.SUBREDDIT_NAME, group2);
                                 context.startActivity(subredditIntent);
                                 break;
                             case "u":
                                 final Intent profileIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                                profileIntent.putExtra("username", group2);
+                                profileIntent.putExtra(Filter.USER_NAME, group2);
                                 context.startActivity(profileIntent);
                                 break;
                         }
