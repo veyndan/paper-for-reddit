@@ -40,6 +40,8 @@
     <string name="profile_link_karma">Link karma</string>
     <string name="profile_comment_karma">Comment karma</string>
 
+    <string name="action_filter">Filter</string>
+
     <!-- Sort overflow titles -->
     <string name="action_sort">Sort</string>
 
@@ -62,4 +64,6 @@
 
     <string name="score_hidden">[score hidden]</string>
     <string name="login_aborted">To log in, allow Reddit Client to connect to your account</string>
+
+    <string name="filter_form_username">Username</string>
 </resources>

@@ -2,6 +2,7 @@ package com.veyndan.redditclient;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -84,6 +85,11 @@ public class MainActivity extends BaseActivity {
             case R.id.action_account_add:
                 final Intent intent = new Intent(this, AuthenticationActivity.class);
                 startActivityForResult(intent, 0);
+                return true;
+            case R.id.action_filter:
+                final FragmentManager fragmentManager = getSupportFragmentManager();
+                final FilterFragment filterFragment = FilterFragment.newInstance();
+                filterFragment.show(fragmentManager, "fragment_filter");
                 return true;
             case R.id.action_sort_hot:
                 postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));
