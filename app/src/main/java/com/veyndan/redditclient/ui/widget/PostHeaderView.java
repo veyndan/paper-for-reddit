@@ -105,6 +105,8 @@ public class PostHeaderView extends TextView {
             public void onClick(final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
                 intent.putExtra(Filter.USER_NAME, author);
+                intent.putExtra(Filter.USER_COMMENTS, true);
+                intent.putExtra(Filter.USER_SUBMITTED, true);
                 context.startActivity(intent);
             }
         });
@@ -151,6 +153,8 @@ public class PostHeaderView extends TextView {
                             case "u":
                                 final Intent profileIntent = new Intent(context.getApplicationContext(), MainActivity.class);
                                 profileIntent.putExtra(Filter.USER_NAME, group2);
+                                profileIntent.putExtra(Filter.USER_COMMENTS, true);
+                                profileIntent.putExtra(Filter.USER_SUBMITTED, true);
                                 context.startActivity(profileIntent);
                                 break;
                         }
