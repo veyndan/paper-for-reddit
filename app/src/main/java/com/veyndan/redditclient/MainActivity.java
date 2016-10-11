@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -59,29 +60,36 @@ public class MainActivity extends BaseActivity {
         } else if (extras.containsKey("filters")) {
             final Bundle filters = extras.getBundle("filters");
 
+            final Bundle subredditFilter = filters.getBundle("subreddit_filter");
             final Bundle userFilters = filters.getBundle("user_filter");
 
-            final String username = userFilters.getString("username");
-            final boolean comments = userFilters.getBoolean("comments");
-            final boolean submitted = userFilters.getBoolean("submitted");
-            final boolean gilded = userFilters.getBoolean("gilded");
+            final String subreddit = subredditFilter.getString("subreddit");
 
-            final User user;
-            if ((comments == submitted) && gilded) {
-                user = User.GILDED;
-            } else if ((comments != submitted) && gilded) {
-                throw new UnsupportedOperationException("User state unsure");
-            } else if (comments && submitted) {
-                user = User.OVERVIEW;
-            } else if (comments) {
-                user = User.COMMENTS;
-            } else if (submitted) {
-                user = User.SUBMITTED;
+            if (!TextUtils.isEmpty(subreddit)) {
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));
             } else {
-                throw new UnsupportedOperationException("User state unsure");
-            }
+                final String username = userFilters.getString("username");
+                final boolean comments = userFilters.getBoolean("comments");
+                final boolean submitted = userFilters.getBoolean("submitted");
+                final boolean gilded = userFilters.getBoolean("gilded");
 
-            postsFragment.setRequest(Request.user(username, user));
+                final User user;
+                if ((comments == submitted) && gilded) {
+                    user = User.GILDED;
+                } else if ((comments != submitted) && gilded) {
+                    throw new UnsupportedOperationException("User state unsure");
+                } else if (comments && submitted) {
+                    user = User.OVERVIEW;
+                } else if (comments) {
+                    user = User.COMMENTS;
+                } else if (submitted) {
+                    user = User.SUBMITTED;
+                } else {
+                    throw new UnsupportedOperationException("User state unsure");
+                }
+
+                postsFragment.setRequest(Request.user(username, user));
+            }
         } else {
             subreddit = extras.getString("subreddit", "all");
             postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));

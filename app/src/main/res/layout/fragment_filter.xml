@@ -15,7 +15,9 @@
         android:id="@+id/filter_tabs"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
-        app:tabMode="scrollable"/>
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="?colorAccent"
+        app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"/>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/filter_view_pager"

@@ -65,6 +65,8 @@
     <string name="score_hidden">[score hidden]</string>
     <string name="login_aborted">To log in, allow Reddit Client to connect to your account</string>
 
+    <string name="filter_form_subreddit">Subreddit</string>
+
     <string name="filter_form_username">Username</string>
     <string name="filter_form_comments">Comments</string>
     <string name="filter_form_submitted">Submitted</string>

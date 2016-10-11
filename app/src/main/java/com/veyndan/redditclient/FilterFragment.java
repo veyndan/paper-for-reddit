@@ -29,8 +29,6 @@ public class FilterFragment extends DialogFragment {
     @BindView(R.id.filter_tabs) TabLayout tabs;
     @BindView(R.id.filter_done) Button doneButton;
 
-    private UserFilterFragment userFilterFragment;
-
     public FilterFragment() {
         // Required empty public constructor
     }
@@ -45,14 +43,19 @@ public class FilterFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.fragment_filter, container, false);
         ButterKnife.bind(this, view);
 
-        userFilterFragment = UserFilterFragment.newInstance();
+        final SubredditFilterFragment subredditFilterFragment = SubredditFilterFragment.newInstance();
+        final UserFilterFragment userFilterFragment = UserFilterFragment.newInstance();
 
-        final Fragment[] fragments = new Fragment[]{userFilterFragment};
+        final Fragment[] fragments = new Fragment[]{
+                subredditFilterFragment,
+                userFilterFragment
+        };
 
         RxView.clicks(doneButton)
                 .subscribe(aVoid -> {
                     final Bundle filters = new Bundle();
 
+                    filters.putBundle("subreddit_filter", subredditFilterFragment.requestFilter());
                     filters.putBundle("user_filter", userFilterFragment.requestFilter());
 
                     final Intent intent = new Intent(getContext(), MainActivity.class);
@@ -68,7 +71,7 @@ public class FilterFragment extends DialogFragment {
         tabs.setupWithViewPager(viewPager);
 
         final int tabCount = tabs.getTabCount();
-        for (int i = 0; i < tabCount; i++) {
+        for (int i = 1; i < tabCount; i++) {
             final TabLayout.Tab tab = tabs.getTabAt(i);
             tab.setIcon(R.drawable.ic_person_black_24dp);
         }
@@ -76,6 +79,7 @@ public class FilterFragment extends DialogFragment {
         final int colorAccent = ContextCompat.getColor(getActivity(), R.color.colorAccent);
 
         RxTabLayout.selectionEvents(tabs)
+                .filter(selectionEvent -> selectionEvent.tab().getIcon() != null)
                 .subscribe(selectionEvent -> {
                     final TabLayout.Tab tab = selectionEvent.tab();
                     final Drawable icon = tab.getIcon().mutate();
@@ -118,7 +122,7 @@ public class FilterFragment extends DialogFragment {
 
         @Override
         public CharSequence getPageTitle(final int position) {
-            return "";
+            return position == 0 ? "r/" : "";
         }
     }
 }
