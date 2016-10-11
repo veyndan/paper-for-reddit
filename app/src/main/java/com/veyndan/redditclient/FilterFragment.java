@@ -43,19 +43,17 @@ public class FilterFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.fragment_filter, container, false);
         ButterKnife.bind(this, view);
 
-        final SubredditFilterFragment subredditFilterFragment = SubredditFilterFragment.newInstance();
-        final UserFilterFragment userFilterFragment = UserFilterFragment.newInstance();
-
         final Fragment[] fragments = new Fragment[]{
-                subredditFilterFragment,
-                userFilterFragment
+                SubredditFilterFragment.newInstance(),
+                UserFilterFragment.newInstance()
         };
 
         RxView.clicks(doneButton)
                 .subscribe(aVoid -> {
                     final Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.putExtras(subredditFilterFragment.requestFilter());
-                    intent.putExtras(userFilterFragment.requestFilter());
+                    for (final Fragment fragment : fragments) {
+                        intent.putExtras(((Filter) fragment).requestFilter());
+                    }
                     startActivity(intent);
 
                     dismiss();
