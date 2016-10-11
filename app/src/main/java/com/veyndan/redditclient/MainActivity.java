@@ -2,13 +2,15 @@ package com.veyndan.redditclient;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.airbnb.deeplinkdispatch.DeepLink;
+import com.veyndan.redditclient.api.reddit.model.Listing;
+import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.api.reddit.network.QueryBuilder;
 import com.veyndan.redditclient.api.reddit.network.Sort;
 import com.veyndan.redditclient.api.reddit.network.TimePeriod;
@@ -17,6 +19,8 @@ import com.veyndan.redditclient.post.PostsFragment;
 import com.veyndan.redditclient.post.model.Post;
 
 import butterknife.ButterKnife;
+import retrofit2.Response;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -40,48 +44,10 @@ public class MainActivity extends BaseActivity {
         postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
 
         final Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-        // Instantiate new Bundle if null so extras.get* will always be the default values.
-        if (extras == null) {
-            extras = new Bundle();
-        }
 
-        subreddit = extras.getString(Filter.SUBREDDIT_NAME);
-
-        if (!TextUtils.isEmpty(subreddit)) {
-            postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));
-        } else {
-            final String username = extras.getString(Filter.USER_NAME);
-
-            if (!TextUtils.isEmpty(username)) {
-                final boolean comments = extras.getBoolean(Filter.USER_COMMENTS);
-                final boolean submitted = extras.getBoolean(Filter.USER_SUBMITTED);
-                final boolean gilded = extras.getBoolean(Filter.USER_GILDED);
-
-                final User user;
-                if ((comments == submitted) && gilded) {
-                    user = User.GILDED;
-                } else if ((comments != submitted) && gilded) {
-                    throw new UnsupportedOperationException("User state unsure");
-                } else if (comments && submitted) {
-                    user = User.OVERVIEW;
-                } else if (comments) {
-                    user = User.COMMENTS;
-                } else if (submitted) {
-                    user = User.SUBMITTED;
-                } else {
-                    throw new UnsupportedOperationException("User state unsure");
-                }
-
-                final ActionBar ab = getSupportActionBar();
-                ab.setDisplayHomeAsUpEnabled(true);
-                ab.setTitle(username);
-
-                postsFragment.setRequest(Request.user(username, user));
-            } else {
-                postsFragment.setRequest(Request.subreddit("all", Sort.HOT));
-            }
-        }
+        final Observable<Response<Thing<Listing>>> defaultRequest = Request.subreddit("all", Sort.HOT);
+        final Observable<Response<Thing<Listing>>> mergedFilters = mergeFilters(intent.getExtras(), defaultRequest);
+        postsFragment.setRequest(mergedFilters);
 
         final PostsFragment commentsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_comments);
 
@@ -96,6 +62,47 @@ public class MainActivity extends BaseActivity {
 
                     commentsFragment.setRequest(Request.comments(subreddit, article));
                 }, Timber::e);
+    }
+
+    @NonNull
+    private Observable<Response<Thing<Listing>>> mergeFilters(@Nullable final Bundle bundle,
+                                                              @NonNull final Observable<Response<Thing<Listing>>> defaultRequest) {
+        if (bundle == null) {
+            return defaultRequest;
+        }
+
+        subreddit = bundle.getString(Filter.SUBREDDIT_NAME);
+
+        final String username = bundle.getString(Filter.USER_NAME);
+        final boolean comments = bundle.getBoolean(Filter.USER_COMMENTS);
+        final boolean submitted = bundle.getBoolean(Filter.USER_SUBMITTED);
+        final boolean gilded = bundle.getBoolean(Filter.USER_GILDED);
+
+        if (subreddit == null && username == null) {
+            return defaultRequest;
+        } else if (subreddit != null && username == null) {
+            return Request.subreddit(subreddit, Sort.HOT);
+        } else if (subreddit == null) { // && username != null
+            final User user;
+            if ((comments == submitted) && gilded) {
+                user = User.GILDED;
+            } else if ((comments != submitted) && gilded) {
+                throw new UnsupportedOperationException("User state unsure");
+            } else if (comments && submitted) {
+                user = User.OVERVIEW;
+            } else if (comments) {
+                user = User.COMMENTS;
+            } else if (submitted) {
+                user = User.SUBMITTED;
+            } else {
+                throw new UnsupportedOperationException("User state unsure");
+            }
+
+            return Request.user(username, user);
+        } else { // subreddit != null && username != null
+            // TODO Concatenate the subreddit and username search query
+            return defaultRequest;
+        }
     }
 
     @Override
