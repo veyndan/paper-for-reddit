@@ -1,6 +1,8 @@
 package com.veyndan.redditclient;
 
-public interface Filter<T> {
+import android.os.Bundle;
 
-    T requestFilter();
+public interface Filter {
+
+    Bundle requestFilter();
 }

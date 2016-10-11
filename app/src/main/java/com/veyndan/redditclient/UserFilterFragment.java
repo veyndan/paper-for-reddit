@@ -10,7 +10,7 @@ import android.widget.EditText;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class UserFilterFragment extends Fragment implements Filter<UserFilterFragment.Filter> {
+public class UserFilterFragment extends Fragment implements Filter {
 
     @BindView(R.id.filter_form_username) EditText formUsernameEditText;
 
@@ -31,21 +31,10 @@ public class UserFilterFragment extends Fragment implements Filter<UserFilterFra
     }
 
     @Override
-    public Filter requestFilter() {
+    public Bundle requestFilter() {
+        final Bundle bundle = new Bundle();
         final String username = formUsernameEditText.getText().toString();
-        return new Filter(username);
-    }
-
-    public static final class Filter {
-
-        private final String username;
-
-        private Filter(final String username) {
-            this.username = username;
-        }
-
-        public String getUsername() {
-            return username;
-        }
+        bundle.putString("username", username);
+        return bundle;
     }
 }

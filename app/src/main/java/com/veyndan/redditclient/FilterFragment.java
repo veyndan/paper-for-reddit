@@ -51,11 +51,14 @@ public class FilterFragment extends DialogFragment {
 
         RxView.clicks(doneButton)
                 .subscribe(aVoid -> {
-                    final UserFilterFragment.Filter userFilter = userFilterFragment.requestFilter();
+                    final Bundle filters = new Bundle();
+
+                    filters.putBundle("user_filter", userFilterFragment.requestFilter());
 
                     final Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.putExtra("username", userFilter.getUsername());
+                    intent.putExtra("filters", filters);
                     startActivity(intent);
+
                     dismiss();
                 });
 

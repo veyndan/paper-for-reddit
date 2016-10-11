@@ -45,12 +45,23 @@ public class MainActivity extends BaseActivity {
             extras = new Bundle();
         }
 
+        // TODO Pass in the filters returned by the FilterFragments and have a method which merges the filters.
+        // e.g. if it just a subreddit filter, then just do the standard endpoint, but if it is a subreddit and
+        // author filter, then cloudsearch is needed, but the options would reduce. Maximise the options available.
         if (extras.containsKey("username")) {
             final String username = extras.getString("username");
 
             final ActionBar ab = getSupportActionBar();
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setTitle(username);
+
+            postsFragment.setRequest(Request.user(username, User.OVERVIEW));
+        } else if (extras.containsKey("filters")) {
+            final Bundle filters = extras.getBundle("filters");
+
+            final Bundle userFilters = filters.getBundle("user_filter");
+
+            final String username = userFilters.getString("username");
 
             postsFragment.setRequest(Request.user(username, User.OVERVIEW));
         } else {
