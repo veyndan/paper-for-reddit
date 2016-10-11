@@ -62,8 +62,26 @@ public class MainActivity extends BaseActivity {
             final Bundle userFilters = filters.getBundle("user_filter");
 
             final String username = userFilters.getString("username");
+            final boolean comments = userFilters.getBoolean("comments");
+            final boolean submitted = userFilters.getBoolean("submitted");
+            final boolean gilded = userFilters.getBoolean("gilded");
 
-            postsFragment.setRequest(Request.user(username, User.OVERVIEW));
+            final User user;
+            if ((comments == submitted) && gilded) {
+                user = User.GILDED;
+            } else if ((comments != submitted) && gilded) {
+                throw new UnsupportedOperationException("User state unsure");
+            } else if (comments && submitted) {
+                user = User.OVERVIEW;
+            } else if (comments) {
+                user = User.COMMENTS;
+            } else if (submitted) {
+                user = User.SUBMITTED;
+            } else {
+                throw new UnsupportedOperationException("User state unsure");
+            }
+
+            postsFragment.setRequest(Request.user(username, user));
         } else {
             subreddit = extras.getString("subreddit", "all");
             postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));

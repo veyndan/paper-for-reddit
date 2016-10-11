@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import butterknife.BindView;
@@ -13,6 +14,9 @@ import butterknife.ButterKnife;
 public class UserFilterFragment extends Fragment implements Filter {
 
     @BindView(R.id.filter_form_username) EditText formUsernameEditText;
+    @BindView(R.id.filter_form_comments) CheckBox formCommentsCheckBox;
+    @BindView(R.id.filter_form_submitted) CheckBox formSubmittedCheckBox;
+    @BindView(R.id.filter_form_gilded) CheckBox formGildedCheckBox;
 
     public UserFilterFragment() {
         // Required empty public constructor
@@ -33,8 +37,19 @@ public class UserFilterFragment extends Fragment implements Filter {
     @Override
     public Bundle requestFilter() {
         final Bundle bundle = new Bundle();
+
         final String username = formUsernameEditText.getText().toString();
         bundle.putString("username", username);
+
+        final boolean comments = formCommentsCheckBox.isChecked();
+        bundle.putBoolean("comments", comments);
+
+        final boolean submitted = formSubmittedCheckBox.isChecked();
+        bundle.putBoolean("submitted", submitted);
+
+        final boolean gilded = formGildedCheckBox.isChecked();
+        bundle.putBoolean("gilded", gilded);
+
         return bundle;
     }
 }
