@@ -46,32 +46,17 @@ public class MainActivity extends BaseActivity {
             extras = new Bundle();
         }
 
-        // TODO Pass in the filters returned by the FilterFragments and have a method which merges the filters.
-        // e.g. if it just a subreddit filter, then just do the standard endpoint, but if it is a subreddit and
-        // author filter, then cloudsearch is needed, but the options would reduce. Maximise the options available.
-        if (extras.containsKey(Filter.USER_NAME)) {
+        subreddit = extras.getString(Filter.SUBREDDIT_NAME);
+
+        if (!TextUtils.isEmpty(subreddit)) {
+            postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));
+        } else {
             final String username = extras.getString(Filter.USER_NAME);
 
-            final ActionBar ab = getSupportActionBar();
-            ab.setDisplayHomeAsUpEnabled(true);
-            ab.setTitle(username);
-
-            postsFragment.setRequest(Request.user(username, User.OVERVIEW));
-        } else if (extras.containsKey("filters")) {
-            final Bundle filters = extras.getBundle("filters");
-
-            final Bundle subredditFilter = filters.getBundle("subreddit_filter");
-            final Bundle userFilters = filters.getBundle("user_filter");
-
-            final String subreddit = subredditFilter.getString(Filter.SUBREDDIT_NAME);
-
-            if (!TextUtils.isEmpty(subreddit)) {
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));
-            } else {
-                final String username = userFilters.getString(Filter.USER_NAME);
-                final boolean comments = userFilters.getBoolean(Filter.USER_COMMENTS);
-                final boolean submitted = userFilters.getBoolean(Filter.USER_SUBMITTED);
-                final boolean gilded = userFilters.getBoolean(Filter.USER_GILDED);
+            if (!TextUtils.isEmpty(username)) {
+                final boolean comments = extras.getBoolean(Filter.USER_COMMENTS);
+                final boolean submitted = extras.getBoolean(Filter.USER_SUBMITTED);
+                final boolean gilded = extras.getBoolean(Filter.USER_GILDED);
 
                 final User user;
                 if ((comments == submitted) && gilded) {
@@ -88,11 +73,14 @@ public class MainActivity extends BaseActivity {
                     throw new UnsupportedOperationException("User state unsure");
                 }
 
+                final ActionBar ab = getSupportActionBar();
+                ab.setDisplayHomeAsUpEnabled(true);
+                ab.setTitle(username);
+
                 postsFragment.setRequest(Request.user(username, user));
+            } else {
+                postsFragment.setRequest(Request.subreddit("all", Sort.HOT));
             }
-        } else {
-            subreddit = extras.getString(Filter.SUBREDDIT_NAME, "all");
-            postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));
         }
 
         final PostsFragment commentsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_comments);

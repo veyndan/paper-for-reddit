@@ -53,13 +53,9 @@ public class FilterFragment extends DialogFragment {
 
         RxView.clicks(doneButton)
                 .subscribe(aVoid -> {
-                    final Bundle filters = new Bundle();
-
-                    filters.putBundle("subreddit_filter", subredditFilterFragment.requestFilter());
-                    filters.putBundle("user_filter", userFilterFragment.requestFilter());
-
                     final Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.putExtra("filters", filters);
+                    intent.putExtras(subredditFilterFragment.requestFilter());
+                    intent.putExtras(userFilterFragment.requestFilter());
                     startActivity(intent);
 
                     dismiss();
