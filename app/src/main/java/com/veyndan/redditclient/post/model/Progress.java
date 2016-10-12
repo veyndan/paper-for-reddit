@@ -59,10 +59,10 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
         return getTrigger().takeFirst(Boolean::booleanValue)
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .flatMap(aBoolean -> getRequest().subscribeOn(Schedulers.io()))
-                .observeOn(Schedulers.computation())
                 .map(Response::body)
                 .flatMap(thing -> Observable.from(thing.data.children)
-                        .flatMap(redditObject -> {
+                        .observeOn(Schedulers.computation())
+                        .concatMap(redditObject -> {
                             if (redditObject instanceof Submission) {
                                 return Observable.just(redditObject)
                                         .cast(Submission.class)
