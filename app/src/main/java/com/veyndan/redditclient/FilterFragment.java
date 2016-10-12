@@ -44,6 +44,7 @@ public class FilterFragment extends DialogFragment {
         ButterKnife.bind(this, view);
 
         final Fragment[] fragments = new Fragment[]{
+                TimePeriodFilterFragment.newInstance(),
                 SubredditFilterFragment.newInstance(),
                 UserFilterFragment.newInstance()
         };
@@ -64,19 +65,22 @@ public class FilterFragment extends DialogFragment {
 
         tabs.setupWithViewPager(viewPager);
 
-        final int tabCount = tabs.getTabCount();
-        for (int i = 1; i < tabCount; i++) {
-            final TabLayout.Tab tab = tabs.getTabAt(i);
-            tab.setIcon(R.drawable.ic_person_black_24dp);
-        }
+        TabLayout.Tab tab = tabs.getTabAt(0);
+        tab.setIcon(R.drawable.ic_schedule_black_24dp);
+
+        tab = tabs.getTabAt(1);
+        tab.setText("r/");
+
+        tab = tabs.getTabAt(2);
+        tab.setIcon(R.drawable.ic_person_black_24dp);
 
         final int colorAccent = ContextCompat.getColor(getActivity(), R.color.colorAccent);
 
         RxTabLayout.selectionEvents(tabs)
                 .filter(selectionEvent -> selectionEvent.tab().getIcon() != null)
                 .subscribe(selectionEvent -> {
-                    final TabLayout.Tab tab = selectionEvent.tab();
-                    final Drawable icon = tab.getIcon().mutate();
+                    final TabLayout.Tab tab1 = selectionEvent.tab();
+                    final Drawable icon = tab1.getIcon().mutate();
                     switch (selectionEvent.kind()) {
                         case SELECTED:
                             icon.setColorFilter(colorAccent, PorterDuff.Mode.SRC_IN);
@@ -112,11 +116,6 @@ public class FilterFragment extends DialogFragment {
         @Override
         public int getCount() {
             return tabCount;
-        }
-
-        @Override
-        public CharSequence getPageTitle(final int position) {
-            return position == 0 ? "r/" : "";
         }
     }
 }

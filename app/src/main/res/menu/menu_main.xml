@@ -52,72 +52,12 @@
             <item
                 android:id="@+id/action_sort_controversial"
                 android:icon="@drawable/ic_controversial_black_24dp"
-                android:title="@string/action_sort_controversial">
-
-                <menu>
-
-                    <item
-                        android:id="@+id/action_sort_controversial_hour"
-                        android:title="@string/action_sort_time_period_hour"/>
-
-                    <item
-                        android:id="@+id/action_sort_controversial_day"
-                        android:title="@string/action_sort_time_period_day"/>
-
-                    <item
-                        android:id="@+id/action_sort_controversial_week"
-                        android:title="@string/action_sort_time_period_week"/>
-
-                    <item
-                        android:id="@+id/action_sort_controversial_month"
-                        android:title="@string/action_sort_time_period_month"/>
-
-                    <item
-                        android:id="@+id/action_sort_controversial_year"
-                        android:title="@string/action_sort_time_period_year"/>
-
-                    <item
-                        android:id="@+id/action_sort_controversial_all"
-                        android:title="@string/action_sort_time_period_all"/>
-
-                </menu>
-
-            </item>
+                android:title="@string/action_sort_controversial"/>
 
             <item
                 android:id="@+id/action_sort_top"
                 android:icon="@drawable/ic_top_black_24dp"
-                android:title="@string/action_sort_top">
-
-                <menu>
-
-                    <item
-                        android:id="@+id/action_sort_top_hour"
-                        android:title="@string/action_sort_time_period_hour"/>
-
-                    <item
-                        android:id="@+id/action_sort_top_day"
-                        android:title="@string/action_sort_time_period_day"/>
-
-                    <item
-                        android:id="@+id/action_sort_top_week"
-                        android:title="@string/action_sort_time_period_week"/>
-
-                    <item
-                        android:id="@+id/action_sort_top_month"
-                        android:title="@string/action_sort_time_period_month"/>
-
-                    <item
-                        android:id="@+id/action_sort_top_year"
-                        android:title="@string/action_sort_time_period_year"/>
-
-                    <item
-                        android:id="@+id/action_sort_top_all"
-                        android:title="@string/action_sort_time_period_all"/>
-
-                </menu>
-
-            </item>
+                android:title="@string/action_sort_top"/>
 
         </menu>
 

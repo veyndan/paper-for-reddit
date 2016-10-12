@@ -50,13 +50,6 @@
     <string name="action_sort_rising">Rising</string>
     <string name="action_sort_controversial">Controversial</string>
     <string name="action_sort_top">Top</string>
-
-    <string name="action_sort_time_period_hour">Hour</string>
-    <string name="action_sort_time_period_day">Day</string>
-    <string name="action_sort_time_period_week">Week</string>
-    <string name="action_sort_time_period_month">Month</string>
-    <string name="action_sort_time_period_year">Year</string>
-    <string name="action_sort_time_period_all">All</string>
     <!-- -->
 
     <string name="action_account">Account</string>
@@ -64,6 +57,15 @@
 
     <string name="score_hidden">[score hidden]</string>
     <string name="login_aborted">To log in, allow Reddit Client to connect to your account</string>
+
+    <string-array name="filter_time_period_array">
+        <item>Hour</item>
+        <item>Day</item>
+        <item>Week</item>
+        <item>Month</item>
+        <item>Year</item>
+        <item>All</item>
+    </string-array>
 
     <string name="filter_form_subreddit">Subreddit</string>
 

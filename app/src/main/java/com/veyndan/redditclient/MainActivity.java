@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -71,6 +72,17 @@ public class MainActivity extends BaseActivity {
             return defaultRequest;
         }
 
+        final TimePeriod[] timePeriods = new TimePeriod[]{
+                TimePeriod.HOUR,
+                TimePeriod.DAY,
+                TimePeriod.WEEK,
+                TimePeriod.MONTH,
+                TimePeriod.YEAR,
+                TimePeriod.ALL
+        };
+
+        final TimePeriod timePeriod = timePeriods[bundle.getInt(Filter.TIME_PERIOD_POSITION)];
+
         subreddit = bundle.getString(Filter.SUBREDDIT_NAME);
 
         final String username = bundle.getString(Filter.USER_NAME);
@@ -78,11 +90,11 @@ public class MainActivity extends BaseActivity {
         final boolean submitted = bundle.getBoolean(Filter.USER_SUBMITTED);
         final boolean gilded = bundle.getBoolean(Filter.USER_GILDED);
 
-        if (subreddit == null && username == null) {
+        if (TextUtils.isEmpty(subreddit) && TextUtils.isEmpty(username)) {
             return defaultRequest;
-        } else if (subreddit != null && username == null) {
-            return Request.subreddit(subreddit, Sort.HOT);
-        } else if (subreddit == null) { // && username != null
+        } else if (!TextUtils.isEmpty(subreddit) && TextUtils.isEmpty(username)) {
+            return Request.subreddit(subreddit, Sort.HOT, new QueryBuilder().t(timePeriod));
+        } else if (TextUtils.isEmpty(subreddit)) { // && !TextUtils.isEmpty(username)
             final User user;
             if ((comments == submitted) && gilded) {
                 user = User.GILDED;
@@ -98,8 +110,8 @@ public class MainActivity extends BaseActivity {
                 throw new UnsupportedOperationException("User state unsure");
             }
 
-            return Request.user(username, user);
-        } else { // subreddit != null && username != null
+            return Request.user(username, user, new QueryBuilder().t(timePeriod));
+        } else { // !TextUtils.isEmpty(subreddit) && !TextUtils.isEmpty(username)
             // TODO Concatenate the subreddit and username search query
             return defaultRequest;
         }
@@ -132,41 +144,11 @@ public class MainActivity extends BaseActivity {
             case R.id.action_sort_rising:
                 postsFragment.setRequest(Request.subreddit(subreddit, Sort.RISING));
                 return true;
-            case R.id.action_sort_controversial_hour:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.HOUR)));
+            case R.id.action_sort_controversial:
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL));
                 return true;
-            case R.id.action_sort_controversial_day:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.DAY)));
-                return true;
-            case R.id.action_sort_controversial_week:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.WEEK)));
-                return true;
-            case R.id.action_sort_controversial_month:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.MONTH)));
-                return true;
-            case R.id.action_sort_controversial_year:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.YEAR)));
-                return true;
-            case R.id.action_sort_controversial_all:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL, new QueryBuilder().t(TimePeriod.ALL)));
-                return true;
-            case R.id.action_sort_top_hour:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.HOUR)));
-                return true;
-            case R.id.action_sort_top_day:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.DAY)));
-                return true;
-            case R.id.action_sort_top_week:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.WEEK)));
-                return true;
-            case R.id.action_sort_top_month:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.MONTH)));
-                return true;
-            case R.id.action_sort_top_year:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.YEAR)));
-                return true;
-            case R.id.action_sort_top_all:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP, new QueryBuilder().t(TimePeriod.ALL)));
+            case R.id.action_sort_top:
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP));
                 return true;
             default:
                 return false;

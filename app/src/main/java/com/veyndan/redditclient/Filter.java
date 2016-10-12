@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 public interface Filter {
 
+    String TIME_PERIOD_POSITION = "time_period_value";
+
     String SUBREDDIT_NAME = "subreddit_name";
 
     String USER_NAME = "user_name";

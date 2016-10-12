@@ -1,0 +1,17 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp"
+    tools:context="com.veyndan.redditclient.TimePeriodFilterFragment">
+
+    <Spinner
+        android:id="@+id/filter_form_time_period"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/filter_time_period_array"
+        android:padding="8dp"/>
+
+</LinearLayout>
