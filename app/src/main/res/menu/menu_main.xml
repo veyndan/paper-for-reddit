@@ -36,27 +36,22 @@
 
             <item
                 android:id="@+id/action_sort_hot"
-                android:icon="@drawable/ic_hot_black_24dp"
                 android:title="@string/action_sort_hot"/>
 
             <item
                 android:id="@+id/action_sort_new"
-                android:icon="@drawable/ic_new_black_24dp"
                 android:title="@string/action_sort_new"/>
 
             <item
                 android:id="@+id/action_sort_rising"
-                android:icon="@drawable/ic_rising_black_24dp"
                 android:title="@string/action_sort_rising"/>
 
             <item
                 android:id="@+id/action_sort_controversial"
-                android:icon="@drawable/ic_controversial_black_24dp"
                 android:title="@string/action_sort_controversial"/>
 
             <item
                 android:id="@+id/action_sort_top"
-                android:icon="@drawable/ic_top_black_24dp"
                 android:title="@string/action_sort_top"/>
 
         </menu>
