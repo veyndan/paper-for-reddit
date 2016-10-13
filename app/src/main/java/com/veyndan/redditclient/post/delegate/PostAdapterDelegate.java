@@ -123,11 +123,6 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         final PostViewHolder postHolder = (PostViewHolder) holder;
         final Post post = (Post) nodes.get(position);
 
-        RxView.clicks(postHolder.itemView)
-                .subscribe(aVoid -> {
-                    EventBus.INSTANCE.send(post);
-                });
-
         final List<Flair> flairs = new ArrayList<>();
 
         if (post.isStickied()) {
@@ -238,6 +233,11 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     }
                 });
 
+        RxView.clicks(postHolder.comments)
+                .subscribe(aVoid -> {
+                    EventBus.INSTANCE.send(post);
+                });
+
         final PopupMenu otherMenu = new PopupMenu(context, postHolder.other);
         otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
 
@@ -272,6 +272,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         @BindView(R.id.post_upvote_new) RadioButton upvote;
         @BindView(R.id.post_downvote_new) RadioButton downvote;
         @BindView(R.id.post_save) CheckableImageButton save;
+        @BindView(R.id.post_comments) CheckableImageButton comments;
         @BindView(R.id.post_other) ImageButton other;
 
         private final PostAdapter adapter;

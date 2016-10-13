@@ -78,6 +78,14 @@
                 android:contentDescription="@string/post_content_description_save"
                 app:srcCompat="@drawable/ic_bookmark_black_24dp"/>
 
+            <android.support.design.widget.CheckableImageButton
+                android:id="@+id/post_comments"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:contentDescription="@string/post_content_description_comments"
+                app:srcCompat="@drawable/ic_comment_black_24dp"/>
+
             <ImageButton
                 android:id="@+id/post_other"
                 android:layout_width="40dp"
