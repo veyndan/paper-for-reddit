@@ -61,7 +61,7 @@ public class MainActivity extends BaseActivity {
                     final String fullname = post.getFullname();
                     final String article = fullname.substring(3, fullname.length());
 
-                    commentsFragment.setRequest(Request.comments(subreddit, article));
+                    commentsFragment.setRequest(Request.comments(post.getSubreddit(), article));
                 }, Timber::e);
     }
 
