@@ -141,6 +141,10 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return fullname;
     }
 
+    public String getArticle() {
+        return fullname.substring(3, fullname.length());
+    }
+
     public boolean isGilded() {
         return gildedCount > 0;
     }

@@ -58,10 +58,7 @@ public class MainActivity extends BaseActivity {
                 .filter(post -> commentsFragment != null && commentsFragment.isVisible())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(post -> {
-                    final String fullname = post.getFullname();
-                    final String article = fullname.substring(3, fullname.length());
-
-                    commentsFragment.setRequest(Request.comments(post.getSubreddit(), article));
+                    commentsFragment.setRequest(Request.comments(post.getSubreddit(), post.getArticle()));
                 }, Timber::e);
     }
 
