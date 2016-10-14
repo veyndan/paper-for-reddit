@@ -265,8 +265,8 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
     @NonNull
     @Override
-    public List<Node<Response<Thing<Listing>>>> getChildren() {
-        return replies;
+    public Observable<Node<Response<Thing<Listing>>>> getChildren() {
+        return Observable.from(replies);
     }
 
     @NonNull

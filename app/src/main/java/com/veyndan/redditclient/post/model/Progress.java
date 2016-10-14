@@ -10,9 +10,6 @@ import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.post.media.mutator.Mutators;
 import com.veyndan.redditclient.util.Node;
 
-import java.util.Collections;
-import java.util.List;
-
 import retrofit2.Response;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -49,8 +46,8 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     @NonNull
     @Override
-    public List<Node<Response<Thing<Listing>>>> getChildren() {
-        return Collections.emptyList();
+    public Observable<Node<Response<Thing<Listing>>>> getChildren() {
+        return Observable.empty();
     }
 
     @NonNull

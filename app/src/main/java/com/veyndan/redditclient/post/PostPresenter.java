@@ -43,7 +43,8 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
                 .filter(nodes1 -> !nodes1.isEmpty())
                 .doOnNext(nodes1 -> postMvpView.popNode())
                 .flatMap(Observable::from)
-                .map(Tree::flattenFrom)
+                .concatMap(node -> Tree.flattenFrom(Observable.just(node), 0))
+                .toList()
                 .subscribe(this::loadNodes);
     }
 }

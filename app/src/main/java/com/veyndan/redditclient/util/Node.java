@@ -3,8 +3,6 @@ package com.veyndan.redditclient.util;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
-import java.util.List;
-
 import rx.Observable;
 
 public abstract class Node<T> {
@@ -23,7 +21,7 @@ public abstract class Node<T> {
     }
 
     @NonNull
-    public abstract List<Node<T>> getChildren();
+    public abstract Observable<Node<T>> getChildren();
 
     @NonNull
     public Observable<Boolean> getTrigger() {
