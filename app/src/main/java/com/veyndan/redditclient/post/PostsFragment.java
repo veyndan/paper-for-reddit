@@ -2,6 +2,7 @@ package com.veyndan.redditclient.post;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,6 +23,7 @@ import com.veyndan.redditclient.ui.recyclerview.SwipeItemTouchHelperCallback;
 import com.veyndan.redditclient.ui.recyclerview.itemdecoration.MarginItemDecoration;
 import com.veyndan.redditclient.ui.recyclerview.itemdecoration.TreeInsetItemDecoration;
 import com.veyndan.redditclient.util.Node;
+import com.veyndan.redditclient.util.Tree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,12 +66,12 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         setRetainInstance(true);
     }
 
-    public void setRequest(final Observable<Response<Thing<Listing>>> request) {
+    public void setRequest(final Observable<Response<Thing<Listing>>> request, @IntRange(from = Tree.MAX_DEPTH_INFINITE) final int maxDepth) {
         clearNodes();
         postPresenter.loadNode(new Progress.Builder()
                 .trigger(getTrigger())
                 .request(request)
-                .build());
+                .build(), maxDepth);
     }
 
     @Override

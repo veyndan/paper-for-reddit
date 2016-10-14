@@ -1,5 +1,7 @@
 package com.veyndan.redditclient.post;
 
+import android.support.annotation.IntRange;
+
 import com.veyndan.redditclient.Presenter;
 import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.Thing;
@@ -28,11 +30,11 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
         postMvpView = null;
     }
 
-    public void loadNode(final Node<Response<Thing<Listing>>> node) {
-        loadNodes(Collections.singletonList(node));
+    public void loadNode(final Node<Response<Thing<Listing>>> node, @IntRange(from = Tree.MAX_DEPTH_INFINITE) final int maxDepth) {
+        loadNodes(Collections.singletonList(node), maxDepth);
     }
 
-    public void loadNodes(final List<Node<Response<Thing<Listing>>>> nodes) {
+    public void loadNodes(final List<Node<Response<Thing<Listing>>>> nodes, @IntRange(from = Tree.MAX_DEPTH_INFINITE) final int maxDepth) {
         postMvpView.appendNodes(nodes);
 
         Observable.from(nodes)
@@ -43,8 +45,8 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
                 .filter(nodes1 -> !nodes1.isEmpty())
                 .doOnNext(nodes1 -> postMvpView.popNode())
                 .flatMap(Observable::from)
-                .concatMap(node -> Tree.flattenFrom(Observable.just(node), 0))
+                .concatMap(node -> Tree.flattenFrom(Observable.just(node), 0, maxDepth))
                 .toList()
-                .subscribe(this::loadNodes);
+                .subscribe(nodes1 -> loadNodes(nodes1, maxDepth));
     }
 }

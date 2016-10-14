@@ -18,6 +18,7 @@ import com.veyndan.redditclient.api.reddit.network.TimePeriod;
 import com.veyndan.redditclient.api.reddit.network.User;
 import com.veyndan.redditclient.post.PostsFragment;
 import com.veyndan.redditclient.post.model.Post;
+import com.veyndan.redditclient.util.Tree;
 
 import butterknife.ButterKnife;
 import retrofit2.Response;
@@ -48,7 +49,7 @@ public class MainActivity extends BaseActivity {
 
         final Observable<Response<Thing<Listing>>> defaultRequest = Request.subreddit("all", Sort.HOT);
         final Observable<Response<Thing<Listing>>> mergedFilters = mergeFilters(intent.getExtras(), defaultRequest);
-        postsFragment.setRequest(mergedFilters);
+        postsFragment.setRequest(mergedFilters, 1);
 
         final PostsFragment commentsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_comments);
 
@@ -61,7 +62,7 @@ public class MainActivity extends BaseActivity {
                     final String fullname = post.getFullname();
                     final String article = fullname.substring(3, fullname.length());
 
-                    commentsFragment.setRequest(Request.comments(post.getSubreddit(), article));
+                    commentsFragment.setRequest(Request.comments(post.getSubreddit(), article), Tree.MAX_DEPTH_INFINITE);
                 }, Timber::e);
     }
 
@@ -136,19 +137,19 @@ public class MainActivity extends BaseActivity {
                 filterFragment.show(fragmentManager, "fragment_filter");
                 return true;
             case R.id.action_sort_hot:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT), 1);
                 return true;
             case R.id.action_sort_new:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.NEW));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.NEW), 1);
                 return true;
             case R.id.action_sort_rising:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.RISING));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.RISING), 1);
                 return true;
             case R.id.action_sort_controversial:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL), 1);
                 return true;
             case R.id.action_sort_top:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP));
+                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP), 1);
                 return true;
             default:
                 return false;

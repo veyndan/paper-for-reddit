@@ -15,7 +15,6 @@ import com.veyndan.redditclient.api.reddit.model.Listing;
 import com.veyndan.redditclient.api.reddit.model.More;
 import com.veyndan.redditclient.api.reddit.model.PostHint;
 import com.veyndan.redditclient.api.reddit.model.Preview;
-import com.veyndan.redditclient.api.reddit.model.RedditObject;
 import com.veyndan.redditclient.api.reddit.model.Submission;
 import com.veyndan.redditclient.api.reddit.model.Thing;
 import com.veyndan.redditclient.api.reddit.network.VoteDirection;
@@ -24,8 +23,6 @@ import com.veyndan.redditclient.util.Node;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Response;
@@ -38,7 +35,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final boolean isLink;
     private final boolean isComment;
 
-    private final List<Node<Response<Thing<Listing>>>> replies;
+    private final Observable<Node<Response<Thing<Listing>>>> children;
 
     private final boolean archived;
     private final String author;
@@ -64,27 +61,33 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final String subreddit;
 
     public Post(@NonNull final Submission submission) {
+        this(submission, Observable.from(submission.getReplies().data.children)
+                .concatMap(redditObject -> {
+                    if (redditObject instanceof Submission) {
+                        return Observable.just(redditObject)
+                                .cast(Submission.class)
+                                .map(Post::new)
+                                .flatMap(Mutators.mutate());
+                    } else if (redditObject instanceof More) {
+                        return Observable.just(redditObject)
+                                .cast(More.class)
+                                .map(more -> new Progress.Builder()
+                                        .trigger(Observable.just(true))
+                                        .childCount(more.count)
+                                        .build());
+                    } else {
+                        return Observable.error(new IllegalStateException("Unknown node class: " + redditObject));
+                    }
+                }));
+    }
+
+    // TODO Not using this create which is needed for the root posts. The network request should be set here and when comments clicked, this will be invoked.
+    // I can skip the repetition of the post in the comment, as 1. it isn't a comment and 2. it is going to be animated into the position.
+    public Post(@NonNull final Submission submission, @NonNull final Observable<Node<Response<Thing<Listing>>>> children) {
         isLink = submission instanceof Link;
         isComment = submission instanceof Comment;
 
-        replies = new ArrayList<>();
-        for (final RedditObject child : submission.getReplies().data.children) {
-            if (child instanceof Submission) {
-                Observable.just(child)
-                        .cast(Submission.class)
-                        .map(Post::new)
-                        .flatMap(Mutators.mutate())
-                        .subscribe(replies::add);
-            } else if (child instanceof More) {
-                final More more = (More) child;
-                replies.add(new Progress.Builder()
-                        .trigger(Observable.empty())
-                        .childCount(more.count)
-                        .build());
-            } else {
-                throw new IllegalStateException("Unknown node class: " + child);
-            }
-        }
+        this.children = children;
 
         archived = submission.archived;
         author = submission.author == null ? "" : submission.author;
@@ -266,7 +269,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
     @NonNull
     @Override
     public Observable<Node<Response<Thing<Listing>>>> getChildren() {
-        return Observable.from(replies);
+        return children;
     }
 
     @NonNull
