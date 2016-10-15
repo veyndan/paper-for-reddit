@@ -27,8 +27,8 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 @DeepLink({
-        "http://reddit.com/u/{username}",
-        "http://reddit.com/user/{username}"
+        "http://reddit.com/u/{" + Filter.USER_NAME + '}',
+        "http://reddit.com/user/{" + Filter.USER_NAME + '}'
 })
 public class MainActivity extends BaseActivity {
 
@@ -93,7 +93,9 @@ public class MainActivity extends BaseActivity {
             return Request.subreddit(subreddit, Sort.HOT, new QueryBuilder().t(timePeriod));
         } else if (TextUtils.isEmpty(subreddit)) { // && !TextUtils.isEmpty(username)
             final User user;
-            if ((comments == submitted) && gilded) {
+            if (bundle.getBoolean(DeepLink.IS_DEEP_LINK, false)) {
+                user = User.OVERVIEW;
+            } else if ((comments == submitted) && gilded) {
                 user = User.GILDED;
             } else if ((comments != submitted) && gilded) {
                 throw new UnsupportedOperationException("User state unsure");
