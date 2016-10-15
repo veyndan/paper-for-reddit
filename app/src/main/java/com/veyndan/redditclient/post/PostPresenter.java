@@ -39,12 +39,11 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
                 .flatMap(Node::asObservable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .toList()
-                .filter(nodes1 -> !nodes1.isEmpty())
-                .doOnNext(nodes1 -> postMvpView.popNode())
-                .flatMap(Observable::from)
                 .concatMap(node -> Tree.flattenFrom(Observable.just(node), 0))
                 .toList()
-                .subscribe(this::loadNodes);
+                .subscribe(nodes1 -> {
+                    postMvpView.popNode();
+                    loadNodes(nodes1);
+                });
     }
 }
