@@ -45,6 +45,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final String domain;
     private final String fullname;
     private final int gildedCount;
+    private final boolean hideable;
     private VoteDirection likes;
     private final boolean hasLinkFlair; // TODO Probably don't want this.
     private final String linkFlair;
@@ -91,6 +92,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         domain = submission.getDomain();
         fullname = submission.getFullname();
         gildedCount = submission.gilded;
+        hideable = isLink;
         likes = submission.getLikes();
         hasLinkFlair = isLink && !TextUtils.isEmpty(submission.getLinkFlairText());
         linkFlair = hasLinkFlair ? submission.getLinkFlairText() : null;
@@ -151,6 +153,10 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
     public int getGildedCount() {
         return gildedCount;
+    }
+
+    public boolean isHideable() {
+        return hideable;
     }
 
     public VoteDirection getLikes() {

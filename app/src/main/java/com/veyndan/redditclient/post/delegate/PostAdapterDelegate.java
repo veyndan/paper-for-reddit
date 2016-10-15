@@ -287,6 +287,13 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         }
 
         @Override
+        public boolean swipeable() {
+            final int position = getAdapterPosition();
+            final Post post = (Post) adapter.getItems().get(position);
+            return post.isHideable();
+        }
+
+        @Override
         public void onSwipe() {
             final int position = getAdapterPosition();
             final Node<Response<Thing<Listing>>> node = adapter.getItems().get(position);
