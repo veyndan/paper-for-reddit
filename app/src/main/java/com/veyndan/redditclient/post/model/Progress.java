@@ -64,8 +64,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
                                 return Observable.just(redditObject)
                                         .cast(Submission.class)
                                         .map(Post::new)
-                                        .flatMap(Mutators.mutate())
-                                        .map(post -> (Node<Response<Thing<Listing>>>) post); // TODO Eww
+                                        .flatMap(Mutators.mutate());
                             } else if (redditObject instanceof More) {
                                 final More more = (More) redditObject;
                                 return Observable.just(new Builder()
