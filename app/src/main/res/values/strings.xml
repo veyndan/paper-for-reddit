@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Reddit Client</string>
+    <string name="app_name">Paper for Reddit</string>
 
     <string name="subtitle">%1$s · %2$s · %3$s</string>
 
@@ -57,7 +57,7 @@
     <string name="action_account_add">Add Account</string>
 
     <string name="score_hidden">[score hidden]</string>
-    <string name="login_aborted">To log in, allow Reddit Client to connect to your account</string>
+    <string name="login_aborted">To log in, allow Paper for Reddit to connect to your account</string>
 
     <string-array name="filter_time_period_array">
         <item>Hour</item>

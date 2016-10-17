@@ -1,1 +1,1 @@
-# Reddit Client
+# Paper for Reddit
