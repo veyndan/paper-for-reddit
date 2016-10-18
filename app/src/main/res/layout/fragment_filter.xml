@@ -9,7 +9,7 @@
     android:minHeight="400dp"
     android:minWidth="400dp"
     android:orientation="vertical"
-    tools:context="com.veyndan.redditclient.FilterFragment">
+    tools:context="com.veyndan.paper.reddit.FilterFragment">
 
     <android.support.design.widget.TabLayout
         android:id="@+id/filter_tabs"

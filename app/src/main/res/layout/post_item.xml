@@ -16,7 +16,7 @@
         android:background="?selectableItemBackground"
         android:orientation="vertical">
 
-        <com.veyndan.redditclient.ui.widget.PostHeaderView
+        <com.veyndan.paper.reddit.ui.widget.PostHeaderView
             android:id="@+id/post_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,13 +56,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <com.veyndan.redditclient.ui.widget.ToggleableRadioButton
+                <com.veyndan.paper.reddit.ui.widget.ToggleableRadioButton
                     android:id="@+id/post_upvote_new"
                     style="@style/ImageRadioButton"
                     android:contentDescription="@string/post_content_description_upvote"
                     android:drawableRight="@drawable/ic_arrow_upward_black_24dp"/>
 
-                <com.veyndan.redditclient.ui.widget.ToggleableRadioButton
+                <com.veyndan.paper.reddit.ui.widget.ToggleableRadioButton
                     android:id="@+id/post_downvote_new"
                     style="@style/ImageRadioButton"
                     android:contentDescription="@string/post_content_description_downvote"

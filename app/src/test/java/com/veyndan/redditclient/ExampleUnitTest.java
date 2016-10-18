@@ -1,4 +1,4 @@
-package com.veyndan.redditclient;
+package com.veyndan.paper.reddit;
 
 import org.junit.Test;
 

@@ -6,7 +6,7 @@
     android:focusableInTouchMode="true"
     android:orientation="vertical"
     android:padding="8dp"
-    tools:context="com.veyndan.redditclient.UserFilterFragment">
+    tools:context="com.veyndan.paper.reddit.UserFilterFragment">
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"

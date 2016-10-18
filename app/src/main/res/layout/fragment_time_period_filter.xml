@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="8dp"
-    tools:context="com.veyndan.redditclient.TimePeriodFilterFragment">
+    tools:context="com.veyndan.paper.reddit.TimePeriodFilterFragment">
 
     <Spinner
         android:id="@+id/filter_form_time_period"

@@ -1,4 +1,4 @@
-package com.veyndan.redditclient;
+package com.veyndan.paper.reddit;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
