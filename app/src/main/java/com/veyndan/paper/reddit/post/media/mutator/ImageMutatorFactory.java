@@ -20,7 +20,7 @@ public final class ImageMutatorFactory implements MutatorFactory {
     public Observable<Post> mutate(final Post post) {
         return Observable.just(post)
                 .filter(Post::isLink)
-                .filter(post1 -> post1.getPostHint().equals(PostHint.IMAGE))
+                .filter(post1 -> post1.getPostHint() == PostHint.IMAGE)
                 .map(post1 -> {
                     final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
 

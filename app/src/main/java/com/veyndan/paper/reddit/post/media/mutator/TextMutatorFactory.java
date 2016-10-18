@@ -18,7 +18,7 @@ final class TextMutatorFactory implements MutatorFactory {
     @Override
     public Observable<Post> mutate(final Post post) {
         return Observable.just(post)
-                .filter(post1 -> post1.getPostHint().equals(PostHint.SELF) &&
+                .filter(post1 -> post1.getPostHint() == PostHint.SELF &&
                         post1.getDisplayBody() != null)
                 .map(post1 -> {
                     post1.setMediaObservable(Observable.just(new Text(post1.getDisplayBody())));

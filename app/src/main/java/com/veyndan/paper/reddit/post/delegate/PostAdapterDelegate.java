@@ -173,7 +173,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
         final VoteDirection likes = post.getLikes();
 
-        postHolder.upvote.setChecked(likes.equals(VoteDirection.UPVOTE));
+        postHolder.upvote.setChecked(likes == VoteDirection.UPVOTE);
         RxCompoundButton.checkedChanges(postHolder.upvote)
                 // checkedChanges emits the checked state on subscription. As the voted state of
                 // the Reddit post is the same as the checked state of the button initially,
@@ -194,7 +194,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     }
                 });
 
-        postHolder.downvote.setChecked(likes.equals(VoteDirection.DOWNVOTE));
+        postHolder.downvote.setChecked(likes == VoteDirection.DOWNVOTE);
         RxCompoundButton.checkedChanges(postHolder.downvote)
                 // checkedChanges emits the checked state on subscription. As the voted state of
                 // the Reddit post is the same as the checked state of the button initially,
