@@ -7,7 +7,7 @@ import rx.Observable;
 
 public abstract class Node<T> {
 
-    @IntRange(from = 0) private int depth = 0;
+    @IntRange(from = 0) private int depth;
     @NonNull private Observable<Boolean> trigger = Observable.empty();
     @NonNull private Observable<T> request = Observable.empty();
 
