@@ -131,8 +131,8 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
     @Override
     public void clearNodes() {
-        final int nodesSize = this.nodes.size();
-        this.nodes.clear();
+        final int nodesSize = nodes.size();
+        nodes.clear();
         postAdapter.notifyItemRangeRemoved(0, nodesSize);
     }
 

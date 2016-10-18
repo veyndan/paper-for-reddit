@@ -15,7 +15,7 @@ public final class AccessToken {
     private final long timestamp;
 
     private AccessToken() {
-        this.timestamp = System.currentTimeMillis();
+        timestamp = System.currentTimeMillis();
     }
 
     public String getAccessToken() {

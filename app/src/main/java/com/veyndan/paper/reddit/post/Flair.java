@@ -11,9 +11,9 @@ public final class Flair {
     private final int backgroundColor;
 
     private Flair(final Builder builder) {
-        this.text = builder.text;
-        this.icon = builder.icon;
-        this.backgroundColor = builder.backgroundColor;
+        text = builder.text;
+        icon = builder.icon;
+        backgroundColor = builder.backgroundColor;
     }
 
     @Nullable
