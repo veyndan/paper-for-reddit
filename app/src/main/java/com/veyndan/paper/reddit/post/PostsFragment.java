@@ -46,6 +46,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
     private Reddit reddit;
 
+    @SuppressWarnings("RedundantNoArgConstructor")
     public PostsFragment() {
         // Required empty public constructor
     }

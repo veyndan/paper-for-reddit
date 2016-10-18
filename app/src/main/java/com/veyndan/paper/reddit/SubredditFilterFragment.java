@@ -14,6 +14,7 @@ public class SubredditFilterFragment extends Fragment implements Filter {
 
     @BindView(R.id.filter_form_subreddit) EditText formSubreddit;
 
+    @SuppressWarnings("RedundantNoArgConstructor")
     public SubredditFilterFragment() {
         // Required empty public constructor
     }

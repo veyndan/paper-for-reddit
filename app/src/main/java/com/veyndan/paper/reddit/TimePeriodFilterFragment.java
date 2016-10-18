@@ -14,6 +14,7 @@ public class TimePeriodFilterFragment extends Fragment implements Filter {
 
     @BindView(R.id.filter_form_time_period) Spinner formTimePeriod;
 
+    @SuppressWarnings("RedundantNoArgConstructor")
     public TimePeriodFilterFragment() {
         // Required empty public constructor
     }

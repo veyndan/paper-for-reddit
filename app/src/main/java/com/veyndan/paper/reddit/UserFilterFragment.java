@@ -18,6 +18,7 @@ public class UserFilterFragment extends Fragment implements Filter {
     @BindView(R.id.filter_form_submitted) CheckBox formSubmittedCheckBox;
     @BindView(R.id.filter_form_gilded) CheckBox formGildedCheckBox;
 
+    @SuppressWarnings("RedundantNoArgConstructor")
     public UserFilterFragment() {
         // Required empty public constructor
     }

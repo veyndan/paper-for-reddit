@@ -29,6 +29,7 @@ public class FilterFragment extends DialogFragment {
     @BindView(R.id.filter_tabs) TabLayout tabs;
     @BindView(R.id.filter_done) Button doneButton;
 
+    @SuppressWarnings("RedundantNoArgConstructor")
     public FilterFragment() {
         // Required empty public constructor
     }
