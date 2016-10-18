@@ -80,7 +80,9 @@ public final class Reddit {
                 .addInterceptor(new AccessTokenInterceptor(authenticationService, credentials))
                 .addInterceptor(new RawJsonInterceptor());
 
-        if (Config.DEBUG) clientBuilder.addInterceptor(loggingInterceptor());
+        if (Config.DEBUG) {
+            clientBuilder.addInterceptor(loggingInterceptor());
+        }
 
         for (final Interceptor interceptor : builder.networkInterceptors) {
             clientBuilder.addNetworkInterceptor(interceptor);

@@ -35,8 +35,10 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     @IntRange(from = 0)
     public int getChildCount() {
-        if (!isChildCountAvailable()) throw new IllegalStateException("Check that " +
-                "Stub.isChildCountAvailable() before attempting to retrieve the child count");
+        if (!isChildCountAvailable()) {
+            throw new IllegalStateException("Check that Stub.isChildCountAvailable() before " +
+                    "attempting to retrieve the child count");
+        }
         return childCount;
     }
 

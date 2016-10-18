@@ -23,7 +23,9 @@ public abstract class Submission extends RedditObject {
     private Boolean likes;
 
     public VoteDirection getLikes() {
-        if (likes == null) return VoteDirection.UNVOTE;
+        if (likes == null) {
+            return VoteDirection.UNVOTE;
+        }
         return likes ? VoteDirection.UPVOTE : VoteDirection.DOWNVOTE;
     }
 

@@ -241,7 +241,9 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
     @Nullable
     public CharSequence getDisplayBody() {
-        if (TextUtils.isEmpty(bodyHtml)) return null;
+        if (TextUtils.isEmpty(bodyHtml)) {
+            return null;
+        }
         return trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(bodyHtml)));
     }
 
