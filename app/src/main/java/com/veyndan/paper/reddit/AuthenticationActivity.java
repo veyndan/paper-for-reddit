@@ -22,7 +22,7 @@ public class AuthenticationActivity extends BaseActivity {
     private static final String ERROR_INVALID_REQUEST = "invalid_request";
 
     // https://www.reddit.com/api/v1/scopes
-    private static final String[] SCOPES = new String[]{
+    private static final String[] SCOPES = {
             "edit", "flair", "history", "identity", "modconfig", "modflair", "modlog", "modposts",
             "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit",
             "subscribe", "vote", "wikiedit", "wikiread"};

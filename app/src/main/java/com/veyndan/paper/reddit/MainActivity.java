@@ -69,7 +69,7 @@ public class MainActivity extends BaseActivity {
             return defaultRequest;
         }
 
-        final TimePeriod[] timePeriods = new TimePeriod[]{
+        final TimePeriod[] timePeriods = {
                 TimePeriod.HOUR,
                 TimePeriod.DAY,
                 TimePeriod.WEEK,

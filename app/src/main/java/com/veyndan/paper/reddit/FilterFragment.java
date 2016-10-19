@@ -44,7 +44,7 @@ public class FilterFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.fragment_filter, container, false);
         ButterKnife.bind(this, view);
 
-        final Fragment[] fragments = new Fragment[]{
+        final Fragment[] fragments = {
                 TimePeriodFilterFragment.newInstance(),
                 SubredditFilterFragment.newInstance(),
                 UserFilterFragment.newInstance()
