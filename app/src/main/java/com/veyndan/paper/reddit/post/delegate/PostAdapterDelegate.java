@@ -168,8 +168,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 }, Timber::e);
 
         final String points = post.getDisplayPoints(context, scoreHiddenText);
-        final String comments = post.getDisplayComments(context);
-        postHolder.score.setText(context.getString(R.string.score, points, comments));
+        postHolder.score.setText(points);
 
         final VoteDirection likes = post.getLikes();
 
@@ -189,8 +188,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         post.setPoints(post.getPoints() + (isChecked ? 1 : -1));
 
                         final String points1 = post.getDisplayPoints(context, scoreHiddenText);
-                        final String comments1 = post.getDisplayComments(context);
-                        postHolder.score.setText(context.getString(R.string.score, points1, comments1));
+                        postHolder.score.setText(points1);
                     }
                 });
 
@@ -210,8 +208,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         post.setPoints(post.getPoints() + (isChecked ? -1 : 1));
 
                         final String points1 = post.getDisplayPoints(context, scoreHiddenText);
-                        final String comments1 = post.getDisplayComments(context);
-                        postHolder.score.setText(context.getString(R.string.score, points1, comments1));
+                        postHolder.score.setText(points1);
                     }
                 });
 
@@ -237,6 +234,14 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 .subscribe(aVoid -> {
                     EventBus.INSTANCE.send(post);
                 });
+
+        if (post.hasComments()) {
+            postHolder.commentCount.setVisibility(View.VISIBLE);
+            final String commentCount = post.getDisplayComments();
+            postHolder.commentCount.setText(commentCount);
+        } else {
+            postHolder.commentCount.setVisibility(View.INVISIBLE);
+        }
 
         final PopupMenu otherMenu = new PopupMenu(context, postHolder.other);
         otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
@@ -273,6 +278,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         @BindView(R.id.post_downvote_new) RadioButton downvote;
         @BindView(R.id.post_save) CheckableImageButton save;
         @BindView(R.id.post_comments) CheckableImageButton comments;
+        @BindView(R.id.post_comment_count) TextView commentCount;
         @BindView(R.id.post_other) ImageButton other;
 
         private final PostAdapter adapter;

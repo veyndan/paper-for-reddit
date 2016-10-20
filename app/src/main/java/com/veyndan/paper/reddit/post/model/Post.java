@@ -258,9 +258,12 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return source.subSequence(0, i + 1);
     }
 
-    public String getDisplayComments(final Context context) {
-        final Resources resources = context.getResources();
-        return resources.getQuantityString(R.plurals.comments, commentCount, commentCount);
+    public boolean hasComments() {
+        return commentCount > 0;
+    }
+
+    public String getDisplayComments() {
+        return String.valueOf(commentCount);
     }
 
     public String getDisplayPoints(final Context context, final String scoreHiddenText) {

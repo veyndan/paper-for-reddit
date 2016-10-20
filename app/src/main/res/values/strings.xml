@@ -8,17 +8,10 @@
         <item quantity="other">%1$d points</item>
     </plurals>
 
-    <plurals name="comments">
-        <item quantity="one">%1$d comment</item>
-        <item quantity="other">%1$d comments</item>
-    </plurals>
-
-    <plurals name="children">
+{    <plurals name="children">
         <item quantity="one">%d more comment</item>
         <item quantity="other">%d more comments</item>
     </plurals>
-
-    <string name="score">%1$s\n%2$s</string>
 
     <!-- Post overflow titles -->
     <string name="action_post_share">Share</string>

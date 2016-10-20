@@ -78,13 +78,35 @@
                 android:contentDescription="@string/post_content_description_save"
                 app:srcCompat="@drawable/ic_bookmark_black_24dp"/>
 
-            <android.support.design.widget.CheckableImageButton
-                android:id="@+id/post_comments"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="?selectableItemBackgroundBorderless"
-                android:contentDescription="@string/post_content_description_comments"
-                app:srcCompat="@drawable/ic_comment_black_24dp"/>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.CheckableImageButton
+                    android:id="@+id/post_comments"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/post_content_description_comments"
+                    app:srcCompat="@drawable/ic_comment_black_24dp"/>
+
+                <TextView
+                    android:id="@+id/post_comment_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignEnd="@id/post_comments"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_badge"
+                    android:fontFamily="sans-serif-condensed"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:minWidth="16dp"
+                    android:text="1"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"/>
+
+            </RelativeLayout>
 
             <ImageButton
                 android:id="@+id/post_other"

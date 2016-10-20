@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="placeholder_post_title" translatable="false">This is Carter. He knocked on my door to ask if he could have a banana then left.</string>
-    <string name="placeholder_post_score" translatable="false">29471 points\n2992 comments</string>
+    <string name="placeholder_post_score" translatable="false">29471 points</string>
     <string name="placeholder_post_media_text" translatable="false">Carter went as a firefighter if anyone wanted to know. btw this is awesome!</string>
     <string name="placeholder_post_media_url" translatable="false">imgur.com</string>
 
