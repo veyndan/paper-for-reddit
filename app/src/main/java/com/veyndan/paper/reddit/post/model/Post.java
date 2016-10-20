@@ -263,7 +263,23 @@ public class Post extends Node<Response<Thing<Listing>>> {
     }
 
     public String getDisplayComments() {
-        return String.valueOf(commentCount);
+        if (commentCount < 1000) {
+            return String.valueOf(commentCount);
+        } else if (commentCount < 100000) {
+            final int beforeDecimal = commentCount / 1000;
+            final int afterDecimal = commentCount % 1000 / 100;
+
+            final int maxStringSize = 5; // e.g. "99.9K"
+            final StringBuilder result = new StringBuilder(maxStringSize);
+            result.append(beforeDecimal);
+            if (afterDecimal > 0) {
+                result.append('.').append(afterDecimal);
+            }
+            result.append('K');
+            return result.toString();
+        } else {
+            throw new UnsupportedOperationException("Comment count summarization not implemented yet for: " + commentCount);
+        }
     }
 
     public String getDisplayPoints(final Context context, final String scoreHiddenText) {
