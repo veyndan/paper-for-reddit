@@ -13,7 +13,6 @@
         android:id="@+id/post_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?selectableItemBackground"
         android:orientation="vertical">
 
         <com.veyndan.paper.reddit.ui.widget.PostHeaderView
