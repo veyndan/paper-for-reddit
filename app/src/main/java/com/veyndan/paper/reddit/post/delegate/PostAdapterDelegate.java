@@ -235,9 +235,9 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     EventBus.INSTANCE.send(post);
                 });
 
-        if (post.hasComments()) {
+        if (post.hasDescendants()) {
             postHolder.commentCount.setVisibility(View.VISIBLE);
-            final String commentCount = post.getDisplayComments();
+            final String commentCount = post.getDisplayDescendants();
             postHolder.commentCount.setText(commentCount);
         } else {
             postHolder.commentCount.setVisibility(View.INVISIBLE);

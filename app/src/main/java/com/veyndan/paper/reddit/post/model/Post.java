@@ -36,11 +36,11 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final boolean isComment;
 
     private final Observable<Node<Response<Thing<Listing>>>> children;
+    private final int descendantCount;
 
     private final boolean archived;
     private final String author;
     private final String bodyHtml;
-    private final int commentCount;
     private final long createdUtc;
     private final String domain;
     private final String fullname;
@@ -83,11 +83,11 @@ public class Post extends Node<Response<Thing<Listing>>> {
                         return Observable.error(new IllegalStateException("Unknown node class: " + redditObject));
                     }
                 });
+        descendantCount = submission.getNumComments();
 
         archived = submission.archived;
         author = submission.author == null ? "" : submission.author;
         bodyHtml = submission.bodyHtml;
-        commentCount = submission.getNumComments();
         createdUtc = submission.createdUtc;
         domain = submission.getDomain();
         fullname = submission.getFullname();
@@ -258,16 +258,16 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return source.subSequence(0, i + 1);
     }
 
-    public boolean hasComments() {
-        return commentCount > 0;
+    public boolean hasDescendants() {
+        return descendantCount > 0;
     }
 
-    public String getDisplayComments() {
-        if (commentCount < 1000) {
-            return String.valueOf(commentCount);
-        } else if (commentCount < 100000) {
-            final int beforeDecimal = commentCount / 1000;
-            final int afterDecimal = commentCount % 1000 / 100;
+    public String getDisplayDescendants() {
+        if (descendantCount < 1000) {
+            return String.valueOf(descendantCount);
+        } else if (descendantCount < 100000) {
+            final int beforeDecimal = descendantCount / 1000;
+            final int afterDecimal = descendantCount % 1000 / 100;
 
             final int maxStringSize = 5; // e.g. "99.9K"
             final StringBuilder result = new StringBuilder(maxStringSize);
@@ -278,7 +278,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
             result.append('K');
             return result.toString();
         } else {
-            throw new UnsupportedOperationException("Comment count summarization not implemented yet for: " + commentCount);
+            throw new UnsupportedOperationException("Descendant count summarization not implemented yet for: " + descendantCount);
         }
     }
 
