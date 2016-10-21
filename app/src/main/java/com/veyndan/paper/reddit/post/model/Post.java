@@ -77,7 +77,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
                                 .cast(More.class)
                                 .map(more -> new Progress.Builder()
                                         .trigger(Observable.just(true))
-                                        .childCount(more.count)
+                                        .degree(more.count)
                                         .build());
                     } else {
                         return Observable.error(new IllegalStateException("Unknown node class: " + redditObject));

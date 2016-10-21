@@ -17,9 +17,9 @@ import rx.schedulers.Schedulers;
 
 public final class Progress extends Node<Response<Thing<Listing>>> {
 
-    private static final int UNKNOWN_CHILD_COUNT = -1;
+    private static final int UNKNOWN_DEGREE = -1;
 
-    @IntRange(from = UNKNOWN_CHILD_COUNT) private final int childCount;
+    @IntRange(from = UNKNOWN_DEGREE) private final int degree;
 
     // Suppress default constructor for noninstantiability
     @SuppressWarnings("unused")
@@ -28,22 +28,22 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
     }
 
     private Progress(@NonNull final Builder builder) {
-        childCount = builder.childCount;
+        degree = builder.degree;
         setTrigger(builder.trigger);
         setRequest(builder.request);
     }
 
     @IntRange(from = 0)
-    public int getChildCount() {
-        if (!isChildCountAvailable()) {
-            throw new IllegalStateException("Check that Stub.isChildCountAvailable() before " +
-                    "attempting to retrieve the child count");
+    public int getDegree() {
+        if (!isDegreeAvailable()) {
+            throw new IllegalStateException("Check that Stub.isDegreeAvailable() before " +
+                    "attempting to retrieve the degree");
         }
-        return childCount;
+        return degree;
     }
 
-    public boolean isChildCountAvailable() {
-        return childCount != UNKNOWN_CHILD_COUNT;
+    public boolean isDegreeAvailable() {
+        return degree != UNKNOWN_DEGREE;
     }
 
     @NonNull
@@ -71,7 +71,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
                                 final More more = (More) redditObject;
                                 return Observable.just(new Builder()
                                         .trigger(Observable.just(true))
-                                        .childCount(more.count)
+                                        .degree(more.count)
                                         .build());
                             } else {
                                 throw new IllegalStateException("Unknown node class: " + redditObject);
@@ -85,13 +85,13 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     public static class Builder {
 
-        @IntRange(from = UNKNOWN_CHILD_COUNT) private int childCount = UNKNOWN_CHILD_COUNT;
+        @IntRange(from = UNKNOWN_DEGREE) private int degree = UNKNOWN_DEGREE;
         @NonNull private Observable<Boolean> trigger = Observable.empty();
         @NonNull private Observable<Response<Thing<Listing>>> request = Observable.empty();
 
         @NonNull
-        public Builder childCount(@IntRange(from = 0) final int childCount) {
-            this.childCount = childCount;
+        public Builder degree(@IntRange(from = 0) final int degree) {
+            this.degree = degree;
             return this;
         }
 
