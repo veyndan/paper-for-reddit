@@ -316,15 +316,14 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     .setAction(R.string.notify_post_hidden_undo, undoClickListener);
 
             RxSnackbar.dismisses(snackbar)
+                    // If undo pressed, don't hide post.
+                    .takeFirst(event -> event != Snackbar.Callback.DISMISS_EVENT_ACTION)
                     .subscribe(event -> {
-                        // If undo pressed, don't hide post.
-                        if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                            // Chance to undo post hiding has gone, so follow through with
-                            // hiding network request.
-                            reddit.hide(post.getFullname())
-                                    .subscribeOn(Schedulers.io())
-                                    .subscribe();
-                        }
+                        // Chance to undo post hiding has gone, so follow through with
+                        // hiding network request.
+                        reddit.hide(post.getFullname())
+                                .subscribeOn(Schedulers.io())
+                                .subscribe();
                     });
 
             snackbar.show();
