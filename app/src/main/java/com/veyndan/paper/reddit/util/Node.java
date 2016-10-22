@@ -16,10 +16,6 @@ public abstract class Node<T> {
         return depth;
     }
 
-    public void setDepth(@IntRange(from = 0) final int depth) {
-        this.depth = depth;
-    }
-
     @NonNull
     public abstract Observable<Node<T>> getChildren();
 
@@ -43,4 +39,13 @@ public abstract class Node<T> {
 
     @NonNull
     public abstract Observable<Node<T>> asObservable();
+
+    @NonNull
+    public Observable<Node<T>> preOrderTraverse(@IntRange(from = 0) final int depth) {
+        return Observable.just(this)
+                .doOnNext(node -> node.depth = depth)
+                .concatMap(node -> Observable.just(node)
+                        .concatWith(node.getChildren()
+                                .concatMap(childNode -> childNode.preOrderTraverse(depth + 1))));
+    }
 }

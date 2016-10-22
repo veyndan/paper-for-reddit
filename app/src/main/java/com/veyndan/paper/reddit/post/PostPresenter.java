@@ -4,7 +4,6 @@ import com.veyndan.paper.reddit.Presenter;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.util.Node;
-import com.veyndan.paper.reddit.util.Tree;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +38,7 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
                 .flatMap(Node::asObservable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .concatMap(node -> Tree.flattenFrom(Observable.just(node), 0))
+                .concatMap(node -> node.preOrderTraverse(0))
                 .toList()
                 .subscribe(nodes1 -> {
                     postMvpView.popNode();
