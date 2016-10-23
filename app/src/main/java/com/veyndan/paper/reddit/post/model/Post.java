@@ -36,7 +36,6 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final boolean isComment;
 
     private final Observable<Node<Response<Thing<Listing>>>> children;
-    private final int descendantCount;
 
     private final boolean archived;
     private final String author;
@@ -83,7 +82,9 @@ public class Post extends Node<Response<Thing<Listing>>> {
                         return Observable.error(new IllegalStateException("Unknown node class: " + redditObject));
                     }
                 });
-        descendantCount = submission.getNumComments();
+        if (isLink) {
+            setDescendantCount(submission.getNumComments());
+        }
 
         archived = submission.archived;
         author = submission.author == null ? "" : submission.author;
@@ -259,10 +260,11 @@ public class Post extends Node<Response<Thing<Listing>>> {
     }
 
     public boolean isInternalNode() {
-        return descendantCount > 0;
+        return getDescendantCount() > 0;
     }
 
     public String getDisplayDescendants() {
+        final int descendantCount = getDescendantCount();
         if (descendantCount < 1000) {
             return String.valueOf(descendantCount);
         } else if (descendantCount < 100000) {
