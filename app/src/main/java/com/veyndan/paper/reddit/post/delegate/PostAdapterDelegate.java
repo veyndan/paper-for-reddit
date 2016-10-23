@@ -123,6 +123,36 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         final PostViewHolder postHolder = (PostViewHolder) holder;
         final Post post = (Post) nodes.get(position);
 
+        bindHeader(post, postHolder);
+        bindMedia(post, postHolder);
+        bindPoints(context, post, postHolder);
+        bindUpvoteAction(context, post, postHolder);
+        bindDownvoteAction(context, post, postHolder);
+        bindSaveAction(post, postHolder);
+        bindCommentsAction(nodes, post, postHolder);
+
+        final PopupMenu otherMenu = new PopupMenu(context, postHolder.other);
+        otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
+
+        RxView.clicks(postHolder.other)
+                .subscribe(aVoid -> otherMenu.show());
+
+        RxPopupMenu.itemClicks(otherMenu)
+                .subscribe(menuItem -> {
+                    switch (menuItem.getItemId()) {
+                        case R.id.action_post_share:
+                            bindShareAction(context, post);
+                            break;
+                        case R.id.action_post_browser:
+                            bindBrowserAction(context, post);
+                            break;
+                        case R.id.action_post_report:
+                            break;
+                    }
+                });
+    }
+
+    private void bindHeader(final Post post, final PostViewHolder holder) {
         final List<Flair> flairs = new ArrayList<>();
 
         if (post.isStickied()) {
@@ -150,14 +180,16 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     .build());
         }
 
-        postHolder.header.setHeader(post.getLinkTitle(), post.getAuthor(), post.getDisplayAge(),
+        holder.header.setHeader(post.getLinkTitle(), post.getAuthor(), post.getDisplayAge(),
                 post.getSubreddit(), flairs);
+    }
 
+    private void bindMedia(final Post post, final PostViewHolder holder) {
         final List<Object> items = new ArrayList<>();
 
         final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
                 activity, customTabsClient, customTabsIntent, post, items);
-        postHolder.mediaView.setAdapter(postMediaAdapter);
+        holder.mediaView.setAdapter(postMediaAdapter);
 
         post.getMediaObservable()
                 .subscribeOn(Schedulers.io())
@@ -166,14 +198,17 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     items.add(item);
                     postMediaAdapter.notifyDataSetChanged();
                 }, Timber::e);
+    }
 
+    private void bindPoints(final Context context, final Post post, final PostViewHolder holder) {
         final String points = post.getDisplayPoints(context, scoreHiddenText);
-        postHolder.score.setText(points);
+        holder.score.setText(points);
+    }
 
+    private void bindUpvoteAction(final Context context, final Post post, final PostViewHolder holder) {
         final VoteDirection likes = post.getLikes();
-
-        postHolder.upvote.setChecked(likes == VoteDirection.UPVOTE);
-        RxCompoundButton.checkedChanges(postHolder.upvote)
+        holder.upvote.setChecked(likes == VoteDirection.UPVOTE);
+        RxCompoundButton.checkedChanges(holder.upvote)
                 // checkedChanges emits the checked state on subscription. As the voted state of
                 // the Reddit post is the same as the checked state of the button initially,
                 // skipping the initial emission means no unnecessary network requests occur.
@@ -188,12 +223,15 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         post.setPoints(post.getPoints() + (isChecked ? 1 : -1));
 
                         final String points1 = post.getDisplayPoints(context, scoreHiddenText);
-                        postHolder.score.setText(points1);
+                        holder.score.setText(points1);
                     }
                 });
+    }
 
-        postHolder.downvote.setChecked(likes == VoteDirection.DOWNVOTE);
-        RxCompoundButton.checkedChanges(postHolder.downvote)
+    private void bindDownvoteAction(final Context context, final Post post, final PostViewHolder holder) {
+        final VoteDirection likes = post.getLikes();
+        holder.downvote.setChecked(likes == VoteDirection.DOWNVOTE);
+        RxCompoundButton.checkedChanges(holder.downvote)
                 // checkedChanges emits the checked state on subscription. As the voted state of
                 // the Reddit post is the same as the checked state of the button initially,
                 // skipping the initial emission means no unnecessary network requests occur.
@@ -208,15 +246,17 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         post.setPoints(post.getPoints() + (isChecked ? -1 : 1));
 
                         final String points1 = post.getDisplayPoints(context, scoreHiddenText);
-                        postHolder.score.setText(points1);
+                        holder.score.setText(points1);
                     }
                 });
+    }
 
-        postHolder.save.setChecked(post.isSaved());
-        RxView.clicks(postHolder.save)
+    private void bindSaveAction(final Post post, final PostViewHolder holder) {
+        holder.save.setChecked(post.isSaved());
+        RxView.clicks(holder.save)
                 .subscribe(aVoid -> {
-                    postHolder.save.toggle();
-                    final boolean isChecked = postHolder.save.isChecked();
+                    holder.save.toggle();
+                    final boolean isChecked = holder.save.isChecked();
 
                     post.setSaved(isChecked);
                     if (isChecked) {
@@ -229,11 +269,13 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                                 .subscribe();
                     }
                 });
+    }
 
-        RxView.clicks(postHolder.comments)
+    private void bindCommentsAction(final List<Node<Response<Thing<Listing>>>> nodes, final Post post, final PostViewHolder holder) {
+        RxView.clicks(holder.comments)
                 .map(aVoid -> {
-                    postHolder.comments.toggle();
-                    return postHolder.comments.isChecked();
+                    holder.comments.toggle();
+                    return holder.comments.isChecked();
                 })
                 .subscribe(displayDescendants -> {
                     post.setDescendantsVisible(!displayDescendants);
@@ -246,8 +288,8 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                             nodes.subList(holder.getAdapterPosition() + 1, i).clear();
                             adapter.notifyItemRangeRemoved(holder.getAdapterPosition() + 1, i - (holder.getAdapterPosition() + 1));
 
-                            postHolder.commentCount.setVisibility(View.VISIBLE);
-                            postHolder.commentCount.setText(String.valueOf(i - (holder.getAdapterPosition() + 1)));
+                            holder.commentCount.setVisibility(View.VISIBLE);
+                            holder.commentCount.setText(String.valueOf(i - (holder.getAdapterPosition() + 1)));
                         } else {
                             post.preOrderTraverse(post.getDepth())
                                     .skip(1)
@@ -257,7 +299,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                                         adapter.notifyItemRangeInserted(holder.getAdapterPosition() + 1, children.size());
                                     });
 
-                            postHolder.commentCount.setVisibility(View.INVISIBLE);
+                            holder.commentCount.setVisibility(View.INVISIBLE);
                         }
                     } else {
                         EventBus.INSTANCE.send(post);
@@ -265,36 +307,24 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 });
 
         if (post.isInternalNode() && !post.isDescendantsVisible()) {
-            postHolder.commentCount.setVisibility(View.VISIBLE);
+            holder.commentCount.setVisibility(View.VISIBLE);
             final String commentCount = post.getDisplayDescendants();
-            postHolder.commentCount.setText(commentCount);
+            holder.commentCount.setText(commentCount);
         } else {
-            postHolder.commentCount.setVisibility(View.INVISIBLE);
+            holder.commentCount.setVisibility(View.INVISIBLE);
         }
+    }
 
-        final PopupMenu otherMenu = new PopupMenu(context, postHolder.other);
-        otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
+    private static void bindShareAction(final Context context, final Post post) {
+        final Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_TEXT, post.getPermalink());
+        intent.setType("text/plain");
+        context.startActivity(intent);
+    }
 
-        RxView.clicks(postHolder.other)
-                .subscribe(aVoid -> otherMenu.show());
-
-        RxPopupMenu.itemClicks(otherMenu)
-                .subscribe(menuItem -> {
-                    switch (menuItem.getItemId()) {
-                        case R.id.action_post_share:
-                            Intent intent = new Intent(Intent.ACTION_SEND);
-                            intent.putExtra(Intent.EXTRA_TEXT, post.getPermalink());
-                            intent.setType("text/plain");
-                            context.startActivity(intent);
-                            break;
-                        case R.id.action_post_browser:
-                            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.getLinkUrl()));
-                            context.startActivity(intent);
-                            break;
-                        case R.id.action_post_report:
-                            break;
-                    }
-                });
+    private static void bindBrowserAction(final Context context, final Post post) {
+        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.getLinkUrl()));
+        context.startActivity(intent);
     }
 
     static class PostViewHolder extends RecyclerView.ViewHolder implements Swipeable {
