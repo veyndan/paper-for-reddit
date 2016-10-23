@@ -36,6 +36,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final boolean isComment;
 
     private final Observable<Node<Response<Thing<Listing>>>> children;
+    private boolean descendantsVisible;
 
     private final boolean archived;
     private final String author;
@@ -85,6 +86,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         if (isLink) {
             setDescendantCount(submission.getNumComments());
         }
+        descendantsVisible = isComment;
 
         archived = submission.archived;
         author = submission.author == null ? "" : submission.author;
@@ -261,6 +263,14 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
     public boolean isInternalNode() {
         return getDescendantCount() > 0;
+    }
+
+    public boolean isDescendantsVisible() {
+        return descendantsVisible;
+    }
+
+    public void setDescendantsVisible(final boolean descendantsVisible) {
+        this.descendantsVisible = descendantsVisible;
     }
 
     public String getDisplayDescendants() {

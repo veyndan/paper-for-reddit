@@ -231,11 +231,40 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 });
 
         RxView.clicks(postHolder.comments)
-                .subscribe(aVoid -> {
-                    EventBus.INSTANCE.send(post);
+                .map(aVoid -> {
+                    postHolder.comments.toggle();
+                    return postHolder.comments.isChecked();
+                })
+                .subscribe(displayDescendants -> {
+                    post.setDescendantsVisible(!displayDescendants);
+                    if (post.isComment()) {
+                        if (displayDescendants) {
+                            int i;
+                            for (i = holder.getAdapterPosition() + 1; i < nodes.size() && nodes.get(i).getDepth() > post.getDepth(); i++)
+                                ;
+
+                            nodes.subList(holder.getAdapterPosition() + 1, i).clear();
+                            adapter.notifyItemRangeRemoved(holder.getAdapterPosition() + 1, i - (holder.getAdapterPosition() + 1));
+
+                            postHolder.commentCount.setVisibility(View.VISIBLE);
+                            postHolder.commentCount.setText(String.valueOf(i - (holder.getAdapterPosition() + 1)));
+                        } else {
+                            post.preOrderTraverse(post.getDepth())
+                                    .skip(1)
+                                    .toList()
+                                    .subscribe(children -> {
+                                        nodes.addAll(holder.getAdapterPosition() + 1, children);
+                                        adapter.notifyItemRangeInserted(holder.getAdapterPosition() + 1, children.size());
+                                    });
+
+                            postHolder.commentCount.setVisibility(View.INVISIBLE);
+                        }
+                    } else {
+                        EventBus.INSTANCE.send(post);
+                    }
                 });
 
-        if (post.isInternalNode()) {
+        if (post.isInternalNode() && !post.isDescendantsVisible()) {
             postHolder.commentCount.setVisibility(View.VISIBLE);
             final String commentCount = post.getDisplayDescendants();
             postHolder.commentCount.setText(commentCount);
