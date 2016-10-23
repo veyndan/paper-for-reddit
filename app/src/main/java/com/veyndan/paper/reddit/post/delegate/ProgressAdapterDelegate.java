@@ -42,7 +42,7 @@ public class ProgressAdapterDelegate
                                     @NonNull final List<Object> payloads) {
     }
 
-    final static class ProgressViewHolder extends RecyclerView.ViewHolder {
+    static final class ProgressViewHolder extends RecyclerView.ViewHolder {
 
         final ProgressBar progress;
 
