@@ -24,7 +24,7 @@
     <!-- TODO Unsure why marginTop and marginBottom needed. -->
     <fragment
         android:id="@+id/main_fragment_posts"
-        android:name="com.veyndan.paper.reddit.post.PostsFragment"
+        android:name="com.veyndan.paper.reddit.tree.PostsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="24dp"

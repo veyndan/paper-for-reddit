@@ -34,7 +34,7 @@
 
         <fragment
             android:id="@+id/main_fragment_posts"
-            android:name="com.veyndan.paper.reddit.post.PostsFragment"
+            android:name="com.veyndan.paper.reddit.tree.PostsFragment"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="9"
@@ -42,7 +42,7 @@
 
         <fragment
             android:id="@+id/main_fragment_comments"
-            android:name="com.veyndan.paper.reddit.post.PostsFragment"
+            android:name="com.veyndan.paper.reddit.tree.PostsFragment"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="16"

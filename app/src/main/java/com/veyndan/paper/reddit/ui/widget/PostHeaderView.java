@@ -31,7 +31,7 @@ import com.binaryfork.spanny.Spanny;
 import com.veyndan.paper.reddit.Filter;
 import com.veyndan.paper.reddit.MainActivity;
 import com.veyndan.paper.reddit.R;
-import com.veyndan.paper.reddit.post.Flair;
+import com.veyndan.paper.reddit.tree.Flair;
 
 import java.util.List;
 import java.util.regex.Matcher;

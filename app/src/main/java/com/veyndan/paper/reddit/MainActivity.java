@@ -16,8 +16,8 @@ import com.veyndan.paper.reddit.api.reddit.network.QueryBuilder;
 import com.veyndan.paper.reddit.api.reddit.network.Sort;
 import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
 import com.veyndan.paper.reddit.api.reddit.network.User;
-import com.veyndan.paper.reddit.post.PostsFragment;
-import com.veyndan.paper.reddit.post.model.Post;
+import com.veyndan.paper.reddit.tree.PostsFragment;
+import com.veyndan.paper.reddit.tree.model.Post;
 
 import butterknife.ButterKnife;
 import retrofit2.Response;

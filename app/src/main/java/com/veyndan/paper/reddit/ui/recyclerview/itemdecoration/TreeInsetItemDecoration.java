@@ -8,7 +8,7 @@ import android.support.annotation.Px;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.veyndan.paper.reddit.post.DepthCalculatorDelegate;
+import com.veyndan.paper.reddit.tree.DepthCalculatorDelegate;
 
 public class TreeInsetItemDecoration extends RecyclerView.ItemDecoration {
 
