@@ -98,7 +98,6 @@
                     android:gravity="center"
                     android:includeFontPadding="false"
                     android:minWidth="16dp"
-                    android:text="1"
                     android:textColor="@android:color/white"
                     android:textSize="11sp"
                     android:textStyle="bold"/>
