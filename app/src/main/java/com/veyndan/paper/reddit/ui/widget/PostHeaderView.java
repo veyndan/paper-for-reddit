@@ -17,7 +17,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
-import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.LineHeightSpan;
@@ -100,7 +99,7 @@ public class PostHeaderView extends TextView {
 
         setMovementMethod(LinkMovementMethod.getInstance());
 
-        final SpannableString authorLink = Spanny.spanText(author, new ClickableSpan() {
+        final ClickableSpan authorClickableSpan = new ClickableSpan() {
             @Override
             public void onClick(final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
@@ -109,23 +108,28 @@ public class PostHeaderView extends TextView {
                 intent.putExtra(Filter.USER_SUBMITTED, true);
                 context.startActivity(intent);
             }
-        });
+        };
 
-        final SpannableString subredditLink = Spanny.spanText(subreddit, new ClickableSpan() {
+        final ClickableSpan subredditClickableSpan = new ClickableSpan() {
             @Override
             public void onClick(final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
                 intent.putExtra(Filter.SUBREDDIT_NAME, subreddit);
                 context.startActivity(intent);
             }
-        });
+        };
 
         final String delimiter = " · ";
         // Appending space to end of subtitle as no span is associated with it. This fixes a bug
         // where the subreddit clickable span spans the rest of the line, instead of being confined
         // to it's textual boundaries. TODO Figure out why this happens and fix it.
-        final CharSequence subtitle = TextUtils.concat(
-                authorLink, delimiter, age, delimiter, subredditLink, " ");
+        final Spanny subtitle = new Spanny()
+                .append(author, authorClickableSpan)
+                .append(delimiter)
+                .append(age)
+                .append(delimiter)
+                .append(subreddit, subredditClickableSpan)
+                .append(" ");
 
         final Spanny spanny = new Spanny();
 
