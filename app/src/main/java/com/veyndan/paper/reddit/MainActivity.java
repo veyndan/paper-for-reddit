@@ -45,9 +45,21 @@ public class MainActivity extends BaseActivity {
         postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
 
         final Intent intent = getIntent();
+        final Bundle extras = intent.getExtras();
+        final String dataString = intent.getDataString();
+
+        if (dataString != null) {
+            if (dataString.contains(RedditProvider.ROOT_AUTHORITY + "/subreddit/")) {
+                extras.putString(Filter.SUBREDDIT_NAME, dataString.substring(dataString.lastIndexOf('/') + 1));
+            } else if (dataString.contains(RedditProvider.ROOT_AUTHORITY + "/user/")) {
+                extras.putString(Filter.USER_NAME, dataString.substring(dataString.lastIndexOf('/') + 1));
+                extras.putBoolean(Filter.USER_COMMENTS, true);
+                extras.putBoolean(Filter.USER_SUBMITTED, true);
+            }
+        }
 
         final Observable<Response<Thing<Listing>>> defaultRequest = Request.subreddit("all", Sort.HOT);
-        final Observable<Response<Thing<Listing>>> mergedFilters = mergeFilters(intent.getExtras(), defaultRequest);
+        final Observable<Response<Thing<Listing>>> mergedFilters = mergeFilters(extras, defaultRequest);
         postsFragment.setRequest(mergedFilters);
 
         final PostsFragment commentsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_comments);

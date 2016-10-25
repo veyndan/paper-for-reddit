@@ -15,7 +15,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.text.util.LinkifyCompat;
 import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -34,7 +33,6 @@ import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.post.Flair;
 
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import butterknife.BindDimen;
@@ -134,37 +132,25 @@ public class PostHeaderView extends TextView {
         final Spanny spanny = new Spanny();
 
         if (title != null) {
-            // https://www.reddit.com/r/modhelp/comments/1gd1at/name_rules_when_trying_to_create_a_subreddit/cajcylg
-            final Pattern redditPattern = Pattern.compile("[^\\w]/?(r|u|R|U)/([A-Za-z0-9]\\w{1,20})");
-            final Matcher redditMatcher = redditPattern.matcher(title);
-
             spanny.append(title, titleTextAppearanceSpan)
                     .append("\n");
 
-            while (redditMatcher.find()) {
-                final String group1 = redditMatcher.group(1);
-                final String group2 = redditMatcher.group(2);
+            // https://www.reddit.com/r/modhelp/comments/1gd1at/name_rules_when_trying_to_create_a_subreddit/cajcylg
+            LinkifyCompat.addLinks(
+                    spanny,
+                    Pattern.compile("[^\\w]/?[r|R]/([A-Za-z0-9]\\w{1,20})"),
+                    "content://com.veyndan.paper.reddit/subreddit/",
+                    null,
+                    (matcher, s) -> matcher.group(1)
+            );
 
-                spanny.setSpan(new ClickableSpan() {
-                    @Override
-                    public void onClick(final View widget) {
-                        switch (group1) {
-                            case "r":
-                                final Intent subredditIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                                subredditIntent.putExtra(Filter.SUBREDDIT_NAME, group2);
-                                context.startActivity(subredditIntent);
-                                break;
-                            case "u":
-                                final Intent profileIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                                profileIntent.putExtra(Filter.USER_NAME, group2);
-                                profileIntent.putExtra(Filter.USER_COMMENTS, true);
-                                profileIntent.putExtra(Filter.USER_SUBMITTED, true);
-                                context.startActivity(profileIntent);
-                                break;
-                        }
-                    }
-                }, redditMatcher.start(), redditMatcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
+            LinkifyCompat.addLinks(
+                    spanny,
+                    Pattern.compile("[^\\w]/?[u|U]/([A-Za-z0-9]\\w{1,20})"),
+                    "content://com.veyndan.paper.reddit/user/",
+                    null,
+                    (matcher, s) -> matcher.group(1)
+            );
 
             // https://support.twitter.com/articles/101299
             LinkifyCompat.addLinks(
