@@ -17,14 +17,10 @@ import com.veyndan.paper.reddit.api.reddit.network.Sort;
 import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
 import com.veyndan.paper.reddit.api.reddit.network.User;
 import com.veyndan.paper.reddit.post.PostsFragment;
-import com.veyndan.paper.reddit.post.model.Post;
 
 import butterknife.ButterKnife;
 import retrofit2.Response;
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 @DeepLink({
         "http://reddit.com/u/{" + Filter.USER_NAME + '}',
@@ -49,23 +45,6 @@ public class MainActivity extends BaseActivity {
         final Observable<Response<Thing<Listing>>> defaultRequest = Request.subreddit("all", Sort.HOT);
         final Observable<Response<Thing<Listing>>> mergedFilters = mergeFilters(intent.getExtras(), defaultRequest);
         postsFragment.setRequest(mergedFilters);
-
-        final PostsFragment commentsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_comments);
-
-        EventBus.INSTANCE.toObserverable()
-                .subscribeOn(Schedulers.io())
-                .ofType(Post.class)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(post -> {
-                    if (commentsFragment != null && commentsFragment.isVisible()) {
-                        commentsFragment.setRequest(Request.comments(post.getSubreddit(), post.getArticle()));
-                    } else {
-                        final Intent commentsIntent = new Intent(this, MainActivity.class);
-                        commentsIntent.putExtra(Filter.COMMENTS_SUBREDDIT, post.getSubreddit());
-                        commentsIntent.putExtra(Filter.COMMENTS_ARTICLE, post.getArticle());
-                        startActivity(commentsIntent);
-                    }
-                }, Timber::e);
     }
 
     @NonNull

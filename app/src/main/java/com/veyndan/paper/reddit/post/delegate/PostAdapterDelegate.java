@@ -28,7 +28,8 @@ import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
-import com.veyndan.paper.reddit.EventBus;
+import com.veyndan.paper.reddit.Filter;
+import com.veyndan.paper.reddit.MainActivity;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
@@ -129,7 +130,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         bindUpvoteAction(context, post, postHolder);
         bindDownvoteAction(context, post, postHolder);
         bindSaveAction(post, postHolder);
-        bindCommentsAction(nodes, post, postHolder);
+        bindCommentsAction(context, nodes, post, postHolder);
 
         final PopupMenu otherMenu = new PopupMenu(context, postHolder.other);
         otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
@@ -271,7 +272,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 });
     }
 
-    private void bindCommentsAction(final List<Node<Response<Thing<Listing>>>> nodes, final Post post, final PostViewHolder holder) {
+    private void bindCommentsAction(final Context context, final List<Node<Response<Thing<Listing>>>> nodes, final Post post, final PostViewHolder holder) {
         RxView.clicks(holder.comments)
                 .map(aVoid -> {
                     holder.comments.toggle();
@@ -302,7 +303,10 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                             holder.commentCount.setVisibility(View.INVISIBLE);
                         }
                     } else {
-                        EventBus.INSTANCE.send(post);
+                        final Intent commentsIntent = new Intent(context, MainActivity.class);
+                        commentsIntent.putExtra(Filter.COMMENTS_SUBREDDIT, post.getSubreddit());
+                        commentsIntent.putExtra(Filter.COMMENTS_ARTICLE, post.getArticle());
+                        context.startActivity(commentsIntent);
                     }
                 });
 
