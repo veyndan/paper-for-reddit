@@ -55,10 +55,16 @@ public class MainActivity extends BaseActivity {
         EventBus.INSTANCE.toObserverable()
                 .subscribeOn(Schedulers.io())
                 .ofType(Post.class)
-                .filter(post -> commentsFragment != null && commentsFragment.isVisible())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(post -> {
-                    commentsFragment.setRequest(Request.comments(post.getSubreddit(), post.getArticle()));
+                    if (commentsFragment != null && commentsFragment.isVisible()) {
+                        commentsFragment.setRequest(Request.comments(post.getSubreddit(), post.getArticle()));
+                    } else {
+                        final Intent commentsIntent = new Intent(this, MainActivity.class);
+                        commentsIntent.putExtra(Filter.COMMENTS_SUBREDDIT, post.getSubreddit());
+                        commentsIntent.putExtra(Filter.COMMENTS_ARTICLE, post.getArticle());
+                        startActivity(commentsIntent);
+                    }
                 }, Timber::e);
     }
 
@@ -67,6 +73,12 @@ public class MainActivity extends BaseActivity {
                                                               @NonNull final Observable<Response<Thing<Listing>>> defaultRequest) {
         if (bundle == null) {
             return defaultRequest;
+        }
+
+        if (bundle.containsKey(Filter.COMMENTS_SUBREDDIT)) {
+            final String subreddit = bundle.getString(Filter.COMMENTS_SUBREDDIT);
+            final String article = bundle.getString(Filter.COMMENTS_ARTICLE);
+            return Request.comments(subreddit, article);
         }
 
         final TimePeriod[] timePeriods = {

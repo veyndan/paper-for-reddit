@@ -4,6 +4,9 @@ import android.os.Bundle;
 
 public interface Filter {
 
+    String COMMENTS_SUBREDDIT = "comments_subreddit";
+    String COMMENTS_ARTICLE = "comments_article";
+
     String TIME_PERIOD_POSITION = "time_period_value";
 
     String SUBREDDIT_NAME = "subreddit_name";
