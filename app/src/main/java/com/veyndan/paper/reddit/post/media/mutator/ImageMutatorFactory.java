@@ -1,9 +1,11 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import android.util.Size;
+
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
 import com.veyndan.paper.reddit.api.reddit.model.Source;
-import com.veyndan.paper.reddit.post.model.Post;
 import com.veyndan.paper.reddit.post.media.model.Image;
+import com.veyndan.paper.reddit.post.model.Post;
 
 import rx.Observable;
 
@@ -24,15 +26,13 @@ public final class ImageMutatorFactory implements MutatorFactory {
                 .map(post1 -> {
                     final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
 
-                    int width = 0;
-                    int height = 0;
+                    Size size = new Size(0, 0);
                     if (imageDimensAvailable) {
                         final Source source = post.getPreview().images.get(0).source;
-                        width = source.width;
-                        height = source.height;
+                        size = new Size(source.width, source.height);
                     }
 
-                    final Image image = new Image(post1.getLinkUrl(), width, height);
+                    final Image image = new Image(post1.getLinkUrl(), size);
                     post1.setMediaObservable(Observable.just(image));
                     return post1;
                 });

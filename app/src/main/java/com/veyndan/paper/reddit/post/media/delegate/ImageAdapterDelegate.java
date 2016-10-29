@@ -8,6 +8,7 @@ import android.support.customtabs.CustomTabsClient;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.customtabs.CustomTabsSession;
 import android.support.v7.widget.RecyclerView;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,7 +79,7 @@ public class ImageAdapterDelegate
                     customTabsIntent.launchUrl(activity, Uri.parse(image.getUrl()));
                 });
 
-        final boolean imageDimensAvailable = image.getWidth() > 0 && image.getHeight() > 0;
+        final boolean imageDimensAvailable = image.getSize().getWidth() > 0 && image.getSize().getHeight() > 0;
 
         // TODO Once media adapter is shared between posts, width can be calculated in the holder constructor.
         RxView.layoutChanges(holder.itemView)
@@ -102,8 +103,7 @@ public class ImageAdapterDelegate
                                         final int imageWidth = resource.getIntrinsicWidth();
                                         final int imageHeight = resource.getIntrinsicHeight();
 
-                                        image.setWidth(imageWidth);
-                                        image.setHeight(imageHeight);
+                                        image.setSize(new Size(imageWidth, imageHeight));
 
                                         post.setMediaObservable(Observable.just(image));
 
@@ -115,7 +115,7 @@ public class ImageAdapterDelegate
                             .into(holder.imageView);
 
                     if (imageDimensAvailable) {
-                        holder.imageView.getLayoutParams().height = (int) ((float) width / image.getWidth() * image.getHeight());
+                        holder.imageView.getLayoutParams().height = (int) ((float) width / image.getSize().getWidth() * image.getSize().getHeight());
                     }
                 });
     }

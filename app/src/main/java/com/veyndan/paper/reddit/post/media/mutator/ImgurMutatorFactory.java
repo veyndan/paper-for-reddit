@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import android.util.Size;
+
 import com.veyndan.paper.reddit.Config;
 import com.veyndan.paper.reddit.api.imgur.network.ImgurService;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
@@ -74,20 +76,18 @@ final class ImgurMutatorFactory implements MutatorFactory {
                         post1.setMediaObservable(
                                 imgurService.album(id)
                                         .flatMap(basic -> Observable.from(basic.data.images))
-                                        .map(image -> new Image(image.link, image.width, image.height))
+                                        .map(image -> new Image(image.link, new Size(image.width, image.height)))
                         );
                     } else {
                         final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
 
-                        int width = 0;
-                        int height = 0;
+                        Size size = new Size(0, 0);
                         if (imageDimensAvailable) {
                             final Source source = post.getPreview().images.get(0).source;
-                            width = source.width;
-                            height = source.height;
+                            size = new Size(source.width, source.height);
                         }
 
-                        final Image image = new Image(post.getLinkUrl(), width, height);
+                        final Image image = new Image(post.getLinkUrl(), size);
                         post1.setMediaObservable(Observable.just(image));
                     }
                     return post1;
