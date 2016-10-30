@@ -13,6 +13,8 @@
         <item quantity="other">%d more comments</item>
     </plurals>
 
+    <string name="post_media_image_type_gif">GIF</string>
+
     <!-- Post overflow titles -->
     <string name="action_post_share">Share</string>
     <string name="action_post_browser">Open in Browser</string>

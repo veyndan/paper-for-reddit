@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -81,6 +82,13 @@ public class ImageAdapterDelegate
 
         final boolean imageDimensAvailable = image.getSize().getWidth() > 0 && image.getSize().getHeight() > 0;
 
+        if (image.getType() == Image.IMAGE_TYPE_STANDARD) {
+            holder.imageType.setVisibility(View.GONE);
+        } else {
+            holder.imageType.setVisibility(View.VISIBLE);
+            holder.imageType.setText(image.getType());
+        }
+
         // TODO Once media adapter is shared between posts, width can be calculated in the holder constructor.
         RxView.layoutChanges(holder.itemView)
                 .take(1)
@@ -126,6 +134,7 @@ public class ImageAdapterDelegate
 
         @BindView(R.id.post_media_image) ImageView imageView;
         @BindView(R.id.post_media_image_progress) ProgressBar imageProgressView;
+        @BindView(R.id.post_media_image_type) TextView imageType;
 
         ImageViewHolder(final View itemView) {
             super(itemView);

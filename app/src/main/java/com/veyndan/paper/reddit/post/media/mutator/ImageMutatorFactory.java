@@ -1,5 +1,6 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import android.support.annotation.StringRes;
 import android.util.Size;
 
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
@@ -32,7 +33,10 @@ public final class ImageMutatorFactory implements MutatorFactory {
                         size = new Size(source.width, source.height);
                     }
 
-                    final Image image = new Image(post1.getLinkUrl(), size);
+                    @StringRes final int type = post1.getLinkUrl().endsWith(".gif")
+                            ? Image.IMAGE_TYPE_GIF
+                            : Image.IMAGE_TYPE_STANDARD;
+                    final Image image = new Image(post1.getLinkUrl(), size, type);
                     post1.setMediaObservable(Observable.just(image));
                     return post1;
                 });
