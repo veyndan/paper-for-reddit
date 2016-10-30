@@ -7,8 +7,8 @@ import com.veyndan.paper.reddit.Config;
 import com.veyndan.paper.reddit.api.imgur.network.ImgurService;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
 import com.veyndan.paper.reddit.api.reddit.model.Source;
-import com.veyndan.paper.reddit.post.model.Post;
 import com.veyndan.paper.reddit.post.media.model.Image;
+import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,6 +82,13 @@ final class ImgurMutatorFactory implements MutatorFactory {
                     } else {
                         final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
 
+                        final String url;
+                        if (post.getLinkUrl().endsWith(".gifv") && imageDimensAvailable) {
+                            url = post.getPreview().images.get(0).source.url;
+                        } else {
+                            url = post.getLinkUrl();
+                        }
+
                         Size size = new Size(0, 0);
                         if (imageDimensAvailable) {
                             final Source source = post.getPreview().images.get(0).source;
@@ -91,7 +98,8 @@ final class ImgurMutatorFactory implements MutatorFactory {
                         @StringRes final int type = post.getLinkUrl().endsWith(".gif") || post.getLinkUrl().endsWith(".gifv")
                                 ? Image.IMAGE_TYPE_GIF
                                 : Image.IMAGE_TYPE_STANDARD;
-                        final Image image = new Image(post.getLinkUrl(), size, type);
+
+                        final Image image = new Image(url, size, type);
                         post1.setMediaObservable(Observable.just(image));
                     }
                     return post1;
