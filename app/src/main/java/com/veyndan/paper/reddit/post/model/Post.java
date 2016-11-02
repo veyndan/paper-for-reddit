@@ -26,6 +26,8 @@ import com.veyndan.paper.reddit.util.Node;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Response;
@@ -33,7 +35,7 @@ import rx.Observable;
 
 public class Post extends Node<Response<Thing<Listing>>> {
 
-    private Observable<?> mediaObservable = Observable.empty();
+    private final List<Object> medias = new ArrayList<>();
 
     private final boolean isLink;
     private final boolean isComment;
@@ -115,12 +117,8 @@ public class Post extends Node<Response<Thing<Listing>>> {
         subreddit = submission.subreddit;
     }
 
-    public Observable<?> getMediaObservable() {
-        return mediaObservable;
-    }
-
-    public void setMediaObservable(final Observable<?> mediaObservable) {
-        this.mediaObservable = mediaObservable;
+    public List<Object> getMedias() {
+        return medias;
     }
 
     public boolean isLink() {

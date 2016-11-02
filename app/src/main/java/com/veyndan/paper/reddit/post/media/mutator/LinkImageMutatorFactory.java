@@ -23,7 +23,7 @@ final class LinkImageMutatorFactory implements MutatorFactory {
                 .map(post1 -> {
                     final Source source = post1.getPreview().images.get(0).source;
                     final LinkImage linkImage = new LinkImage(source.url, post1.getDomain());
-                    post1.setMediaObservable(Observable.just(linkImage));
+                    post1.getMedias().add(linkImage);
                     return post1;
                 });
     }

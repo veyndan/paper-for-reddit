@@ -30,7 +30,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.Observable;
 
 public class ImageAdapterDelegate
         extends AbsListItemAdapterDelegate<Image, Object, ImageAdapterDelegate.ImageViewHolder> {
@@ -113,7 +112,7 @@ public class ImageAdapterDelegate
 
                                         image.setSize(new Size(imageWidth, imageHeight));
 
-                                        post.setMediaObservable(Observable.just(image));
+                                        post.getMedias().add(image);
 
                                         holder.imageView.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
                                     }

@@ -10,6 +10,7 @@ import com.veyndan.paper.reddit.api.reddit.model.Source;
 import com.veyndan.paper.reddit.post.media.model.Image;
 import com.veyndan.paper.reddit.post.model.Post;
 
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +39,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
         return Observable.just(post)
                 .filter(post1 -> post1.isLink() && matcher.matches())
-                .map(post1 -> {
+                .flatMap(post1 -> {
                     final boolean isAlbum = matcher.group(2) != null;
                     final boolean isDirectImage = matcher.group(1) != null;
 
@@ -74,11 +75,10 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
                         final String id = matcher.group(3);
 
-                        post1.setMediaObservable(
-                                imgurService.album(id)
-                                        .flatMap(basic -> Observable.from(basic.data.images))
-                                        .map(image -> new Image(image.link, new Size(image.width, image.height)))
-                        );
+                        return imgurService.album(id)
+                                .flatMap(basic -> Observable.from(basic.data.images))
+                                .map(image -> new Image(image.link, new Size(image.width, image.height)))
+                                .toList();
                     } else {
                         final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
 
@@ -99,9 +99,10 @@ final class ImgurMutatorFactory implements MutatorFactory {
                                 ? Image.IMAGE_TYPE_GIF
                                 : Image.IMAGE_TYPE_STANDARD;
 
-                        final Image image = new Image(url, size, type);
-                        post1.setMediaObservable(Observable.just(image));
+                        return Observable.just(Collections.singletonList(new Image(url, size, type)));
                     }
+                }, (post1, images) -> {
+                    post1.getMedias().addAll(images);
                     return post1;
                 });
     }

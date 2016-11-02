@@ -2,8 +2,8 @@ package com.veyndan.paper.reddit.post.media.mutator;
 
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
 import com.veyndan.paper.reddit.api.xkcd.network.XkcdService;
-import com.veyndan.paper.reddit.post.model.Post;
 import com.veyndan.paper.reddit.post.media.model.Image;
+import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +30,7 @@ final class XkcdMutatorFactory implements MutatorFactory {
 
         return Observable.just(post)
                 .filter(post1 -> post1.isLink() && matcher.matches())
-                .map(post1 -> {
+                .flatMap(post1 -> {
                     final int comicNum = Integer.parseInt(matcher.group(1));
 
                     final Retrofit retrofit = new Retrofit.Builder()
@@ -46,7 +46,9 @@ final class XkcdMutatorFactory implements MutatorFactory {
 
                     post.setPostHint(PostHint.IMAGE);
 
-                    post1.setMediaObservable(imageObservable);
+                    return imageObservable;
+                }, (post1, image) -> {
+                    post1.getMedias().add(image);
                     return post1;
                 });
     }

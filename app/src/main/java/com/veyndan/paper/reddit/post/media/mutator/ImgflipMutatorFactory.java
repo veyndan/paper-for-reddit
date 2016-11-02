@@ -27,7 +27,7 @@ final class ImgflipMutatorFactory implements MutatorFactory {
                 .filter(post1 -> matcher.matches())
                 .map(post1 -> {
                     final String directImageUrl = "https://i.imgflip.com/" + matcher.group(1) + ".jpg";
-                    post1.setMediaObservable(Observable.just(new Image(directImageUrl)));
+                    post1.getMedias().add(new Image(directImageUrl));
                     return post1;
                 });
     }

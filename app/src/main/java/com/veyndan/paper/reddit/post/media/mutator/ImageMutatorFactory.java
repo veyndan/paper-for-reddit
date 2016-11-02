@@ -37,7 +37,7 @@ public final class ImageMutatorFactory implements MutatorFactory {
                             ? Image.IMAGE_TYPE_GIF
                             : Image.IMAGE_TYPE_STANDARD;
                     final Image image = new Image(post1.getLinkUrl(), size, type);
-                    post1.setMediaObservable(Observable.just(image));
+                    post1.getMedias().add(image);
                     return post1;
                 });
     }

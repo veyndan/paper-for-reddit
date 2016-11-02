@@ -24,7 +24,7 @@ final class TextMutatorFactory implements MutatorFactory {
                         !TextUtils.isEmpty(post1.getBody()))
                 .map(post1 -> {
                     final Text text = new Text(post1::getDisplayBody);
-                    post1.setMediaObservable(Observable.just(text));
+                    post1.getMedias().add(text);
                     return post1;
                 });
     }

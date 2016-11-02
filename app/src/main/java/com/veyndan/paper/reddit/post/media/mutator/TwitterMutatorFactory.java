@@ -29,10 +29,10 @@ final class TwitterMutatorFactory implements MutatorFactory {
 
         return Observable.just(post)
                 .filter(post1 -> post1.isLink() && matcher.matches())
-                .map(post1 -> {
+                .flatMap(post1 -> {
                     final Long tweetId = Long.parseLong(matcher.group(1));
                     // TODO Replace Observable.create with an Observable returned by Retrofit.
-                    post1.setMediaObservable(Observable.create(subscriber -> {
+                    return Observable.create(subscriber -> {
                         TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
                             @Override
                             public void success(final Result<Tweet> result) {
@@ -47,7 +47,9 @@ final class TwitterMutatorFactory implements MutatorFactory {
                                 subscriber.onError(exception);
                             }
                         });
-                    }));
+                    });
+                }, (post1, tweet) -> {
+                    post1.getMedias().add(tweet);
                     return post1;
                 });
     }

@@ -52,9 +52,7 @@ import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Response;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thing<Listing>>>>> {
 
@@ -186,19 +184,9 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
     }
 
     private void bindMedia(final Post post, final PostViewHolder holder) {
-        final List<Object> items = new ArrayList<>();
-
         final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
-                activity, customTabsClient, customTabsIntent, post, items);
+                activity, customTabsClient, customTabsIntent, post, post.getMedias());
         holder.mediaView.setAdapter(postMediaAdapter);
-
-        post.getMediaObservable()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(item -> {
-                    items.add(item);
-                    postMediaAdapter.notifyDataSetChanged();
-                }, Timber::e);
     }
 
     private void bindPoints(final Context context, final Post post, final PostViewHolder holder) {
