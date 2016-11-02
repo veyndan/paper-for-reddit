@@ -9,13 +9,11 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -32,10 +30,9 @@ import com.veyndan.paper.reddit.Filter;
 import com.veyndan.paper.reddit.MainActivity;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.post.Flair;
+import com.veyndan.paper.reddit.util.Linkifier;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.BindDimen;
 import butterknife.ButterKnife;
@@ -137,52 +134,7 @@ public class PostHeaderView extends TextView {
             spanny.append(title, titleTextAppearanceSpan)
                     .append("\n");
 
-            // https://www.reddit.com/r/modhelp/comments/1gd1at/name_rules_when_trying_to_create_a_subreddit/cajcylg
-            final Pattern pattern = Pattern.compile("[^\\w]/?(r|u|R|U)/([A-Za-z0-9]\\w{1,20})");
-            final Matcher matcher = pattern.matcher(title);
-
-            while (matcher.find()) {
-                final String group1 = matcher.group(1);
-                final String group2 = matcher.group(2);
-
-                spanny.setSpan(new ClickableSpan() {
-                    @Override
-                    public void onClick(final View widget) {
-                        switch (group1) {
-                            case "r":
-                                final Intent subredditIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                                subredditIntent.putExtra(Filter.SUBREDDIT_NAME, group2);
-                                context.startActivity(subredditIntent);
-                                break;
-                            case "u":
-                                final Intent profileIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                                profileIntent.putExtra(Filter.USER_NAME, group2);
-                                profileIntent.putExtra(Filter.USER_COMMENTS, true);
-                                profileIntent.putExtra(Filter.USER_SUBMITTED, true);
-                                context.startActivity(profileIntent);
-                                break;
-                        }
-                    }
-                }, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-
-            // https://support.twitter.com/articles/101299
-            final Pattern twitterPattern = Pattern.compile("@(\\w{1,15})");
-            final Matcher twitterMatcher = twitterPattern.matcher(title);
-
-            while (twitterMatcher.find()) {
-                final String twitterUsername = twitterMatcher.group(1);
-
-                spanny.setSpan(new ClickableSpan() {
-                    @Override
-                    public void onClick(final View widget) {
-                        final String url = "https://twitter.com/" + twitterUsername;
-                        final Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(url));
-                        context.startActivity(intent);
-                    }
-                }, twitterMatcher.start(), twitterMatcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
+            Linkifier.addLinks(context, spanny);
         }
 
         spanny.append(subtitle, subtitleTextAppearanceSpan, subtitleLineHeightSpan);
