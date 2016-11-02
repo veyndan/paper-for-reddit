@@ -5,6 +5,8 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
@@ -19,6 +21,7 @@ import com.veyndan.paper.reddit.api.reddit.model.Submission;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 import com.veyndan.paper.reddit.post.media.mutator.Mutators;
+import com.veyndan.paper.reddit.util.Linkifier;
 import com.veyndan.paper.reddit.util.Node;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -138,6 +141,10 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return author;
     }
 
+    public String getBody() {
+        return bodyHtml;
+    }
+
     public String getDomain() {
         return domain;
     }
@@ -243,11 +250,13 @@ public class Post extends Node<Response<Thing<Listing>>> {
     }
 
     @Nullable
-    public CharSequence getDisplayBody() {
+    public Spannable getDisplayBody(final Context context) {
         if (TextUtils.isEmpty(bodyHtml)) {
             return null;
         }
-        return trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(bodyHtml)));
+        final Spannable html = new SpannableString(trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(bodyHtml))));
+        Linkifier.addLinks(context, html);
+        return html;
     }
 
     private static CharSequence trimTrailingWhitespace(@NonNull final CharSequence source) {

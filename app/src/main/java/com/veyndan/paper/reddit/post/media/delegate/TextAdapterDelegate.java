@@ -1,5 +1,6 @@
 package com.veyndan.paper.reddit.post.media.delegate;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
@@ -34,7 +35,8 @@ public class TextAdapterDelegate
     @Override
     protected void onBindViewHolder(@NonNull final Text text, @NonNull final TextViewHolder holder,
                                     @NonNull final List<Object> payloads) {
-        holder.textView.setText(text.getBody());
+        final Context context = holder.itemView.getContext();
+        holder.textView.setText(text.getBody(context));
         holder.textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 

@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import android.text.TextUtils;
+
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
 import com.veyndan.paper.reddit.post.media.model.Text;
 import com.veyndan.paper.reddit.post.model.Post;
@@ -19,9 +21,10 @@ final class TextMutatorFactory implements MutatorFactory {
     public Observable<Post> mutate(final Post post) {
         return Observable.just(post)
                 .filter(post1 -> post1.getPostHint() == PostHint.SELF &&
-                        post1.getDisplayBody() != null)
+                        !TextUtils.isEmpty(post1.getBody()))
                 .map(post1 -> {
-                    post1.setMediaObservable(Observable.just(new Text(post1.getDisplayBody())));
+                    final Text text = new Text(post1::getDisplayBody);
+                    post1.setMediaObservable(Observable.just(text));
                     return post1;
                 });
     }
