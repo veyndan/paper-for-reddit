@@ -50,7 +50,6 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final int gildedCount;
     private final boolean hideable;
     private VoteDirection likes;
-    private final boolean hasLinkFlair; // TODO Probably don't want this.
     private final String linkFlair;
     private final String linkTitle;
     private String linkUrl;
@@ -100,8 +99,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         gildedCount = submission.gilded;
         hideable = isLink;
         likes = submission.getLikes();
-        hasLinkFlair = isLink && !TextUtils.isEmpty(submission.getLinkFlairText());
-        linkFlair = hasLinkFlair ? submission.getLinkFlairText() : null;
+        linkFlair = submission.getLinkFlairText();
         linkTitle = submission.linkTitle;
         linkUrl = submission.linkUrl == null ? "" : submission.linkUrl;
         nsfw = submission.isOver18();
@@ -178,7 +176,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
     }
 
     public boolean hasLinkFlair() {
-        return hasLinkFlair;
+        return !TextUtils.isEmpty(linkFlair);
     }
 
     public String getLinkFlair() {
