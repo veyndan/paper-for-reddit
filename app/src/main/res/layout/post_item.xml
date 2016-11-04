@@ -75,7 +75,7 @@
                 android:contentDescription="@string/post_content_description_save"
                 app:srcCompat="@drawable/ic_bookmark_black_24dp"/>
 
-            <RelativeLayout
+            <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
@@ -91,7 +91,7 @@
                     android:id="@+id/post_comment_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignEnd="@id/post_comments"
+                    android:layout_gravity="right"
                     android:layout_margin="4dp"
                     android:background="@drawable/bg_badge"
                     android:fontFamily="sans-serif-condensed"
@@ -102,7 +102,7 @@
                     android:textSize="11sp"
                     android:textStyle="bold"/>
 
-            </RelativeLayout>
+            </FrameLayout>
 
             <ImageButton
                 android:id="@+id/post_other"
