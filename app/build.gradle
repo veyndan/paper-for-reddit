@@ -24,6 +24,9 @@ android {
         ]
     }
     buildTypes {
+        debug {
+            multiDexEnabled true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -92,6 +95,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta3'
     compile 'com.android.support:customtabs:25.0.0'
     compile 'com.android.support:design:25.0.0'
+    compile 'com.android.support:multidex:1.0.1'
     compile 'com.android.support:recyclerview-v7:25.0.0'
 
     // Timber

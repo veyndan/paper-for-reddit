@@ -1,6 +1,8 @@
 package com.veyndan.paper.reddit;
 
 import android.app.Application;
+import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import com.squareup.leakcanary.LeakCanary;
 import com.twitter.sdk.android.Twitter;
@@ -26,5 +28,11 @@ public class PaperForRedditApp extends Application {
         final TwitterAuthConfig authConfig = new TwitterAuthConfig(Config.TWITTER_KEY, Config.TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         LeakCanary.install(this);
+    }
+
+    @Override
+    protected void attachBaseContext(final Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 }
