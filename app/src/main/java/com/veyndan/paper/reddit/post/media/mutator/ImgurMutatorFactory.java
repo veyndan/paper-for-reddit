@@ -82,17 +82,16 @@ final class ImgurMutatorFactory implements MutatorFactory {
                     } else {
                         final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
 
-                        final String url;
-                        if (post.getLinkUrl().endsWith(".gifv") && imageDimensAvailable) {
-                            url = post.getPreview().images.get(0).source.url;
-                        } else {
-                            url = post.getLinkUrl();
-                        }
+                        final String url = post.getLinkUrl().endsWith(".gifv") && imageDimensAvailable
+                                ? post.getPreview().images.get(0).source.url
+                                : post.getLinkUrl();
 
-                        Size size = new Size(0, 0);
+                        final Size size;
                         if (imageDimensAvailable) {
                             final Source source = post.getPreview().images.get(0).source;
                             size = new Size(source.width, source.height);
+                        } else {
+                            size = new Size(0, 0);
                         }
 
                         @StringRes final int type = post.getLinkUrl().endsWith(".gif") || post.getLinkUrl().endsWith(".gifv")

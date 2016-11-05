@@ -27,10 +27,9 @@ public class SwipeItemTouchHelperCallback extends ItemTouchHelper.Callback {
     @Override
     public int getMovementFlags(final RecyclerView recyclerView,
                                 final RecyclerView.ViewHolder holder) {
-        int swipeFlags = 0;
-        if (holder instanceof Swipeable && ((Swipeable) holder).swipeable()) {
-            swipeFlags = ItemTouchHelper.START | ItemTouchHelper.END;
-        }
+        final int swipeFlags = holder instanceof Swipeable && ((Swipeable) holder).swipeable()
+                ? ItemTouchHelper.START | ItemTouchHelper.END
+                : 0;
         return makeMovementFlags(0, swipeFlags);
     }
 

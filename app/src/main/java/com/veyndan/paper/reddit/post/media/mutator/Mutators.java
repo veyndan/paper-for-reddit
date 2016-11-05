@@ -3,7 +3,6 @@ package com.veyndan.paper.reddit.post.media.mutator;
 import com.google.common.collect.ImmutableList;
 import com.veyndan.paper.reddit.post.model.Post;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
@@ -47,12 +46,8 @@ public final class Mutators {
      * Mutate a list of posts by the first mutator which is applicable to mutate the post.
      */
     public static Func1<Post, Observable<Post>> mutate() {
-        return post -> {
-            final List<Observable<Post>> observables = new ArrayList<>();
-            for (final MutatorFactory mutatorFactory : MUTATOR_FACTORIES) {
-                observables.add(mutatorFactory.mutate(post));
-            }
-            return Observable.concat(observables).firstOrDefault(post);
-        };
+        return post -> Observable.from(MUTATOR_FACTORIES)
+                .concatMap(mutatorFactory -> mutatorFactory.mutate(post))
+                .firstOrDefault(post);
     }
 }

@@ -40,10 +40,9 @@ public final class AccessTokenInterceptor implements Interceptor {
     }
 
     private Observable<AccessToken> accessTokenCache() {
-        if (accessTokenCache == null) {
-            return Observable.empty();
-        }
-        return Observable.just(accessTokenCache);
+        return accessTokenCache == null
+                ? Observable.empty()
+                : Observable.just(accessTokenCache);
     }
 
     private Observable<AccessToken> accessTokenNetwork() {

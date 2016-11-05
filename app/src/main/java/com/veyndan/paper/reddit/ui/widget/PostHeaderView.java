@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.binaryfork.spanny.Spanny;
+import com.google.common.base.MoreObjects;
 import com.veyndan.paper.reddit.Filter;
 import com.veyndan.paper.reddit.MainActivity;
 import com.veyndan.paper.reddit.R;
@@ -184,13 +185,9 @@ public class PostHeaderView extends TextView {
         final FlairBackgroundSpan flairBackgroundSpan = new FlairBackgroundSpan(context,
                 flair.getBackgroundColor(), flair.getIcon());
 
-        final StringBuilder tagBuilder = new StringBuilder(2);
+        final String tag = MoreObjects.firstNonNull(flair.getText(), "");
 
-        if (flair.getText() != null) {
-            tagBuilder.append(flair.getText());
-        }
-
-        return Spanny.spanText(tagBuilder, flairTextAppearanceSpan, flairStyleSpan, flairBackgroundSpan);
+        return Spanny.spanText(tag, flairTextAppearanceSpan, flairStyleSpan, flairBackgroundSpan);
     }
 
     private static final class FlairBackgroundSpan extends ReplacementSpan {
@@ -221,10 +218,9 @@ public class PostHeaderView extends TextView {
         public void draw(@NonNull final Canvas canvas, final CharSequence text, final int start,
                          final int end, final float x, final int top, final int y, final int bottom,
                          @NonNull final Paint paint) {
-            int drawablePadding = 0;
-            if (icon != null) {
-                drawablePadding += icon.getIntrinsicWidth() + paddingDrawable;
-            }
+            final int drawablePadding = icon == null
+                    ? 0
+                    : icon.getIntrinsicWidth() + paddingDrawable;
 
             final RectF rect = new RectF(x, top, x + paint.measureText(text, start, end) + paddingHorizontal * 2 + drawablePadding, bottom);
             paint.setColor(backgroundColor);

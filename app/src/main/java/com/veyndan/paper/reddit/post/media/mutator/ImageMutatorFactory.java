@@ -27,10 +27,12 @@ public final class ImageMutatorFactory implements MutatorFactory {
                 .map(post1 -> {
                     final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
 
-                    Size size = new Size(0, 0);
+                    final Size size;
                     if (imageDimensAvailable) {
                         final Source source = post.getPreview().images.get(0).source;
                         size = new Size(source.width, source.height);
+                    } else {
+                        size = new Size(0, 0);
                     }
 
                     @StringRes final int type = post1.getLinkUrl().endsWith(".gif")
