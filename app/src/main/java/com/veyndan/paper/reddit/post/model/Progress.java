@@ -10,10 +10,12 @@ import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.post.media.mutator.Mutators;
 import com.veyndan.paper.reddit.util.Node;
 
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public final class Progress extends Node<Response<Thing<Listing>>> {
 
@@ -55,24 +57,29 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
     @NonNull
     @Override
     public Observable<Node<Response<Thing<Listing>>>> asObservable() {
-        return getTrigger().takeFirst(Boolean::booleanValue)
+        return getTrigger()
+                .filter(Boolean::booleanValue)
+                .firstElement()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .flatMap(aBoolean -> getRequest().subscribeOn(Schedulers.io()))
                 .map(Response::body)
-                .flatMap(thing -> Observable.from(thing.data.children)
+                .toObservable()
+                .flatMap(thing -> Observable.fromIterable(thing.data.children)
                         .observeOn(Schedulers.computation())
                         .concatMap(redditObject -> {
                             if (redditObject instanceof Submission) {
-                                return Observable.just(redditObject)
+                                return Single.just(redditObject)
                                         .cast(Submission.class)
                                         .map(Post::new)
-                                        .flatMap(Mutators.mutate());
+                                        .flatMap(Mutators.mutate())
+                                        .toObservable();
                             } else if (redditObject instanceof More) {
                                 final More more = (More) redditObject;
-                                return Observable.just(new Builder()
+                                return Single.just(new Builder()
                                         .trigger(Observable.just(true))
                                         .degree(more.count)
-                                        .build());
+                                        .build())
+                                        .toObservable();
                             } else {
                                 throw new IllegalStateException("Unknown node class: " + redditObject);
                             }
@@ -87,7 +94,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
         @IntRange(from = UNKNOWN_DEGREE) private int degree = UNKNOWN_DEGREE;
         @NonNull private Observable<Boolean> trigger = Observable.empty();
-        @NonNull private Observable<Response<Thing<Listing>>> request = Observable.empty();
+        @NonNull private Maybe<Response<Thing<Listing>>> request = Maybe.empty();
 
         @NonNull
         public Builder degree(@IntRange(from = 0) final int degree) {
@@ -102,7 +109,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
         }
 
         @NonNull
-        public Builder request(@NonNull final Observable<Response<Thing<Listing>>> request) {
+        public Builder request(@NonNull final Maybe<Response<Thing<Listing>>> request) {
             this.request = request;
             return this;
         }

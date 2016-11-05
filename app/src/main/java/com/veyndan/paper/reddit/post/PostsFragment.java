@@ -27,8 +27,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import retrofit2.Response;
-import rx.Observable;
 
 public class PostsFragment extends Fragment implements PostMvpView<Response<Thing<Listing>>> {
 
@@ -65,7 +67,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         setRetainInstance(true);
     }
 
-    public void setRequest(final Observable<Response<Thing<Listing>>> request) {
+    public void setRequest(final Maybe<Response<Thing<Listing>>> request) {
         clearNodes();
         postPresenter.loadNode(new Progress.Builder()
                 .trigger(getTrigger())
@@ -144,17 +146,22 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
     }
 
     private Observable<Boolean> getFirstPageTrigger() {
-        return Observable.from(nodes).count().map(integer -> integer == 1);
+        return Observable.fromIterable(nodes)
+                .count()
+                .map(count -> count == 1)
+                .toObservable();
     }
 
     private Observable<Boolean> getNextPageTrigger() {
-        return RxRecyclerView.scrollEvents(recyclerView)
-                .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
-                .map(scrollEvent -> {
-                    final int visibleItemCount = recyclerView.getChildCount();
-                    final int totalItemCount = layoutManager.getItemCount();
-                    final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
-                    return totalItemCount - visibleItemCount <= firstVisibleItem;
-                });
+        return RxJavaInterop.toV2Observable(
+                RxRecyclerView.scrollEvents(recyclerView)
+                        .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
+                        .map(scrollEvent -> {
+                            final int visibleItemCount = recyclerView.getChildCount();
+                            final int totalItemCount = layoutManager.getItemCount();
+                            final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+                            return totalItemCount - visibleItemCount <= firstVisibleItem;
+                        })
+        );
     }
 }

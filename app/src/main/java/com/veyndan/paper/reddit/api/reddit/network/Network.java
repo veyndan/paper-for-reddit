@@ -12,8 +12,8 @@ import com.veyndan.paper.reddit.api.reddit.model.Trophies;
 import java.util.List;
 import java.util.Map;
 
+import io.reactivex.Single;
 import okhttp3.ResponseBody;
-import rx.Observable;
 
 public interface Network {
 
@@ -22,18 +22,18 @@ public interface Network {
     // ================================
 
     //   GET /api/v1/me
-    Observable<Account2> me();
+    Single<Account2> me();
 
     //   GET /api/v1/me/karma
-    Observable<Thing<List<Karma>>> meKarma();
+    Single<Thing<List<Karma>>> meKarma();
 
     //   GET /api/v1/me/prefs
-    Observable<Prefs> mePrefs();
+    Single<Prefs> mePrefs();
 
     // PATCH /api/v1/me/prefs
 
     //   GET /api/v1/me/trophies
-    Observable<Thing<Trophies>> meTrophies();
+    Single<Thing<Trophies>> meTrophies();
 
     //   GET /prefs/where
     //    → /prefs/friends
@@ -48,10 +48,10 @@ public interface Network {
     //   GET /api/needs_captcha
 
     //  POST /api/new_captcha
-    Observable<CaptchaNew> newCaptcha();
+    Single<CaptchaNew> newCaptcha();
 
     //   GET /captcha/iden
-    Observable<ResponseBody> idenCaptcha(String iden);
+    Single<ResponseBody> idenCaptcha(String iden);
 
     // ================================
     //              Flair
@@ -91,10 +91,10 @@ public interface Network {
     //  POST /api/report
 
     //  POST /api/save
-    Observable<ResponseBody> save(String category, String id);
+    Single<ResponseBody> save(String category, String id);
 
     //   GET /api/saved_categories
-    Observable<Categories> savedCategories();
+    Single<Categories> savedCategories();
 
     //  POST /api/sendreplies
     //  POST /api/set_contest_mode
@@ -107,10 +107,10 @@ public interface Network {
     //  POST /api/unmarknsfw
 
     //  POST /api/unsave
-    Observable<ResponseBody> unsave(String id);
+    Single<ResponseBody> unsave(String id);
 
     //  POST /api/vote
-    Observable<ResponseBody> vote(VoteDirection voteDirection, String id);
+    Single<ResponseBody> vote(VoteDirection voteDirection, String id);
 
     // ================================
     //             Listings
@@ -122,9 +122,9 @@ public interface Network {
     //   GET [/r/subreddit]/random
 
     //   GET /r/{subreddit}/{where}
-    Observable<Thing<Listing>> subreddit(String subreddit, Sort sort);
+    Single<Thing<Listing>> subreddit(String subreddit, Sort sort);
 
-    Observable<Thing<Listing>> subreddit(
+    Single<Thing<Listing>> subreddit(
             String subreddit, Sort sort, Map<String, String> queries);
 
     // ================================
@@ -164,7 +164,7 @@ public interface Network {
     //  POST /api/unread_message
 
     //   GET /message/{where}
-    Observable<Thing<Listing>> message(Message message);
+    Single<Thing<Listing>> message(Message message);
 
     // ================================
     //               Misc
@@ -230,7 +230,7 @@ public interface Network {
     // ================================
 
     //   GET [/r/subreddit]/about/{where}
-    Observable<Thing<Listing>> aboutSubreddit(String subreddit, AboutSubreddit aboutSubreddit);
+    Single<Thing<Listing>> aboutSubreddit(String subreddit, AboutSubreddit aboutSubreddit);
 
     //  POST [/r/subreddit]/api/delete_sr_banner
     //  POST [/r/subreddit]/api/delete_sr_header
@@ -251,12 +251,12 @@ public interface Network {
     //   GET [/r/subreddit]/sticky
 
     //   GET /subreddits/mine/{where}
-    Observable<Thing<Listing>> mySubreddits(MySubreddits mySubreddits);
+    Single<Thing<Listing>> mySubreddits(MySubreddits mySubreddits);
 
     //   GET /subreddits/search
 
     //   GET /subreddits/{where}
-    Observable<Thing<Listing>> subreddits(SubredditSort sort);
+    Single<Thing<Listing>> subreddits(SubredditSort sort);
 
     // ================================
     //              Users
@@ -274,7 +274,7 @@ public interface Network {
     //   GET /user/username/about
 
     //   GET /user/{username}/{where}
-    Observable<Thing<Listing>> user(String username, User where);
+    Single<Thing<Listing>> user(String username, User where);
 
     // ================================
     //              Wiki

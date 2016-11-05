@@ -1,5 +1,6 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
 import com.veyndan.paper.reddit.api.xkcd.network.XkcdService;
 import com.veyndan.paper.reddit.post.media.model.Image;
@@ -8,10 +9,10 @@ import com.veyndan.paper.reddit.post.model.Post;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observable;
 
 final class XkcdMutatorFactory implements MutatorFactory {
 
@@ -25,28 +26,28 @@ final class XkcdMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public Observable<Post> mutate(final Post post) {
+    public Maybe<Post> mutate(final Post post) {
         final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
-        return Observable.just(post)
+        return Single.just(post)
                 .filter(post1 -> post1.isLink() && matcher.matches())
                 .flatMap(post1 -> {
                     final int comicNum = Integer.parseInt(matcher.group(1));
 
                     final Retrofit retrofit = new Retrofit.Builder()
-                            .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                             .addConverterFactory(GsonConverterFactory.create())
                             .baseUrl("https://xkcd.com")
                             .build();
 
                     final XkcdService xkcdService = retrofit.create(XkcdService.class);
 
-                    final Observable<Image> imageObservable = xkcdService.num(comicNum)
+                    final Single<Image> imageObservable = xkcdService.num(comicNum)
                             .map(comic -> new Image(comic.getImg()));
 
                     post.setPostHint(PostHint.IMAGE);
 
-                    return imageObservable;
+                    return imageObservable.toMaybe();
                 }, (post1, image) -> {
                     post1.getMedias().add(image);
                     return post1;

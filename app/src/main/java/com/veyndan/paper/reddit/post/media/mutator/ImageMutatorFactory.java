@@ -8,7 +8,8 @@ import com.veyndan.paper.reddit.api.reddit.model.Source;
 import com.veyndan.paper.reddit.post.media.model.Image;
 import com.veyndan.paper.reddit.post.model.Post;
 
-import rx.Observable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 public final class ImageMutatorFactory implements MutatorFactory {
 
@@ -20,8 +21,8 @@ public final class ImageMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public Observable<Post> mutate(final Post post) {
-        return Observable.just(post)
+    public Maybe<Post> mutate(final Post post) {
+        return Single.just(post)
                 .filter(Post::isLink)
                 .filter(post1 -> post1.getPostHint() == PostHint.IMAGE)
                 .map(post1 -> {

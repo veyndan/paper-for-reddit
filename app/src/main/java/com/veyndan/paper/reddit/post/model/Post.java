@@ -30,8 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import retrofit2.Response;
-import rx.Observable;
 
 public class Post extends Node<Response<Thing<Listing>>> {
 
@@ -69,20 +70,22 @@ public class Post extends Node<Response<Thing<Listing>>> {
         isLink = submission instanceof Link;
         isComment = submission instanceof Comment;
 
-        children = Observable.from(submission.getReplies().data.children)
+        children = Observable.fromIterable(submission.getReplies().data.children)
                 .concatMap(redditObject -> {
                     if (redditObject instanceof Submission) {
-                        return Observable.just(redditObject)
+                        return Single.just(redditObject)
                                 .cast(Submission.class)
                                 .map(Post::new)
-                                .flatMap(Mutators.mutate());
+                                .flatMap(Mutators.mutate())
+                                .toObservable();
                     } else if (redditObject instanceof More) {
-                        return Observable.just(redditObject)
+                        return Single.just(redditObject)
                                 .cast(More.class)
                                 .map(more -> new Progress.Builder()
                                         .trigger(Observable.just(true))
                                         .degree(more.count)
-                                        .build());
+                                        .build())
+                                .toObservable();
                     } else {
                         return Observable.error(new IllegalStateException("Unknown node class: " + redditObject));
                     }

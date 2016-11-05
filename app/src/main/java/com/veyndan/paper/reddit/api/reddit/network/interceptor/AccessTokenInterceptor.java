@@ -6,10 +6,11 @@ import com.veyndan.paper.reddit.api.reddit.network.Credentials;
 
 import java.io.IOException;
 
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
-import rx.Observable;
 
 public final class AccessTokenInterceptor implements Interceptor {
 
@@ -28,8 +29,9 @@ public final class AccessTokenInterceptor implements Interceptor {
     public Response intercept(final Chain chain) throws IOException {
         final Request[] accessTokenRequest = {chain.request()};
 
-        Observable.concat(accessTokenCache(), accessTokenNetwork())
-                .first(accessToken -> !accessToken.isExpired())
+        Maybe.concat(accessTokenCache(), accessTokenNetwork())
+                .filter(accessToken -> !accessToken.isExpired())
+                .firstElement()
                 .subscribe(accessToken -> {
                     accessTokenRequest[0] = accessTokenRequest[0].newBuilder()
                             .header("Authorization", "Bearer " + accessToken.getAccessToken())
@@ -39,17 +41,17 @@ public final class AccessTokenInterceptor implements Interceptor {
         return chain.proceed(accessTokenRequest[0]);
     }
 
-    private Observable<AccessToken> accessTokenCache() {
+    private Maybe<AccessToken> accessTokenCache() {
         return accessTokenCache == null
-                ? Observable.empty()
-                : Observable.just(accessTokenCache);
+                ? Maybe.empty()
+                : Maybe.just(accessTokenCache);
     }
 
-    private Observable<AccessToken> accessTokenNetwork() {
-        final Observable<AccessToken> observable = authenticationService.getAccessToken(
+    private Maybe<AccessToken> accessTokenNetwork() {
+        final Single<AccessToken> single = authenticationService.getAccessToken(
                 "password", credentials.getUsername(), credentials.getPassword());
 
         // Save access token from network into the cache.
-        return observable.doOnNext(accessToken -> accessTokenCache = accessToken);
+        return single.doOnSuccess(accessToken -> accessTokenCache = accessToken).toMaybe();
     }
 }

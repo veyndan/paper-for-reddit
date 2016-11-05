@@ -1,12 +1,13 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
-import com.veyndan.paper.reddit.post.model.Post;
 import com.veyndan.paper.reddit.post.media.model.Image;
+import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import rx.Observable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 final class ImgflipMutatorFactory implements MutatorFactory {
 
@@ -20,10 +21,10 @@ final class ImgflipMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public Observable<Post> mutate(final Post post) {
+    public Maybe<Post> mutate(final Post post) {
         final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
-        return Observable.just(post)
+        return Single.just(post)
                 .filter(post1 -> matcher.matches())
                 .map(post1 -> {
                     final String directImageUrl = "https://i.imgflip.com/" + matcher.group(1) + ".jpg";

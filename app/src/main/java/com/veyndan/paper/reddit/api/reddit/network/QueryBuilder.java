@@ -91,7 +91,7 @@ public class QueryBuilder {
     /**
      * The time period in which the query should span e.g. sorting a subreddit by top posts in the
      * last hour, last 24 hours etc.
-     *
+     * <p>
      * #inferred
      */
     public QueryBuilder t(final TimePeriod timePeriod) {

@@ -3,7 +3,8 @@ package com.veyndan.paper.reddit.util;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
-import rx.Observable;
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
 
 public abstract class Node<T> {
 
@@ -12,7 +13,7 @@ public abstract class Node<T> {
     @IntRange(from = 0) private int depth;
     @IntRange(from = UNKNOWN_DESCENDANT_COUNT) private int descendantCount = UNKNOWN_DESCENDANT_COUNT;
     @NonNull private Observable<Boolean> trigger = Observable.empty();
-    @NonNull private Observable<T> request = Observable.empty();
+    @NonNull private Maybe<T> request = Maybe.empty();
 
     @IntRange(from = 0)
     public int getDepth() {
@@ -41,11 +42,11 @@ public abstract class Node<T> {
     }
 
     @NonNull
-    public Observable<T> getRequest() {
+    public Maybe<T> getRequest() {
         return request;
     }
 
-    public void setRequest(@NonNull final Observable<T> request) {
+    public void setRequest(@NonNull final Maybe<T> request) {
         this.request = request;
     }
 
@@ -69,10 +70,12 @@ public abstract class Node<T> {
     private Observable<Integer> generateDescendantCount() {
         return getChildren()
                 .toList()
-                .flatMap(nodes -> Observable.from(nodes)
+                .toObservable()
+                .flatMap(nodes -> Observable.fromIterable(nodes)
                         .flatMap(Node::generateDescendantCount)
                         .concatWith(Observable.just(nodes.size()))
                         .scan((sum, item) -> sum + item))
-                .last();
+                .lastElement()
+                .toObservable();
     }
 }

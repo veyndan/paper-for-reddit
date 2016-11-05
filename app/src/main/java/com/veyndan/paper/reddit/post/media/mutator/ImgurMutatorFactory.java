@@ -3,6 +3,7 @@ package com.veyndan.paper.reddit.post.media.mutator;
 import android.support.annotation.StringRes;
 import android.util.Size;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.veyndan.paper.reddit.Config;
 import com.veyndan.paper.reddit.api.imgur.network.ImgurService;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
@@ -14,13 +15,14 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.reactivex.Maybe;
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observable;
 
 final class ImgurMutatorFactory implements MutatorFactory {
 
@@ -34,10 +36,10 @@ final class ImgurMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public Observable<Post> mutate(final Post post) {
+    public Maybe<Post> mutate(final Post post) {
         final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
-        return Observable.just(post)
+        return Single.just(post)
                 .filter(post1 -> post1.isLink() && matcher.matches())
                 .flatMap(post1 -> {
                     final boolean isAlbum = matcher.group(2) != null;
@@ -66,7 +68,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
                         final Retrofit retrofit = new Retrofit.Builder()
                                 .baseUrl("https://api.imgur.com/3/")
-                                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                                 .addConverterFactory(GsonConverterFactory.create())
                                 .client(client)
                                 .build();
@@ -76,9 +78,10 @@ final class ImgurMutatorFactory implements MutatorFactory {
                         final String id = matcher.group(3);
 
                         return imgurService.album(id)
-                                .flatMap(basic -> Observable.from(basic.data.images))
+                                .flatMapObservable(basic -> Observable.fromIterable(basic.data.images))
                                 .map(image -> new Image(image.link, new Size(image.width, image.height)))
-                                .toList();
+                                .toList()
+                                .toMaybe();
                     } else {
                         final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
 
@@ -98,7 +101,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
                                 ? Image.IMAGE_TYPE_GIF
                                 : Image.IMAGE_TYPE_STANDARD;
 
-                        return Observable.just(Collections.singletonList(new Image(url, size, type)));
+                        return Maybe.just(Collections.singletonList(new Image(url, size, type)));
                     }
                 }, (post1, images) -> {
                     post1.getMedias().addAll(images);

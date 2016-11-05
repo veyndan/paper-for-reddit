@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.veyndan.paper.reddit.api.reddit.model.Account2;
 import com.veyndan.paper.reddit.api.reddit.model.CaptchaNew;
 import com.veyndan.paper.reddit.api.reddit.model.Categories;
@@ -36,15 +37,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.reactivex.Single;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observable;
 
 public final class Reddit {
 
@@ -68,7 +68,7 @@ public final class Reddit {
 
         final Retrofit authenticatorRetrofit = new Retrofit.Builder()
                 .baseUrl("https://www.reddit.com")
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(authenticationClientBuilder.build())
                 .build();
@@ -90,7 +90,7 @@ public final class Reddit {
 
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://oauth.reddit.com/")
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(clientBuilder.build())
                 .build();
@@ -107,19 +107,19 @@ public final class Reddit {
     //             Account
     // ================================
 
-    public Observable<Response<Account2>> me() {
+    public Single<Response<Account2>> me() {
         return redditService.me();
     }
 
-    public Observable<Response<Thing<List<Karma>>>> myKarma() {
+    public Single<Response<Thing<List<Karma>>>> myKarma() {
         return redditService.myKarma();
     }
 
-    public Observable<Response<Prefs>> myPrefs() {
+    public Single<Response<Prefs>> myPrefs() {
         return redditService.myPrefs();
     }
 
-    public Observable<Response<Thing<Trophies>>> myTrophies() {
+    public Single<Response<Thing<Trophies>>> myTrophies() {
         return redditService.myTrophies();
     }
 
@@ -127,11 +127,11 @@ public final class Reddit {
     //             Captcha
     // ================================
 
-    public Observable<Response<CaptchaNew>> newCaptcha() {
+    public Single<Response<CaptchaNew>> newCaptcha() {
         return redditService.newCaptcha("json");
     }
 
-    public Observable<Response<ResponseBody>> idenCaptcha(final String iden) {
+    public Single<Response<ResponseBody>> idenCaptcha(final String iden) {
         return redditService.idenCaptcha(iden);
     }
 
@@ -139,31 +139,31 @@ public final class Reddit {
     //         Links & Comments
     // ================================
 
-    public Observable<Response<ResponseBody>> hide(final String... ids) {
+    public Single<Response<ResponseBody>> hide(final String... ids) {
         return hide(Arrays.asList(ids));
     }
 
-    public Observable<Response<ResponseBody>> hide(final List<String> ids) {
+    public Single<Response<ResponseBody>> hide(final List<String> ids) {
         return redditService.hide(TextUtils.join(",", ids));
     }
 
-    public Observable<MoreChildren> moreChildren(final List<String> children, final String linkId) {
+    public Single<MoreChildren> moreChildren(final List<String> children, final String linkId) {
         return redditService.moreChildren("json", TextUtils.join(",", children), linkId);
     }
 
-    public Observable<Response<ResponseBody>> save(final String category, final String id) {
+    public Single<Response<ResponseBody>> save(final String category, final String id) {
         return redditService.save(category, id);
     }
 
-    public Observable<Response<Categories>> savedCategories() {
+    public Single<Response<Categories>> savedCategories() {
         return redditService.savedCategories();
     }
 
-    public Observable<Response<ResponseBody>> unsave(final String id) {
+    public Single<Response<ResponseBody>> unsave(final String id) {
         return redditService.unsave(id);
     }
 
-    public Observable<Response<ResponseBody>> vote(final VoteDirection voteDirection, final String id) {
+    public Single<Response<ResponseBody>> vote(final VoteDirection voteDirection, final String id) {
         return redditService.vote(voteDirection, id);
     }
 
@@ -171,16 +171,16 @@ public final class Reddit {
     //             Listings
     // ================================
 
-    public Observable<Response<List<Thing<Listing>>>> subredditComments(final String subreddit, final String article) {
+    public Single<Response<List<Thing<Listing>>>> subredditComments(final String subreddit, final String article) {
         return redditService.subredditComments(subreddit, article);
     }
 
-    public Observable<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort) {
+    public Single<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort) {
         return subreddit(subreddit, sort, new QueryBuilder());
     }
 
-    public Observable<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort,
-                                                          final QueryBuilder queryBuilder) {
+    public Single<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort,
+                                                      final QueryBuilder queryBuilder) {
         return redditService.subreddit(subreddit, sort, queryBuilder.build());
     }
 
@@ -188,7 +188,7 @@ public final class Reddit {
     //         Private Messages
     // ================================
 
-    public Observable<Response<Thing<Listing>>> message(final Message message) {
+    public Single<Response<Thing<Listing>>> message(final Message message) {
         return redditService.message(message);
     }
 
@@ -196,15 +196,15 @@ public final class Reddit {
     //            Subreddits
     // ================================
 
-    public Observable<Response<Thing<Listing>>> mySubreddits(final MySubreddits mySubreddits) {
+    public Single<Response<Thing<Listing>>> mySubreddits(final MySubreddits mySubreddits) {
         return redditService.mySubreddits(mySubreddits);
     }
 
-    public Observable<Response<Thing<Listing>>> subreddits(final SubredditSort sort) {
+    public Single<Response<Thing<Listing>>> subreddits(final SubredditSort sort) {
         return redditService.subreddits(sort);
     }
 
-    public Observable<Response<Thing<Subreddit>>> subredditAbout(final String subreddit) {
+    public Single<Response<Thing<Subreddit>>> subredditAbout(final String subreddit) {
         return redditService.subredditAbout(subreddit);
     }
 
@@ -212,25 +212,25 @@ public final class Reddit {
     //              Users
     // ================================
 
-    public Observable<Response<Thing<Listing>>> aboutSubreddit(
+    public Single<Response<Thing<Listing>>> aboutSubreddit(
             final String subreddit, final AboutSubreddit where) {
         return redditService.aboutSubreddit(subreddit, where);
     }
 
-    public Observable<Response<Thing<Trophies>>> userTrophies(final String username) {
+    public Single<Response<Thing<Trophies>>> userTrophies(final String username) {
         return redditService.userTrophies(username);
     }
 
-    public Observable<Response<Thing<Account2>>> userAbout(final String username) {
+    public Single<Response<Thing<Account2>>> userAbout(final String username) {
         return redditService.userAbout(username);
     }
 
-    public Observable<Response<Thing<Listing>>> user(final String username, final User where) {
+    public Single<Response<Thing<Listing>>> user(final String username, final User where) {
         return user(username, where, new QueryBuilder());
     }
 
-    public Observable<Response<Thing<Listing>>> user(final String username, final User where,
-                                                     final QueryBuilder queryBuilder) {
+    public Single<Response<Thing<Listing>>> user(final String username, final User where,
+                                                 final QueryBuilder queryBuilder) {
         return redditService.user(username, where, queryBuilder.build());
     }
 

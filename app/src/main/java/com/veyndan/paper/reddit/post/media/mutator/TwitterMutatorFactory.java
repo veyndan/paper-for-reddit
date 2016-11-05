@@ -10,7 +10,8 @@ import com.veyndan.paper.reddit.post.model.Post;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import rx.Observable;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 final class TwitterMutatorFactory implements MutatorFactory {
 
@@ -24,22 +25,20 @@ final class TwitterMutatorFactory implements MutatorFactory {
     }
 
     @Override
-    public Observable<Post> mutate(final Post post) {
+    public Maybe<Post> mutate(final Post post) {
         final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
-        return Observable.just(post)
+        return Single.just(post)
                 .filter(post1 -> post1.isLink() && matcher.matches())
                 .flatMap(post1 -> {
                     final Long tweetId = Long.parseLong(matcher.group(1));
                     // TODO Replace Observable.create with an Observable returned by Retrofit.
-                    return Observable.create(subscriber -> {
+                    return Maybe.create(subscriber -> {
                         TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
                             @Override
                             public void success(final Result<Tweet> result) {
-                                if (!subscriber.isUnsubscribed()) {
-                                    subscriber.onNext(result.data);
-                                    subscriber.onCompleted();
-                                }
+                                subscriber.onSuccess(result.data);
+                                subscriber.onComplete();
                             }
 
                             @Override

@@ -7,8 +7,8 @@ import com.veyndan.paper.reddit.api.reddit.network.QueryBuilder;
 import com.veyndan.paper.reddit.api.reddit.network.Sort;
 import com.veyndan.paper.reddit.api.reddit.network.User;
 
+import io.reactivex.Single;
 import retrofit2.Response;
-import rx.Observable;
 
 public class RequestBuilder {
 
@@ -50,7 +50,7 @@ public class RequestBuilder {
         return this;
     }
 
-    public Observable<Response<Thing<Listing>>> build() {
+    public Single<Response<Thing<Listing>>> build() {
         switch (type) {
             case TYPE_SUBREDDIT:
                 return reddit.subreddit(subreddit, sort, query);

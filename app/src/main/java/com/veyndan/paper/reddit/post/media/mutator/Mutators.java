@@ -5,8 +5,9 @@ import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.List;
 
-import rx.Observable;
-import rx.functions.Func1;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.functions.Function;
 
 public final class Mutators {
 
@@ -45,9 +46,9 @@ public final class Mutators {
     /**
      * Mutate a list of posts by the first mutator which is applicable to mutate the post.
      */
-    public static Func1<Post, Observable<Post>> mutate() {
-        return post -> Observable.from(MUTATOR_FACTORIES)
-                .concatMap(mutatorFactory -> mutatorFactory.mutate(post))
-                .firstOrDefault(post);
+    public static Function<Post, Single<Post>> mutate() {
+        return post -> Observable.fromIterable(MUTATOR_FACTORIES)
+                .concatMap(mutatorFactory -> mutatorFactory.mutate(post).toObservable())
+                .first(post);
     }
 }

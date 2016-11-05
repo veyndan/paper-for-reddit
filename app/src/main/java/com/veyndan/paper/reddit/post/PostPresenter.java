@@ -8,10 +8,10 @@ import com.veyndan.paper.reddit.util.Node;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listing>>>> {
 
@@ -34,7 +34,7 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
     public void loadNodes(final List<Node<Response<Thing<Listing>>>> nodes) {
         postMvpView.appendNodes(nodes);
 
-        Observable.from(nodes)
+        Observable.fromIterable(nodes)
                 .flatMap(Node::asObservable)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

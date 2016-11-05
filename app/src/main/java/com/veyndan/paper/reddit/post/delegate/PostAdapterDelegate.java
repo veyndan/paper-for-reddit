@@ -51,8 +51,8 @@ import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
-import rx.schedulers.Schedulers;
 
 public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thing<Listing>>>>> {
 

@@ -19,8 +19,8 @@ import com.veyndan.paper.reddit.api.reddit.network.User;
 import com.veyndan.paper.reddit.post.PostsFragment;
 
 import butterknife.ButterKnife;
+import io.reactivex.Maybe;
 import retrofit2.Response;
-import rx.Observable;
 
 @DeepLink({
         "http://reddit.com/u/{" + Filter.USER_NAME + '}',
@@ -42,14 +42,14 @@ public class MainActivity extends BaseActivity {
 
         final Intent intent = getIntent();
 
-        final Observable<Response<Thing<Listing>>> defaultRequest = Request.subreddit("all", Sort.HOT);
-        final Observable<Response<Thing<Listing>>> mergedFilters = mergeFilters(intent.getExtras(), defaultRequest);
+        final Maybe<Response<Thing<Listing>>> defaultRequest = Request.subreddit("all", Sort.HOT);
+        final Maybe<Response<Thing<Listing>>> mergedFilters = mergeFilters(intent.getExtras(), defaultRequest);
         postsFragment.setRequest(mergedFilters);
     }
 
     @NonNull
-    private Observable<Response<Thing<Listing>>> mergeFilters(@Nullable final Bundle bundle,
-                                                              @NonNull final Observable<Response<Thing<Listing>>> defaultRequest) {
+    private Maybe<Response<Thing<Listing>>> mergeFilters(@Nullable final Bundle bundle,
+                                                         @NonNull final Maybe<Response<Thing<Listing>>> defaultRequest) {
         if (bundle == null) {
             return defaultRequest;
         }
@@ -57,7 +57,7 @@ public class MainActivity extends BaseActivity {
         if (bundle.containsKey(Filter.COMMENTS_SUBREDDIT)) {
             final String subreddit = bundle.getString(Filter.COMMENTS_SUBREDDIT);
             final String article = bundle.getString(Filter.COMMENTS_ARTICLE);
-            return Request.comments(subreddit, article);
+            return Request.comments(subreddit, article).toMaybe();
         }
 
         final TimePeriod[] timePeriods = {
