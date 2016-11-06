@@ -6,7 +6,6 @@ import com.veyndan.paper.reddit.api.reddit.network.Credentials;
 
 import java.io.IOException;
 
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -17,7 +16,7 @@ public final class AccessTokenInterceptor implements Interceptor {
     private final AuthenticationService authenticationService;
     private final Credentials credentials;
 
-    private AccessToken accessTokenCache;
+    private AccessToken accessTokenCache = AccessToken.EXPIRED_ACCESS_TOKEN;
 
     public AccessTokenInterceptor(final AuthenticationService authenticationService,
                                   final Credentials credentials) {
@@ -27,31 +26,28 @@ public final class AccessTokenInterceptor implements Interceptor {
 
     @Override
     public Response intercept(final Chain chain) throws IOException {
-        final Request[] accessTokenRequest = {chain.request()};
+        final Request unauthorizedRequest = chain.request();
 
-        Maybe.concat(accessTokenCache(), accessTokenNetwork())
+        final Request authorizedRequest = Single.concat(accessTokenCache(), accessTokenNetwork())
                 .filter(accessToken -> !accessToken.isExpired())
                 .firstElement()
-                .subscribe(accessToken -> {
-                    accessTokenRequest[0] = accessTokenRequest[0].newBuilder()
-                            .header("Authorization", "Bearer " + accessToken.getAccessToken())
-                            .build();
-                });
+                .map(accessToken -> unauthorizedRequest.newBuilder()
+                        .header("Authorization", "Bearer " + accessToken.getAccessToken())
+                        .build())
+                .blockingGet();
 
-        return chain.proceed(accessTokenRequest[0]);
+        return chain.proceed(authorizedRequest);
     }
 
-    private Maybe<AccessToken> accessTokenCache() {
-        return accessTokenCache == null
-                ? Maybe.empty()
-                : Maybe.just(accessTokenCache);
+    private Single<AccessToken> accessTokenCache() {
+        return Single.just(accessTokenCache);
     }
 
-    private Maybe<AccessToken> accessTokenNetwork() {
+    private Single<AccessToken> accessTokenNetwork() {
         final Single<AccessToken> single = authenticationService.getAccessToken(
                 "password", credentials.getUsername(), credentials.getPassword());
 
         // Save access token from network into the cache.
-        return single.doOnSuccess(accessToken -> accessTokenCache = accessToken).toMaybe();
+        return single.doOnSuccess(accessToken -> accessTokenCache = accessToken);
     }
 }

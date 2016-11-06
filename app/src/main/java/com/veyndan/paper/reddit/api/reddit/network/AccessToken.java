@@ -3,6 +3,14 @@ package com.veyndan.paper.reddit.api.reddit.network;
 import java.util.concurrent.TimeUnit;
 
 public final class AccessToken {
+
+    public static final AccessToken EXPIRED_ACCESS_TOKEN;
+
+    static {
+        EXPIRED_ACCESS_TOKEN = new AccessToken();
+        EXPIRED_ACCESS_TOKEN.expiresIn = -1;
+    }
+
     private String accessToken;
     private String tokenType;
 
