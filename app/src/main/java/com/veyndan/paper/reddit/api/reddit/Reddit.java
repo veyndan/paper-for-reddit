@@ -53,20 +53,26 @@ public final class Reddit {
                 .registerTypeAdapter(RedditObject.class, new RedditObjectDeserializer())
                 .create();
 
-        final OkHttpClient.Builder authenticationClientBuilder = new OkHttpClient.Builder()
+        final GsonConverterFactory jsonConverterFactory = GsonConverterFactory.create(gson);
+
+        final RxJava2CallAdapterFactory rxJava2CallAdapterFactory = RxJava2CallAdapterFactory.create();
+
+        final OkHttpClient client = new OkHttpClient();
+
+        final OkHttpClient.Builder authenticationClientBuilder = client.newBuilder()
                 .addInterceptor(new UserAgentInterceptor(credentials.getUserAgent()))
                 .addInterceptor(new AuthorizationInterceptor(credentials));
 
         final Retrofit authenticatorRetrofit = new Retrofit.Builder()
                 .baseUrl("https://www.reddit.com")
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(rxJava2CallAdapterFactory)
+                .addConverterFactory(jsonConverterFactory)
                 .client(authenticationClientBuilder.build())
                 .build();
 
         final AuthenticationService authenticationService = authenticatorRetrofit.create(AuthenticationService.class);
 
-        final OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+        final OkHttpClient.Builder clientBuilder = client.newBuilder()
                 .addInterceptor(new UserAgentInterceptor(credentials.getUserAgent()))
                 .addInterceptor(new AccessTokenInterceptor(authenticationService, credentials))
                 .addInterceptor(new RawJsonInterceptor());
@@ -77,8 +83,8 @@ public final class Reddit {
 
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://oauth.reddit.com/")
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(rxJava2CallAdapterFactory)
+                .addConverterFactory(jsonConverterFactory)
                 .client(clientBuilder.build())
                 .build();
 
