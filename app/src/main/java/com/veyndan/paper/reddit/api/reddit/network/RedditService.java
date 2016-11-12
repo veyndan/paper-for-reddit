@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Single;
-import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -52,7 +51,7 @@ public interface RedditService {
     Single<Response<CaptchaNew>> newCaptcha(@Field("api_type") String apiType);
 
     @GET("captcha/{iden}")
-    Single<Response<ResponseBody>> idenCaptcha(@Path("iden") String iden);
+    Single<Response<Void>> idenCaptcha(@Path("iden") String iden);
 
     // ================================
     //         Links & Comments
@@ -60,7 +59,7 @@ public interface RedditService {
 
     @FormUrlEncoded
     @POST("api/hide")
-    Single<Response<ResponseBody>> hide(@Field("id") String ids);
+    Single<Response<Void>> hide(@Field("id") String ids);
 
     @GET("api/morechildren")
     Single<MoreChildren> moreChildren(@Query("api_type") String apiType,
@@ -69,18 +68,18 @@ public interface RedditService {
 
     @FormUrlEncoded
     @POST("api/save")
-    Single<Response<ResponseBody>> save(@Field("category") String category, @Field("id") String id);
+    Single<Response<Void>> save(@Field("category") String category, @Field("id") String id);
 
     @GET("api/saved_categories")
     Single<Response<Categories>> savedCategories();
 
     @FormUrlEncoded
     @POST("api/unsave")
-    Single<Response<ResponseBody>> unsave(@Field("id") String id);
+    Single<Response<Void>> unsave(@Field("id") String id);
 
     @FormUrlEncoded
     @POST("api/vote")
-    Single<Response<ResponseBody>> vote(
+    Single<Response<Void>> vote(
             @Field("dir") VoteDirection voteDirection, @Field("id") String id);
 
     // ================================

@@ -40,7 +40,6 @@ import java.util.List;
 import io.reactivex.Single;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -131,7 +130,7 @@ public final class Reddit {
         return redditService.newCaptcha("json");
     }
 
-    public Single<Response<ResponseBody>> idenCaptcha(final String iden) {
+    public Single<Response<Void>> idenCaptcha(final String iden) {
         return redditService.idenCaptcha(iden);
     }
 
@@ -139,11 +138,11 @@ public final class Reddit {
     //         Links & Comments
     // ================================
 
-    public Single<Response<ResponseBody>> hide(final String... ids) {
+    public Single<Response<Void>> hide(final String... ids) {
         return hide(Arrays.asList(ids));
     }
 
-    public Single<Response<ResponseBody>> hide(final List<String> ids) {
+    public Single<Response<Void>> hide(final List<String> ids) {
         return redditService.hide(TextUtils.join(",", ids));
     }
 
@@ -151,7 +150,7 @@ public final class Reddit {
         return redditService.moreChildren("json", TextUtils.join(",", children), linkId);
     }
 
-    public Single<Response<ResponseBody>> save(final String category, final String id) {
+    public Single<Response<Void>> save(final String category, final String id) {
         return redditService.save(category, id);
     }
 
@@ -159,11 +158,11 @@ public final class Reddit {
         return redditService.savedCategories();
     }
 
-    public Single<Response<ResponseBody>> unsave(final String id) {
+    public Single<Response<Void>> unsave(final String id) {
         return redditService.unsave(id);
     }
 
-    public Single<Response<ResponseBody>> vote(final VoteDirection voteDirection, final String id) {
+    public Single<Response<Void>> vote(final VoteDirection voteDirection, final String id) {
         return redditService.vote(voteDirection, id);
     }
 
