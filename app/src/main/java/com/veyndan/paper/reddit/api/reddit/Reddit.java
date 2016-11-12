@@ -33,12 +33,10 @@ import com.veyndan.paper.reddit.api.reddit.network.interceptor.AuthorizationInte
 import com.veyndan.paper.reddit.api.reddit.network.interceptor.RawJsonInterceptor;
 import com.veyndan.paper.reddit.api.reddit.network.interceptor.UserAgentInterceptor;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import io.reactivex.Single;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Response;
@@ -49,9 +47,7 @@ public final class Reddit {
 
     private final RedditService redditService;
 
-    private Reddit(final Builder builder) {
-        final Credentials credentials = builder.credentials;
-
+    public Reddit(final Credentials credentials) {
         final Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(RedditObject.class, new RedditObjectDeserializer())
@@ -60,10 +56,6 @@ public final class Reddit {
         final OkHttpClient.Builder authenticationClientBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new UserAgentInterceptor(credentials.getUserAgent()))
                 .addInterceptor(new AuthorizationInterceptor(credentials));
-
-        for (final Interceptor interceptor : builder.networkInterceptors) {
-            authenticationClientBuilder.addNetworkInterceptor(interceptor);
-        }
 
         final Retrofit authenticatorRetrofit = new Retrofit.Builder()
                 .baseUrl("https://www.reddit.com")
@@ -81,10 +73,6 @@ public final class Reddit {
 
         if (Config.DEBUG) {
             clientBuilder.addInterceptor(loggingInterceptor());
-        }
-
-        for (final Interceptor interceptor : builder.networkInterceptors) {
-            clientBuilder.addNetworkInterceptor(interceptor);
         }
 
         final Retrofit retrofit = new Retrofit.Builder()
@@ -231,24 +219,5 @@ public final class Reddit {
     public Single<Response<Thing<Listing>>> user(final String username, final User where,
                                                  final QueryBuilder queryBuilder) {
         return redditService.user(username, where, queryBuilder.build());
-    }
-
-    public static class Builder {
-
-        private final Credentials credentials;
-        private final List<Interceptor> networkInterceptors = new ArrayList<>();
-
-        public Builder(final Credentials credentials) {
-            this.credentials = credentials;
-        }
-
-        public Builder addNetworkInterceptor(final Interceptor interceptor) {
-            networkInterceptors.add(interceptor);
-            return this;
-        }
-
-        public Reddit build() {
-            return new Reddit(this);
-        }
     }
 }

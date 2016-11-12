@@ -15,7 +15,7 @@ import retrofit2.Response;
 
 public final class Request {
 
-    private static final Reddit REDDIT = new Reddit.Builder(Config.REDDIT_CREDENTIALS).build();
+    private static final Reddit REDDIT = new Reddit(Config.REDDIT_CREDENTIALS);
 
     public static Maybe<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort) {
         return subreddit(subreddit, sort, new QueryBuilder());

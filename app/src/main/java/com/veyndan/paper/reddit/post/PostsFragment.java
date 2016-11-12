@@ -58,7 +58,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         super.onAttach(context);
         postPresenter.attachView(this);
 
-        reddit = new Reddit.Builder(Config.REDDIT_CREDENTIALS).build();
+        reddit = new Reddit(Config.REDDIT_CREDENTIALS);
     }
 
     @Override
