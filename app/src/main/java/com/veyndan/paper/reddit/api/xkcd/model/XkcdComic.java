@@ -1,14 +1,15 @@
 package com.veyndan.paper.reddit.api.xkcd.model;
 
-public class XkcdComic {
+import com.google.auto.value.AutoValue;
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
 
-    private final String img;
+@AutoValue
+public abstract class XkcdComic {
 
-    public XkcdComic(final String img) {
-        this.img = img;
-    }
+    public abstract String img();
 
-    public String getImg() {
-        return img;
+    public static TypeAdapter<XkcdComic> typeAdapter(final Gson gson) {
+        return new AutoValue_XkcdComic.GsonTypeAdapter(gson);
     }
 }

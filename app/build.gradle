@@ -51,6 +51,14 @@ dependencies {
     // Apache Commons
     compile 'org.apache.commons:commons-lang3:3.4'
 
+    // Auto Value
+    apt 'com.google.auto.value:auto-value:1.2'
+    provided 'com.google.auto.value:auto-value:1.2'
+
+    // Auto Value Gson
+    apt 'com.ryanharter.auto.value:auto-value-gson:0.4.4'
+    provided 'com.ryanharter.auto.value:auto-value-gson:0.4.4'
+
     // Butterknife
     compile 'com.jakewharton:butterknife:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'

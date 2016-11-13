@@ -1,5 +1,9 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-public class MoreChildren {
-    public Json json;
+import com.google.auto.value.AutoValue;
+
+@AutoValue
+public abstract class MoreChildren {
+
+    public abstract Json json();
 }

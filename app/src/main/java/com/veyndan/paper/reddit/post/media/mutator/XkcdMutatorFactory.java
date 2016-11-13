@@ -1,7 +1,10 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
+import com.veyndan.paper.reddit.api.xkcd.XkcdAdapterFactory;
 import com.veyndan.paper.reddit.api.xkcd.network.XkcdService;
 import com.veyndan.paper.reddit.post.media.model.Image;
 import com.veyndan.paper.reddit.post.model.Post;
@@ -34,16 +37,20 @@ final class XkcdMutatorFactory implements MutatorFactory {
                 .flatMap(post1 -> {
                     final int comicNum = Integer.parseInt(matcher.group(1));
 
+                    final Gson gson = new GsonBuilder()
+                            .registerTypeAdapterFactory(XkcdAdapterFactory.create())
+                            .create();
+
                     final Retrofit retrofit = new Retrofit.Builder()
                             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                            .addConverterFactory(GsonConverterFactory.create())
+                            .addConverterFactory(GsonConverterFactory.create(gson))
                             .baseUrl("https://xkcd.com")
                             .build();
 
                     final XkcdService xkcdService = retrofit.create(XkcdService.class);
 
                     final Single<Image> imageObservable = xkcdService.num(comicNum)
-                            .map(comic -> new Image(comic.getImg()));
+                            .map(comic -> new Image(comic.img()));
 
                     post.setPostHint(PostHint.IMAGE);
 

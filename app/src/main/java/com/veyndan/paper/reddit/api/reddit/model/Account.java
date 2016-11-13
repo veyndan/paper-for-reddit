@@ -1,7 +1,19 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-public class Account {
-    public long date;
-    public String name;
-    public String id;
+import com.google.auto.value.AutoValue;
+import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
+
+@AutoValue
+public abstract class Account {
+
+    public abstract long date();
+
+    public abstract String name();
+
+    public abstract String id();
+
+    public static TypeAdapter<Account> typeAdapter(final Gson gson) {
+        return new AutoValue_Account.GsonTypeAdapter(gson);
+    }
 }

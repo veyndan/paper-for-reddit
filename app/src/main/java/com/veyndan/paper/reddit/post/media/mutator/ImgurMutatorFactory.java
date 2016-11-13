@@ -3,8 +3,11 @@ package com.veyndan.paper.reddit.post.media.mutator;
 import android.support.annotation.StringRes;
 import android.util.Size;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.veyndan.paper.reddit.Config;
+import com.veyndan.paper.reddit.api.imgur.ImgurAdapterFactory;
 import com.veyndan.paper.reddit.api.imgur.network.ImgurService;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
 import com.veyndan.paper.reddit.api.reddit.model.Source;
@@ -66,10 +69,14 @@ final class ImgurMutatorFactory implements MutatorFactory {
                                 })
                                 .build();
 
+                        final Gson gson = new GsonBuilder()
+                                .registerTypeAdapterFactory(ImgurAdapterFactory.create())
+                                .create();
+
                         final Retrofit retrofit = new Retrofit.Builder()
                                 .baseUrl("https://api.imgur.com/3/")
                                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                                .addConverterFactory(GsonConverterFactory.create())
+                                .addConverterFactory(GsonConverterFactory.create(gson))
                                 .client(client)
                                 .build();
 
@@ -78,8 +85,8 @@ final class ImgurMutatorFactory implements MutatorFactory {
                         final String id = matcher.group(3);
 
                         return imgurService.album(id)
-                                .flatMapObservable(basic -> Observable.fromIterable(basic.data.images))
-                                .map(image -> new Image(image.link, new Size(image.width, image.height)))
+                                .flatMapObservable(basic -> Observable.fromIterable(basic.data().images()))
+                                .map(image -> new Image(image.link(), new Size(image.width(), image.height())))
                                 .toList()
                                 .toMaybe();
                     } else {

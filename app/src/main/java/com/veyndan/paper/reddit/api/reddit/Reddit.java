@@ -51,6 +51,7 @@ public final class Reddit {
         final Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(RedditObject.class, new RedditObjectDeserializer())
+                .registerTypeAdapterFactory(RedditAdapterFactory.create())
                 .create();
 
         final GsonConverterFactory jsonConverterFactory = GsonConverterFactory.create(gson);
