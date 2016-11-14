@@ -27,13 +27,16 @@ import android.widget.TextView;
 
 import com.binaryfork.spanny.Spanny;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Splitter;
 import com.veyndan.paper.reddit.Filter;
 import com.veyndan.paper.reddit.MainActivity;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.post.Flair;
 import com.veyndan.paper.reddit.util.Linkifier;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindDimen;
 import butterknife.ButterKnife;
@@ -69,6 +72,60 @@ public class PostHeaderView extends TextView {
         titleTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostTitleTextAppearance);
         subtitleTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostSubtitleTextAppearance);
         flairTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostFlairTextAppearance);
+
+        if (isInEditMode()) {
+            final String text = getText().toString();
+
+            final int flairStickiedColor = ContextCompat.getColor(context, R.color.post_flair_stickied);
+            final int flairNsfwColor = ContextCompat.getColor(context, R.color.post_flair_nsfw);
+            final int flairLinkColor = ContextCompat.getColor(context, R.color.post_flair_link);
+            final int flairGildedColor = ContextCompat.getColor(context, R.color.post_flair_gilded);
+
+            final Drawable flairGildedIcon = context.getDrawable(R.drawable.ic_star_white_12sp);
+
+            final String flairStickiedText = context.getString(R.string.post_stickied);
+            final String flairNsfwText = context.getString(R.string.post_nsfw);
+
+            // Using regex (Pattern and Matcher) doesn't seem to work in edit mode.
+            final Map<String, String> properties = Splitter.on(',').withKeyValueSeparator(':').split(text);
+
+            final String title = properties.get("title");
+            final String author = properties.get("author");
+            final CharSequence age = properties.get("age");
+            final String subreddit = properties.get("subreddit");
+            final List<Flair> flairs = new ArrayList<>(4);
+
+            if (Boolean.valueOf(properties.getOrDefault("stickied", "false"))) {
+                flairs.add(new Flair.Builder(flairStickiedColor)
+                        .text(flairStickiedText)
+                        .build());
+            }
+
+            if (Boolean.valueOf(properties.getOrDefault("nsfw", "false"))) {
+                flairs.add(new Flair.Builder(flairNsfwColor)
+                        .text(flairNsfwText)
+                        .build());
+            }
+
+            if (properties.containsKey("linkFlair")) {
+                flairs.add(new Flair.Builder(flairLinkColor)
+                        .text(properties.get("linkFlair"))
+                        .build());
+            }
+
+            if (properties.containsKey("gildedCount")) {
+                flairs.add(new Flair.Builder(flairGildedColor)
+                        .text(properties.get("gildedCount"))
+                        .icon(flairGildedIcon)
+                        .build());
+            }
+
+            if (title == null || author == null || age == null || subreddit == null) {
+                throw new IllegalStateException("title, author, age, and subreddit must be set");
+            }
+
+            setHeader(title, author, age, subreddit, flairs);
+        }
     }
 
     public void setHeader(final String title, final String author, final CharSequence age,
