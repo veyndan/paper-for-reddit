@@ -14,7 +14,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.LineHeightSpan;
@@ -32,14 +34,17 @@ import com.veyndan.paper.reddit.Filter;
 import com.veyndan.paper.reddit.MainActivity;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.post.Flair;
+import com.veyndan.paper.reddit.ui.TextBuilder;
 import com.veyndan.paper.reddit.util.Linkifier;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import butterknife.BindDimen;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class PostHeaderView extends TextView {
 
@@ -129,7 +134,125 @@ public class PostHeaderView extends TextView {
     }
 
     public void setHeader(final String title, final String author, final CharSequence age,
-                          final String subreddit, @NonNull final List<Flair> flairs) {
+                          final String subreddit, @NonNull final Collection<Flair> flairs) {
+        final CharSequence titleSpannable = new TextBuilder(context, title + '\n')
+                .padding(0, 0, 0, titleSubtitleSpacing)
+                .textAppearance(R.style.PostTitleTextAppearance)
+                .build();
+
+        final CharSequence authorSpannable = new TextBuilder(context, author)
+                .onClick(view -> {
+                    final Intent intent = new Intent(context, MainActivity.class);
+                    intent.putExtra(Filter.USER_NAME, author);
+                    intent.putExtra(Filter.USER_COMMENTS, true);
+                    intent.putExtra(Filter.USER_SUBMITTED, true);
+                    context.startActivity(intent);
+                })
+                .padding(0, 0, 0, flairs.isEmpty() ? 0 : subtitleFlairSpacing)
+                .textAppearance(R.style.PostSubtitleTextAppearance)
+                .build();
+
+        final String subtitleDelimiter = " · ";
+
+        final CharSequence ageSpannable = new TextBuilder(context, subtitleDelimiter + age + subtitleDelimiter)
+                .textAppearance(R.style.PostSubtitleTextAppearance)
+                .build();
+
+        final CharSequence subredditSpannable = new TextBuilder(context, subreddit)
+                .onClick(view -> {
+                    final Intent intent = new Intent(context, MainActivity.class);
+                    intent.putExtra(Filter.SUBREDDIT_NAME, subreddit);
+                    context.startActivity(intent);
+                })
+                .textAppearance(R.style.PostSubtitleTextAppearance)
+                .build();
+
+        final SpannableStringBuilder spannable = new SpannableStringBuilder()
+                .append(titleSpannable)
+                .append(authorSpannable)
+                .append(ageSpannable)
+                .append(subredditSpannable);
+
+        if (!flairs.isEmpty()) {
+            spannable.append("\n");
+            for (final Flair flair : flairs) {
+                final FlairBackgroundSpan flairBackgroundSpan = new FlairBackgroundSpan(context,
+                        flair.getBackgroundColor(), flair.getIcon());
+
+                final String tag = MoreObjects.firstNonNull(flair.getText(), "");
+
+                final CharSequence flairSpannable = new TextBuilder(context, Spanny.spanText(tag, flairStyleSpan, flairBackgroundSpan))
+                        .textAppearance(R.style.PostFlairTextAppearance)
+                        .textStyle(Typeface.BOLD)
+                        .build();
+
+                spannable.append(flairSpannable);
+            }
+        }
+
+        setText(spannable);
+    }
+
+    private static class PaddingSpan implements LineHeightSpan {
+
+        private final int paddingBottom;
+
+        PaddingSpan(final int paddingBottom) {
+            this.paddingBottom = paddingBottom;
+        }
+
+        @Override
+        public void chooseHeight(final CharSequence text, final int start, final int end,
+                                 final int spanstartv, final int v, final Paint.FontMetricsInt fm) {
+            final String[] subsections = TextUtils.split(text.toString(), "\n");
+
+            final String subsection = end <= subsections[0].length() + 1 ? subsections[0] : subsections[1];
+
+            final int startSubsection = subsection.equals(subsections[0]) ? start : start - subsections[0].length();
+            final int endSubsection = subsection.equals(subsections[0]) ? end : end - subsections[0].length();
+
+            Timber.d("start=%3d end=%3d startSubsection=%3d endSubsection=%3d", start, end, startSubsection, endSubsection);
+
+            final String a = subsection.substring(startSubsection, Math.min(subsection.length(), endSubsection));
+            final boolean b = subsection.endsWith(a);
+
+            Timber.d(a);
+            Timber.d(String.valueOf(b));
+
+            if (b) {
+                fm.bottom += paddingBottom;
+                fm.descent += paddingBottom;
+            }
+        }
+    }
+
+    public void setHeader1(final String title, final String author, final CharSequence age,
+                           final String subreddit, @NonNull final List<Flair> flairs) {
+        final LineHeightSpan textLineHeightSpan = new LineHeightSpan.WithDensity() {
+            @Override
+            public void chooseHeight(final CharSequence text, final int start, final int end,
+                                     final int spanstartv, final int v,
+                                     final Paint.FontMetricsInt fm) {
+                chooseHeight(text, start, end, spanstartv, v, fm, null);
+            }
+
+            @Override
+            public void chooseHeight(final CharSequence text, final int start, final int end,
+                                     final int spanstartv, final int v,
+                                     final Paint.FontMetricsInt fm, final TextPaint paint) {
+
+                Timber.d("text=%s start=%s end=%s spanstartv=%s v=%s", text, start, end, spanstartv, v);
+                Timber.d("lineIndex=%s string=%s", end - start, text.subSequence(start, end));
+
+                Timber.d(text.toString().substring(0, text.toString().indexOf('\n')));
+
+                if (text.toString().substring(0, text.toString().indexOf('\n')).contains(text.subSequence(start, end).toString())) {
+                    fm.bottom += 100;
+                    fm.descent += 100;
+                }
+            }
+        };
+
         final LineHeightSpan subtitleLineHeightSpan = new LineHeightSpan.WithDensity() {
             @Override
             public void chooseHeight(final CharSequence text, final int start, final int end,
@@ -189,13 +312,13 @@ public class PostHeaderView extends TextView {
         final Spanny spanny = new Spanny();
 
         if (title != null) {
-            spanny.append(title, titleTextAppearanceSpan)
+            spanny.append(title, titleTextAppearanceSpan, new PaddingSpan(titleSubtitleSpacing))
                     .append("\n");
 
             Linkifier.addLinks(context, spanny);
         }
 
-        spanny.append(subtitle, subtitleTextAppearanceSpan, subtitleLineHeightSpan);
+        spanny.append(subtitle, subtitleTextAppearanceSpan, new PaddingSpan(flairs.isEmpty() ? 0 : subtitleFlairSpacing));
 
         if (!flairs.isEmpty()) {
             spanny.append("\n");
