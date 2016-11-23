@@ -45,26 +45,109 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private boolean descendantsVisible;
 
     private final boolean archived;
-    private final String author;
     private final String bodyHtml;
-    private final long createdUtc;
     private final String domain;
     private final String fullname;
-    private final int gildedCount;
     private final boolean hideable;
     private VoteDirection likes;
-    private final String linkFlair;
-    private final String linkTitle;
     private String linkUrl;
-    private final boolean nsfw;
     private final String permalink;
     private int points;
     private PostHint postHint;
     private final Preview preview;
     private boolean saved;
     private final boolean scoreHidden;
-    private final boolean stickied;
-    private final String subreddit;
+
+    public static List<?> create(final Submission submission) {
+        final String author = submission.author == null ? "" : submission.author;
+        final long createdUtc = submission.createdUtc;
+        final int gildedCount = submission.gilded;
+        final boolean stickied = submission.stickied;
+        final String linkFlair = submission.getLinkFlairText();
+        final String linkTitle = submission.linkTitle;
+        final boolean nsfw = submission.isOver18();
+        final String subreddit = submission.subreddit;
+
+        final Title title = new Title(author, createdUtc, gildedCount, linkFlair, linkTitle, nsfw,
+                stickied, subreddit);
+
+        final List<Object> particles = new ArrayList<>();
+        particles.add(title);
+        return particles;
+    }
+
+    public static final class Title {
+
+        private final String author;
+        private final long createdUtc;
+        private final int gildedCount;
+        private final String linkFlair;
+        private final String linkTitle;
+        private final boolean nsfw;
+        private final boolean stickied;
+        private final String subreddit;
+
+        private Title(final String author, final long createdUtc, final int gildedCount,
+                      final String linkFlair, final String linkTitle, final boolean nsfw,
+                      final boolean stickied, final String subreddit) {
+            this.author = author;
+            this.createdUtc = createdUtc;
+            this.gildedCount = gildedCount;
+            this.linkFlair = linkFlair;
+            this.linkTitle = linkTitle;
+            this.nsfw = nsfw;
+            this.stickied = stickied;
+            this.subreddit = subreddit;
+        }
+
+        public String getAuthor() {
+            return author;
+        }
+
+        public long getCreatedUtc() {
+            return createdUtc;
+        }
+
+        public boolean isGilded() {
+            return gildedCount > 0;
+        }
+
+        public int getGildedCount() {
+            return gildedCount;
+        }
+
+        public boolean hasLinkFlair() {
+            return !TextUtils.isEmpty(linkFlair);
+        }
+
+        public String getLinkFlair() {
+            return linkFlair;
+        }
+
+        public String getLinkTitle() {
+            return linkTitle;
+        }
+
+        public boolean isNsfw() {
+            return nsfw;
+        }
+
+        public boolean isStickied() {
+            return stickied;
+        }
+
+        public String getSubreddit() {
+            return subreddit;
+        }
+
+        public CharSequence getDisplayAge() {
+            return DateUtils.getRelativeTimeSpanString(
+                    TimeUnit.SECONDS.toMillis(createdUtc), System.currentTimeMillis(),
+                    DateUtils.SECOND_IN_MILLIS,
+                    DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON
+                            | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
+        }
+    }
 
     public Post(@NonNull final Submission submission) {
         isLink = submission instanceof Link;
@@ -96,18 +179,12 @@ public class Post extends Node<Response<Thing<Listing>>> {
         descendantsVisible = isComment;
 
         archived = submission.archived;
-        author = submission.author == null ? "" : submission.author;
         bodyHtml = submission.bodyHtml;
-        createdUtc = submission.createdUtc;
         domain = submission.getDomain();
         fullname = submission.getFullname();
-        gildedCount = submission.gilded;
         hideable = isLink;
         likes = submission.getLikes();
-        linkFlair = submission.getLinkFlairText();
-        linkTitle = submission.linkTitle;
         linkUrl = submission.linkUrl == null ? "" : submission.linkUrl;
-        nsfw = submission.isOver18();
         permalink = submission.getPermalink();
         points = submission.score;
 
@@ -116,8 +193,6 @@ public class Post extends Node<Response<Thing<Listing>>> {
         preview = submission.getPreview();
         saved = submission.saved;
         scoreHidden = submission.scoreHidden;
-        stickied = submission.stickied;
-        subreddit = submission.subreddit;
     }
 
     public List<Object> getMedias() {
@@ -136,10 +211,6 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return archived;
     }
 
-    public String getAuthor() {
-        return author;
-    }
-
     public String getBody() {
         return bodyHtml;
     }
@@ -156,14 +227,6 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return fullname.substring(3, fullname.length());
     }
 
-    public boolean isGilded() {
-        return gildedCount > 0;
-    }
-
-    public int getGildedCount() {
-        return gildedCount;
-    }
-
     public boolean isHideable() {
         return hideable;
     }
@@ -176,24 +239,8 @@ public class Post extends Node<Response<Thing<Listing>>> {
         this.likes = likes;
     }
 
-    public boolean hasLinkFlair() {
-        return !TextUtils.isEmpty(linkFlair);
-    }
-
-    public String getLinkFlair() {
-        return linkFlair;
-    }
-
-    public String getLinkTitle() {
-        return linkTitle;
-    }
-
     public String getLinkUrl() {
         return linkUrl;
-    }
-
-    public boolean isNsfw() {
-        return nsfw;
     }
 
     public String getPermalink() {
@@ -228,24 +275,8 @@ public class Post extends Node<Response<Thing<Listing>>> {
         this.saved = saved;
     }
 
-    public boolean isStickied() {
-        return stickied;
-    }
-
-    public String getSubreddit() {
-        return subreddit;
-    }
-
     public void setLinkUrl(final String linkUrl) {
         this.linkUrl = linkUrl;
-    }
-
-    public CharSequence getDisplayAge() {
-        return DateUtils.getRelativeTimeSpanString(
-                TimeUnit.SECONDS.toMillis(createdUtc), System.currentTimeMillis(),
-                DateUtils.SECOND_IN_MILLIS,
-                DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_NO_NOON
-                        | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
     }
 
     @Nullable
