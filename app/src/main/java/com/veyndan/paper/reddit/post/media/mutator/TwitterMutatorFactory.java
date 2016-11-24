@@ -29,7 +29,7 @@ final class TwitterMutatorFactory implements MutatorFactory {
         final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
         return Single.just(post)
-                .filter(post1 -> post1.isLink() && matcher.matches())
+                .filter(post1 -> matcher.matches())
                 .flatMap(post1 -> {
                     final Long tweetId = Long.parseLong(matcher.group(1));
                     // TODO Replace Observable.create with an Observable returned by Retrofit.

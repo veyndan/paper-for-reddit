@@ -8,6 +8,7 @@ public class Comment extends Submission {
     private String linkAuthor;
     private String linkId;
     private String parentId;
+    private Preview preview = new Preview();
     private Thing<Listing> replies;
 
     @Override
@@ -87,7 +88,7 @@ public class Comment extends Submission {
 
     @Override
     public Preview getPreview() {
-        return null;
+        return preview;
     }
 
     @Override

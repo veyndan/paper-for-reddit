@@ -40,7 +40,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
         final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
         return Single.just(post)
-                .filter(post1 -> post1.isLink() && matcher.matches())
+                .filter(post1 -> matcher.matches())
                 .flatMap(post1 -> {
                     final boolean isAlbum = matcher.group(2) != null;
                     final boolean isDirectImage = matcher.group(1) != null;

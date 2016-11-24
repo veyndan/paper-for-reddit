@@ -30,7 +30,7 @@ final class XkcdMutatorFactory implements MutatorFactory {
         final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
         return Single.just(post)
-                .filter(post1 -> post1.isLink() && matcher.matches())
+                .filter(post1 -> matcher.matches())
                 .flatMap(post1 -> {
                     final int comicNum = Integer.parseInt(matcher.group(1));
 

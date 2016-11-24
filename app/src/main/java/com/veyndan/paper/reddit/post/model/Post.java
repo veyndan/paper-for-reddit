@@ -38,7 +38,6 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
     private final List<Object> medias = new ArrayList<>();
 
-    private final boolean isLink;
     private final boolean isComment;
 
     private final Observable<Node<Response<Thing<Listing>>>> children;
@@ -67,7 +66,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final String subreddit;
 
     public Post(@NonNull final Submission submission) {
-        isLink = submission instanceof Link;
+        boolean isLink = submission instanceof Link;
         isComment = submission instanceof Comment;
 
         children = Observable.fromIterable(submission.getReplies().data.children)
@@ -122,10 +121,6 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
     public List<Object> getMedias() {
         return medias;
-    }
-
-    public boolean isLink() {
-        return isLink;
     }
 
     public boolean isComment() {
@@ -188,6 +183,9 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return linkTitle;
     }
 
+    /**
+     * Returns the url of the link and the empty string if there is no link url e.g. for a comment.
+     */
     public String getLinkUrl() {
         return linkUrl;
     }
