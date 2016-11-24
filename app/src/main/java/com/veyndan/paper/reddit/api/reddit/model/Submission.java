@@ -342,4 +342,10 @@ public abstract class Submission extends RedditObject {
      * #undocumented
      */
     public abstract int getControversiality();
+
+    /**
+     * Returns whether this submission can be hidden. {@code true} for {@link Link} and
+     * {@code false} for {@link Comment}.
+     */
+    public abstract boolean isHideable();
 }

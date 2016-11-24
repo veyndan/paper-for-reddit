@@ -178,4 +178,9 @@ public class Link extends Submission {
     public int getControversiality() {
         throw new UnsupportedOperationException("Method intention unknown");
     }
+
+    @Override
+    public boolean isHideable() {
+        return true;
+    }
 }

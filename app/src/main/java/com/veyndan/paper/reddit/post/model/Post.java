@@ -12,7 +12,6 @@ import android.text.format.DateUtils;
 
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.model.Comment;
-import com.veyndan.paper.reddit.api.reddit.model.Link;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.More;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
@@ -66,7 +65,6 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final String subreddit;
 
     public Post(@NonNull final Submission submission) {
-        boolean isLink = submission instanceof Link;
         isComment = submission instanceof Comment;
 
         children = Observable.fromIterable(submission.getReplies().data.children)
@@ -101,7 +99,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         domain = submission.getDomain();
         fullname = submission.getFullname();
         gildedCount = submission.gilded;
-        hideable = isLink;
+        hideable = submission.isHideable();
         likes = submission.getLikes();
         linkFlair = submission.getLinkFlairText();
         linkTitle = submission.linkTitle;

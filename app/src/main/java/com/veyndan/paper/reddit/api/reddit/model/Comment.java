@@ -154,6 +154,11 @@ public class Comment extends Submission {
     }
 
     @Override
+    public boolean isHideable() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return author;
     }
