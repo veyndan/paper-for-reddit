@@ -8,7 +8,7 @@ import io.reactivex.Observable;
 
 public abstract class Node<T> {
 
-    private static final int UNKNOWN_DESCENDANT_COUNT = -1;
+    protected static final int UNKNOWN_DESCENDANT_COUNT = -1;
 
     @IntRange(from = 0) private int depth;
     @IntRange(from = UNKNOWN_DESCENDANT_COUNT) private int descendantCount = UNKNOWN_DESCENDANT_COUNT;
@@ -28,7 +28,7 @@ public abstract class Node<T> {
         return descendantCount;
     }
 
-    public void setDescendantCount(@IntRange(from = 0) final int descendantCount) {
+    public void setDescendantCount(@IntRange(from = UNKNOWN_DESCENDANT_COUNT) final int descendantCount) {
         this.descendantCount = descendantCount;
     }
 

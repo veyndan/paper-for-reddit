@@ -58,7 +58,7 @@ public class Comment extends Submission {
 
     @Override
     public int getNumComments() {
-        return 0;
+        return -1;
     }
 
     @Override

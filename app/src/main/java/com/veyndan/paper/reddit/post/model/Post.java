@@ -89,9 +89,9 @@ public class Post extends Node<Response<Thing<Listing>>> {
                         return Observable.error(new IllegalStateException("Unknown node class: " + redditObject));
                     }
                 });
-        if (isLink) {
-            setDescendantCount(submission.getNumComments());
-        }
+        setDescendantCount(submission.getNumComments() >= 0
+                ? submission.getNumComments()
+                : UNKNOWN_DESCENDANT_COUNT);
         descendantsVisible = isComment;
 
         archived = submission.archived;
