@@ -2,6 +2,7 @@ package com.veyndan.paper.reddit;
 
 import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
+import com.veyndan.paper.reddit.api.reddit.model.Submission;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.api.reddit.network.QueryBuilder;
 import com.veyndan.paper.reddit.api.reddit.network.Sort;
@@ -37,7 +38,7 @@ public final class Request {
         return REDDIT.subredditComments(subreddit, article)
                 .map(response -> {
                     final List<Thing<Listing>> things = response.body();
-                    things.get(0).data.children.addAll(things.get(1).data.children);
+                    ((Submission) things.get(0).data.children.get(0)).getReplies().data.children.addAll(things.get(1).data.children);
                     return Response.success(things.get(0));
                 });
     }

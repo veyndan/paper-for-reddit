@@ -30,8 +30,7 @@ public class RedditObjectDeserializer implements JsonDeserializer<RedditObject> 
                 // If there are no replies, instead of returning an empty object or null, an empty
                 // string is returned. This sets an empty object if empty string.
                 if (thing.data.get("replies").isJsonPrimitive()) {
-                    final Thing<Listing> thing1 = new Thing<>();
-                    thing1.data = new Listing();
+                    final Thing<Listing> thing1 = new Thing<>(new Listing());
                     thing.data.add("replies", new Gson().toJsonTree(thing1));
                 }
             }

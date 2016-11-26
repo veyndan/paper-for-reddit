@@ -35,6 +35,7 @@ public class Link extends Submission {
     private Object fromId;
     private boolean quarantine;
     private boolean visited;
+    private Thing<Listing> replies = new Thing<>(new Listing());
 
     @Override
     public PostHint getPostHint() {
@@ -154,9 +155,7 @@ public class Link extends Submission {
 
     @Override
     public Thing<Listing> getReplies() {
-        final Thing<Listing> thing = new Thing<>();
-        thing.data = new Listing();
-        return thing;
+        return replies;
     }
 
     @Override
