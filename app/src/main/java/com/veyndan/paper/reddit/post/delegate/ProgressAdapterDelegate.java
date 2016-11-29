@@ -25,7 +25,7 @@ public class ProgressAdapterDelegate
     protected boolean isForViewType(@NonNull final Node<Response<Thing<Listing>>> node,
                                     @NonNull final List<Node<Response<Thing<Listing>>>> nodes,
                                     final int position) {
-        return node instanceof Progress && !((Progress) node).isDegreeAvailable();
+        return node instanceof Progress && ((Progress) node).getDegree() == null;
     }
 
     @NonNull

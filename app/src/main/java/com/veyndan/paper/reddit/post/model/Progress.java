@@ -2,6 +2,7 @@ package com.veyndan.paper.reddit.post.model;
 
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.More;
@@ -19,9 +20,7 @@ import retrofit2.Response;
 
 public final class Progress extends Node<Response<Thing<Listing>>> {
 
-    private static final int UNKNOWN_DEGREE = -1;
-
-    @IntRange(from = UNKNOWN_DEGREE) private final int degree;
+    @Nullable @IntRange(from = 0) private final Integer degree;
 
     // Suppress default constructor for noninstantiability
     @SuppressWarnings("unused")
@@ -35,17 +34,13 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
         setRequest(builder.request);
     }
 
+    /**
+     * Returns the degree of this node, or else {@code null} if the degree is unknown.
+     */
+    @Nullable
     @IntRange(from = 0)
-    public int getDegree() {
-        if (!isDegreeAvailable()) {
-            throw new IllegalStateException("Check that Stub.isDegreeAvailable() before " +
-                    "attempting to retrieve the degree");
-        }
+    public Integer getDegree() {
         return degree;
-    }
-
-    public boolean isDegreeAvailable() {
-        return degree != UNKNOWN_DEGREE;
     }
 
     @NonNull
@@ -92,7 +87,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     public static class Builder {
 
-        @IntRange(from = UNKNOWN_DEGREE) private int degree = UNKNOWN_DEGREE;
+        @Nullable @IntRange(from = 0) private Integer degree;
         @NonNull private Observable<Boolean> trigger = Observable.empty();
         @NonNull private Maybe<Response<Thing<Listing>>> request = Maybe.empty();
 
