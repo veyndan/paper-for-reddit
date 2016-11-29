@@ -1,5 +1,8 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import android.support.annotation.IntRange;
+import android.support.annotation.Nullable;
+
 import com.google.common.collect.ImmutableList;
 
 import java.util.regex.Pattern;
@@ -108,8 +111,10 @@ public class Link extends Submission {
         return mediaEmbed;
     }
 
+    @Nullable
+    @IntRange(from = 0)
     @Override
-    public int getNumComments() {
+    public Integer getNumComments() {
         return numComments;
     }
 

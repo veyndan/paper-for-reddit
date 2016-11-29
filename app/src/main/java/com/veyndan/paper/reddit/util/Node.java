@@ -2,16 +2,15 @@ package com.veyndan.paper.reddit.util;
 
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 
 public abstract class Node<T> {
 
-    protected static final int UNKNOWN_DESCENDANT_COUNT = -1;
-
     @IntRange(from = 0) private int depth;
-    @IntRange(from = UNKNOWN_DESCENDANT_COUNT) private int descendantCount = UNKNOWN_DESCENDANT_COUNT;
+    @Nullable @IntRange(from = 0) private Integer descendantCount;
     @NonNull private Observable<Boolean> trigger = Observable.empty();
     @NonNull private Maybe<T> request = Maybe.empty();
 
@@ -23,12 +22,17 @@ public abstract class Node<T> {
     @NonNull
     public abstract Observable<Node<T>> getChildren();
 
-    @IntRange(from = UNKNOWN_DESCENDANT_COUNT)
-    public int getDescendantCount() {
+    /**
+     * Returns the descendant count of this node, or else {@code null} if the descendant count is
+     * unknown.
+     */
+    @Nullable
+    @IntRange(from = 0)
+    public Integer getDescendantCount() {
         return descendantCount;
     }
 
-    public void setDescendantCount(@IntRange(from = UNKNOWN_DESCENDANT_COUNT) final int descendantCount) {
+    public void setDescendantCount(@Nullable @IntRange(from = 0) final Integer descendantCount) {
         this.descendantCount = descendantCount;
     }
 
@@ -58,7 +62,7 @@ public abstract class Node<T> {
         return Observable.just(this)
                 .doOnNext(node -> node.depth = depth)
                 .doOnNext(node -> {
-                    if (node.descendantCount == UNKNOWN_DESCENDANT_COUNT) {
+                    if (node.descendantCount == null) {
                         node.generateDescendantCount().subscribe(integer -> node.descendantCount = integer);
                     }
                 })

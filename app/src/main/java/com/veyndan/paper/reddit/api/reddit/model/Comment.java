@@ -1,5 +1,8 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import android.support.annotation.IntRange;
+import android.support.annotation.Nullable;
+
 import java.util.Objects;
 
 public class Comment extends Submission {
@@ -56,9 +59,11 @@ public class Comment extends Submission {
         return null;
     }
 
+    @Nullable
+    @IntRange(from = 0)
     @Override
-    public int getNumComments() {
-        return -1;
+    public Integer getNumComments() {
+        return null;
     }
 
     @Override

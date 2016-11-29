@@ -1,5 +1,8 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import android.support.annotation.IntRange;
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 
@@ -89,7 +92,9 @@ public abstract class Submission extends RedditObject {
      * The number of comments that belong to this link. includes removed comments. If the submission
      * is a Comment, then {@code 0} is returned.
      */
-    public abstract int getNumComments();
+    @Nullable
+    @IntRange(from = 0)
+    public abstract Integer getNumComments();
 
     /**
      * {@code true} if the post is tagged as NSFW. {@code false} if otherwise. If the submission is
