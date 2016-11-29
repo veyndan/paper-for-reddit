@@ -34,11 +34,9 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
         setRequest(builder.request);
     }
 
-    /**
-     * Returns the degree of this node, or else {@code null} if the degree is unknown.
-     */
     @Nullable
     @IntRange(from = 0)
+    @Override
     public Integer getDegree() {
         return degree;
     }

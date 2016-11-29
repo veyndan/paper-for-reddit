@@ -305,6 +305,12 @@ public class Post extends Node<Response<Thing<Listing>>> {
         }
     }
 
+    @Nullable
+    @Override
+    public Integer getDegree() {
+        return null;
+    }
+
     @NonNull
     @Override
     public Observable<Node<Response<Thing<Listing>>>> getChildren() {

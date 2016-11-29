@@ -19,6 +19,13 @@ public abstract class Node<T> {
         return depth;
     }
 
+    /**
+     * Returns the degree of this node, or else {@code null} if the degree is unknown.
+     */
+    @Nullable
+    @IntRange(from = 0)
+    public abstract Integer getDegree();
+
     @NonNull
     public abstract Observable<Node<T>> getChildren();
 
