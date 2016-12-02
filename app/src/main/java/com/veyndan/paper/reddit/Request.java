@@ -10,7 +10,6 @@ import com.veyndan.paper.reddit.api.reddit.network.User;
 
 import java.util.List;
 
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 import retrofit2.Response;
 
@@ -18,19 +17,19 @@ public final class Request {
 
     private static final Reddit REDDIT = new Reddit(Config.REDDIT_CREDENTIALS);
 
-    public static Maybe<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort) {
+    public static Single<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort) {
         return subreddit(subreddit, sort, new QueryBuilder());
     }
 
-    public static Maybe<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort, final QueryBuilder query) {
+    public static Single<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort, final QueryBuilder query) {
         return paginate(new RequestBuilder(REDDIT).subreddit(subreddit, sort), query);
     }
 
-    public static Maybe<Response<Thing<Listing>>> user(final String username, final User user) {
+    public static Single<Response<Thing<Listing>>> user(final String username, final User user) {
         return user(username, user, new QueryBuilder());
     }
 
-    public static Maybe<Response<Thing<Listing>>> user(final String username, final User user, final QueryBuilder query) {
+    public static Single<Response<Thing<Listing>>> user(final String username, final User user, final QueryBuilder query) {
         return paginate(new RequestBuilder(REDDIT).user(username, user), query);
     }
 
@@ -43,11 +42,11 @@ public final class Request {
                 });
     }
 
-    private static Maybe<Response<Thing<Listing>>> paginate(final RequestBuilder requestBuilder, final QueryBuilder query) {
+    private static Single<Response<Thing<Listing>>> paginate(final RequestBuilder requestBuilder, final QueryBuilder query) {
         return Single.just(query)
                 // TODO If the query has never been initialized, then we want it to pass.
                 .filter(query1 -> !query1.build().containsKey("after") || query1.build().get("after") != null)
-                .flatMap(query1 -> requestBuilder.query(query1).build().toMaybe())
+                .flatMapSingle(query1 -> requestBuilder.query(query1).build())
                 .doOnSuccess(response -> query.after(response.body().data.after));
     }
 }

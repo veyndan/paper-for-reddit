@@ -20,6 +20,7 @@ import com.veyndan.paper.reddit.post.PostsFragment;
 
 import butterknife.ButterKnife;
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 import retrofit2.Response;
 
 @DeepLink({
@@ -42,14 +43,14 @@ public class MainActivity extends BaseActivity {
 
         final Intent intent = getIntent();
 
-        final Maybe<Response<Thing<Listing>>> defaultRequest = Request.subreddit("all", Sort.HOT);
-        final Maybe<Response<Thing<Listing>>> mergedFilters = mergeFilters(intent.getExtras(), defaultRequest);
+        final Single<Response<Thing<Listing>>> defaultRequest = Request.subreddit("all", Sort.HOT);
+        final Single<Response<Thing<Listing>>> mergedFilters = mergeFilters(intent.getExtras(), defaultRequest);
         postsFragment.setRequest(mergedFilters);
     }
 
     @NonNull
-    private Maybe<Response<Thing<Listing>>> mergeFilters(@Nullable final Bundle bundle,
-                                                         @NonNull final Maybe<Response<Thing<Listing>>> defaultRequest) {
+    private Single<Response<Thing<Listing>>> mergeFilters(@Nullable final Bundle bundle,
+                                                         @NonNull final Single<Response<Thing<Listing>>> defaultRequest) {
         if (bundle == null) {
             return defaultRequest;
         }
@@ -57,7 +58,7 @@ public class MainActivity extends BaseActivity {
         if (bundle.containsKey(Filter.COMMENTS_SUBREDDIT)) {
             final String subreddit = bundle.getString(Filter.COMMENTS_SUBREDDIT);
             final String article = bundle.getString(Filter.COMMENTS_ARTICLE);
-            return Request.comments(subreddit, article).toMaybe();
+            return Request.comments(subreddit, article);
         }
 
         final TimePeriod[] timePeriods = {

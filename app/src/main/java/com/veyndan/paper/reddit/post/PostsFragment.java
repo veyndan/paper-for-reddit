@@ -28,8 +28,8 @@ import java.util.List;
 
 import butterknife.ButterKnife;
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
-import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import retrofit2.Response;
 
 public class PostsFragment extends Fragment implements PostMvpView<Response<Thing<Listing>>> {
@@ -67,11 +67,11 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         setRetainInstance(true);
     }
 
-    public void setRequest(final Maybe<Response<Thing<Listing>>> request) {
+    public void setRequest(final Single<Response<Thing<Listing>>> request) {
         clearNodes();
         postPresenter.loadNode(new Progress.Builder()
                 .trigger(getTrigger())
-                .request(request)
+                .request(request.toMaybe())
                 .build());
     }
 
