@@ -20,6 +20,7 @@ import retrofit2.Response;
 
 public final class Progress extends Node<Response<Thing<Listing>>> {
 
+    @IntRange(from = 0) private final int depth;
     @Nullable @IntRange(from = 0) private final Integer degree;
 
     // Suppress default constructor for noninstantiability
@@ -29,9 +30,15 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
     }
 
     private Progress(@NonNull final Builder builder) {
+        depth = builder.depth;
         degree = builder.degree;
         setTrigger(builder.trigger);
         setRequest(builder.request);
+    }
+
+    @Override
+    public int getDepth() {
+        return depth;
     }
 
     @Nullable
@@ -63,7 +70,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
                             if (redditObject instanceof Submission) {
                                 return Single.just(redditObject)
                                         .cast(Submission.class)
-                                        .map(Post::new)
+                                        .map(submission1 -> new Post(submission1, getDepth()))
                                         .flatMap(Mutators.mutate())
                                         .toObservable();
                             } else if (redditObject instanceof More) {
@@ -85,9 +92,16 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     public static class Builder {
 
+        @IntRange(from = 0) private int depth;
         @Nullable @IntRange(from = 0) private Integer degree;
         @NonNull private Observable<Boolean> trigger = Observable.empty();
         @NonNull private Maybe<Response<Thing<Listing>>> request = Maybe.empty();
+
+        @NonNull
+        public Builder depth(@IntRange(from = 0) final int depth) {
+            this.depth = depth;
+            return this;
+        }
 
         @NonNull
         public Builder degree(@IntRange(from = 0) final int degree) {

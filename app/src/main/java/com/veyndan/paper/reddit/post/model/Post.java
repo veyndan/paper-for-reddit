@@ -35,10 +35,16 @@ import retrofit2.Response;
 
 public class Post extends Node<Response<Thing<Listing>>> {
 
+    // TODO To remove all references to isComment, the comment section must be indented by one i.e. have a depth of plus one of what it is currently. After that, to distinguish between
+    // whether it is a link or a comment is easy. A link has depth of 0 and a comment has depth of > 1.
+    // Problem implementing above is that getDepth() returns 0 when used in the constructor as preOrderTraverse generates this value when called. A solution is to move depth generation
+    // to point of node creation which in turn reduces the side effects of preOrderTraverse as well as allows me to use getDepth in this method.
+
     private final List<Object> medias = new ArrayList<>();
 
     private final boolean isComment;
 
+    private final int depth;
     private final Observable<Node<Response<Thing<Listing>>>> children;
     private boolean descendantsVisible;
 
@@ -64,21 +70,23 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final boolean stickied;
     private final String subreddit;
 
-    public Post(@NonNull final Submission submission) {
+    public Post(@NonNull final Submission submission, final int depth) {
         isComment = submission instanceof Comment;
 
+        this.depth = depth;
         children = Observable.fromIterable(submission.getReplies().data.children)
                 .concatMap(redditObject -> {
                     if (redditObject instanceof Submission) {
                         return Single.just(redditObject)
                                 .cast(Submission.class)
-                                .map(Post::new)
+                                .map(submission1 -> new Post(submission1, getDepth() + 1))
                                 .flatMap(Mutators.mutate())
                                 .toObservable();
                     } else if (redditObject instanceof More) {
                         return Single.just(redditObject)
                                 .cast(More.class)
                                 .map(more -> new Progress.Builder()
+                                        .depth(getDepth() + 1)
                                         .trigger(Observable.just(true))
                                         .degree(more.count)
                                         .build())
@@ -303,6 +311,11 @@ public class Post extends Node<Response<Thing<Listing>>> {
             final Resources resources = context.getResources();
             return resources.getQuantityString(R.plurals.points, points, points);
         }
+    }
+
+    @Override
+    public int getDepth() {
+        return depth;
     }
 
     @Nullable

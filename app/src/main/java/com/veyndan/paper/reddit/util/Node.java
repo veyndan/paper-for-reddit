@@ -67,7 +67,7 @@ public abstract class Node<T> {
     @NonNull
     public Observable<Node<T>> preOrderTraverse(@IntRange(from = 0) final int depth) {
         return Observable.just(this)
-                .doOnNext(node -> node.depth = depth)
+//                .doOnNext(node -> node.depth = depth)
                 .doOnNext(node -> {
                     if (node.descendantCount == null) {
                         node.generateDescendantCount().subscribe(integer -> node.descendantCount = integer);
