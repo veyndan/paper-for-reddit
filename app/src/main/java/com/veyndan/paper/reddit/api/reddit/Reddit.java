@@ -1,5 +1,6 @@
 package com.veyndan.paper.reddit.api.reddit;
 
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.gson.FieldNamingPolicy;
@@ -23,10 +24,10 @@ import com.veyndan.paper.reddit.api.reddit.network.AuthenticationService;
 import com.veyndan.paper.reddit.api.reddit.network.Credentials;
 import com.veyndan.paper.reddit.api.reddit.network.Message;
 import com.veyndan.paper.reddit.api.reddit.network.MySubreddits;
-import com.veyndan.paper.reddit.api.reddit.network.QueryBuilder;
 import com.veyndan.paper.reddit.api.reddit.network.RedditService;
 import com.veyndan.paper.reddit.api.reddit.network.Sort;
 import com.veyndan.paper.reddit.api.reddit.network.SubredditSort;
+import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
 import com.veyndan.paper.reddit.api.reddit.network.User;
 import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 import com.veyndan.paper.reddit.api.reddit.network.interceptor.AccessTokenInterceptor;
@@ -174,12 +175,14 @@ public final class Reddit {
                 });
     }
 
-    public Single<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort) {
-        return subreddit(subreddit, sort, new QueryBuilder());
-    }
-
     public Single<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort,
-                                                      final QueryBuilder query) {
+                                                      @Nullable final TimePeriod timePeriod) {
+        final QueryBuilder query = new QueryBuilder();
+
+        if (timePeriod != null) {
+            query.t(timePeriod);
+        }
+
         final Single<Response<Thing<Listing>>> request = redditService.subreddit(subreddit, sort, query.build());
         return paginate(request, query);
     }
@@ -225,12 +228,14 @@ public final class Reddit {
         return redditService.userAbout(username);
     }
 
-    public Single<Response<Thing<Listing>>> user(final String username, final User where) {
-        return user(username, where, new QueryBuilder());
-    }
-
     public Single<Response<Thing<Listing>>> user(final String username, final User where,
-                                                 final QueryBuilder query) {
+                                                 @Nullable final TimePeriod timePeriod) {
+        final QueryBuilder query = new QueryBuilder();
+
+        if (timePeriod != null) {
+            query.t(timePeriod);
+        }
+
         final Single<Response<Thing<Listing>>> request = redditService.user(username, where, query.build());
         return paginate(request, query);
     }

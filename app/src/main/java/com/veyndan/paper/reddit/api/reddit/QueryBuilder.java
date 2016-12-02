@@ -1,4 +1,6 @@
-package com.veyndan.paper.reddit.api.reddit.network;
+package com.veyndan.paper.reddit.api.reddit;
+
+import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +15,7 @@ import java.util.Map;
  * To see which queries are excepted by each endpoint, see
  * <a href="https://www.reddit.com/dev/api">https://www.reddit.com/dev/api</a>.
  */
-public class QueryBuilder {
+class QueryBuilder {
 
     private final Map<String, String> query;
 

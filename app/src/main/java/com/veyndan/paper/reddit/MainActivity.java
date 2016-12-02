@@ -13,7 +13,6 @@ import com.airbnb.deeplinkdispatch.DeepLink;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
-import com.veyndan.paper.reddit.api.reddit.network.QueryBuilder;
 import com.veyndan.paper.reddit.api.reddit.network.Sort;
 import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
 import com.veyndan.paper.reddit.api.reddit.network.User;
@@ -45,7 +44,7 @@ public class MainActivity extends BaseActivity {
 
         final Intent intent = getIntent();
 
-        final Single<Response<Thing<Listing>>> defaultRequest = REDDIT.subreddit("all", Sort.HOT);
+        final Single<Response<Thing<Listing>>> defaultRequest = REDDIT.subreddit("all", Sort.HOT, null);
         final Single<Response<Thing<Listing>>> mergedFilters = mergeFilters(intent.getExtras(), defaultRequest);
         postsFragment.setRequest(mergedFilters);
     }
@@ -84,7 +83,7 @@ public class MainActivity extends BaseActivity {
         if (TextUtils.isEmpty(subreddit) && TextUtils.isEmpty(username)) {
             return defaultRequest;
         } else if (!TextUtils.isEmpty(subreddit) && TextUtils.isEmpty(username)) {
-            return REDDIT.subreddit(subreddit, Sort.HOT, new QueryBuilder().t(timePeriod));
+            return REDDIT.subreddit(subreddit, Sort.HOT, null);
         } else if (TextUtils.isEmpty(subreddit)) { // && !TextUtils.isEmpty(username)
             final User user;
             if (bundle.getBoolean(DeepLink.IS_DEEP_LINK, false)) {
@@ -103,7 +102,7 @@ public class MainActivity extends BaseActivity {
                 throw new UnsupportedOperationException("User state unsure");
             }
 
-            return REDDIT.user(username, user, new QueryBuilder().t(timePeriod));
+            return REDDIT.user(username, user, timePeriod);
         } else { // !TextUtils.isEmpty(subreddit) && !TextUtils.isEmpty(username)
             // TODO Concatenate the subreddit and username search query
             return defaultRequest;
@@ -129,19 +128,19 @@ public class MainActivity extends BaseActivity {
                 filterFragment.show(fragmentManager, "fragment_filter");
                 return true;
             case R.id.action_sort_hot:
-                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.HOT));
+                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.HOT, null));
                 return true;
             case R.id.action_sort_new:
-                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.NEW));
+                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.NEW, null));
                 return true;
             case R.id.action_sort_rising:
-                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.RISING));
+                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.RISING, null));
                 return true;
             case R.id.action_sort_controversial:
-                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.CONTROVERSIAL));
+                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.CONTROVERSIAL, null));
                 return true;
             case R.id.action_sort_top:
-                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.TOP));
+                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.TOP, null));
                 return true;
             default:
                 return false;
