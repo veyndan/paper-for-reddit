@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
 apply plugin: 'com.getkeepsafe.dexcount'
@@ -53,11 +52,11 @@ dependencies {
 
     // Butterknife
     compile 'com.jakewharton:butterknife:8.4.0'
-    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 
     // Deep Link Dispatch
     compile 'com.airbnb:deeplinkdispatch:2.0.1'
-    apt 'com.airbnb:deeplinkdispatch-processor:2.0.1'
+    annotationProcessor 'com.airbnb:deeplinkdispatch-processor:2.0.1'
 
     // Glide
     compile 'com.github.bumptech.glide:glide:3.7.0'
