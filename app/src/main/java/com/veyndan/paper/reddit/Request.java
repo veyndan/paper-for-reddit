@@ -22,7 +22,7 @@ public final class Request {
     }
 
     public static Single<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort, final QueryBuilder query) {
-        return paginate(new RequestBuilder(REDDIT).subreddit(subreddit, sort), query);
+        return paginate(REDDIT.subreddit(subreddit, sort, query), query);
     }
 
     public static Single<Response<Thing<Listing>>> user(final String username, final User user) {
@@ -30,7 +30,7 @@ public final class Request {
     }
 
     public static Single<Response<Thing<Listing>>> user(final String username, final User user, final QueryBuilder query) {
-        return paginate(new RequestBuilder(REDDIT).user(username, user), query);
+        return paginate(REDDIT.user(username, user, query), query);
     }
 
     public static Single<Response<Thing<Listing>>> comments(final String subreddit, final String article) {
@@ -42,11 +42,11 @@ public final class Request {
                 });
     }
 
-    private static Single<Response<Thing<Listing>>> paginate(final RequestBuilder requestBuilder, final QueryBuilder query) {
+    private static Single<Response<Thing<Listing>>> paginate(final Single<Response<Thing<Listing>>> page, final QueryBuilder query) {
         return Single.just(query)
                 // TODO If the query has never been initialized, then we want it to pass.
                 .filter(query1 -> !query1.build().containsKey("after") || query1.build().get("after") != null)
-                .flatMapSingle(query1 -> requestBuilder.query(query1).build())
+                .flatMapSingle(query1 -> page)
                 .doOnSuccess(response -> query.after(response.body().data.after));
     }
 }
