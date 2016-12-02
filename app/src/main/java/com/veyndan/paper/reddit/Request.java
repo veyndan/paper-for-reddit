@@ -2,13 +2,10 @@ package com.veyndan.paper.reddit;
 
 import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
-import com.veyndan.paper.reddit.api.reddit.model.Submission;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.api.reddit.network.QueryBuilder;
 import com.veyndan.paper.reddit.api.reddit.network.Sort;
 import com.veyndan.paper.reddit.api.reddit.network.User;
-
-import java.util.List;
 
 import io.reactivex.Single;
 import retrofit2.Response;
@@ -34,12 +31,7 @@ public final class Request {
     }
 
     public static Single<Response<Thing<Listing>>> comments(final String subreddit, final String article) {
-        return REDDIT.subredditComments(subreddit, article)
-                .map(response -> {
-                    final List<Thing<Listing>> things = response.body();
-                    ((Submission) things.get(0).data.children.get(0)).getReplies().data.children.addAll(things.get(1).data.children);
-                    return Response.success(things.get(0));
-                });
+        return REDDIT.subredditComments(subreddit, article);
     }
 
     private static Single<Response<Thing<Listing>>> paginate(final Single<Response<Thing<Listing>>> page, final QueryBuilder query) {

@@ -14,6 +14,7 @@ import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.MoreChildren;
 import com.veyndan.paper.reddit.api.reddit.model.Prefs;
 import com.veyndan.paper.reddit.api.reddit.model.RedditObject;
+import com.veyndan.paper.reddit.api.reddit.model.Submission;
 import com.veyndan.paper.reddit.api.reddit.model.Subreddit;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.api.reddit.model.Trophies;
@@ -164,8 +165,13 @@ public final class Reddit {
     //             Listings
     // ================================
 
-    public Single<Response<List<Thing<Listing>>>> subredditComments(final String subreddit, final String article) {
-        return redditService.subredditComments(subreddit, article);
+    public Single<Response<Thing<Listing>>> subredditComments(final String subreddit, final String article) {
+        return redditService.subredditComments(subreddit, article)
+                .map(response -> {
+                    final List<Thing<Listing>> things = response.body();
+                    ((Submission) things.get(0).data.children.get(0)).getReplies().data.children.addAll(things.get(1).data.children);
+                    return Response.success(things.get(0));
+                });
     }
 
     public Single<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort) {
