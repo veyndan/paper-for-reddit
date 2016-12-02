@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.airbnb.deeplinkdispatch.DeepLink;
+import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.api.reddit.network.QueryBuilder;
@@ -19,7 +20,6 @@ import com.veyndan.paper.reddit.api.reddit.network.User;
 import com.veyndan.paper.reddit.post.PostsFragment;
 
 import butterknife.ButterKnife;
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 import retrofit2.Response;
 
@@ -28,6 +28,8 @@ import retrofit2.Response;
         "http://reddit.com/user/{" + Filter.USER_NAME + '}'
 })
 public class MainActivity extends BaseActivity {
+
+    private static final Reddit REDDIT = new Reddit(Config.REDDIT_CREDENTIALS);
 
     private PostsFragment postsFragment;
 
@@ -43,7 +45,7 @@ public class MainActivity extends BaseActivity {
 
         final Intent intent = getIntent();
 
-        final Single<Response<Thing<Listing>>> defaultRequest = Request.subreddit("all", Sort.HOT);
+        final Single<Response<Thing<Listing>>> defaultRequest = REDDIT.subreddit("all", Sort.HOT);
         final Single<Response<Thing<Listing>>> mergedFilters = mergeFilters(intent.getExtras(), defaultRequest);
         postsFragment.setRequest(mergedFilters);
     }
@@ -58,7 +60,7 @@ public class MainActivity extends BaseActivity {
         if (bundle.containsKey(Filter.COMMENTS_SUBREDDIT)) {
             final String subreddit = bundle.getString(Filter.COMMENTS_SUBREDDIT);
             final String article = bundle.getString(Filter.COMMENTS_ARTICLE);
-            return Request.comments(subreddit, article);
+            return REDDIT.subredditComments(subreddit, article);
         }
 
         final TimePeriod[] timePeriods = {
@@ -82,7 +84,7 @@ public class MainActivity extends BaseActivity {
         if (TextUtils.isEmpty(subreddit) && TextUtils.isEmpty(username)) {
             return defaultRequest;
         } else if (!TextUtils.isEmpty(subreddit) && TextUtils.isEmpty(username)) {
-            return Request.subreddit(subreddit, Sort.HOT, new QueryBuilder().t(timePeriod));
+            return REDDIT.subreddit(subreddit, Sort.HOT, new QueryBuilder().t(timePeriod));
         } else if (TextUtils.isEmpty(subreddit)) { // && !TextUtils.isEmpty(username)
             final User user;
             if (bundle.getBoolean(DeepLink.IS_DEEP_LINK, false)) {
@@ -101,7 +103,7 @@ public class MainActivity extends BaseActivity {
                 throw new UnsupportedOperationException("User state unsure");
             }
 
-            return Request.user(username, user, new QueryBuilder().t(timePeriod));
+            return REDDIT.user(username, user, new QueryBuilder().t(timePeriod));
         } else { // !TextUtils.isEmpty(subreddit) && !TextUtils.isEmpty(username)
             // TODO Concatenate the subreddit and username search query
             return defaultRequest;
@@ -127,19 +129,19 @@ public class MainActivity extends BaseActivity {
                 filterFragment.show(fragmentManager, "fragment_filter");
                 return true;
             case R.id.action_sort_hot:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.HOT));
+                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.HOT));
                 return true;
             case R.id.action_sort_new:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.NEW));
+                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.NEW));
                 return true;
             case R.id.action_sort_rising:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.RISING));
+                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.RISING));
                 return true;
             case R.id.action_sort_controversial:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.CONTROVERSIAL));
+                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.CONTROVERSIAL));
                 return true;
             case R.id.action_sort_top:
-                postsFragment.setRequest(Request.subreddit(subreddit, Sort.TOP));
+                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.TOP));
                 return true;
             default:
                 return false;

@@ -179,8 +179,9 @@ public final class Reddit {
     }
 
     public Single<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort,
-                                                      final QueryBuilder queryBuilder) {
-        return redditService.subreddit(subreddit, sort, queryBuilder.build());
+                                                      final QueryBuilder query) {
+        final Single<Response<Thing<Listing>>> request = redditService.subreddit(subreddit, sort, query.build());
+        return paginate(request, query);
     }
 
     // ================================
@@ -229,7 +230,16 @@ public final class Reddit {
     }
 
     public Single<Response<Thing<Listing>>> user(final String username, final User where,
-                                                 final QueryBuilder queryBuilder) {
-        return redditService.user(username, where, queryBuilder.build());
+                                                 final QueryBuilder query) {
+        final Single<Response<Thing<Listing>>> request = redditService.user(username, where, query.build());
+        return paginate(request, query);
+    }
+
+    private static Single<Response<Thing<Listing>>> paginate(final Single<Response<Thing<Listing>>> page, final QueryBuilder query) {
+        return Single.just(query)
+                // TODO If the query has never been initialized, then we want it to pass.
+                .filter(query1 -> !query1.build().containsKey("after") || query1.build().get("after") != null)
+                .flatMapSingle(query1 -> page)
+                .doOnSuccess(response -> query.after(response.body().data.after));
     }
 }
