@@ -78,8 +78,8 @@ final class ImgurMutatorFactory implements MutatorFactory {
                         final String id = matcher.group(3);
 
                         return imgurService.album(id)
-                                .flatMapObservable(basic -> Observable.fromIterable(basic.data.images))
-                                .map(image -> new Image(image.link, new Size(image.width, image.height)))
+                                .flatMapObservable(basic -> Observable.fromIterable(basic.getData().images()))
+                                .map(image -> new Image(image.getLink(), new Size(image.getWidth(), image.getHeight())))
                                 .toList()
                                 .toMaybe();
                     } else {
