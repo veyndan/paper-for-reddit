@@ -1,14 +1,16 @@
 package com.veyndan.paper.reddit.api.xkcd.model;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import java.util.Objects;
+
 public class XkcdComic {
 
-    private final String img;
+    @Nullable private String img;
 
-    public XkcdComic(final String img) {
-        this.img = img;
-    }
-
+    @NonNull
     public String getImg() {
-        return img;
+        return Objects.requireNonNull(img);
     }
 }
