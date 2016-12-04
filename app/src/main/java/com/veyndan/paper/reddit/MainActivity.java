@@ -3,7 +3,6 @@ package com.veyndan.paper.reddit;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -17,6 +16,7 @@ import com.veyndan.paper.reddit.api.reddit.network.Sort;
 import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
 import com.veyndan.paper.reddit.api.reddit.network.User;
 import com.veyndan.paper.reddit.post.PostsFragment;
+import com.veyndan.paper.reddit.util.IntentUtils;
 
 import butterknife.ButterKnife;
 import io.reactivex.Single;
@@ -45,17 +45,13 @@ public class MainActivity extends BaseActivity {
         final Intent intent = getIntent();
 
         final Single<Response<Thing<Listing>>> defaultRequest = REDDIT.subreddit("all", Sort.HOT, null);
-        final Single<Response<Thing<Listing>>> mergedFilters = mergeFilters(intent.getExtras(), defaultRequest);
+        final Single<Response<Thing<Listing>>> mergedFilters = mergeFilters(IntentUtils.getExtras(intent), defaultRequest);
         postsFragment.setRequest(mergedFilters);
     }
 
     @NonNull
-    private Single<Response<Thing<Listing>>> mergeFilters(@Nullable final Bundle bundle,
-                                                         @NonNull final Single<Response<Thing<Listing>>> defaultRequest) {
-        if (bundle == null) {
-            return defaultRequest;
-        }
-
+    private Single<Response<Thing<Listing>>> mergeFilters(@NonNull final Bundle bundle,
+                                                          @NonNull final Single<Response<Thing<Listing>>> defaultRequest) {
         if (bundle.containsKey(Filter.COMMENTS_SUBREDDIT)) {
             final String subreddit = bundle.getString(Filter.COMMENTS_SUBREDDIT);
             final String article = bundle.getString(Filter.COMMENTS_ARTICLE);
