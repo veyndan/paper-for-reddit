@@ -1,6 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.google.common.base.MoreObjects;
@@ -49,9 +50,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class Reddit {
 
-    private final RedditService redditService;
+    @NonNull private final RedditService redditService;
 
-    public Reddit(final Credentials credentials) {
+    public Reddit(@NonNull final Credentials credentials) {
         final Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(RedditObject.class, new RedditObjectDeserializer())
@@ -95,6 +96,7 @@ public final class Reddit {
         redditService = retrofit.create(RedditService.class);
     }
 
+    @NonNull
     private static HttpLoggingInterceptor loggingInterceptor() {
         final HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         return loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -104,18 +106,22 @@ public final class Reddit {
     //             Account
     // ================================
 
+    @NonNull
     public Single<Response<Account2>> me() {
         return redditService.me();
     }
 
+    @NonNull
     public Single<Response<Thing<List<Karma>>>> myKarma() {
         return redditService.myKarma();
     }
 
+    @NonNull
     public Single<Response<Prefs>> myPrefs() {
         return redditService.myPrefs();
     }
 
+    @NonNull
     public Single<Response<Thing<Trophies>>> myTrophies() {
         return redditService.myTrophies();
     }
@@ -124,11 +130,13 @@ public final class Reddit {
     //             Captcha
     // ================================
 
+    @NonNull
     public Single<Response<CaptchaNew>> newCaptcha() {
         return redditService.newCaptcha("json");
     }
 
-    public Single<Response<Void>> idenCaptcha(final String iden) {
+    @NonNull
+    public Single<Response<Void>> idenCaptcha(@NonNull final String iden) {
         return redditService.idenCaptcha(iden);
     }
 
@@ -136,31 +144,40 @@ public final class Reddit {
     //         Links & Comments
     // ================================
 
-    public Single<Response<Void>> hide(final String... ids) {
+    @NonNull
+    public Single<Response<Void>> hide(@NonNull final String... ids) {
         return hide(Arrays.asList(ids));
     }
 
-    public Single<Response<Void>> hide(final List<String> ids) {
+    @NonNull
+    public Single<Response<Void>> hide(@NonNull final List<String> ids) {
         return redditService.hide(TextUtils.join(",", ids));
     }
 
-    public Single<MoreChildren> moreChildren(final List<String> children, final String linkId) {
+    @NonNull
+    public Single<MoreChildren> moreChildren(@NonNull final List<String> children,
+                                             @NonNull final String linkId) {
         return redditService.moreChildren("json", TextUtils.join(",", children), linkId);
     }
 
-    public Single<Response<Void>> save(final String category, final String id) {
+    @NonNull
+    public Single<Response<Void>> save(@NonNull final String category, @NonNull final String id) {
         return redditService.save(category, id);
     }
 
+    @NonNull
     public Single<Response<Categories>> savedCategories() {
         return redditService.savedCategories();
     }
 
+    @NonNull
     public Single<Response<Void>> unsave(final String id) {
         return redditService.unsave(id);
     }
 
-    public Single<Response<Void>> vote(final VoteDirection voteDirection, final String id) {
+    @NonNull
+    public Single<Response<Void>> vote(@NonNull final VoteDirection voteDirection,
+                                       @NonNull final String id) {
         return redditService.vote(voteDirection, id);
     }
 
@@ -168,7 +185,9 @@ public final class Reddit {
     //             Listings
     // ================================
 
-    private Single<Response<Thing<Listing>>> subredditComments(final String subreddit, final String article) {
+    @NonNull
+    private Single<Response<Thing<Listing>>> subredditComments(@NonNull final String subreddit,
+                                                              @NonNull final String article) {
         return redditService.subredditComments(subreddit, article)
                 .map(response -> {
                     final List<Thing<Listing>> things = response.body();
@@ -177,8 +196,10 @@ public final class Reddit {
                 });
     }
 
-    private Single<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort,
-                                                      final Maybe<TimePeriod> timePeriod) {
+    @NonNull
+    private Single<Response<Thing<Listing>>> subreddit(@NonNull final String subreddit,
+                                                      @NonNull final Sort sort,
+                                                      @NonNull final Maybe<TimePeriod> timePeriod) {
         final QueryBuilder query = new QueryBuilder();
 
         if (timePeriod.count().blockingGet() == 1L) {
@@ -193,7 +214,8 @@ public final class Reddit {
     //         Private Messages
     // ================================
 
-    public Single<Response<Thing<Listing>>> message(final Message message) {
+    @NonNull
+    public Single<Response<Thing<Listing>>> message(@NonNull final Message message) {
         return redditService.message(message);
     }
 
@@ -201,15 +223,18 @@ public final class Reddit {
     //            Subreddits
     // ================================
 
-    public Single<Response<Thing<Listing>>> mySubreddits(final MySubreddits mySubreddits) {
+    @NonNull
+    public Single<Response<Thing<Listing>>> mySubreddits(@NonNull final MySubreddits mySubreddits) {
         return redditService.mySubreddits(mySubreddits);
     }
 
-    public Single<Response<Thing<Listing>>> subreddits(final SubredditSort sort) {
+    @NonNull
+    public Single<Response<Thing<Listing>>> subreddits(@NonNull final SubredditSort sort) {
         return redditService.subreddits(sort);
     }
 
-    public Single<Response<Thing<Subreddit>>> subredditAbout(final String subreddit) {
+    @NonNull
+    public Single<Response<Thing<Subreddit>>> subredditAbout(@NonNull final String subreddit) {
         return redditService.subredditAbout(subreddit);
     }
 
@@ -217,21 +242,26 @@ public final class Reddit {
     //              Users
     // ================================
 
+    @NonNull
     public Single<Response<Thing<Listing>>> aboutSubreddit(
-            final String subreddit, final AboutSubreddit where) {
+            @NonNull final String subreddit, @NonNull final AboutSubreddit where) {
         return redditService.aboutSubreddit(subreddit, where);
     }
 
-    public Single<Response<Thing<Trophies>>> userTrophies(final String username) {
+    @NonNull
+    public Single<Response<Thing<Trophies>>> userTrophies(@NonNull final String username) {
         return redditService.userTrophies(username);
     }
 
-    public Single<Response<Thing<Account2>>> userAbout(final String username) {
+    @NonNull
+    public Single<Response<Thing<Account2>>> userAbout(@NonNull final String username) {
         return redditService.userAbout(username);
     }
 
-    private Single<Response<Thing<Listing>>> user(final String username, final User where,
-                                                 final Maybe<TimePeriod> timePeriod) {
+    @NonNull
+    private Single<Response<Thing<Listing>>> user(@NonNull final String username,
+                                                 @NonNull final User where,
+                                                 @NonNull final Maybe<TimePeriod> timePeriod) {
         final QueryBuilder query = new QueryBuilder();
 
         if (timePeriod.count().blockingGet() == 1L) {
@@ -286,7 +316,9 @@ public final class Reddit {
         }
     }
 
-    private static Single<Response<Thing<Listing>>> paginate(final Single<Response<Thing<Listing>>> page, final QueryBuilder query) {
+    @NonNull
+    private static Single<Response<Thing<Listing>>> paginate(@NonNull final Single<Response<Thing<Listing>>> page,
+                                                             @NonNull final QueryBuilder query) {
         return Single.just(query)
                 // TODO If the query has never been initialized, then we want it to pass.
                 .filter(query1 -> !query1.build().containsKey("after") || query1.build().get("after") != null)
@@ -295,19 +327,19 @@ public final class Reddit {
     }
 
     public interface Filter {
-        String NODE_DEPTH = "node_depth";
+        @NonNull String NODE_DEPTH = "node_depth";
 
-        String COMMENTS_SUBREDDIT = "comments_subreddit";
-        String COMMENTS_ARTICLE = "comments_article";
+        @NonNull String COMMENTS_SUBREDDIT = "comments_subreddit";
+        @NonNull String COMMENTS_ARTICLE = "comments_article";
 
-        String TIME_PERIOD = "time_period";
+        @NonNull String TIME_PERIOD = "time_period";
 
-        String SUBREDDIT_NAME = "subreddit_name";
+        @NonNull String SUBREDDIT_NAME = "subreddit_name";
 
-        String USER_NAME = "user_name";
-        String USER_COMMENTS = "user_comments";
-        String USER_SUBMITTED = "user_submitted";
-        String USER_GILDED = "user_gilded";
-        String USER_WHERE = "user_where";
+        @NonNull String USER_NAME = "user_name";
+        @NonNull String USER_COMMENTS = "user_comments";
+        @NonNull String USER_SUBMITTED = "user_submitted";
+        @NonNull String USER_GILDED = "user_gilded";
+        @NonNull String USER_WHERE = "user_where";
     }
 }

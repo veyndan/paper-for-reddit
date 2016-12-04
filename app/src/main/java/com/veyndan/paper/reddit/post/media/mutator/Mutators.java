@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import android.support.annotation.NonNull;
+
 import com.google.common.collect.ImmutableList;
 import com.veyndan.paper.reddit.post.model.Post;
 
@@ -32,7 +34,7 @@ public final class Mutators {
      * {@link TwitterMutatorFactory} would never be applicable. Obviously this means that
      * {@link LinkMutatorFactory} should occur <b><em>after</em></b> {@link TwitterMutatorFactory}.
      */
-    private static final List<MutatorFactory> MUTATOR_FACTORIES = ImmutableList.of(
+    @NonNull private static final List<MutatorFactory> MUTATOR_FACTORIES = ImmutableList.of(
             TwitterMutatorFactory.create(),
             XkcdMutatorFactory.create(),
 //            ImgurMutatorFactory.create(),
@@ -46,6 +48,7 @@ public final class Mutators {
     /**
      * Mutate a list of posts by the first mutator which is applicable to mutate the post.
      */
+    @NonNull
     public static Function<Post, Single<Post>> mutate() {
         return post -> Observable.fromIterable(MUTATOR_FACTORIES)
                 .concatMap(mutatorFactory -> mutatorFactory.mutate(post).toObservable())

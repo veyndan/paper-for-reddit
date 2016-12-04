@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import android.support.annotation.NonNull;
+
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterException;
@@ -15,8 +17,9 @@ import io.reactivex.Single;
 
 final class TwitterMutatorFactory implements MutatorFactory {
 
-    private static final Pattern PATTERN = Pattern.compile("^https?://(?:www\\.)?twitter\\.com/\\w*/status/(\\d+)\\??.*$");
+    @NonNull private static final Pattern PATTERN = Pattern.compile("^https?://(?:www\\.)?twitter\\.com/\\w*/status/(\\d+)\\??.*$");
 
+    @NonNull
     static TwitterMutatorFactory create() {
         return new TwitterMutatorFactory();
     }
@@ -24,8 +27,9 @@ final class TwitterMutatorFactory implements MutatorFactory {
     private TwitterMutatorFactory() {
     }
 
+    @NonNull
     @Override
-    public Maybe<Post> mutate(final Post post) {
+    public Maybe<Post> mutate(@NonNull final Post post) {
         final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
         return Single.just(post)

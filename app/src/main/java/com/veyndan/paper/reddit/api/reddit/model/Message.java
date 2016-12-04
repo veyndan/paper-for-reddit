@@ -1,24 +1,26 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 public class Message {
-    public String body;
-    public Boolean wasComment;
-    public Object firstMessage;
-    public String name;
-    public Object firstMessageName;
-    public Integer created;
-    public String dest;
-    public String author;
-    public Integer createdUtc;
-    public String bodyHtml;
-    public Object subreddit;
-    public Object parentId;
-    public String context;
-    public String replies;
-    public String id;
-    @SerializedName("new") public Boolean _new;
-    public String distinguished;
-    public String subject;
+    @Nullable public String body;
+    @Nullable public Boolean wasComment;
+    @Nullable public Object firstMessage;
+    @Nullable public String name;
+    @Nullable public Object firstMessageName;
+    @Nullable public Integer created;
+    @Nullable public String dest;
+    @Nullable public String author;
+    @Nullable public Integer createdUtc;
+    @Nullable public String bodyHtml;
+    @Nullable public Object subreddit;
+    @Nullable public Object parentId;
+    @Nullable public String context;
+    @Nullable public String replies;
+    @Nullable public String id;
+    @Nullable @SerializedName("new") public Boolean _new;
+    @Nullable public String distinguished;
+    @Nullable public String subject;
 }

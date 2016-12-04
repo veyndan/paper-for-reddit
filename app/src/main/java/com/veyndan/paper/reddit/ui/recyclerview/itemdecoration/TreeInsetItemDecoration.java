@@ -20,8 +20,8 @@ public class TreeInsetItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent,
-                               final RecyclerView.State state) {
+    public void getItemOffsets(@NonNull final Rect outRect, @NonNull final View view,
+                               @NonNull final RecyclerView parent, @NonNull final RecyclerView.State state) {
         if (parent.getAdapter() instanceof DepthCalculatorDelegate) {
             final DepthCalculatorDelegate depthCalculatorDelegate = (DepthCalculatorDelegate) parent.getAdapter();
             final int position = parent.getChildAdapterPosition(view);

@@ -1,5 +1,8 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.util.Objects;
 
 import io.reactivex.Maybe;
@@ -7,12 +10,13 @@ import io.reactivex.Maybe;
 public class Comment extends Submission {
 
     private int controversiality;
-    private String linkAuthor;
-    private String linkId;
-    private String parentId;
-    private Preview preview = new Preview();
-    private Thing<Listing> replies;
+    @Nullable private String linkAuthor;
+    @Nullable private String linkId;
+    @Nullable private String parentId;
+    @NonNull private Preview preview = new Preview();
+    @Nullable private Thing<Listing> replies;
 
+    @NonNull
     @Override
     public Thing<Listing> getReplies() {
         return Objects.requireNonNull(replies);
@@ -23,6 +27,7 @@ public class Comment extends Submission {
         return false;
     }
 
+    @NonNull
     @Override
     public Maybe<String> getDomain() {
         return Maybe.empty();
@@ -33,11 +38,13 @@ public class Comment extends Submission {
         return false;
     }
 
+    @NonNull
     @Override
     public Maybe<String> getLinkFlairCssClass() {
         return Maybe.empty();
     }
 
+    @NonNull
     @Override
     public Maybe<String> getLinkFlairText() {
         return Maybe.empty();
@@ -48,16 +55,19 @@ public class Comment extends Submission {
         return false;
     }
 
+    @NonNull
     @Override
     public Maybe<Media> getMedia() {
         return Maybe.empty();
     }
 
+    @NonNull
     @Override
     public Maybe<MediaEmbed> getMediaEmbed() {
         return Maybe.empty();
     }
 
+    @NonNull
     @Override
     public Maybe<Integer> getNumComments() {
         return Maybe.empty();
@@ -68,46 +78,55 @@ public class Comment extends Submission {
         return false;
     }
 
+    @NonNull
     @Override
     public Maybe<String> getThumbnail() {
         return Maybe.empty();
     }
 
+    @NonNull
     @Override
     public Maybe<Object> getSuggestedSort() {
         return Maybe.empty();
     }
 
+    @NonNull
     @Override
     public Maybe<Media> getSecureMedia() {
         return Maybe.empty();
     }
 
+    @Nullable
     @Override
     public Object getFromKind() {
         throw new UnsupportedOperationException("Method intention unknown");
     }
 
+    @NonNull
     @Override
     public Preview getPreview() {
         return preview;
     }
 
+    @NonNull
     @Override
     public Maybe<MediaEmbed> getSecureMediaEmbed() {
         return Maybe.empty();
     }
 
+    @NonNull
     @Override
     public PostHint getPostHint() {
         return PostHint.SELF;
     }
 
+    @Nullable
     @Override
     public Object from() {
         throw new UnsupportedOperationException("Method intention unknown");
     }
 
+    @Nullable
     @Override
     public Object fromId() {
         throw new UnsupportedOperationException("Method intention unknown");
@@ -123,11 +142,13 @@ public class Comment extends Submission {
         return false;
     }
 
+    @NonNull
     @Override
     public Maybe<String> getParentId() {
-        return Maybe.just(parentId);
+        return parentId == null ? Maybe.empty() : Maybe.just(parentId);
     }
 
+    @Nullable
     @Override
     public String getLinkAuthor() {
         return linkAuthor;
@@ -140,11 +161,17 @@ public class Comment extends Submission {
      *
      * @see Submission#getPermalink()
      */
+    @NonNull
     @Override
     public String getPermalink() {
-        return String.format("https://www.reddit.com/comments/%s//%s", linkId.split("_")[1], id);
+        if (linkId == null) {
+            throw new NullPointerException();
+        } else {
+            return String.format("https://www.reddit.com/comments/%s//%s", linkId.split("_")[1], id);
+        }
     }
 
+    @Nullable
     @Override
     public String getLinkId() {
         return linkId;
@@ -160,6 +187,7 @@ public class Comment extends Submission {
         return false;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return author;

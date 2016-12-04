@@ -3,6 +3,7 @@ package com.veyndan.paper.reddit.util;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
@@ -19,25 +20,25 @@ public final class Linkifier {
     /**
      * https://www.reddit.com/r/modhelp/comments/1gd1at/name_rules_when_trying_to_create_a_subreddit/cajcylg
      */
-    private static final Pattern SUBREDDIT_PATTERN = Pattern.compile("[^\\w]/?[r|R]/([A-Za-z0-9]\\w{1,20})");
+    @NonNull private static final Pattern SUBREDDIT_PATTERN = Pattern.compile("[^\\w]/?[r|R]/([A-Za-z0-9]\\w{1,20})");
 
     /**
      * https://www.reddit.com/r/modhelp/comments/1gd1at/name_rules_when_trying_to_create_a_subreddit/cajcylg
      */
-    private static final Pattern USER_PATTERN = Pattern.compile("[^\\w]/?[u|U]/([A-Za-z0-9]\\w{1,20})");
+    @NonNull private static final Pattern USER_PATTERN = Pattern.compile("[^\\w]/?[u|U]/([A-Za-z0-9]\\w{1,20})");
 
     /**
      * https://support.twitter.com/articles/101299
      */
-    private static final Pattern TWITTER_MENTION_PATTERN = Pattern.compile("@(\\w{1,15})");
+    @NonNull private static final Pattern TWITTER_MENTION_PATTERN = Pattern.compile("@(\\w{1,15})");
 
-    public static void addLinks(final Context context, final Spannable spannable) {
+    public static void addLinks(@NonNull final Context context, @NonNull final Spannable spannable) {
         addSubredditLinks(context, spannable);
         addUserLinks(context, spannable);
         addTwitterMentionLinks(context, spannable);
     }
 
-    private static void addSubredditLinks(final Context context, final Spannable spannable) {
+    private static void addSubredditLinks(@NonNull final Context context, @NonNull final Spannable spannable) {
         final Matcher matcher = SUBREDDIT_PATTERN.matcher(spannable);
 
         while (matcher.find()) {
@@ -45,7 +46,7 @@ public final class Linkifier {
 
             spannable.setSpan(new ClickableSpan() {
                 @Override
-                public void onClick(final View view) {
+                public void onClick(@NonNull final View view) {
                     final Intent subredditIntent = new Intent(context.getApplicationContext(), MainActivity.class);
                     subredditIntent.putExtra(Reddit.Filter.NODE_DEPTH, 0);
                     subredditIntent.putExtra(Reddit.Filter.SUBREDDIT_NAME, subredditName);
@@ -55,7 +56,7 @@ public final class Linkifier {
         }
     }
 
-    private static void addUserLinks(final Context context, final Spannable spannable) {
+    private static void addUserLinks(@NonNull final Context context, @NonNull final Spannable spannable) {
         // https://www.reddit.com/r/modhelp/comments/1gd1at/name_rules_when_trying_to_create_a_subreddit/cajcylg
         final Matcher matcher = USER_PATTERN.matcher(spannable);
 
@@ -64,7 +65,7 @@ public final class Linkifier {
 
             spannable.setSpan(new ClickableSpan() {
                 @Override
-                public void onClick(final View view) {
+                public void onClick(@NonNull final View view) {
                     final Intent profileIntent = new Intent(context.getApplicationContext(), MainActivity.class);
                     profileIntent.putExtra(Reddit.Filter.NODE_DEPTH, 0);
                     profileIntent.putExtra(Reddit.Filter.USER_NAME, userName);
@@ -76,7 +77,7 @@ public final class Linkifier {
         }
     }
 
-    private static void addTwitterMentionLinks(final Context context, final Spannable spannable) {
+    private static void addTwitterMentionLinks(@NonNull final Context context, @NonNull final Spannable spannable) {
         final Matcher matcher = TWITTER_MENTION_PATTERN.matcher(spannable);
 
         while (matcher.find()) {
@@ -84,7 +85,7 @@ public final class Linkifier {
 
             spannable.setSpan(new ClickableSpan() {
                 @Override
-                public void onClick(final View view) {
+                public void onClick(@NonNull final View view) {
                     final String url = "https://twitter.com/" + twitterUsername;
                     final Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(url));

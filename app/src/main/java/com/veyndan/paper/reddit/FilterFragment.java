@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -26,13 +28,15 @@ public class FilterFragment extends DialogFragment {
         // Required empty public constructor
     }
 
+    @NonNull
     public static FilterFragment newInstance() {
         return new FilterFragment();
     }
 
+    @NonNull
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         final FragmentFilterBinding binding = FragmentFilterBinding.inflate(inflater, container, false);
 
         final Fragment[] fragments = {
@@ -91,15 +95,16 @@ public class FilterFragment extends DialogFragment {
     private static class FilterSectionAdapter extends FragmentStatePagerAdapter {
 
         private final int tabCount;
-        private final Fragment[] fragments;
+        @NonNull private final Fragment[] fragments;
 
-        FilterSectionAdapter(final FragmentManager fm, final Fragment[] fragments) {
+        FilterSectionAdapter(@NonNull final FragmentManager fm, @NonNull final Fragment[] fragments) {
             super(fm);
             this.fragments = fragments;
 
             tabCount = fragments.length;
         }
 
+        @NonNull
         @Override
         public Fragment getItem(final int position) {
             return fragments[position];

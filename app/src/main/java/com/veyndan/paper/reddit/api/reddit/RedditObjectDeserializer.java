@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -16,8 +18,10 @@ import java.lang.reflect.Type;
 
 public class RedditObjectDeserializer implements JsonDeserializer<RedditObject> {
 
+    @NonNull
     @Override
-    public RedditObject deserialize(final JsonElement json, final Type type, final JsonDeserializationContext context)
+    public RedditObject deserialize(@NonNull final JsonElement json, @NonNull final Type type,
+                                    @NonNull final JsonDeserializationContext context)
             throws JsonParseException {
         if (!json.isJsonObject()) {
             // if there are no replies, we're given a String rather than an object

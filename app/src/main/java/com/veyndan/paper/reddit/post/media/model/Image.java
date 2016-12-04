@@ -1,5 +1,6 @@
 package com.veyndan.paper.reddit.post.media.model;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.util.Size;
 
@@ -11,18 +12,18 @@ public class Image {
     @StringRes public static final int IMAGE_TYPE_GIF = R.string.post_media_image_type_gif;
 
     private final int type;
-    private final String url;
-    private Size size;
+    @NonNull private final String url;
+    @NonNull private Size size;
 
     public Image(final String url) {
         this(url, new Size(0, 0));
     }
 
-    public Image(final String url, final Size size) {
+    public Image(@NonNull final String url, @NonNull final Size size) {
         this(url, size, IMAGE_TYPE_STANDARD);
     }
 
-    public Image(final String url, final Size size, @StringRes final int type) {
+    public Image(@NonNull final String url, @NonNull final Size size, @StringRes final int type) {
         this.url = url;
         this.size = size;
         this.type = type;
@@ -33,15 +34,17 @@ public class Image {
         return type;
     }
 
+    @NonNull
     public String getUrl() {
         return url;
     }
 
+    @NonNull
     public Size getSize() {
         return size;
     }
 
-    public void setSize(final Size size) {
+    public void setSize(@NonNull final Size size) {
         this.size = size;
     }
 }

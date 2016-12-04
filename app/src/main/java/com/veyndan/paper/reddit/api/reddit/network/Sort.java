@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit.network;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 public enum Sort {
@@ -9,6 +11,7 @@ public enum Sort {
     @SerializedName("controversial")CONTROVERSIAL,
     @SerializedName("top")TOP;
 
+    @NonNull
     @Override
     public String toString() {
         // Nothing to do with JSON deserialization, but is

@@ -1,6 +1,8 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import android.support.annotation.Nullable;
+
 public class Experiment {
-    public String variant;
+    @Nullable public String variant;
     public int experimentId;
 }

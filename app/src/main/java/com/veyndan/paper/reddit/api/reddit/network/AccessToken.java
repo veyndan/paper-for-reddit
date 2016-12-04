@@ -1,24 +1,27 @@
 package com.veyndan.paper.reddit.api.reddit.network;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import java.util.concurrent.TimeUnit;
 
 public final class AccessToken {
 
-    public static final AccessToken EXPIRED_ACCESS_TOKEN;
+    @NonNull public static final AccessToken EXPIRED_ACCESS_TOKEN;
 
     static {
         EXPIRED_ACCESS_TOKEN = new AccessToken();
         EXPIRED_ACCESS_TOKEN.expiresIn = -1;
     }
 
-    private String accessToken;
-    private String tokenType;
+    @Nullable private String accessToken;
+    @Nullable private String tokenType;
 
     /**
      * The number of seconds that this access token is valid for.
      */
     private int expiresIn;
-    private String scope;
+    @Nullable private String scope;
 
     private final long timestamp;
 
@@ -26,10 +29,12 @@ public final class AccessToken {
         timestamp = System.currentTimeMillis();
     }
 
+    @Nullable
     public String getAccessToken() {
         return accessToken;
     }
 
+    @Nullable
     public String getTokenType() {
         return tokenType;
     }
@@ -41,6 +46,7 @@ public final class AccessToken {
         return TimeUnit.MILLISECONDS.convert(expiresIn, TimeUnit.SECONDS);
     }
 
+    @Nullable
     public String getScope() {
         return scope;
     }

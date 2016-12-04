@@ -42,9 +42,9 @@ public class TextAdapterDelegate
 
     static class TextViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView textView;
+        @NonNull private final TextView textView;
 
-        TextViewHolder(final View itemView) {
+        TextViewHolder(@NonNull final View itemView) {
             super(itemView);
 
             textView = (TextView) itemView;

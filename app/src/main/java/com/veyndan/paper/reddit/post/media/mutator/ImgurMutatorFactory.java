@@ -1,5 +1,6 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.util.Size;
 
@@ -26,8 +27,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 final class ImgurMutatorFactory implements MutatorFactory {
 
-    private static final Pattern PATTERN = Pattern.compile("^https?://(?:m\\.|www\\.)?(i\\.)?imgur\\.com/(a/|gallery/)?(.*)$");
+    @NonNull private static final Pattern PATTERN = Pattern.compile("^https?://(?:m\\.|www\\.)?(i\\.)?imgur\\.com/(a/|gallery/)?(.*)$");
 
+    @NonNull
     static ImgurMutatorFactory create() {
         return new ImgurMutatorFactory();
     }
@@ -35,8 +37,9 @@ final class ImgurMutatorFactory implements MutatorFactory {
     private ImgurMutatorFactory() {
     }
 
+    @NonNull
     @Override
-    public Maybe<Post> mutate(final Post post) {
+    public Maybe<Post> mutate(@NonNull final Post post) {
         final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
         return Single.just(post)
@@ -117,7 +120,8 @@ final class ImgurMutatorFactory implements MutatorFactory {
      * @param url The single image url.
      * @return The direct image url.
      */
-    private static String singleImageUrlToDirectImageUrl(final String url) {
+    @NonNull
+    private static String singleImageUrlToDirectImageUrl(@NonNull final String url) {
         return HttpUrl.parse(url).newBuilder().host("i.imgur.com").build() + ".png";
     }
 }

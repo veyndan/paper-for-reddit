@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +18,6 @@ import com.veyndan.paper.reddit.databinding.ActivityMainBinding;
 import com.veyndan.paper.reddit.post.PostsFragment;
 import com.veyndan.paper.reddit.util.IntentUtils;
 
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 import retrofit2.Response;
 
@@ -27,11 +27,11 @@ import retrofit2.Response;
 })
 public class MainActivity extends BaseActivity {
 
-    private static final Reddit REDDIT = new Reddit(Config.REDDIT_CREDENTIALS);
+    @NonNull private static final Reddit REDDIT = new Reddit(Config.REDDIT_CREDENTIALS);
 
-    private PostsFragment postsFragment;
+    @Nullable private PostsFragment postsFragment;
 
-    private String subreddit;
+    @Nullable private String subreddit;
 
     @Override
     protected void onCreateNonNull(@NonNull final Bundle savedInstanceState) {
@@ -56,13 +56,13 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_account_add:
                 final Intent intent = new Intent(this, AuthenticationActivity.class);
@@ -114,7 +114,7 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, @NonNull final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == RESULT_OK) {

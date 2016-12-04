@@ -1,6 +1,7 @@
 package com.veyndan.paper.reddit.post.media;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.support.customtabs.CustomTabsClient;
 import android.support.customtabs.CustomTabsIntent;
 
@@ -18,9 +19,11 @@ import io.reactivex.Maybe;
 
 public class PostMediaAdapter extends ListDelegationAdapter<List<Object>> {
 
-    public PostMediaAdapter(final Activity activity, final Maybe<CustomTabsClient> customTabsClient,
-                            final CustomTabsIntent customTabsIntent, final Post post,
-                            final List<Object> items) {
+    public PostMediaAdapter(@NonNull final Activity activity,
+                            @NonNull final Maybe<CustomTabsClient> customTabsClient,
+                            @NonNull final CustomTabsIntent customTabsIntent,
+                            @NonNull final Post post,
+                            @NonNull final List<Object> items) {
         delegatesManager
                 .addDelegate(new TextAdapterDelegate())
                 .addDelegate(new LinkAdapterDelegate(activity, customTabsClient, customTabsIntent, post))

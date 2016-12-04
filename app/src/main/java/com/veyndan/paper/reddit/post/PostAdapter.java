@@ -2,6 +2,7 @@ package com.veyndan.paper.reddit.post;
 
 import android.app.Activity;
 import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
 
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
@@ -19,7 +20,7 @@ import retrofit2.Response;
 public class PostAdapter extends ListDelegationAdapter<List<Node<Response<Thing<Listing>>>>>
         implements DepthCalculatorDelegate {
 
-    public PostAdapter(final Activity activity, final List<Node<Response<Thing<Listing>>>> posts, final Reddit reddit) {
+    public PostAdapter(@NonNull final Activity activity, @NonNull final List<Node<Response<Thing<Listing>>>> posts, @NonNull final Reddit reddit) {
         delegatesManager
                 .addDelegate(new PostAdapterDelegate(this, activity, reddit))
                 .addDelegate(new ProgressAdapterDelegate())

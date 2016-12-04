@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import android.support.annotation.Nullable;
+
 public class Account2 {
     // Created
     public long created;
@@ -10,14 +12,14 @@ public class Account2 {
     public boolean hasMail;
     public boolean hasModMail;
     public boolean hasVerifiedEmail;
-    public String id;
+    @Nullable public String id;
     public int inboxCount;
     public boolean isFriend;
     public boolean isGold;
     public boolean isMod;
     public int linkKarma;
-    public String modhash;
-    public String name;
+    @Nullable public String modhash;
+    @Nullable public String name;
     public boolean over18;
 
     // Undocumented
@@ -25,8 +27,8 @@ public class Account2 {
     public boolean hideFromRobots;
     public boolean isSuspended;
     public boolean inBeta;
-    public Features features;
-    public Object goldExpiration;
+    @Nullable public Features features;
+    @Nullable public Object goldExpiration;
     public int goldCreddits;
-    public Object suspensionExpirationUtc; // Type not sure
+    @Nullable public Object suspensionExpirationUtc; // Type not sure
 }

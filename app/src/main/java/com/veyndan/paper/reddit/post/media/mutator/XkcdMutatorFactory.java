@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import android.support.annotation.NonNull;
+
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
 import com.veyndan.paper.reddit.api.xkcd.network.XkcdService;
@@ -16,8 +18,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 final class XkcdMutatorFactory implements MutatorFactory {
 
-    private static final Pattern PATTERN = Pattern.compile("^https?://(?:www\\.)?xkcd\\.com/(\\d+)/?$");
+    @NonNull private static final Pattern PATTERN = Pattern.compile("^https?://(?:www\\.)?xkcd\\.com/(\\d+)/?$");
 
+    @NonNull
     static XkcdMutatorFactory create() {
         return new XkcdMutatorFactory();
     }
@@ -25,8 +28,9 @@ final class XkcdMutatorFactory implements MutatorFactory {
     private XkcdMutatorFactory() {
     }
 
+    @NonNull
     @Override
-    public Maybe<Post> mutate(final Post post) {
+    public Maybe<Post> mutate(@NonNull final Post post) {
         final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
 
         return Single.just(post)

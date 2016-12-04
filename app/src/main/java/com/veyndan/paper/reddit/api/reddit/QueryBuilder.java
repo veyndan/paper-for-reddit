@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit;
 
+import android.support.annotation.NonNull;
+
 import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
 
 import java.util.HashMap;
@@ -17,7 +19,7 @@ import java.util.Map;
  */
 class QueryBuilder {
 
-    private final Map<String, String> query;
+    @NonNull private final Map<String, String> query;
 
     public QueryBuilder() {
         query = new HashMap<>();
@@ -31,7 +33,8 @@ class QueryBuilder {
      *
      * @param fullname fullname of a thing
      */
-    public QueryBuilder after(final String fullname) {
+    @NonNull
+    public QueryBuilder after(@NonNull final String fullname) {
         query.put("after", fullname);
         return this;
     }
@@ -44,7 +47,8 @@ class QueryBuilder {
      *
      * @param fullname fullname of a thing
      */
-    public QueryBuilder before(final String fullname) {
+    @NonNull
+    public QueryBuilder before(@NonNull final String fullname) {
         query.put("before", fullname);
         return this;
     }
@@ -56,6 +60,7 @@ class QueryBuilder {
      *
      * @param count A positive integer (default: 0)
      */
+    @NonNull
     public QueryBuilder count(final int count) {
         if (count < 0) {
             throw new IllegalStateException("Query parameter 'count' must be non negative.");
@@ -69,6 +74,7 @@ class QueryBuilder {
      *
      * @param limit The maximum number of items desired (default: 25, maximum: 100)
      */
+    @NonNull
     public QueryBuilder limit(final int limit) {
         if (limit < 0 || limit > 100) {
             throw new IllegalStateException("Query parameter 'limit' must be between 0 and 100");
@@ -81,6 +87,7 @@ class QueryBuilder {
      * @param all If {@code true}, filters such as "hide links that I have voted on" will be
      *            disabled.
      */
+    @NonNull
     public QueryBuilder show(final boolean all) {
         if (all) {
             query.put("show", "all");
@@ -96,7 +103,8 @@ class QueryBuilder {
      * <p>
      * #inferred
      */
-    public QueryBuilder t(final TimePeriod timePeriod) {
+    @NonNull
+    public QueryBuilder t(@NonNull final TimePeriod timePeriod) {
         query.put("t", timePeriod.toString());
         return this;
     }
@@ -104,11 +112,13 @@ class QueryBuilder {
     /**
      * #undocumented
      */
-    public QueryBuilder srDetail(final Object expandSubreddits) {
+    @NonNull
+    public QueryBuilder srDetail(@NonNull final Object expandSubreddits) {
         query.put("sr_detail", String.valueOf(expandSubreddits));
         return this;
     }
 
+    @NonNull
     public Map<String, String> build() {
         return query;
     }

@@ -1,9 +1,11 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import android.support.annotation.Nullable;
+
 public class Features {
     public boolean inlineImagePreviewsLoggedOut;
-    public Experiment relevancyMweb;
-    public Experiment relevancySidebar;
+    @Nullable public Experiment relevancyMweb;
+    @Nullable public Experiment relevancySidebar;
     public boolean liveHappeningNow;
     public boolean adserverReporting;
     public boolean inlineImagePreviewsLoggedIn;
@@ -23,7 +25,7 @@ public class Features {
     public boolean doNotTrack;
     public boolean stylesheetsEverywhere;
     public boolean newLoggedinCachePolicy;
-    public Experiment registrationCaptcha;
+    @Nullable public Experiment registrationCaptcha;
     public boolean httpsRedirect;
     public boolean screenviewEvents;
     public boolean pauseAds;

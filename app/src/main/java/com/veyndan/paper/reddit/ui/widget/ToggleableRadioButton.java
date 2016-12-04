@@ -1,6 +1,7 @@
 package com.veyndan.paper.reddit.ui.widget;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -10,15 +11,15 @@ import android.widget.RadioGroup;
  */
 public class ToggleableRadioButton extends RadioButton {
 
-    public ToggleableRadioButton(final Context context) {
+    public ToggleableRadioButton(@NonNull final Context context) {
         super(context);
     }
 
-    public ToggleableRadioButton(final Context context, final AttributeSet attrs) {
+    public ToggleableRadioButton(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ToggleableRadioButton(final Context context, final AttributeSet attrs,
+    public ToggleableRadioButton(@NonNull final Context context, @NonNull final AttributeSet attrs,
                                  final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }

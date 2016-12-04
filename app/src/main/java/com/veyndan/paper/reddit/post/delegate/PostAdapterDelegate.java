@@ -50,28 +50,29 @@ import retrofit2.Response;
 
 public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thing<Listing>>>>> {
 
-    private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
+    @NonNull private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
     @BindColor(R.color.post_flair_stickied) int flairStickiedColor;
     @BindColor(R.color.post_flair_nsfw) int flairNsfwColor;
     @BindColor(R.color.post_flair_link) int flairLinkColor;
     @BindColor(R.color.post_flair_gilded) int flairGildedColor;
 
-    @BindDrawable(R.drawable.ic_star_white_12sp) Drawable flairGildedIcon;
+    @Nullable @BindDrawable(R.drawable.ic_star_white_12sp) Drawable flairGildedIcon;
 
-    @BindString(R.string.post_stickied) String flairStickiedText;
-    @BindString(R.string.post_nsfw) String flairNsfwText;
-    @BindString(R.string.score_hidden) String scoreHiddenText;
+    @Nullable @BindString(R.string.post_stickied) String flairStickiedText;
+    @Nullable @BindString(R.string.post_nsfw) String flairNsfwText;
+    @Nullable @BindString(R.string.score_hidden) String scoreHiddenText;
 
-    private final PostAdapter adapter;
-    private final Activity activity;
-    private final Reddit reddit;
+    @NonNull private final PostAdapter adapter;
+    @NonNull private final Activity activity;
+    @NonNull private final Reddit reddit;
 
-    private final CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
-    private final CustomTabsIntent customTabsIntent = builder.build();
-    private Maybe<CustomTabsClient> customTabsClient;
+    @NonNull private final CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+    @NonNull private final CustomTabsIntent customTabsIntent = builder.build();
+    @NonNull private Maybe<CustomTabsClient> customTabsClient = Maybe.empty();
 
-    public PostAdapterDelegate(final PostAdapter adapter, final Activity activity, final Reddit reddit) {
+    public PostAdapterDelegate(@NonNull final PostAdapter adapter, @NonNull final Activity activity,
+                               @NonNull final Reddit reddit) {
         this.adapter = adapter;
         this.activity = activity;
         this.reddit = reddit;
@@ -87,7 +88,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
             @Override
             public void onServiceDisconnected(final ComponentName name) {
                 // customTabsClient is no longer valid. This also invalidates sessions.
-                customTabsClient = null;
+                customTabsClient = Maybe.empty();
             }
         });
     }
@@ -100,7 +101,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         ButterKnife.bind(this, parent);
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final PostItemBinding binding = PostItemBinding.inflate(inflater, parent, false);
@@ -145,7 +146,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 });
     }
 
-    private void bindHeader(final Post post, final PostViewHolder holder) {
+    private void bindHeader(@NonNull final Post post, @NonNull final PostViewHolder holder) {
         final List<Flair> flairs = new ArrayList<>();
 
         if (post.isStickied()) {
@@ -177,18 +178,20 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 post.getSubreddit(), flairs);
     }
 
-    private void bindMedia(final Post post, final PostViewHolder holder) {
+    private void bindMedia(@NonNull final Post post, @NonNull final PostViewHolder holder) {
         final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
                 activity, customTabsClient, customTabsIntent, post, post.getMedias());
         holder.binding.postMediaView.setAdapter(postMediaAdapter);
     }
 
-    private void bindPoints(final Context context, final Post post, final PostViewHolder holder) {
+    private void bindPoints(@NonNull final Context context, @NonNull final Post post,
+                            @NonNull final PostViewHolder holder) {
         final String points = post.getDisplayPoints(context, scoreHiddenText);
         holder.binding.postScore.setText(points);
     }
 
-    private void bindUpvoteAction(final Context context, final Post post, final PostViewHolder holder) {
+    private void bindUpvoteAction(@NonNull final Context context, @NonNull final Post post,
+                                  @NonNull final PostViewHolder holder) {
         final VoteDirection likes = post.getLikes();
         holder.binding.postUpvoteNew.setChecked(likes == VoteDirection.UPVOTE);
         RxCompoundButton.checkedChanges(holder.binding.postUpvoteNew)
@@ -211,7 +214,8 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 });
     }
 
-    private void bindDownvoteAction(final Context context, final Post post, final PostViewHolder holder) {
+    private void bindDownvoteAction(@NonNull final Context context, @NonNull final Post post,
+                                    @NonNull final PostViewHolder holder) {
         final VoteDirection likes = post.getLikes();
         holder.binding.postDownvoteNew.setChecked(likes == VoteDirection.DOWNVOTE);
         RxCompoundButton.checkedChanges(holder.binding.postDownvoteNew)
@@ -234,7 +238,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 });
     }
 
-    private void bindSaveAction(final Post post, final PostViewHolder holder) {
+    private void bindSaveAction(@NonNull final Post post, @NonNull final PostViewHolder holder) {
         holder.binding.postSave.setChecked(post.isSaved());
         RxView.clicks(holder.binding.postSave)
                 .subscribe(aVoid -> {
@@ -254,7 +258,8 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 });
     }
 
-    private void bindCommentsAction(final Context context, final List<Node<Response<Thing<Listing>>>> nodes, final Post post, final PostViewHolder holder) {
+    private void bindCommentsAction(@NonNull final Context context, @NonNull final List<Node<Response<Thing<Listing>>>> nodes,
+                                    @NonNull final Post post, @NonNull final PostViewHolder holder) {
         RxView.clicks(holder.binding.postComments)
                 .map(aVoid -> {
                     holder.binding.postComments.toggle();
@@ -302,25 +307,25 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         }
     }
 
-    private static void bindShareAction(final Context context, final Post post) {
+    private static void bindShareAction(@NonNull final Context context, @NonNull final Post post) {
         final Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_TEXT, post.getPermalink());
         intent.setType("text/plain");
         context.startActivity(intent);
     }
 
-    private static void bindBrowserAction(final Context context, final Post post) {
+    private static void bindBrowserAction(@NonNull final Context context, @NonNull final Post post) {
         final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.getLinkUrl()));
         context.startActivity(intent);
     }
 
     static class PostViewHolder extends RecyclerView.ViewHolder implements Swipeable {
 
-        private final PostItemBinding binding;
-        private final PostAdapter adapter;
-        private final Reddit reddit;
+        @NonNull private final PostItemBinding binding;
+        @NonNull private final PostAdapter adapter;
+        @NonNull private final Reddit reddit;
 
-        PostViewHolder(final PostItemBinding binding, final PostAdapter adapter, final Reddit reddit) {
+        PostViewHolder(@NonNull final PostItemBinding binding, @NonNull final PostAdapter adapter, @NonNull final Reddit reddit) {
             super(binding.getRoot());
 
             this.binding = binding;

@@ -44,9 +44,9 @@ public class TweetAdapterDelegate
 
     static class TweetViewHolder extends RecyclerView.ViewHolder {
 
-        final ViewGroup container;
+        @NonNull final ViewGroup container;
 
-        TweetViewHolder(final View itemView) {
+        TweetViewHolder(@NonNull final View itemView) {
             super(itemView);
 
             container = (ViewGroup) itemView;

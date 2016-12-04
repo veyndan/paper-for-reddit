@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit.network;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 public enum VoteDirection {
@@ -13,6 +15,7 @@ public enum VoteDirection {
         this.direction = direction;
     }
 
+    @NonNull
     @Override
     public String toString() {
         // Nothing to do with JSON deserialization, but is

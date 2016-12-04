@@ -1,5 +1,8 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 
@@ -22,8 +25,9 @@ public abstract class Submission extends RedditObject {
      * How the logged-in user has voted on the submission. {@code true} = upvoted,
      * {@code false} = downvoted, {@code null} = no vote.
      */
-    private Boolean likes;
+    @Nullable private Boolean likes;
 
+    @NonNull
     public VoteDirection getLikes() {
         if (likes == null) {
             return VoteDirection.UNVOTE;
@@ -49,6 +53,7 @@ public abstract class Submission extends RedditObject {
      * other examples include {@code en.wikipedia.org} and {@code s3.amazon.com}. If the submission
      * is a comment, then {@code null} is returned.
      */
+    @NonNull
     public abstract Maybe<String> getDomain();
 
     /**
@@ -62,11 +67,13 @@ public abstract class Submission extends RedditObject {
      * The CSS class of the link's flair. If the submission is a Comment, then {@code null} is
      * returned.
      */
+    @NonNull
     public abstract Maybe<String> getLinkFlairCssClass();
 
     /**
      * The text of the link's flair. If the submission is a Comment, then {@code null} is returned.
      */
+    @NonNull
     public abstract Maybe<String> getLinkFlairText();
 
     /**
@@ -79,18 +86,21 @@ public abstract class Submission extends RedditObject {
      * Used for streaming video. Detailed information about the video and it's origins are placed
      * here. If the submission is a Comment, then {@code null} is returned.
      */
+    @NonNull
     public abstract Maybe<Media> getMedia();
 
     /**
      * Used for streaming video. Technical embed specific information is found here. If the
      * submission is a Comment, then {@code null} is returned.
      */
+    @NonNull
     public abstract Maybe<MediaEmbed> getMediaEmbed();
 
     /**
      * The number of comments that belong to this link. includes removed comments. If the submission
      * is a Comment, then {@code 0} is returned.
      */
+    @NonNull
     public abstract Maybe<Integer> getNumComments();
 
     /**
@@ -103,31 +113,37 @@ public abstract class Submission extends RedditObject {
      * Full URL to the thumbnail for this link. "self" if this is a self post. "default" if a
      * thumbnail is not available. If the submission is a Comment, then {@code null} is returned.
      */
+    @NonNull
     public abstract Maybe<String> getThumbnail();
 
     /**
      * #undocumented
      */
+    @NonNull
     public abstract Maybe<Object> getSuggestedSort();
 
     /**
      * #undocumented
      */
+    @NonNull
     public abstract Maybe<Media> getSecureMedia();
 
     /**
      * #undocumented
      */
+    @Nullable
     public abstract Object getFromKind();
 
     /**
      * #undocumented
      */
+    @NonNull
     public abstract Preview getPreview();
 
     /**
      * #undocumented
      */
+    @NonNull
     public abstract Maybe<MediaEmbed> getSecureMediaEmbed();
 
     /**
@@ -137,16 +153,19 @@ public abstract class Submission extends RedditObject {
      * <p>
      * #inferred ({@code "post_hint"} defined at <a href="https://github.com/reddit/reddit/blob/b423fe2bf873919b27c4eab885551c8ee325b9af/r2/r2/models/link.py#L896">https://github.com/reddit/reddit/blob/b423fe2bf873919b27c4eab885551c8ee325b9af/r2/r2/models/link.py#L896</a>
      */
+    @NonNull
     public abstract PostHint getPostHint();
 
     /**
      * #undocumented
      */
+    @Nullable
     public abstract Object from();
 
     /**
      * #undocumented
      */
+    @Nullable
     public abstract Object fromId();
 
     /**
@@ -165,34 +184,37 @@ public abstract class Submission extends RedditObject {
      *
      * @return Submission's parent ID.
      */
+    @NonNull
     public abstract Maybe<String> getParentId();
 
     /**
      * The comment nodes/leaves exactly one below the current Submission.
      */
+    @NonNull
     public abstract Thing<Listing> getReplies();
 
     /**
      * The account name of the poster. {@code null} if this is a promotional link.
      */
-    public String author;
+    @Nullable public String author;
 
+    @Nullable
     public abstract String getLinkAuthor();
 
     /**
      * The CSS class of the author's flair. subreddit specific.
      */
-    public String authorFlairCssClass;
+    @Nullable public String authorFlairCssClass;
 
     /**
      * The text of the author's flair. subreddit specific.
      */
-    public String authorFlairText;
+    @Nullable public String authorFlairText;
 
     /**
      * Url of the permanent link.
      */
-    public abstract String getPermalink();
+    @NonNull public abstract String getPermalink();
 
     /**
      * {@code true} if this post is saved by the logged in user.
@@ -215,24 +237,24 @@ public abstract class Submission extends RedditObject {
     /**
      * Subreddit of thing excluding the /r/ prefix e.g. "pics".
      */
-    public String subreddit;
+    @Nullable public String subreddit;
 
     /**
      * The id of the subreddit in which the thing is located.
      */
-    public String subredditId;
+    @Nullable public String subredditId;
 
     /**
      * Indicates if link has been edited. Will be the edit timestamp if the link has been edited
      * and return {@code false} otherwise.
      */
-    public Object edited;
+    @Nullable public Object edited;
 
     /**
      * To allow determining whether they have been distinguished by moderators/admins. If
      * {@code null} then not distinguished.
      */
-    public Distinguished distinguished;
+    @Nullable public Distinguished distinguished;
 
     /**
      * {@code true} if the post is set as the sticky in its subreddit.
@@ -242,21 +264,22 @@ public abstract class Submission extends RedditObject {
     /**
      * Who removed this submission. {@code null} if nobody or you are not a mod.
      */
-    public String bannedBy;
+    @Nullable public String bannedBy;
 
     /**
      * #undocumented
      */
-    public List<Object> userReports = new ArrayList<>();
+    @NonNull public List<Object> userReports = new ArrayList<>();
 
     /**
      * #undocumented
      */
-    public String id;
+    @Nullable public String id;
 
     /**
      * ID of the link the submission is or is in.
      */
+    @Nullable
     public abstract String getLinkId();
 
     /**
@@ -274,23 +297,24 @@ public abstract class Submission extends RedditObject {
     /**
      * #undocumented
      */
-    public Object reportReasons;
+    @Nullable public Object reportReasons;
 
     /**
      * Who approved this submission. {@code null} if nobody or you are not a mod.
      */
-    public String approvedBy;
+    @Nullable public String approvedBy;
 
     /**
      * #undocumented
      */
-    public Object removalReason;
+    @Nullable public Object removalReason;
 
-    private String name;
+    @Nullable private String name;
 
     /**
      * #undocumented
      */
+    @Nullable
     public String getFullname() {
         return name;
     }
@@ -298,12 +322,12 @@ public abstract class Submission extends RedditObject {
     /**
      * #undocumented
      */
-    public List<Object> modReports = new ArrayList<>();
+    @NonNull public List<Object> modReports = new ArrayList<>();
 
     /**
      * How many times this submission has been reported, {@code null} if not a mod.
      */
-    public Object numReports;
+    @Nullable public Object numReports;
 
     /**
      * Should the score be hidden.
@@ -315,12 +339,12 @@ public abstract class Submission extends RedditObject {
     /**
      * The title of the link. May contain newlines for some reason.
      */
-    @SerializedName(value = "link_title", alternate = "title") public String linkTitle;
+    @Nullable @SerializedName(value = "link_title", alternate = "title") public String linkTitle;
 
     /**
      * The link of this post. The permalink if this is a self-post.
      */
-    @SerializedName(value = "link_url", alternate = "url") public String linkUrl;
+    @Nullable @SerializedName(value = "link_url", alternate = "url") public String linkUrl;
 
     /**
      * The raw text. This is the unformatted text which includes the raw markup characters such as
@@ -328,7 +352,7 @@ public abstract class Submission extends RedditObject {
      * <p>
      * If it is a {@link Link} then this is the self text if available. Empty if not present.
      */
-    @SerializedName(value = "body", alternate = "selftext") public String body;
+    @Nullable @SerializedName(value = "body", alternate = "selftext") public String body;
 
     /**
      * The formatted HTML text as displayed on reddit. For example, text that is emphasised by *
@@ -338,7 +362,7 @@ public abstract class Submission extends RedditObject {
      * <p>
      * If it is a {@link Link} then this is the self text if available. {@code null} if not present.
      */
-    @SerializedName(value = "body_html", alternate = "selftext_html") public String bodyHtml;
+    @Nullable @SerializedName(value = "body_html", alternate = "selftext_html") public String bodyHtml;
 
     /**
      * #undocumented

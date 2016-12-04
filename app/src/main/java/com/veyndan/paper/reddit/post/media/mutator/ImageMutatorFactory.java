@@ -1,5 +1,6 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.util.Size;
 
@@ -13,6 +14,7 @@ import io.reactivex.Single;
 
 public final class ImageMutatorFactory implements MutatorFactory {
 
+    @NonNull
     public static ImageMutatorFactory create() {
         return new ImageMutatorFactory();
     }
@@ -20,8 +22,9 @@ public final class ImageMutatorFactory implements MutatorFactory {
     private ImageMutatorFactory() {
     }
 
+    @NonNull
     @Override
-    public Maybe<Post> mutate(final Post post) {
+    public Maybe<Post> mutate(@NonNull final Post post) {
         return Single.just(post)
                 .filter(post1 -> post1.getPostHint() == PostHint.IMAGE)
                 .map(post1 -> {

@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.TextPaint;
@@ -45,24 +46,24 @@ public class PostHeaderView extends TextView {
     @BindDimen(R.dimen.post_title_subtitle_spacing) int titleSubtitleSpacing;
     @BindDimen(R.dimen.post_subtitle_flair_spacing) int subtitleFlairSpacing;
 
-    private final Context context;
+    @NonNull private final Context context;
 
-    private final TextAppearanceSpan titleTextAppearanceSpan;
+    @NonNull private final TextAppearanceSpan titleTextAppearanceSpan;
 
-    private final TextAppearanceSpan subtitleTextAppearanceSpan;
+    @NonNull private final TextAppearanceSpan subtitleTextAppearanceSpan;
 
-    private final TextAppearanceSpan flairTextAppearanceSpan;
-    private final StyleSpan flairStyleSpan = new StyleSpan(Typeface.BOLD);
+    @NonNull private final TextAppearanceSpan flairTextAppearanceSpan;
+    @NonNull private final StyleSpan flairStyleSpan = new StyleSpan(Typeface.BOLD);
 
-    public PostHeaderView(final Context context) {
+    public PostHeaderView(@NonNull final Context context) {
         this(context, null);
     }
 
-    public PostHeaderView(final Context context, final AttributeSet attrs) {
+    public PostHeaderView(@NonNull final Context context, @Nullable final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public PostHeaderView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
+    public PostHeaderView(@NonNull final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         ButterKnife.bind(this);
 
@@ -127,13 +128,13 @@ public class PostHeaderView extends TextView {
         }
     }
 
-    public void setHeader(final Maybe<String> title, final String author, final CharSequence age,
-                          final String subreddit, @NonNull final List<Flair> flairs) {
+    public void setHeader(@NonNull final Maybe<String> title, @NonNull final String author, @NonNull final CharSequence age,
+                          @NonNull final String subreddit, @NonNull final List<Flair> flairs) {
         final LineHeightSpan subtitleLineHeightSpan = new LineHeightSpan.WithDensity() {
             @Override
-            public void chooseHeight(final CharSequence text, final int start, final int end,
+            public void chooseHeight(@NonNull final CharSequence text, final int start, final int end,
                                      final int spanstartv, final int v,
-                                     final Paint.FontMetricsInt fm, final TextPaint paint) {
+                                     @NonNull final Paint.FontMetricsInt fm, @Nullable final TextPaint paint) {
                 fm.ascent -= titleSubtitleSpacing;
                 fm.top -= titleSubtitleSpacing;
 
@@ -144,9 +145,9 @@ public class PostHeaderView extends TextView {
             }
 
             @Override
-            public void chooseHeight(final CharSequence text, final int start, final int end,
+            public void chooseHeight(@NonNull final CharSequence text, final int start, final int end,
                                      final int spanstartv, final int v,
-                                     final Paint.FontMetricsInt fm) {
+                                     @NonNull final Paint.FontMetricsInt fm) {
                 chooseHeight(text, start, end, spanstartv, v, fm, null);
             }
         };
@@ -155,7 +156,7 @@ public class PostHeaderView extends TextView {
 
         final ClickableSpan authorClickableSpan = new ClickableSpan() {
             @Override
-            public void onClick(final View widget) {
+            public void onClick(@NonNull final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
                 intent.putExtra(Reddit.Filter.NODE_DEPTH, 0);
                 intent.putExtra(Reddit.Filter.USER_NAME, author);
@@ -167,7 +168,7 @@ public class PostHeaderView extends TextView {
 
         final ClickableSpan subredditClickableSpan = new ClickableSpan() {
             @Override
-            public void onClick(final View widget) {
+            public void onClick(@NonNull final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
                 intent.putExtra(Reddit.Filter.NODE_DEPTH, 0);
                 intent.putExtra(Reddit.Filter.SUBREDDIT_NAME, subreddit);
@@ -215,9 +216,9 @@ public class PostHeaderView extends TextView {
 
             spanny.append(flairsSpanny, new LineHeightSpan.WithDensity() {
                 @Override
-                public void chooseHeight(final CharSequence text, final int start, final int end,
+                public void chooseHeight(@NonNull final CharSequence text, final int start, final int end,
                                          final int spanstartv, final int v,
-                                         final Paint.FontMetricsInt fm, final TextPaint paint) {
+                                         @NonNull final Paint.FontMetricsInt fm, @Nullable final TextPaint paint) {
                     // Reset titleSubtitleSpacing.
                     fm.ascent += titleSubtitleSpacing;
                     fm.top += titleSubtitleSpacing;
@@ -228,9 +229,9 @@ public class PostHeaderView extends TextView {
                 }
 
                 @Override
-                public void chooseHeight(final CharSequence text, final int start, final int end,
+                public void chooseHeight(@NonNull final CharSequence text, final int start, final int end,
                                          final int spanstartv, final int v,
-                                         final Paint.FontMetricsInt fm) {
+                                         @NonNull final Paint.FontMetricsInt fm) {
                     chooseHeight(text, start, end, spanstartv, v, fm, null);
                 }
             });
@@ -239,7 +240,8 @@ public class PostHeaderView extends TextView {
         setText(spanny);
     }
 
-    private SpannableString createFlairSpannable(final Flair flair) {
+    @NonNull
+    private SpannableString createFlairSpannable(@NonNull final Flair flair) {
         final FlairBackgroundSpan flairBackgroundSpan = new FlairBackgroundSpan(context,
                 flair.getBackgroundColor(), flair.getIcon());
 
@@ -252,15 +254,15 @@ public class PostHeaderView extends TextView {
 
         @ColorInt private final int backgroundColor;
         @ColorInt private final int textColor;
-        private final Maybe<Drawable> icon;
+        @NonNull private final Maybe<Drawable> icon;
 
         private final int cornerRadius;
         private final int paddingHorizontal;
         private final int paddingVertical;
         private final int paddingDrawable;
 
-        private FlairBackgroundSpan(final Context context, @ColorInt final int backgroundColor,
-                                    final Maybe<Drawable> icon) {
+        private FlairBackgroundSpan(@NonNull final Context context, @ColorInt final int backgroundColor,
+                                    @NonNull final Maybe<Drawable> icon) {
             this.backgroundColor = backgroundColor;
             textColor = ContextCompat.getColor(context, android.R.color.white);
             this.icon = icon;
@@ -273,7 +275,7 @@ public class PostHeaderView extends TextView {
         }
 
         @Override
-        public void draw(@NonNull final Canvas canvas, final CharSequence text, final int start,
+        public void draw(@NonNull final Canvas canvas, @NonNull final CharSequence text, final int start,
                          final int end, final float x, final int top, final int y, final int bottom,
                          @NonNull final Paint paint) {
             final int drawablePadding = icon.isEmpty().blockingGet()
@@ -312,8 +314,8 @@ public class PostHeaderView extends TextView {
         }
 
         @Override
-        public int getSize(@NonNull final Paint paint, final CharSequence text, final int start,
-                           final int end, final Paint.FontMetricsInt fm) {
+        public int getSize(@NonNull final Paint paint, @NonNull final CharSequence text, final int start,
+                           final int end, @Nullable final Paint.FontMetricsInt fm) {
             if (fm != null) {
                 fm.descent += paddingVertical * 2;
                 fm.bottom += paddingVertical * 2;

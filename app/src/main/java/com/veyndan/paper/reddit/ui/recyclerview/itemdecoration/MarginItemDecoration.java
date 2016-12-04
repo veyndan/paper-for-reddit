@@ -17,8 +17,8 @@ public class MarginItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent,
-                               final RecyclerView.State state) {
+    public void getItemOffsets(@NonNull final Rect outRect, @NonNull final View view,
+                               @NonNull final RecyclerView parent, @NonNull final RecyclerView.State state) {
         final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) view.getLayoutParams();
         final int position = params.getViewLayoutPosition();
         final int marginTop = position == 0 ? margin : 0;

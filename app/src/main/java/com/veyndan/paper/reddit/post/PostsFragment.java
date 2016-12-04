@@ -2,6 +2,7 @@ package com.veyndan.paper.reddit.post;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,19 +34,19 @@ import retrofit2.Response;
 
 public class PostsFragment extends Fragment implements PostMvpView<Response<Thing<Listing>>> {
 
-    private final PostPresenter postPresenter = new PostPresenter();
+    @NonNull private final PostPresenter postPresenter = new PostPresenter();
 
-    private RecyclerView recyclerView;
+    @Nullable private RecyclerView recyclerView;
 
-    private final List<Node<Response<Thing<Listing>>>> nodes = new ArrayList<>();
+    @NonNull private final List<Node<Response<Thing<Listing>>>> nodes = new ArrayList<>();
 
-    private PostAdapter postAdapter;
+    @Nullable private PostAdapter postAdapter;
 
-    private LinearLayoutManager layoutManager;
+    @Nullable private LinearLayoutManager layoutManager;
 
     private boolean loadingPosts;
 
-    private Reddit reddit;
+    @Nullable private Reddit reddit;
 
     @SuppressWarnings("RedundantNoArgConstructor")
     public PostsFragment() {
@@ -53,7 +54,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
     }
 
     @Override
-    public void onAttach(final Context context) {
+    public void onAttach(@NonNull final Context context) {
         super.onAttach(context);
         postPresenter.attachView(this);
 
@@ -66,7 +67,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         setRetainInstance(true);
     }
 
-    public void setRequest(final Single<Response<Thing<Listing>>> request) {
+    public void setRequest(@NonNull final Single<Response<Thing<Listing>>> request) {
         clearNodes();
         postPresenter.loadNode(new Progress.Builder()
                 .trigger(getTrigger())
@@ -74,9 +75,10 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
                 .build());
     }
 
+    @NonNull
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
 
@@ -102,25 +104,27 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
     }
 
     @Override
-    public void appendNode(final Node<Response<Thing<Listing>>> node) {
+    public void appendNode(@NonNull final Node<Response<Thing<Listing>>> node) {
         nodes.add(node);
         postAdapter.notifyItemInserted(nodes.size() - 1);
         loadingPosts = false;
     }
 
     @Override
-    public void appendNodes(final List<? extends Node<Response<Thing<Listing>>>> nodes) {
+    public void appendNodes(@NonNull final List<? extends Node<Response<Thing<Listing>>>> nodes) {
         final int positionStart = this.nodes.size();
         this.nodes.addAll(nodes);
         postAdapter.notifyItemRangeInserted(positionStart, nodes.size());
         loadingPosts = false;
     }
 
+    @NonNull
     @Override
     public Node<Response<Thing<Listing>>> popNode() {
         return popNode(nodes.size() - 1);
     }
 
+    @NonNull
     @Override
     public Node<Response<Thing<Listing>>> popNode(final int index) {
         final Node<Response<Thing<Listing>>> poppedNode = nodes.get(index);
@@ -136,6 +140,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         postAdapter.notifyItemRangeRemoved(0, nodesSize);
     }
 
+    @NonNull
     private Observable<Boolean> getTrigger() {
         return Observable.concat(getFirstPageTrigger(), getNextPageTrigger())
                 .filter(Boolean::booleanValue)
@@ -143,6 +148,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
                 .doOnNext(aBoolean -> loadingPosts = true);
     }
 
+    @NonNull
     private Observable<Boolean> getFirstPageTrigger() {
         return Observable.fromIterable(nodes)
                 .count()
@@ -150,6 +156,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
                 .toObservable();
     }
 
+    @NonNull
     private Observable<Boolean> getNextPageTrigger() {
         return RxJavaInterop.toV2Observable(
                 RxRecyclerView.scrollEvents(recyclerView)

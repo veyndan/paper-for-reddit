@@ -1,5 +1,6 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
@@ -11,6 +12,7 @@ import io.reactivex.Single;
 
 final class TextMutatorFactory implements MutatorFactory {
 
+    @NonNull
     static TextMutatorFactory create() {
         return new TextMutatorFactory();
     }
@@ -18,8 +20,9 @@ final class TextMutatorFactory implements MutatorFactory {
     private TextMutatorFactory() {
     }
 
+    @NonNull
     @Override
-    public Maybe<Post> mutate(final Post post) {
+    public Maybe<Post> mutate(@NonNull final Post post) {
         return Single.just(post)
                 .filter(post1 -> post1.getPostHint() == PostHint.SELF &&
                         !TextUtils.isEmpty(post1.getBody()))

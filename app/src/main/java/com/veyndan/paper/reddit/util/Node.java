@@ -86,6 +86,7 @@ public abstract class Node<T> {
                                 .concatMap(childNode -> childNode.preOrderTraverse(depth + 1))));
     }
 
+    @NonNull
     private Observable<Integer> generateDescendantCount() {
         return getChildren()
                 .toList()

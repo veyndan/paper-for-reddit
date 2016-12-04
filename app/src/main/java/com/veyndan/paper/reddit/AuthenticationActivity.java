@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
@@ -20,13 +21,13 @@ import timber.log.Timber;
 
 public class AuthenticationActivity extends BaseActivity {
 
-    private static final String ERROR_ACCESS_DENIED = "access_denied";
-    private static final String ERROR_UNSUPPORTED_RESPONSE_TYPE = "unsupported_response_type";
-    private static final String ERROR_INVALID_SCOPE = "invalid_scope";
-    private static final String ERROR_INVALID_REQUEST = "invalid_request";
+    @NonNull private static final String ERROR_ACCESS_DENIED = "access_denied";
+    @NonNull private static final String ERROR_UNSUPPORTED_RESPONSE_TYPE = "unsupported_response_type";
+    @NonNull private static final String ERROR_INVALID_SCOPE = "invalid_scope";
+    @NonNull private static final String ERROR_INVALID_REQUEST = "invalid_request";
 
     // https://www.reddit.com/api/v1/scopes
-    private static final String[] SCOPES = {
+    @NonNull private static final String[] SCOPES = {
             "edit", "flair", "history", "identity", "modconfig", "modflair", "modlog", "modposts",
             "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit",
             "subscribe", "vote", "wikiedit", "wikiread"};
@@ -44,7 +45,7 @@ public class AuthenticationActivity extends BaseActivity {
         binding.webView.setWebViewClient(new WebViewClient() {
             @SuppressWarnings("deprecation")
             @Override
-            public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
+            public boolean shouldOverrideUrlLoading(@NonNull final WebView view, @NonNull final String url) {
                 if (url.startsWith(Constants.REDDIT_REDIRECT_URI)) {
                     final HttpUrl redirectUrl = HttpUrl.parse(url);
 

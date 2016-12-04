@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit.network.interceptor;
 
+import android.support.annotation.NonNull;
+
 import com.veyndan.paper.reddit.api.reddit.network.AccessToken;
 import com.veyndan.paper.reddit.api.reddit.network.AuthenticationService;
 import com.veyndan.paper.reddit.api.reddit.network.Credentials;
@@ -13,19 +15,20 @@ import okhttp3.Response;
 
 public final class AccessTokenInterceptor implements Interceptor {
 
-    private final AuthenticationService authenticationService;
-    private final Credentials credentials;
+    @NonNull private final AuthenticationService authenticationService;
+    @NonNull private final Credentials credentials;
 
-    private AccessToken accessTokenCache = AccessToken.EXPIRED_ACCESS_TOKEN;
+    @NonNull private AccessToken accessTokenCache = AccessToken.EXPIRED_ACCESS_TOKEN;
 
-    public AccessTokenInterceptor(final AuthenticationService authenticationService,
-                                  final Credentials credentials) {
+    public AccessTokenInterceptor(@NonNull final AuthenticationService authenticationService,
+                                  @NonNull final Credentials credentials) {
         this.authenticationService = authenticationService;
         this.credentials = credentials;
     }
 
+    @NonNull
     @Override
-    public Response intercept(final Chain chain) throws IOException {
+    public Response intercept(@NonNull final Chain chain) throws IOException {
         final Request unauthorizedRequest = chain.request();
 
         final Request authorizedRequest = Single.concat(accessTokenCache(), accessTokenNetwork())
@@ -39,10 +42,12 @@ public final class AccessTokenInterceptor implements Interceptor {
         return chain.proceed(authorizedRequest);
     }
 
+    @NonNull
     private Single<AccessToken> accessTokenCache() {
         return Single.just(accessTokenCache);
     }
 
+    @NonNull
     private Single<AccessToken> accessTokenNetwork() {
         final Single<AccessToken> single = authenticationService.getAccessToken(
                 "password", credentials.getUsername(), credentials.getPassword());

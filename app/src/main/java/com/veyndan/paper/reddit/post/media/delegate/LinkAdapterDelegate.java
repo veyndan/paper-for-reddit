@@ -23,13 +23,13 @@ import io.reactivex.Maybe;
 public class LinkAdapterDelegate
         extends AbsListItemAdapterDelegate<Link, Object, LinkAdapterDelegate.LinkViewHolder> {
 
-    private final Activity activity;
-    private final Maybe<CustomTabsClient> customTabsClient;
-    private final CustomTabsIntent customTabsIntent;
-    private final Post post;
+    @NonNull private final Activity activity;
+    @NonNull private final Maybe<CustomTabsClient> customTabsClient;
+    @NonNull private final CustomTabsIntent customTabsIntent;
+    @NonNull private final Post post;
 
-    public LinkAdapterDelegate(final Activity activity, final Maybe<CustomTabsClient> customTabsClient,
-                               final CustomTabsIntent customTabsIntent, final Post post) {
+    public LinkAdapterDelegate(@NonNull final Activity activity, @NonNull final Maybe<CustomTabsClient> customTabsClient,
+                               @NonNull final CustomTabsIntent customTabsIntent, @NonNull final Post post) {
         this.activity = activity;
         this.customTabsClient = customTabsClient;
         this.customTabsIntent = customTabsIntent;
@@ -70,9 +70,9 @@ public class LinkAdapterDelegate
 
     static class LinkViewHolder extends RecyclerView.ViewHolder {
 
-        private final PostMediaLinkBinding binding;
+        @NonNull private final PostMediaLinkBinding binding;
 
-        public LinkViewHolder(final PostMediaLinkBinding binding) {
+        public LinkViewHolder(@NonNull final PostMediaLinkBinding binding) {
             super(binding.getRoot());
 
             this.binding = binding;

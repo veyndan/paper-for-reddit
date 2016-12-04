@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import android.support.annotation.Nullable;
+
 public class CaptchaData {
-    public String iden;
+    @Nullable public String iden;
 }

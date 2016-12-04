@@ -1,6 +1,8 @@
 package com.veyndan.paper.reddit;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,17 +20,20 @@ public class UserFilterFragment extends Fragment implements Filter {
         // Required empty public constructor
     }
 
+    @NonNull
     public static UserFilterFragment newInstance() {
         return new UserFilterFragment();
     }
 
+    @NonNull
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         binding = FragmentUserFilterBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
+    @NonNull
     @Override
     public Bundle requestFilter() {
         final Bundle bundle = new Bundle();

@@ -44,9 +44,9 @@ public class ProgressAdapterDelegate
 
     static final class ProgressViewHolder extends RecyclerView.ViewHolder {
 
-        final ProgressBar progress;
+        @NonNull final ProgressBar progress;
 
-        ProgressViewHolder(final View itemView) {
+        ProgressViewHolder(@NonNull final View itemView) {
             super(itemView);
             progress = (ProgressBar) itemView;
         }

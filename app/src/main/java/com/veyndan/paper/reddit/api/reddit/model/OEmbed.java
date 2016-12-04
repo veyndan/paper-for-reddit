@@ -1,16 +1,18 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import android.support.annotation.Nullable;
+
 public class OEmbed {
-    public String providerUrl;
-    public String description;
-    public String title;
-    public String type;
+    @Nullable public String providerUrl;
+    @Nullable public String description;
+    @Nullable public String title;
+    @Nullable public String type;
     public int thumbnailWidth;
     public int height;
     public int width;
-    public String html;
-    public String version;
-    public String providerName;
-    public String thumbnailUrl;
+    @Nullable public String html;
+    @Nullable public String version;
+    @Nullable public String providerName;
+    @Nullable public String thumbnailUrl;
     public int thumbnailHeight;
 }

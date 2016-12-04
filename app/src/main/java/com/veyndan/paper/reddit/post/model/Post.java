@@ -3,6 +3,7 @@ package com.veyndan.paper.reddit.post.model;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -35,34 +36,34 @@ import retrofit2.Response;
 
 public class Post extends Node<Response<Thing<Listing>>> {
 
-    private final List<Object> medias = new ArrayList<>();
+    @NonNull private final List<Object> medias = new ArrayList<>();
 
     private final boolean isComment;
 
-    private final Observable<Node<Response<Thing<Listing>>>> children;
+    @NonNull private final Observable<Node<Response<Thing<Listing>>>> children;
     private boolean descendantsVisible;
 
     private final boolean archived;
-    private final String author;
-    private final String bodyHtml;
+    @NonNull private final String author;
+    @Nullable private final String bodyHtml;
     private final long createdUtc;
-    private final Maybe<String> domain;
-    private final String fullname;
+    @NonNull private final Maybe<String> domain;
+    @Nullable private final String fullname;
     private final int gildedCount;
     private final boolean hideable;
-    private VoteDirection likes;
-    private final Maybe<String> linkFlair;
-    private final String linkTitle;
-    private String linkUrl;
+    @NonNull private VoteDirection likes;
+    @NonNull private final Maybe<String> linkFlair;
+    @Nullable private final String linkTitle;
+    @NonNull private String linkUrl;
     private final boolean nsfw;
-    private final String permalink;
+    @NonNull private final String permalink;
     private int points;
-    private PostHint postHint;
-    private final Preview preview;
+    @NonNull private PostHint postHint;
+    @NonNull private final Preview preview;
     private boolean saved;
     private final boolean scoreHidden;
     private final boolean stickied;
-    private final String subreddit;
+    @Nullable private final String subreddit;
 
     public Post(@NonNull final Submission submission) {
         isComment = submission instanceof Comment;
@@ -115,6 +116,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         subreddit = submission.subreddit;
     }
 
+    @NonNull
     public List<Object> getMedias() {
         return medias;
     }
@@ -127,24 +129,33 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return archived;
     }
 
+    @NonNull
     public String getAuthor() {
         return author;
     }
 
+    @Nullable
     public String getBody() {
         return bodyHtml;
     }
 
+    @NonNull
     public Maybe<String> getDomain() {
         return domain;
     }
 
+    @Nullable
     public String getFullname() {
         return fullname;
     }
 
+    @NonNull
     public String getArticle() {
-        return fullname.substring(3, fullname.length());
+        if (fullname == null) {
+            throw new IllegalStateException();
+        } else {
+            return fullname.substring(3, fullname.length());
+        }
     }
 
     public boolean isGilded() {
@@ -159,18 +170,21 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return hideable;
     }
 
+    @NonNull
     public VoteDirection getLikes() {
         return likes;
     }
 
-    public void setLikes(final VoteDirection likes) {
+    public void setLikes(@NonNull final VoteDirection likes) {
         this.likes = likes;
     }
 
+    @NonNull
     public Maybe<String> getLinkFlair() {
         return linkFlair;
     }
 
+    @Nullable
     public String getLinkTitle() {
         return linkTitle;
     }
@@ -178,6 +192,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
     /**
      * Returns the url of the link and the empty string if there is no link url e.g. for a comment.
      */
+    @NonNull
     public String getLinkUrl() {
         return linkUrl;
     }
@@ -186,6 +201,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return nsfw;
     }
 
+    @NonNull
     public String getPermalink() {
         return permalink;
     }
@@ -198,6 +214,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         this.points = points;
     }
 
+    @NonNull
     public PostHint getPostHint() {
         return postHint;
     }
@@ -206,6 +223,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         this.postHint = postHint;
     }
 
+    @NonNull
     public Preview getPreview() {
         return preview;
     }
@@ -222,14 +240,16 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return stickied;
     }
 
+    @Nullable
     public String getSubreddit() {
         return subreddit;
     }
 
-    public void setLinkUrl(final String linkUrl) {
+    public void setLinkUrl(@NonNull final String linkUrl) {
         this.linkUrl = linkUrl;
     }
 
+    @NonNull
     public CharSequence getDisplayAge() {
         return DateUtils.getRelativeTimeSpanString(
                 TimeUnit.SECONDS.toMillis(createdUtc), System.currentTimeMillis(),
@@ -238,7 +258,8 @@ public class Post extends Node<Response<Thing<Listing>>> {
                         | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
     }
 
-    public Maybe<Spannable> getDisplayBody(final Context context) {
+    @NonNull
+    public Maybe<Spannable> getDisplayBody(@NonNull final Context context) {
         if (TextUtils.isEmpty(bodyHtml)) {
             return Maybe.empty();
         }
@@ -247,6 +268,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return Maybe.just(html);
     }
 
+    @NonNull
     private static CharSequence trimTrailingWhitespace(@NonNull final CharSequence source) {
         int i = source.length();
 
@@ -266,6 +288,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         this.descendantsVisible = descendantsVisible;
     }
 
+    @NonNull
     public String getDisplayDescendants() {
         final int descendantCount = getDescendantCount().blockingGet();
         if (descendantCount < 1000) {
@@ -287,7 +310,8 @@ public class Post extends Node<Response<Thing<Listing>>> {
         }
     }
 
-    public String getDisplayPoints(final Context context, final String scoreHiddenText) {
+    @NonNull
+    public String getDisplayPoints(@NonNull final Context context, @NonNull final String scoreHiddenText) {
         if (scoreHidden) {
             return scoreHiddenText;
         } else {

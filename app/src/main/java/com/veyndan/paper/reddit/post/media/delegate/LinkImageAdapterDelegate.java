@@ -29,13 +29,13 @@ import io.reactivex.Maybe;
 public class LinkImageAdapterDelegate
         extends AbsListItemAdapterDelegate<LinkImage, Object, LinkImageAdapterDelegate.LinkImageViewHolder> {
 
-    private final Activity activity;
-    private final Maybe<CustomTabsClient> customTabsClient;
-    private final CustomTabsIntent customTabsIntent;
-    private final Post post;
+    @NonNull private final Activity activity;
+    @NonNull private final Maybe<CustomTabsClient> customTabsClient;
+    @NonNull private final CustomTabsIntent customTabsIntent;
+    @NonNull private final Post post;
 
-    public LinkImageAdapterDelegate(final Activity activity, final Maybe<CustomTabsClient> customTabsClient,
-                                    final CustomTabsIntent customTabsIntent, final Post post) {
+    public LinkImageAdapterDelegate(@NonNull final Activity activity, @NonNull final Maybe<CustomTabsClient> customTabsClient,
+                                    @NonNull final CustomTabsIntent customTabsIntent, @NonNull final Post post) {
         this.activity = activity;
         this.customTabsClient = customTabsClient;
         this.customTabsIntent = customTabsIntent;
@@ -78,13 +78,13 @@ public class LinkImageAdapterDelegate
                 .load(linkImage.getUrl())
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
-                    public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
+                    public boolean onException(@NonNull final Exception e, @NonNull final String model, @NonNull final Target<GlideDrawable> target, final boolean isFirstResource) {
                         holder.binding.postMediaImageProgress.setVisibility(View.GONE);
                         return false;
                     }
 
                     @Override
-                    public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
+                    public boolean onResourceReady(@NonNull final GlideDrawable resource, @NonNull final String model, @NonNull final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
                         holder.binding.postMediaImageProgress.setVisibility(View.GONE);
                         return false;
                     }
@@ -96,9 +96,9 @@ public class LinkImageAdapterDelegate
 
     static class LinkImageViewHolder extends RecyclerView.ViewHolder {
 
-        private final PostMediaLinkImageBinding binding;
+        @NonNull private final PostMediaLinkImageBinding binding;
 
-        LinkImageViewHolder(final PostMediaLinkImageBinding binding) {
+        LinkImageViewHolder(@NonNull final PostMediaLinkImageBinding binding) {
             super(binding.getRoot());
 
             this.binding = binding;

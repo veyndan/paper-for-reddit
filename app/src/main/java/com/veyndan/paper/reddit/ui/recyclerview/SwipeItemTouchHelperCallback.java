@@ -1,6 +1,7 @@
 package com.veyndan.paper.reddit.ui.recyclerview;
 
 import android.graphics.Canvas;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 
@@ -25,8 +26,8 @@ public class SwipeItemTouchHelperCallback extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public int getMovementFlags(final RecyclerView recyclerView,
-                                final RecyclerView.ViewHolder holder) {
+    public int getMovementFlags(@NonNull final RecyclerView recyclerView,
+                                @NonNull final RecyclerView.ViewHolder holder) {
         final int swipeFlags = holder instanceof Swipeable && ((Swipeable) holder).swipeable()
                 ? ItemTouchHelper.START | ItemTouchHelper.END
                 : 0;
@@ -34,19 +35,19 @@ public class SwipeItemTouchHelperCallback extends ItemTouchHelper.Callback {
     }
 
     @Override
-    public boolean onMove(final RecyclerView recyclerView, final RecyclerView.ViewHolder holder,
-                          final RecyclerView.ViewHolder target) {
+    public boolean onMove(@NonNull final RecyclerView recyclerView, @NonNull final RecyclerView.ViewHolder holder,
+                          @NonNull final RecyclerView.ViewHolder target) {
         return false;
     }
 
     @Override
-    public void onSwiped(final RecyclerView.ViewHolder holder, final int direction) {
+    public void onSwiped(@NonNull final RecyclerView.ViewHolder holder, final int direction) {
         ((Swipeable) holder).onSwipe();
     }
 
     @Override
-    public void onChildDraw(final Canvas c, final RecyclerView recyclerView,
-                            final RecyclerView.ViewHolder holder, final float dX, final float dY,
+    public void onChildDraw(@NonNull final Canvas c, @NonNull final RecyclerView recyclerView,
+                            @NonNull final RecyclerView.ViewHolder holder, final float dX, final float dY,
                             final int actionState, final boolean isCurrentlyActive) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             // Fade out the view as it is swiped out of the parent's bounds

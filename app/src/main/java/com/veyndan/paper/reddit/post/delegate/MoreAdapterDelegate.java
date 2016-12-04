@@ -50,9 +50,9 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Progress, No
 
     class MoreViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView textView;
+        @NonNull final TextView textView;
 
-        MoreViewHolder(final View itemView) {
+        MoreViewHolder(@NonNull final View itemView) {
             super(itemView);
             textView = (TextView) itemView;
         }

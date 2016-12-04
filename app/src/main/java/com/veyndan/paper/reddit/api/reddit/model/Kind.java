@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 public enum Kind {
@@ -14,18 +16,20 @@ public enum Kind {
     @SerializedName("TrophyList")TROPHY_LIST("TrophyList", Trophies.class),
     @SerializedName("more")MORE("more", More.class);
 
-    private final String type;
-    private final Class clazz;
+    @NonNull private final String type;
+    @NonNull private final Class clazz;
 
-    Kind(final String type, final Class clazz) {
+    Kind(@NonNull final String type, @NonNull final Class clazz) {
         this.type = type;
         this.clazz = clazz;
     }
 
+    @NonNull
     public Class getDerivedClass() {
         return clazz;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return type;

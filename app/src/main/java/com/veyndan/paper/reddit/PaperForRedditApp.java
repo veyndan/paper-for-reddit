@@ -2,6 +2,7 @@ package com.veyndan.paper.reddit;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.multidex.MultiDex;
 
 import com.squareup.leakcanary.LeakCanary;
@@ -19,8 +20,8 @@ public class PaperForRedditApp extends Application {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree() {
                 @Override
-                protected void log(final int priority, final String tag, final String message,
-                                   final Throwable t) {
+                protected void log(final int priority, @NonNull final String tag,
+                                   @NonNull final String message, @NonNull final Throwable t) {
                     super.log(priority, "veyndan_" + tag, message, t);
                 }
             });
@@ -31,7 +32,7 @@ public class PaperForRedditApp extends Application {
     }
 
     @Override
-    protected void attachBaseContext(final Context base) {
+    protected void attachBaseContext(@NonNull final Context base) {
         super.attachBaseContext(base);
         MultiDex.install(this);
     }

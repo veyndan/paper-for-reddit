@@ -1,5 +1,8 @@
 package com.veyndan.paper.reddit.post;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.veyndan.paper.reddit.Presenter;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
@@ -14,10 +17,10 @@ import retrofit2.Response;
 
 public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listing>>>> {
 
-    private PostMvpView<Response<Thing<Listing>>> postMvpView;
+    @Nullable private PostMvpView<Response<Thing<Listing>>> postMvpView;
 
     @Override
-    public void attachView(final PostMvpView<Response<Thing<Listing>>> view) {
+    public void attachView(@NonNull final PostMvpView<Response<Thing<Listing>>> view) {
         postMvpView = view;
     }
 
@@ -26,11 +29,11 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
         postMvpView = null;
     }
 
-    public void loadNode(final Node<Response<Thing<Listing>>> node) {
+    public void loadNode(@NonNull final Node<Response<Thing<Listing>>> node) {
         loadNodes(Collections.singletonList(node));
     }
 
-    public void loadNodes(final List<Node<Response<Thing<Listing>>>> nodes) {
+    public void loadNodes(@NonNull final List<Node<Response<Thing<Listing>>>> nodes) {
         postMvpView.appendNodes(nodes);
 
         Observable.fromIterable(nodes)
