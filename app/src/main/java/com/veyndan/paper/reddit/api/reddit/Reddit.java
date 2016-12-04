@@ -1,7 +1,6 @@
 package com.veyndan.paper.reddit.api.reddit;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.common.base.MoreObjects;
@@ -40,6 +39,7 @@ import com.veyndan.paper.reddit.api.reddit.network.interceptor.UserAgentIntercep
 import java.util.Arrays;
 import java.util.List;
 
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -178,11 +178,11 @@ public final class Reddit {
     }
 
     private Single<Response<Thing<Listing>>> subreddit(final String subreddit, final Sort sort,
-                                                       @Nullable final TimePeriod timePeriod) {
+                                                      final Maybe<TimePeriod> timePeriod) {
         final QueryBuilder query = new QueryBuilder();
 
-        if (timePeriod != null) {
-            query.t(timePeriod);
+        if (timePeriod.count().blockingGet() == 1L) {
+            query.t(timePeriod.blockingGet());
         }
 
         final Single<Response<Thing<Listing>>> request = redditService.subreddit(subreddit, sort, query.build());
@@ -231,11 +231,11 @@ public final class Reddit {
     }
 
     private Single<Response<Thing<Listing>>> user(final String username, final User where,
-                                                  @Nullable final TimePeriod timePeriod) {
+                                                 final Maybe<TimePeriod> timePeriod) {
         final QueryBuilder query = new QueryBuilder();
 
-        if (timePeriod != null) {
-            query.t(timePeriod);
+        if (timePeriod.count().blockingGet() == 1L) {
+            query.t(timePeriod.blockingGet());
         }
 
         final Single<Response<Thing<Listing>>> request = redditService.user(username, where, query.build());
@@ -264,13 +264,13 @@ public final class Reddit {
         } else if (nodeDepth == 0) {
             if (commentsSubreddit == null && commentsArticle == null
                     && TextUtils.isEmpty(userName) && !userComments && !userSubmitted && !userGilded && userWhere == null) {
-                return subreddit(MoreObjects.firstNonNull(subredditName, "all"), sort, MoreObjects.firstNonNull(timePeriod, TimePeriod.ALL));
+                return subreddit(MoreObjects.firstNonNull(subredditName, "all"), sort, Maybe.just(MoreObjects.firstNonNull(timePeriod, TimePeriod.ALL)));
             }
 
             if (commentsSubreddit == null && commentsArticle == null
                     && subredditName == null
                     && userName != null && userWhere != null) {
-                return user(userName, userWhere, timePeriod);
+                return user(userName, userWhere, timePeriod == null ? Maybe.empty() : Maybe.just(timePeriod));
             }
 
             if (commentsSubreddit != null && commentsArticle != null

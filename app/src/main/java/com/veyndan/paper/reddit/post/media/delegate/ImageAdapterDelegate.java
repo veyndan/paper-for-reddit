@@ -25,15 +25,17 @@ import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.List;
 
+import io.reactivex.Maybe;
+
 public class ImageAdapterDelegate
         extends AbsListItemAdapterDelegate<Image, Object, ImageAdapterDelegate.ImageViewHolder> {
 
     private final Activity activity;
-    private final CustomTabsClient customTabsClient;
+    private final Maybe<CustomTabsClient> customTabsClient;
     private final CustomTabsIntent customTabsIntent;
     private final Post post;
 
-    public ImageAdapterDelegate(final Activity activity, final CustomTabsClient customTabsClient,
+    public ImageAdapterDelegate(final Activity activity, final Maybe<CustomTabsClient> customTabsClient,
                                 final CustomTabsIntent customTabsIntent, final Post post) {
         this.activity = activity;
         this.customTabsClient = customTabsClient;
@@ -63,8 +65,8 @@ public class ImageAdapterDelegate
 
         holder.binding.postMediaImageProgress.setVisibility(View.VISIBLE);
 
-        if (customTabsClient != null) {
-            final CustomTabsSession session = customTabsClient.newSession(null);
+        if (customTabsClient.count().blockingGet() == 1L) {
+            final CustomTabsSession session = customTabsClient.blockingGet().newSession(null);
             session.mayLaunchUrl(Uri.parse(image.getUrl()), null, null);
         }
 

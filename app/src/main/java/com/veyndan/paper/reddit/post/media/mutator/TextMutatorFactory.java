@@ -24,7 +24,7 @@ final class TextMutatorFactory implements MutatorFactory {
                 .filter(post1 -> post1.getPostHint() == PostHint.SELF &&
                         !TextUtils.isEmpty(post1.getBody()))
                 .map(post1 -> {
-                    final Text text = new Text(post1::getDisplayBody);
+                    final Text text = new Text(context -> post1.getDisplayBody(context).blockingGet());
                     post1.getMedias().add(text);
                     return post1;
                 });

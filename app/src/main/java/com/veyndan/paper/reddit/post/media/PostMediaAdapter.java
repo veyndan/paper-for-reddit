@@ -14,9 +14,11 @@ import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.List;
 
+import io.reactivex.Maybe;
+
 public class PostMediaAdapter extends ListDelegationAdapter<List<Object>> {
 
-    public PostMediaAdapter(final Activity activity, final CustomTabsClient customTabsClient,
+    public PostMediaAdapter(final Activity activity, final Maybe<CustomTabsClient> customTabsClient,
                             final CustomTabsIntent customTabsIntent, final Post post,
                             final List<Object> items) {
         delegatesManager

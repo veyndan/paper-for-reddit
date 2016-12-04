@@ -1,8 +1,6 @@
 package com.veyndan.paper.reddit.post.model;
 
-import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.More;
@@ -20,7 +18,7 @@ import retrofit2.Response;
 public final class Progress extends Node<Response<Thing<Listing>>> {
 
     @NonNull private final Observable<Boolean> trigger;
-    @Nullable @IntRange(from = 0) private final Integer degree;
+    @NonNull private final Maybe<Integer> degree;
 
     // Suppress default constructor for noninstantiability
     @SuppressWarnings("unused")
@@ -34,10 +32,9 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
         setRequest(builder.request);
     }
 
-    @Nullable
-    @IntRange(from = 0)
+    @NonNull
     @Override
-    public Integer getDegree() {
+    public Maybe<Integer> getDegree() {
         return degree;
     }
 
@@ -88,13 +85,13 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     public static class Builder {
 
-        @Nullable @IntRange(from = 0) private Integer degree;
+        @NonNull private Maybe<Integer> degree = Maybe.empty();
         @NonNull private Observable<Boolean> trigger = Observable.empty();
         @NonNull private Maybe<Response<Thing<Listing>>> request = Maybe.empty();
 
         @NonNull
-        public Builder degree(@IntRange(from = 0) final int degree) {
-            this.degree = degree;
+        public Builder degree(final int degree) {
+            this.degree = Maybe.just(degree);
             return this;
         }
 

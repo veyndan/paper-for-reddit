@@ -25,7 +25,7 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Progress, No
     protected boolean isForViewType(@NonNull final Node<Response<Thing<Listing>>> node,
                                     @NonNull final List<Node<Response<Thing<Listing>>>> nodes,
                                     final int position) {
-        return node instanceof Progress && node.getDegree() != null;
+        return node instanceof Progress && node.getDegree().count().blockingGet() == 1L;
     }
 
     @NonNull
@@ -40,10 +40,12 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Progress, No
     protected void onBindViewHolder(@NonNull final Progress progress,
                                     @NonNull final MoreViewHolder holder,
                                     @NonNull final List<Object> payloads) {
-        final int count = progress.getDegree();
-        final Resources resources = holder.itemView.getResources();
-
-        holder.textView.setText(resources.getQuantityString(R.plurals.children, count, count));
+        progress.getDegree()
+                .map(count -> {
+                    final Resources resources = holder.itemView.getResources();
+                    return resources.getQuantityString(R.plurals.children, count, count);
+                })
+                .subscribe(holder.textView::setText);
     }
 
     class MoreViewHolder extends RecyclerView.ViewHolder {

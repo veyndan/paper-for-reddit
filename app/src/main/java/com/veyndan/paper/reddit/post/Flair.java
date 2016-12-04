@@ -2,12 +2,13 @@ package com.veyndan.paper.reddit.post;
 
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
+
+import io.reactivex.Maybe;
 
 public final class Flair {
 
-    @Nullable private final String text;
-    @Nullable private final Drawable icon;
+    private final Maybe<String> text;
+    private final Maybe<Drawable> icon;
     private final int backgroundColor;
 
     private Flair(final Builder builder) {
@@ -16,13 +17,11 @@ public final class Flair {
         backgroundColor = builder.backgroundColor;
     }
 
-    @Nullable
-    public String getText() {
+    public Maybe<String> getText() {
         return text;
     }
 
-    @Nullable
-    public Drawable getIcon() {
+    public Maybe<Drawable> getIcon() {
         return icon;
     }
 
@@ -33,8 +32,8 @@ public final class Flair {
 
     public static class Builder {
 
-        private String text;
-        private Drawable icon;
+        private Maybe<String> text = Maybe.empty();
+        private Maybe<Drawable> icon = Maybe.empty();
         @ColorInt private final int backgroundColor;
 
         public Builder(@ColorInt final int backgroundColor) {
@@ -42,12 +41,12 @@ public final class Flair {
         }
 
         public Builder text(final String text) {
-            this.text = text;
+            this.text = Maybe.just(text);
             return this;
         }
 
         public Builder icon(final Drawable icon) {
-            this.icon = icon;
+            this.icon = Maybe.just(icon);
             return this;
         }
 

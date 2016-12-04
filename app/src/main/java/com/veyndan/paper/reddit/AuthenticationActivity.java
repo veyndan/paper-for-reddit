@@ -14,6 +14,7 @@ import com.veyndan.paper.reddit.databinding.AuthenticationActivityBinding;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
+import io.reactivex.Maybe;
 import okhttp3.HttpUrl;
 import timber.log.Timber;
 
@@ -53,9 +54,9 @@ public class AuthenticationActivity extends BaseActivity {
                         return false;
                     }
 
-                    final String error = redirectUrl.queryParameter("error");
-                    if (error != null) {
-                        switch (error) {
+                    final Maybe<String> error = redirectUrl.queryParameter("error") == null ? Maybe.empty() : Maybe.just(redirectUrl.queryParameter("error"));
+                    if (error.count().blockingGet() == 1L) {
+                        switch (error.blockingGet()) {
                             case ERROR_ACCESS_DENIED:
                                 Toast.makeText(view.getContext(), R.string.login_aborted, Toast.LENGTH_LONG).show();
                                 break;

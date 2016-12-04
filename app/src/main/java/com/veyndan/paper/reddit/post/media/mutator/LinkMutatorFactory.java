@@ -21,7 +21,7 @@ final class LinkMutatorFactory implements MutatorFactory {
         return Single.just(post)
                 .filter(post1 -> post1.getPostHint() != PostHint.SELF)
                 .map(post1 -> {
-                    post1.getMedias().add(new Link(post1.getDomain()));
+                    post1.getMedias().add(new Link(post1.getDomain().blockingGet()));
                     return post1;
                 });
     }

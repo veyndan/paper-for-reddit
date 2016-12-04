@@ -11,7 +11,6 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.SpannableString;
 import android.text.TextPaint;
@@ -26,7 +25,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.binaryfork.spanny.Spanny;
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Splitter;
 import com.veyndan.paper.reddit.MainActivity;
 import com.veyndan.paper.reddit.R;
@@ -40,6 +38,7 @@ import java.util.Map;
 
 import butterknife.BindDimen;
 import butterknife.ButterKnife;
+import io.reactivex.Maybe;
 
 public class PostHeaderView extends TextView {
 
@@ -89,10 +88,10 @@ public class PostHeaderView extends TextView {
             // Using regex (Pattern and Matcher) doesn't seem to work in edit mode.
             final Map<String, String> properties = Splitter.on(',').withKeyValueSeparator(':').split(text);
 
-            final String title = properties.get("title");
-            final String author = properties.get("author");
-            final CharSequence age = properties.get("age");
-            final String subreddit = properties.get("subreddit");
+            final Maybe<String> title = properties.get("title") == null ? Maybe.empty() : Maybe.just(properties.get("title"));
+            final Maybe<String> author = properties.get("author") == null ? Maybe.empty() : Maybe.just(properties.get("author"));
+            final Maybe<CharSequence> age = properties.get("age") == null ? Maybe.empty() : Maybe.just(properties.get("age"));
+            final Maybe<String> subreddit = properties.get("subreddit") == null ? Maybe.empty() : Maybe.just(properties.get("subreddit"));
             final List<Flair> flairs = new ArrayList<>(4);
 
             if (Boolean.valueOf(properties.getOrDefault("stickied", "false"))) {
@@ -120,15 +119,15 @@ public class PostHeaderView extends TextView {
                         .build());
             }
 
-            if (title == null || author == null || age == null || subreddit == null) {
+            if (title.isEmpty().blockingGet() || author.isEmpty().blockingGet() || age.isEmpty().blockingGet() || subreddit.isEmpty().blockingGet()) {
                 throw new IllegalStateException("title, author, age, and subreddit must be set");
             }
 
-            setHeader(title, author, age, subreddit, flairs);
+            setHeader(title, author.blockingGet(), age.blockingGet(), subreddit.blockingGet(), flairs);
         }
     }
 
-    public void setHeader(final String title, final String author, final CharSequence age,
+    public void setHeader(final Maybe<String> title, final String author, final CharSequence age,
                           final String subreddit, @NonNull final List<Flair> flairs) {
         final LineHeightSpan subtitleLineHeightSpan = new LineHeightSpan.WithDensity() {
             @Override
@@ -190,8 +189,8 @@ public class PostHeaderView extends TextView {
 
         final Spanny spanny = new Spanny();
 
-        if (title != null) {
-            spanny.append(title, titleTextAppearanceSpan)
+        if (title.count().blockingGet() == 1L) {
+            spanny.append(title.blockingGet(), titleTextAppearanceSpan)
                     .append("\n");
 
             Linkifier.addLinks(context, spanny);
@@ -244,7 +243,7 @@ public class PostHeaderView extends TextView {
         final FlairBackgroundSpan flairBackgroundSpan = new FlairBackgroundSpan(context,
                 flair.getBackgroundColor(), flair.getIcon());
 
-        final String tag = MoreObjects.firstNonNull(flair.getText(), "");
+        final String tag = flair.getText().blockingGet("");
 
         return Spanny.spanText(tag, flairTextAppearanceSpan, flairStyleSpan, flairBackgroundSpan);
     }
@@ -253,7 +252,7 @@ public class PostHeaderView extends TextView {
 
         @ColorInt private final int backgroundColor;
         @ColorInt private final int textColor;
-        @Nullable private final Drawable icon;
+        private final Maybe<Drawable> icon;
 
         private final int cornerRadius;
         private final int paddingHorizontal;
@@ -261,7 +260,7 @@ public class PostHeaderView extends TextView {
         private final int paddingDrawable;
 
         private FlairBackgroundSpan(final Context context, @ColorInt final int backgroundColor,
-                                    @Nullable final Drawable icon) {
+                                    final Maybe<Drawable> icon) {
             this.backgroundColor = backgroundColor;
             textColor = ContextCompat.getColor(context, android.R.color.white);
             this.icon = icon;
@@ -277,9 +276,9 @@ public class PostHeaderView extends TextView {
         public void draw(@NonNull final Canvas canvas, final CharSequence text, final int start,
                          final int end, final float x, final int top, final int y, final int bottom,
                          @NonNull final Paint paint) {
-            final int drawablePadding = icon == null
+            final int drawablePadding = icon.isEmpty().blockingGet()
                     ? 0
-                    : icon.getIntrinsicWidth() + paddingDrawable;
+                    : icon.blockingGet().getIntrinsicWidth() + paddingDrawable;
 
             final RectF rect = new RectF(x, top, x + paint.measureText(text, start, end) + paddingHorizontal * 2 + drawablePadding, bottom);
             paint.setColor(backgroundColor);
@@ -292,20 +291,20 @@ public class PostHeaderView extends TextView {
             final float textHeight = textPaint.descent() - textPaint.ascent();
             final float textOffset = (textHeight / 2) - textPaint.descent();
 
-            if (icon != null) {
+            if (icon.count().blockingGet() == 1L) {
                 final Rect paddedRect = new Rect(
                         (int) rect.left + paddingHorizontal,
                         (int) rect.top + paddingVertical,
                         (int) rect.right - paddingHorizontal,
                         (int) rect.bottom - paddingVertical);
 
-                icon.setBounds(
+                icon.blockingGet().setBounds(
                         paddedRect.left,
                         (int) (paddedRect.top + textPaint.descent()),
-                        paddedRect.left + icon.getIntrinsicWidth(),
-                        (int) (paddedRect.top + textPaint.descent() + icon.getIntrinsicHeight()));
+                        paddedRect.left + icon.blockingGet().getIntrinsicWidth(),
+                        (int) (paddedRect.top + textPaint.descent() + icon.blockingGet().getIntrinsicHeight()));
 
-                icon.draw(canvas);
+                icon.blockingGet().draw(canvas);
             }
 
             canvas.drawText(text, start, end, rect.centerX() + drawablePadding / 2,

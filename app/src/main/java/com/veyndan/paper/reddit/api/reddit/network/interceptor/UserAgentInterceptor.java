@@ -1,7 +1,6 @@
 package com.veyndan.paper.reddit.api.reddit.network.interceptor;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -12,7 +11,7 @@ public final class UserAgentInterceptor implements Interceptor {
     private final String userAgentHeaderValue;
 
     public UserAgentInterceptor(final String userAgentHeaderValue) {
-        this.userAgentHeaderValue = Objects.requireNonNull(userAgentHeaderValue);
+        this.userAgentHeaderValue = userAgentHeaderValue;
     }
 
     @Override

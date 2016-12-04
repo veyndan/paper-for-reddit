@@ -2,7 +2,6 @@ package com.veyndan.paper.reddit.util;
 
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
@@ -10,7 +9,7 @@ import io.reactivex.Observable;
 public abstract class Node<T> {
 
     @IntRange(from = 0) private int depth;
-    @Nullable @IntRange(from = 0) private Integer descendantCount;
+    @NonNull private Maybe<Integer> descendantCount = Maybe.empty();
     @NonNull private Maybe<T> request = Maybe.empty();
 
     @IntRange(from = 0)
@@ -21,12 +20,11 @@ public abstract class Node<T> {
     /**
      * Returns the degree of this node, or else {@code null} if the degree is unknown.
      */
-    @Nullable
-    @IntRange(from = 0)
-    public abstract Integer getDegree();
+    @NonNull
+    public abstract Maybe<Integer> getDegree();
 
     public boolean isInternalNode() {
-        return getDescendantCount() > 0;
+        return descendantCount.blockingGet() > 0;
     }
 
     @NonNull
@@ -36,13 +34,12 @@ public abstract class Node<T> {
      * Returns the descendant count of this node, or else {@code null} if the descendant count is
      * unknown.
      */
-    @Nullable
-    @IntRange(from = 0)
-    public Integer getDescendantCount() {
+    @NonNull
+    public Maybe<Integer> getDescendantCount() {
         return descendantCount;
     }
 
-    public void setDescendantCount(@Nullable @IntRange(from = 0) final Integer descendantCount) {
+    public void setDescendantCount(@NonNull final Maybe<Integer> descendantCount) {
         this.descendantCount = descendantCount;
     }
 
@@ -69,8 +66,8 @@ public abstract class Node<T> {
                 // some unknown place, e.g. a network request, disk etc.
                 .doOnNext(node -> node.depth = depth)
                 .doOnNext(node -> {
-                    if (node.descendantCount == null) {
-                        node.generateDescendantCount().subscribe(integer -> node.descendantCount = integer);
+                    if (node.descendantCount.isEmpty().blockingGet()) {
+                        node.generateDescendantCount().subscribe(integer -> node.descendantCount = Maybe.just(integer));
                     }
                 });
     }
@@ -80,8 +77,8 @@ public abstract class Node<T> {
         return Observable.just(this)
                 .doOnNext(node -> node.depth = depth)
                 .doOnNext(node -> {
-                    if (node.descendantCount == null) {
-                        node.generateDescendantCount().subscribe(integer -> node.descendantCount = integer);
+                    if (node.descendantCount.isEmpty().blockingGet()) {
+                        node.generateDescendantCount().subscribe(integer -> node.descendantCount = Maybe.just(integer));
                     }
                 })
                 .concatMap(node -> Observable.just(node)

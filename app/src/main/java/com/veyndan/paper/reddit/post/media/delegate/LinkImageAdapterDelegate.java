@@ -24,15 +24,17 @@ import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.List;
 
+import io.reactivex.Maybe;
+
 public class LinkImageAdapterDelegate
         extends AbsListItemAdapterDelegate<LinkImage, Object, LinkImageAdapterDelegate.LinkImageViewHolder> {
 
     private final Activity activity;
-    private final CustomTabsClient customTabsClient;
+    private final Maybe<CustomTabsClient> customTabsClient;
     private final CustomTabsIntent customTabsIntent;
     private final Post post;
 
-    public LinkImageAdapterDelegate(final Activity activity, final CustomTabsClient customTabsClient,
+    public LinkImageAdapterDelegate(final Activity activity, final Maybe<CustomTabsClient> customTabsClient,
                                     final CustomTabsIntent customTabsIntent, final Post post) {
         this.activity = activity;
         this.customTabsClient = customTabsClient;
@@ -60,8 +62,8 @@ public class LinkImageAdapterDelegate
                                     @NonNull final List<Object> payloads) {
         final Context context = holder.itemView.getContext();
 
-        if (customTabsClient != null) {
-            final CustomTabsSession session = customTabsClient.newSession(null);
+        if (customTabsClient.count().blockingGet() == 1L) {
+            final CustomTabsSession session = customTabsClient.blockingGet().newSession(null);
             session.mayLaunchUrl(Uri.parse(post.getLinkUrl()), null, null);
         }
 

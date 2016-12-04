@@ -1,13 +1,12 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.Nullable;
-
 import com.google.gson.annotations.SerializedName;
 import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Maybe;
 
 // TODO Votable and Created should be super classes some how.
 public abstract class Submission extends RedditObject {
@@ -50,7 +49,7 @@ public abstract class Submission extends RedditObject {
      * other examples include {@code en.wikipedia.org} and {@code s3.amazon.com}. If the submission
      * is a comment, then {@code null} is returned.
      */
-    public abstract String getDomain();
+    public abstract Maybe<String> getDomain();
 
     /**
      * {@code true} if the submission is hidden by the logged in user. {@code false} if not logged
@@ -63,12 +62,12 @@ public abstract class Submission extends RedditObject {
      * The CSS class of the link's flair. If the submission is a Comment, then {@code null} is
      * returned.
      */
-    public abstract String getLinkFlairCssClass();
+    public abstract Maybe<String> getLinkFlairCssClass();
 
     /**
      * The text of the link's flair. If the submission is a Comment, then {@code null} is returned.
      */
-    public abstract String getLinkFlairText();
+    public abstract Maybe<String> getLinkFlairText();
 
     /**
      * Whether the submission is locked (closed to new comments) or not. If the submission is a
@@ -80,21 +79,19 @@ public abstract class Submission extends RedditObject {
      * Used for streaming video. Detailed information about the video and it's origins are placed
      * here. If the submission is a Comment, then {@code null} is returned.
      */
-    public abstract Media getMedia();
+    public abstract Maybe<Media> getMedia();
 
     /**
      * Used for streaming video. Technical embed specific information is found here. If the
      * submission is a Comment, then {@code null} is returned.
      */
-    public abstract MediaEmbed getMediaEmbed();
+    public abstract Maybe<MediaEmbed> getMediaEmbed();
 
     /**
      * The number of comments that belong to this link. includes removed comments. If the submission
      * is a Comment, then {@code 0} is returned.
      */
-    @Nullable
-    @IntRange(from = 0)
-    public abstract Integer getNumComments();
+    public abstract Maybe<Integer> getNumComments();
 
     /**
      * {@code true} if the post is tagged as NSFW. {@code false} if otherwise. If the submission is
@@ -106,17 +103,17 @@ public abstract class Submission extends RedditObject {
      * Full URL to the thumbnail for this link. "self" if this is a self post. "default" if a
      * thumbnail is not available. If the submission is a Comment, then {@code null} is returned.
      */
-    public abstract String getThumbnail();
+    public abstract Maybe<String> getThumbnail();
 
     /**
      * #undocumented
      */
-    public abstract Object getSuggestedSort();
+    public abstract Maybe<Object> getSuggestedSort();
 
     /**
      * #undocumented
      */
-    public abstract Media getSecureMedia();
+    public abstract Maybe<Media> getSecureMedia();
 
     /**
      * #undocumented
@@ -131,7 +128,7 @@ public abstract class Submission extends RedditObject {
     /**
      * #undocumented
      */
-    public abstract MediaEmbed getSecureMediaEmbed();
+    public abstract Maybe<MediaEmbed> getSecureMediaEmbed();
 
     /**
      * Returns a string that suggests the content of this link. As a hint, this is lossy and may be
@@ -168,7 +165,7 @@ public abstract class Submission extends RedditObject {
      *
      * @return Submission's parent ID.
      */
-    public abstract String getParentId();
+    public abstract Maybe<String> getParentId();
 
     /**
      * The comment nodes/leaves exactly one below the current Submission.

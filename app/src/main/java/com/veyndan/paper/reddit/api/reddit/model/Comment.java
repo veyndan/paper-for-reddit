@@ -1,9 +1,8 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.Nullable;
-
 import java.util.Objects;
+
+import io.reactivex.Maybe;
 
 public class Comment extends Submission {
 
@@ -25,8 +24,8 @@ public class Comment extends Submission {
     }
 
     @Override
-    public String getDomain() {
-        return null;
+    public Maybe<String> getDomain() {
+        return Maybe.empty();
     }
 
     @Override
@@ -35,13 +34,13 @@ public class Comment extends Submission {
     }
 
     @Override
-    public String getLinkFlairCssClass() {
-        return null;
+    public Maybe<String> getLinkFlairCssClass() {
+        return Maybe.empty();
     }
 
     @Override
-    public String getLinkFlairText() {
-        return null;
+    public Maybe<String> getLinkFlairText() {
+        return Maybe.empty();
     }
 
     @Override
@@ -50,20 +49,18 @@ public class Comment extends Submission {
     }
 
     @Override
-    public Media getMedia() {
-        return null;
+    public Maybe<Media> getMedia() {
+        return Maybe.empty();
     }
 
     @Override
-    public MediaEmbed getMediaEmbed() {
-        return null;
+    public Maybe<MediaEmbed> getMediaEmbed() {
+        return Maybe.empty();
     }
 
-    @Nullable
-    @IntRange(from = 0)
     @Override
-    public Integer getNumComments() {
-        return null;
+    public Maybe<Integer> getNumComments() {
+        return Maybe.empty();
     }
 
     @Override
@@ -72,18 +69,18 @@ public class Comment extends Submission {
     }
 
     @Override
-    public String getThumbnail() {
-        return null;
+    public Maybe<String> getThumbnail() {
+        return Maybe.empty();
     }
 
     @Override
-    public Object getSuggestedSort() {
-        return null;
+    public Maybe<Object> getSuggestedSort() {
+        return Maybe.empty();
     }
 
     @Override
-    public Media getSecureMedia() {
-        return null;
+    public Maybe<Media> getSecureMedia() {
+        return Maybe.empty();
     }
 
     @Override
@@ -97,8 +94,8 @@ public class Comment extends Submission {
     }
 
     @Override
-    public MediaEmbed getSecureMediaEmbed() {
-        return null;
+    public Maybe<MediaEmbed> getSecureMediaEmbed() {
+        return Maybe.empty();
     }
 
     @Override
@@ -127,8 +124,8 @@ public class Comment extends Submission {
     }
 
     @Override
-    public String getParentId() {
-        return parentId;
+    public Maybe<String> getParentId() {
+        return Maybe.just(parentId);
     }
 
     @Override

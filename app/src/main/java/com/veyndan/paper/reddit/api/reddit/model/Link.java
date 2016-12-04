@@ -1,12 +1,10 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-import android.support.annotation.IntRange;
-import android.support.annotation.Nullable;
-
 import com.google.common.collect.ImmutableList;
 
 import java.util.regex.Pattern;
 
+import io.reactivex.Maybe;
 import okhttp3.HttpUrl;
 
 public class Link extends Submission {
@@ -77,8 +75,8 @@ public class Link extends Submission {
     }
 
     @Override
-    public String getDomain() {
-        return domain;
+    public Maybe<String> getDomain() {
+        return Maybe.just(domain);
     }
 
     @Override
@@ -87,13 +85,13 @@ public class Link extends Submission {
     }
 
     @Override
-    public String getLinkFlairCssClass() {
-        return linkFlairCssClass;
+    public Maybe<String> getLinkFlairCssClass() {
+        return Maybe.just(linkFlairCssClass);
     }
 
     @Override
-    public String getLinkFlairText() {
-        return linkFlairText;
+    public Maybe<String> getLinkFlairText() {
+        return linkFlairText == null ? Maybe.empty() : Maybe.just(linkFlairText);
     }
 
     @Override
@@ -102,20 +100,18 @@ public class Link extends Submission {
     }
 
     @Override
-    public Media getMedia() {
-        return media;
+    public Maybe<Media> getMedia() {
+        return Maybe.just(media);
     }
 
     @Override
-    public MediaEmbed getMediaEmbed() {
-        return mediaEmbed;
+    public Maybe<MediaEmbed> getMediaEmbed() {
+        return Maybe.just(mediaEmbed);
     }
 
-    @Nullable
-    @IntRange(from = 0)
     @Override
-    public Integer getNumComments() {
-        return numComments;
+    public Maybe<Integer> getNumComments() {
+        return Maybe.just(numComments);
     }
 
     @Override
@@ -124,18 +120,18 @@ public class Link extends Submission {
     }
 
     @Override
-    public String getThumbnail() {
-        return thumbnail;
+    public Maybe<String> getThumbnail() {
+        return Maybe.just(thumbnail);
     }
 
     @Override
-    public Object getSuggestedSort() {
-        return suggestedSort;
+    public Maybe<Object> getSuggestedSort() {
+        return Maybe.just(suggestedSort);
     }
 
     @Override
-    public Media getSecureMedia() {
-        return secureMedia;
+    public Maybe<Media> getSecureMedia() {
+        return Maybe.just(secureMedia);
     }
 
     @Override
@@ -149,13 +145,13 @@ public class Link extends Submission {
     }
 
     @Override
-    public MediaEmbed getSecureMediaEmbed() {
-        return secureMediaEmbed;
+    public Maybe<MediaEmbed> getSecureMediaEmbed() {
+        return Maybe.just(secureMediaEmbed);
     }
 
     @Override
-    public String getParentId() {
-        return null;
+    public Maybe<String> getParentId() {
+        return Maybe.empty();
     }
 
     @Override

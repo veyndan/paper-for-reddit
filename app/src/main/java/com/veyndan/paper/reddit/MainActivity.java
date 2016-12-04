@@ -17,6 +17,7 @@ import com.veyndan.paper.reddit.databinding.ActivityMainBinding;
 import com.veyndan.paper.reddit.post.PostsFragment;
 import com.veyndan.paper.reddit.util.IntentUtils;
 
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 import retrofit2.Response;
 

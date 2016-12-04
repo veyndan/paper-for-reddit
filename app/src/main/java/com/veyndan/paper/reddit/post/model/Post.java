@@ -3,7 +3,6 @@ package com.veyndan.paper.reddit.post.model;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -29,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.Response;
@@ -46,12 +46,12 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final String author;
     private final String bodyHtml;
     private final long createdUtc;
-    private final String domain;
+    private final Maybe<String> domain;
     private final String fullname;
     private final int gildedCount;
     private final boolean hideable;
     private VoteDirection likes;
-    private final String linkFlair;
+    private final Maybe<String> linkFlair;
     private final String linkTitle;
     private String linkUrl;
     private final boolean nsfw;
@@ -99,7 +99,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         gildedCount = submission.gilded;
         hideable = submission.isHideable();
         likes = submission.getLikes();
-        linkFlair = submission.getLinkFlairText();
+        linkFlair = submission.getLinkFlairText().filter(String::isEmpty);
         linkTitle = submission.linkTitle;
         linkUrl = submission.linkUrl == null ? "" : submission.linkUrl;
         nsfw = submission.isOver18();
@@ -135,7 +135,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return bodyHtml;
     }
 
-    public String getDomain() {
+    public Maybe<String> getDomain() {
         return domain;
     }
 
@@ -167,11 +167,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         this.likes = likes;
     }
 
-    public boolean hasLinkFlair() {
-        return !TextUtils.isEmpty(linkFlair);
-    }
-
-    public String getLinkFlair() {
+    public Maybe<String> getLinkFlair() {
         return linkFlair;
     }
 
@@ -242,14 +238,13 @@ public class Post extends Node<Response<Thing<Listing>>> {
                         | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_NO_MONTH_DAY);
     }
 
-    @Nullable
-    public Spannable getDisplayBody(final Context context) {
+    public Maybe<Spannable> getDisplayBody(final Context context) {
         if (TextUtils.isEmpty(bodyHtml)) {
-            return null;
+            return Maybe.empty();
         }
         final Spannable html = new SpannableString(trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(bodyHtml))));
         Linkifier.addLinks(context, html);
-        return html;
+        return Maybe.just(html);
     }
 
     private static CharSequence trimTrailingWhitespace(@NonNull final CharSequence source) {
@@ -272,7 +267,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
     }
 
     public String getDisplayDescendants() {
-        final int descendantCount = getDescendantCount();
+        final int descendantCount = getDescendantCount().blockingGet();
         if (descendantCount < 1000) {
             return String.valueOf(descendantCount);
         } else if (descendantCount < 100000) {
@@ -301,10 +296,10 @@ public class Post extends Node<Response<Thing<Listing>>> {
         }
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public Integer getDegree() {
-        return null;
+    public Maybe<Integer> getDegree() {
+        return Maybe.empty();
     }
 
     @NonNull

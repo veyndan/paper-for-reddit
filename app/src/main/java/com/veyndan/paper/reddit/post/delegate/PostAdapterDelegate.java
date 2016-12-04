@@ -44,6 +44,7 @@ import butterknife.BindColor;
 import butterknife.BindDrawable;
 import butterknife.BindString;
 import butterknife.ButterKnife;
+import io.reactivex.Maybe;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
@@ -68,7 +69,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
     private final CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
     private final CustomTabsIntent customTabsIntent = builder.build();
-    @Nullable private CustomTabsClient customTabsClient;
+    private Maybe<CustomTabsClient> customTabsClient;
 
     public PostAdapterDelegate(final PostAdapter adapter, final Activity activity, final Reddit reddit) {
         this.adapter = adapter;
@@ -77,10 +78,10 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
         CustomTabsClient.bindCustomTabsService(activity, CUSTOM_TAB_PACKAGE_NAME, new CustomTabsServiceConnection() {
             @Override
-            public void onCustomTabsServiceConnected(final ComponentName name, final CustomTabsClient client) {
+            public void onCustomTabsServiceConnected(final ComponentName name, @Nullable final CustomTabsClient client) {
                 // customTabsClient is now valid.
-                customTabsClient = client;
-                customTabsClient.warmup(0);
+                customTabsClient = client == null ? Maybe.empty() : Maybe.just(client);
+                customTabsClient.blockingGet().warmup(0);
             }
 
             @Override
@@ -159,9 +160,9 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     .build());
         }
 
-        if (post.hasLinkFlair()) {
+        if (post.getLinkFlair().count().blockingGet() == 1L) {
             flairs.add(new Flair.Builder(flairLinkColor)
-                    .text(post.getLinkFlair())
+                    .text(post.getLinkFlair().blockingGet())
                     .build());
         }
 
@@ -172,7 +173,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     .build());
         }
 
-        holder.binding.postHeader.setHeader(post.getLinkTitle(), post.getAuthor(), post.getDisplayAge(),
+        holder.binding.postHeader.setHeader(post.getLinkTitle() == null ? Maybe.empty() : Maybe.just(post.getLinkTitle()), post.getAuthor(), post.getDisplayAge(),
                 post.getSubreddit(), flairs);
     }
 
