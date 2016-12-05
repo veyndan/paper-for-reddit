@@ -2,6 +2,7 @@ package com.veyndan.paper.reddit;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
@@ -30,8 +31,7 @@ public class AuthenticationActivity extends BaseActivity {
     @BindView(R.id.web_view) WebView webView;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateNonNull(@NonNull final Bundle savedInstanceState) {
         setContentView(R.layout.authentication_activity);
 
         // If previously logged in from another account, clears cookies so account is logged out.
