@@ -1,5 +1,6 @@
 package com.veyndan.paper.reddit;
 
+import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,15 @@ import butterknife.ButterKnife;
 
 public abstract class BaseActivity extends AppCompatActivity {
     @Nullable @BindView(R.id.toolbar) Toolbar toolbar;
+
+    @Override
+    protected final void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        onCreateNonNull(savedInstanceState == null ? new Bundle() : savedInstanceState);
+    }
+
+    protected void onCreateNonNull(@NonNull final Bundle savedInstanceState) {
+    }
 
     @Override
     public void setContentView(@LayoutRes final int layoutResID) {

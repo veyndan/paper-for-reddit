@@ -35,8 +35,7 @@ public class MainActivity extends BaseActivity {
     private String subreddit;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateNonNull(@NonNull final Bundle savedInstanceState) {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
