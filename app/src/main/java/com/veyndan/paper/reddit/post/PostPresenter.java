@@ -10,7 +10,6 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
 public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listing>>>> {
@@ -35,8 +34,11 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
         postMvpView.appendNodes(nodes);
 
         Observable.fromIterable(nodes)
-                .flatMap(Node::asObservable)
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .flatMap(node -> node.getTrigger()
+                        .filter(Boolean::booleanValue)
+                        .firstElement()
+                        .flatMapObservable(aBoolean -> node.asObservable()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .concatMap(node -> node.preOrderTraverse(0))
                 .toList()
