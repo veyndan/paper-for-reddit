@@ -14,12 +14,12 @@ import com.veyndan.paper.reddit.util.Node;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
 public final class Progress extends Node<Response<Thing<Listing>>> {
 
+    @NonNull private final Observable<Boolean> trigger;
     @Nullable @IntRange(from = 0) private final Integer degree;
 
     // Suppress default constructor for noninstantiability
@@ -30,7 +30,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     private Progress(@NonNull final Builder builder) {
         degree = builder.degree;
-        setTrigger(builder.trigger);
+        trigger = builder.trigger;
         setRequest(builder.request);
     }
 
@@ -49,12 +49,15 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     @NonNull
     @Override
+    public Observable<Boolean> getTrigger() {
+        return trigger;
+    }
+
+    @NonNull
+    @Override
     public Observable<Node<Response<Thing<Listing>>>> asObservable() {
-        return getTrigger()
-                .filter(Boolean::booleanValue)
-                .firstElement()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .flatMap(aBoolean -> getRequest().subscribeOn(Schedulers.io()))
+        return getRequest()
+                .subscribeOn(Schedulers.io())
                 .map(Response::body)
                 .toObservable()
                 .flatMap(thing -> Observable.fromIterable(thing.data.children)

@@ -11,7 +11,6 @@ public abstract class Node<T> {
 
     @IntRange(from = 0) private int depth;
     @Nullable @IntRange(from = 0) private Integer descendantCount;
-    @NonNull private Observable<Boolean> trigger = Observable.empty();
     @NonNull private Maybe<T> request = Maybe.empty();
 
     @IntRange(from = 0)
@@ -44,13 +43,7 @@ public abstract class Node<T> {
     }
 
     @NonNull
-    public Observable<Boolean> getTrigger() {
-        return trigger;
-    }
-
-    public void setTrigger(@NonNull final Observable<Boolean> trigger) {
-        this.trigger = trigger;
-    }
+    public abstract Observable<Boolean> getTrigger();
 
     @NonNull
     public Maybe<T> getRequest() {

@@ -319,6 +319,12 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
     @NonNull
     @Override
+    public Observable<Boolean> getTrigger() {
+        return Observable.empty();
+    }
+
+    @NonNull
+    @Override
     public Observable<Node<Response<Thing<Listing>>>> asObservable() {
         return Observable.empty();
     }
