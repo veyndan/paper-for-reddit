@@ -25,6 +25,10 @@ public abstract class Node<T> {
     @IntRange(from = 0)
     public abstract Integer getDegree();
 
+    public boolean isInternalNode() {
+        return getDegree() > 0;
+    }
+
     @NonNull
     public abstract Observable<Node<T>> getChildren();
 

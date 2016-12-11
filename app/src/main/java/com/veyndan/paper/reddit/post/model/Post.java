@@ -263,10 +263,6 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return source.subSequence(0, i + 1);
     }
 
-    public boolean isInternalNode() {
-        return getDescendantCount() > 0;
-    }
-
     public boolean isDescendantsVisible() {
         return descendantsVisible;
     }
