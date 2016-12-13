@@ -1,6 +1,7 @@
 package com.veyndan.paper.reddit;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -9,9 +10,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.veyndan.paper.reddit.databinding.AuthenticationActivityBinding;
+
 import org.apache.commons.lang3.RandomStringUtils;
 
-import butterknife.BindView;
 import okhttp3.HttpUrl;
 import timber.log.Timber;
 
@@ -28,11 +30,9 @@ public class AuthenticationActivity extends BaseActivity {
             "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit",
             "subscribe", "vote", "wikiedit", "wikiread"};
 
-    @BindView(R.id.web_view) WebView webView;
-
     @Override
     protected void onCreateNonNull(@NonNull final Bundle savedInstanceState) {
-        setContentView(R.layout.authentication_activity);
+        final AuthenticationActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.authentication_activity);
 
         // If previously logged in from another account, clears cookies so account is logged out.
         final CookieManager cookieManager = CookieManager.getInstance();
@@ -40,7 +40,7 @@ public class AuthenticationActivity extends BaseActivity {
 
         final String state = RandomStringUtils.randomAlphanumeric(16);
 
-        webView.setWebViewClient(new WebViewClient() {
+        binding.webView.setWebViewClient(new WebViewClient() {
             @SuppressWarnings("deprecation")
             @Override
             public boolean shouldOverrideUrlLoading(final WebView view, final String url) {
@@ -98,6 +98,6 @@ public class AuthenticationActivity extends BaseActivity {
                 .addQueryParameter("scope", TextUtils.join(",", SCOPES))
                 .build();
 
-        webView.loadUrl(url.toString());
+        binding.webView.loadUrl(url.toString());
     }
 }

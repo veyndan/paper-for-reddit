@@ -12,9 +12,6 @@ import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -22,14 +19,11 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
 import com.jakewharton.rxbinding.view.RxView;
-import com.veyndan.paper.reddit.R;
+import com.veyndan.paper.reddit.databinding.PostMediaImageBinding;
 import com.veyndan.paper.reddit.post.media.model.Image;
 import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.List;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class ImageAdapterDelegate
         extends AbsListItemAdapterDelegate<Image, Object, ImageAdapterDelegate.ImageViewHolder> {
@@ -57,8 +51,8 @@ public class ImageAdapterDelegate
     @Override
     public ImageViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final View view = inflater.inflate(R.layout.post_media_image, parent, false);
-        return new ImageViewHolder(view);
+        final PostMediaImageBinding binding = PostMediaImageBinding.inflate(inflater, parent, false);
+        return new ImageViewHolder(binding);
     }
 
     @Override
@@ -67,7 +61,7 @@ public class ImageAdapterDelegate
                                     @NonNull final List<Object> payloads) {
         final Context context = holder.itemView.getContext();
 
-        holder.imageProgressView.setVisibility(View.VISIBLE);
+        holder.binding.postMediaImageProgress.setVisibility(View.VISIBLE);
 
         if (customTabsClient != null) {
             final CustomTabsSession session = customTabsClient.newSession(null);
@@ -82,10 +76,10 @@ public class ImageAdapterDelegate
         final boolean imageDimensAvailable = image.getSize().getWidth() > 0 && image.getSize().getHeight() > 0;
 
         if (image.getType() == Image.IMAGE_TYPE_STANDARD) {
-            holder.imageType.setVisibility(View.GONE);
+            holder.binding.postMediaImageType.setVisibility(View.GONE);
         } else {
-            holder.imageType.setVisibility(View.VISIBLE);
-            holder.imageType.setText(image.getType());
+            holder.binding.postMediaImageType.setVisibility(View.VISIBLE);
+            holder.binding.postMediaImageType.setText(image.getType());
         }
 
         // TODO Once media adapter is shared between posts, width can be calculated in the holder constructor.
@@ -99,13 +93,13 @@ public class ImageAdapterDelegate
                             .listener(new RequestListener<String, GlideDrawable>() {
                                 @Override
                                 public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
-                                    holder.imageProgressView.setVisibility(View.GONE);
+                                    holder.binding.postMediaImageProgress.setVisibility(View.GONE);
                                     return false;
                                 }
 
                                 @Override
                                 public boolean onResourceReady(final GlideDrawable resource, final String model, final Target<GlideDrawable> target, final boolean isFromMemoryCache, final boolean isFirstResource) {
-                                    holder.imageProgressView.setVisibility(View.GONE);
+                                    holder.binding.postMediaImageProgress.setVisibility(View.GONE);
                                     if (!imageDimensAvailable) {
                                         final int imageWidth = resource.getIntrinsicWidth();
                                         final int imageHeight = resource.getIntrinsicHeight();
@@ -114,30 +108,27 @@ public class ImageAdapterDelegate
 
                                         post.getMedias().add(image);
 
-                                        holder.imageView.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
+                                        holder.binding.postMediaImage.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
                                     }
                                     return false;
                                 }
                             })
-                            .into(holder.imageView);
+                            .into(holder.binding.postMediaImage);
 
                     if (imageDimensAvailable) {
-                        holder.imageView.getLayoutParams().height = (int) ((float) width / image.getSize().getWidth() * image.getSize().getHeight());
+                        holder.binding.postMediaImage.getLayoutParams().height = (int) ((float) width / image.getSize().getWidth() * image.getSize().getHeight());
                     }
                 });
     }
 
-    // ButterKnife requires that binding occurs in non private classes.
-    @SuppressWarnings("WeakerAccess")
     static class ImageViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.post_media_image) ImageView imageView;
-        @BindView(R.id.post_media_image_progress) ProgressBar imageProgressView;
-        @BindView(R.id.post_media_image_type) TextView imageType;
+        private final PostMediaImageBinding binding;
 
-        ImageViewHolder(final View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
+        ImageViewHolder(final PostMediaImageBinding binding) {
+            super(binding.getRoot());
+
+            this.binding = binding;
         }
     }
 }

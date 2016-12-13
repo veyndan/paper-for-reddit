@@ -11,23 +11,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.jakewharton.rxbinding.support.design.widget.RxTabLayout;
 import com.jakewharton.rxbinding.view.RxView;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import com.veyndan.paper.reddit.databinding.FragmentFilterBinding;
 
 public class FilterFragment extends DialogFragment {
-
-    @BindView(R.id.filter_view_pager) ViewPager viewPager;
-    @BindView(R.id.filter_tabs) TabLayout tabs;
-    @BindView(R.id.filter_done) Button doneButton;
 
     @SuppressWarnings("RedundantNoArgConstructor")
     public FilterFragment() {
@@ -41,8 +33,7 @@ public class FilterFragment extends DialogFragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_filter, container, false);
-        ButterKnife.bind(this, view);
+        final FragmentFilterBinding binding = FragmentFilterBinding.inflate(inflater, container, false);
 
         final Fragment[] fragments = {
                 TimePeriodFilterFragment.newInstance(),
@@ -50,7 +41,7 @@ public class FilterFragment extends DialogFragment {
                 UserFilterFragment.newInstance()
         };
 
-        RxView.clicks(doneButton)
+        RxView.clicks(binding.filterDone)
                 .subscribe(aVoid -> {
                     final Intent intent = new Intent(getContext(), MainActivity.class);
                     for (final Fragment fragment : fragments) {
@@ -62,22 +53,22 @@ public class FilterFragment extends DialogFragment {
                 });
 
         final FragmentManager fragmentManager = getChildFragmentManager();
-        viewPager.setAdapter(new FilterSectionAdapter(fragmentManager, fragments));
+        binding.filterViewPager.setAdapter(new FilterSectionAdapter(fragmentManager, fragments));
 
-        tabs.setupWithViewPager(viewPager);
+        binding.filterTabs.setupWithViewPager(binding.filterViewPager);
 
-        TabLayout.Tab tab = tabs.getTabAt(0);
+        TabLayout.Tab tab = binding.filterTabs.getTabAt(0);
         tab.setIcon(R.drawable.ic_schedule_black_24dp);
 
-        tab = tabs.getTabAt(1);
+        tab = binding.filterTabs.getTabAt(1);
         tab.setText("r/");
 
-        tab = tabs.getTabAt(2);
+        tab = binding.filterTabs.getTabAt(2);
         tab.setIcon(R.drawable.ic_person_black_24dp);
 
         final int colorAccent = ContextCompat.getColor(getActivity(), R.color.colorAccent);
 
-        RxTabLayout.selectionEvents(tabs)
+        RxTabLayout.selectionEvents(binding.filterTabs)
                 .filter(selectionEvent -> selectionEvent.tab().getIcon() != null)
                 .subscribe(selectionEvent -> {
                     final TabLayout.Tab tab1 = selectionEvent.tab();
@@ -94,7 +85,7 @@ public class FilterFragment extends DialogFragment {
                     }
                 });
 
-        return view;
+        return binding.getRoot();
     }
 
     private static class FilterSectionAdapter extends FragmentStatePagerAdapter {

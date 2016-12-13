@@ -38,6 +38,7 @@ android {
     packagingOptions {
         pickFirst 'META-INF/rxjava.properties'
     }
+    dataBinding.enabled = true
 }
 
 dependencies {

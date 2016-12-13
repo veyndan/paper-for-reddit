@@ -5,14 +5,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Spinner;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import com.veyndan.paper.reddit.databinding.FragmentTimePeriodFilterBinding;
 
 public class TimePeriodFilterFragment extends Fragment implements Filter {
 
-    @BindView(R.id.filter_form_time_period) Spinner formTimePeriod;
+    private FragmentTimePeriodFilterBinding binding;
 
     @SuppressWarnings("RedundantNoArgConstructor")
     public TimePeriodFilterFragment() {
@@ -26,15 +24,14 @@ public class TimePeriodFilterFragment extends Fragment implements Filter {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_time_period_filter, container, false);
-        ButterKnife.bind(this, view);
-        return view;
+        binding = FragmentTimePeriodFilterBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public Bundle requestFilter() {
         final Bundle bundle = new Bundle();
-        bundle.putInt(TIME_PERIOD_POSITION, formTimePeriod.getSelectedItemPosition());
+        bundle.putInt(TIME_PERIOD_POSITION, binding.filterFormTimePeriod.getSelectedItemPosition());
         return bundle;
     }
 }

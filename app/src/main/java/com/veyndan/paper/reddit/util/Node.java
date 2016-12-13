@@ -26,7 +26,7 @@ public abstract class Node<T> {
     public abstract Integer getDegree();
 
     public boolean isInternalNode() {
-        return getDegree() > 0;
+        return getDescendantCount() > 0;
     }
 
     @NonNull

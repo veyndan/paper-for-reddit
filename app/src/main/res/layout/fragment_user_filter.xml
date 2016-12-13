@@ -1,45 +1,49 @@
-<LinearLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:focusableInTouchMode="true"
-    android:orientation="vertical"
-    android:padding="8dp"
-    tools:context="com.veyndan.paper.reddit.UserFilterFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.design.widget.TextInputLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        android:padding="8dp"
+        tools:context="com.veyndan.paper.reddit.UserFilterFragment">
 
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/filter_form_username"
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/filter_form_username"/>
+            android:layout_margin="8dp">
 
-    </android.support.design.widget.TextInputLayout>
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/filter_form_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/filter_form_username"/>
 
-    <CheckBox
-        android:id="@+id/filter_form_comments"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="@string/filter_form_comments"/>
+        </android.support.design.widget.TextInputLayout>
 
-    <CheckBox
-        android:id="@+id/filter_form_submitted"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="@string/filter_form_submitted"/>
+        <CheckBox
+            android:id="@+id/filter_form_comments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/filter_form_comments"/>
 
-    <CheckBox
-        android:id="@+id/filter_form_gilded"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="@string/filter_form_gilded"/>
+        <CheckBox
+            android:id="@+id/filter_form_submitted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/filter_form_submitted"/>
 
-</LinearLayout>
+        <CheckBox
+            android:id="@+id/filter_form_gilded"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/filter_form_gilded"/>
+
+    </LinearLayout>
+
+</layout>
