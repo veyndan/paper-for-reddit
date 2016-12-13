@@ -26,7 +26,6 @@ import com.veyndan.paper.reddit.util.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.ButterKnife;
 import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -80,7 +79,6 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
                              final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
-        ButterKnife.bind(this, recyclerView);
 
         layoutManager = new LinearLayoutManager(getActivity());
         postAdapter = new PostAdapter(getActivity(), nodes, reddit);

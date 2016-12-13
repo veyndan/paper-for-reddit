@@ -1,6 +1,7 @@
 package com.veyndan.paper.reddit;
 
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
@@ -15,10 +16,10 @@ import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.api.reddit.network.Sort;
 import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
 import com.veyndan.paper.reddit.api.reddit.network.User;
+import com.veyndan.paper.reddit.databinding.ActivityMainBinding;
 import com.veyndan.paper.reddit.post.PostsFragment;
 import com.veyndan.paper.reddit.util.IntentUtils;
 
-import butterknife.ButterKnife;
 import io.reactivex.Single;
 import retrofit2.Response;
 
@@ -36,8 +37,9 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreateNonNull(@NonNull final Bundle savedInstanceState) {
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        final ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        setSupportActionBar(binding.toolbar);
 
         postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
 

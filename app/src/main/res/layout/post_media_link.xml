@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/post_media_url"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginLeft="@dimen/post_horizontal_margin"
-    android:layout_marginRight="@dimen/post_horizontal_margin"
-    android:background="@drawable/post_url_border"
-    android:foreground="?selectableItemBackground"
-    android:padding="16dp"
-    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-    tools:text="@string/placeholder_post_media_url"/>
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/post_media_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/post_horizontal_margin"
+        android:layout_marginRight="@dimen/post_horizontal_margin"
+        android:background="@drawable/post_url_border"
+        android:foreground="?selectableItemBackground"
+        android:padding="16dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        tools:text="@string/placeholder_post_media_url"/>
+
+</layout>
