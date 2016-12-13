@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.databinding.FragmentSubredditFilterBinding;
 
 public class SubredditFilterFragment extends Fragment implements Filter {
@@ -32,8 +33,10 @@ public class SubredditFilterFragment extends Fragment implements Filter {
     public Bundle requestFilter() {
         final Bundle bundle = new Bundle();
 
+        bundle.putInt(Reddit.Filter.NODE_DEPTH, 0);
+
         final String subreddit = binding.filterFormSubreddit.getText().toString();
-        bundle.putString(SUBREDDIT_NAME, subreddit);
+        bundle.putString(Reddit.Filter.SUBREDDIT_NAME, subreddit);
 
         return bundle;
     }

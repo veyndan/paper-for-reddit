@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.databinding.FragmentUserFilterBinding;
 
 public class UserFilterFragment extends Fragment implements Filter {
@@ -32,17 +33,19 @@ public class UserFilterFragment extends Fragment implements Filter {
     public Bundle requestFilter() {
         final Bundle bundle = new Bundle();
 
+        bundle.putInt(Reddit.Filter.NODE_DEPTH, 0);
+
         final String username = binding.filterFormUsername.getText().toString();
-        bundle.putString(USER_NAME, username);
+        bundle.putString(Reddit.Filter.USER_NAME, username);
 
         final boolean comments = binding.filterFormComments.isChecked();
-        bundle.putBoolean(USER_COMMENTS, comments);
+        bundle.putBoolean(Reddit.Filter.USER_COMMENTS, comments);
 
         final boolean submitted = binding.filterFormSubmitted.isChecked();
-        bundle.putBoolean(USER_SUBMITTED, submitted);
+        bundle.putBoolean(Reddit.Filter.USER_SUBMITTED, submitted);
 
         final boolean gilded = binding.filterFormGilded.isChecked();
-        bundle.putBoolean(USER_GILDED, gilded);
+        bundle.putBoolean(Reddit.Filter.USER_GILDED, gilded);
 
         return bundle;
     }
