@@ -8,8 +8,8 @@ import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
-import com.veyndan.paper.reddit.Filter;
 import com.veyndan.paper.reddit.MainActivity;
+import com.veyndan.paper.reddit.api.reddit.Reddit;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,7 +47,8 @@ public final class Linkifier {
                 @Override
                 public void onClick(final View view) {
                     final Intent subredditIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                    subredditIntent.putExtra(Filter.SUBREDDIT_NAME, subredditName);
+                    subredditIntent.putExtra(Reddit.Filter.NODE_DEPTH, 0);
+                    subredditIntent.putExtra(Reddit.Filter.SUBREDDIT_NAME, subredditName);
                     context.startActivity(subredditIntent);
                 }
             }, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -65,9 +66,10 @@ public final class Linkifier {
                 @Override
                 public void onClick(final View view) {
                     final Intent profileIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                    profileIntent.putExtra(Filter.USER_NAME, userName);
-                    profileIntent.putExtra(Filter.USER_COMMENTS, true);
-                    profileIntent.putExtra(Filter.USER_SUBMITTED, true);
+                    profileIntent.putExtra(Reddit.Filter.NODE_DEPTH, 0);
+                    profileIntent.putExtra(Reddit.Filter.USER_NAME, userName);
+                    profileIntent.putExtra(Reddit.Filter.USER_COMMENTS, true);
+                    profileIntent.putExtra(Reddit.Filter.USER_SUBMITTED, true);
                     context.startActivity(profileIntent);
                 }
             }, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
