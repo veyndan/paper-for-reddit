@@ -5,7 +5,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -14,8 +13,6 @@ import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.api.reddit.network.Sort;
-import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
-import com.veyndan.paper.reddit.api.reddit.network.User;
 import com.veyndan.paper.reddit.databinding.ActivityMainBinding;
 import com.veyndan.paper.reddit.post.PostsFragment;
 import com.veyndan.paper.reddit.util.IntentUtils;
@@ -24,8 +21,8 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 @DeepLink({
-        "http://reddit.com/u/{" + Filter.USER_NAME + '}',
-        "http://reddit.com/user/{" + Filter.USER_NAME + '}'
+        "http://reddit.com/u/{" + Reddit.Filter.USER_NAME + '}',
+        "http://reddit.com/user/{" + Reddit.Filter.USER_NAME + '}'
 })
 public class MainActivity extends BaseActivity {
 
@@ -44,66 +41,17 @@ public class MainActivity extends BaseActivity {
         postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
 
         final Intent intent = getIntent();
+        final Bundle intentExtras = IntentUtils.getExtras(intent);
 
-        final Single<Response<Thing<Listing>>> defaultRequest = REDDIT.subreddit("all", Sort.HOT, null);
-        final Single<Response<Thing<Listing>>> mergedFilters = mergeFilters(IntentUtils.getExtras(intent), defaultRequest);
+        if (intentExtras.isEmpty()) {
+            intentExtras.putInt(Reddit.Filter.NODE_DEPTH, 0);
+            intentExtras.putString(Reddit.Filter.SUBREDDIT_NAME, "all");
+        }
+
+        subreddit = intentExtras.getString(Reddit.Filter.SUBREDDIT_NAME);
+
+        final Single<Response<Thing<Listing>>> mergedFilters = REDDIT.query(intentExtras, Sort.HOT);
         postsFragment.setRequest(mergedFilters);
-    }
-
-    @NonNull
-    private Single<Response<Thing<Listing>>> mergeFilters(@NonNull final Bundle bundle,
-                                                          @NonNull final Single<Response<Thing<Listing>>> defaultRequest) {
-        if (bundle.containsKey(Filter.COMMENTS_SUBREDDIT)) {
-            final String subreddit = bundle.getString(Filter.COMMENTS_SUBREDDIT);
-            final String article = bundle.getString(Filter.COMMENTS_ARTICLE);
-            return REDDIT.subredditComments(subreddit, article);
-        }
-
-        final TimePeriod[] timePeriods = {
-                TimePeriod.HOUR,
-                TimePeriod.DAY,
-                TimePeriod.WEEK,
-                TimePeriod.MONTH,
-                TimePeriod.YEAR,
-                TimePeriod.ALL
-        };
-
-        final TimePeriod timePeriod = timePeriods[bundle.getInt(Filter.TIME_PERIOD_POSITION)];
-
-        subreddit = bundle.getString(Filter.SUBREDDIT_NAME);
-
-        final String username = bundle.getString(Filter.USER_NAME);
-        final boolean comments = bundle.getBoolean(Filter.USER_COMMENTS);
-        final boolean submitted = bundle.getBoolean(Filter.USER_SUBMITTED);
-        final boolean gilded = bundle.getBoolean(Filter.USER_GILDED);
-
-        if (TextUtils.isEmpty(subreddit) && TextUtils.isEmpty(username)) {
-            return defaultRequest;
-        } else if (!TextUtils.isEmpty(subreddit) && TextUtils.isEmpty(username)) {
-            return REDDIT.subreddit(subreddit, Sort.HOT, null);
-        } else if (TextUtils.isEmpty(subreddit)) { // && !TextUtils.isEmpty(username)
-            final User user;
-            if (bundle.getBoolean(DeepLink.IS_DEEP_LINK, false)) {
-                user = User.OVERVIEW;
-            } else if ((comments == submitted) && gilded) {
-                user = User.GILDED;
-            } else if ((comments != submitted) && gilded) {
-                throw new UnsupportedOperationException("User state unsure");
-            } else if (comments && submitted) {
-                user = User.OVERVIEW;
-            } else if (comments) {
-                user = User.COMMENTS;
-            } else if (submitted) {
-                user = User.SUBMITTED;
-            } else {
-                throw new UnsupportedOperationException("User state unsure");
-            }
-
-            return REDDIT.user(username, user, timePeriod);
-        } else { // !TextUtils.isEmpty(subreddit) && !TextUtils.isEmpty(username)
-            // TODO Concatenate the subreddit and username search query
-            return defaultRequest;
-        }
     }
 
     @Override
@@ -125,19 +73,39 @@ public class MainActivity extends BaseActivity {
                 filterFragment.show(fragmentManager, "fragment_filter");
                 return true;
             case R.id.action_sort_hot:
-                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.HOT, null));
+                final Bundle redditQueryParamsHot = new Bundle();
+                redditQueryParamsHot.putInt(Reddit.Filter.NODE_DEPTH, 0);
+                redditQueryParamsHot.putString(Reddit.Filter.SUBREDDIT_NAME, subreddit);
+
+                postsFragment.setRequest(REDDIT.query(redditQueryParamsHot, Sort.HOT));
                 return true;
             case R.id.action_sort_new:
-                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.NEW, null));
+                final Bundle redditQueryParamsNew = new Bundle();
+                redditQueryParamsNew.putInt(Reddit.Filter.NODE_DEPTH, 0);
+                redditQueryParamsNew.putString(Reddit.Filter.SUBREDDIT_NAME, subreddit);
+
+                postsFragment.setRequest(REDDIT.query(redditQueryParamsNew, Sort.NEW));
                 return true;
             case R.id.action_sort_rising:
-                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.RISING, null));
+                final Bundle redditQueryParamsRising = new Bundle();
+                redditQueryParamsRising.putInt(Reddit.Filter.NODE_DEPTH, 0);
+                redditQueryParamsRising.putString(Reddit.Filter.SUBREDDIT_NAME, subreddit);
+
+                postsFragment.setRequest(REDDIT.query(redditQueryParamsRising, Sort.RISING));
                 return true;
             case R.id.action_sort_controversial:
-                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.CONTROVERSIAL, null));
+                final Bundle redditQueryParamsControversial = new Bundle();
+                redditQueryParamsControversial.putInt(Reddit.Filter.NODE_DEPTH, 0);
+                redditQueryParamsControversial.putString(Reddit.Filter.SUBREDDIT_NAME, subreddit);
+
+                postsFragment.setRequest(REDDIT.query(redditQueryParamsControversial, Sort.CONTROVERSIAL));
                 return true;
             case R.id.action_sort_top:
-                postsFragment.setRequest(REDDIT.subreddit(subreddit, Sort.TOP, null));
+                final Bundle redditQueryParamsTop = new Bundle();
+                redditQueryParamsTop.putInt(Reddit.Filter.NODE_DEPTH, 0);
+                redditQueryParamsTop.putString(Reddit.Filter.SUBREDDIT_NAME, subreddit);
+
+                postsFragment.setRequest(REDDIT.query(redditQueryParamsTop, Sort.TOP));
                 return true;
             default:
                 return false;

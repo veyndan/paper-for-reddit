@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.veyndan.paper.reddit.api.reddit.Reddit;
+import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
 import com.veyndan.paper.reddit.databinding.FragmentTimePeriodFilterBinding;
 
 public class TimePeriodFilterFragment extends Fragment implements Filter {
@@ -31,7 +33,18 @@ public class TimePeriodFilterFragment extends Fragment implements Filter {
     @Override
     public Bundle requestFilter() {
         final Bundle bundle = new Bundle();
-        bundle.putInt(TIME_PERIOD_POSITION, binding.filterFormTimePeriod.getSelectedItemPosition());
+
+        final TimePeriod[] timePeriods = {
+                TimePeriod.HOUR,
+                TimePeriod.DAY,
+                TimePeriod.WEEK,
+                TimePeriod.MONTH,
+                TimePeriod.YEAR,
+                TimePeriod.ALL
+        };
+
+        bundle.putInt(Reddit.Filter.NODE_DEPTH, 0);
+        bundle.putSerializable(Reddit.Filter.TIME_PERIOD, timePeriods[binding.filterFormTimePeriod.getSelectedItemPosition()]);
         return bundle;
     }
 }

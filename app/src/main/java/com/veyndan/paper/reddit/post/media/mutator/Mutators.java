@@ -35,7 +35,7 @@ public final class Mutators {
     private static final List<MutatorFactory> MUTATOR_FACTORIES = ImmutableList.of(
             TwitterMutatorFactory.create(),
             XkcdMutatorFactory.create(),
-            ImgurMutatorFactory.create(),
+//            ImgurMutatorFactory.create(),
             ImgflipMutatorFactory.create(),
             ImageMutatorFactory.create(),
             TextMutatorFactory.create(),

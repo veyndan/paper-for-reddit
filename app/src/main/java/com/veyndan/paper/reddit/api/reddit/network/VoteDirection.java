@@ -3,9 +3,9 @@ package com.veyndan.paper.reddit.api.reddit.network;
 import com.google.gson.annotations.SerializedName;
 
 public enum VoteDirection {
-    @SerializedName("upvote") UPVOTE(1),
-    @SerializedName("downvote") DOWNVOTE(-1),
-    @SerializedName("unvote") UNVOTE(0);
+    @SerializedName("upvote")UPVOTE(1),
+    @SerializedName("downvote")DOWNVOTE(-1),
+    @SerializedName("unvote")UNVOTE(0);
 
     private final int direction;
 

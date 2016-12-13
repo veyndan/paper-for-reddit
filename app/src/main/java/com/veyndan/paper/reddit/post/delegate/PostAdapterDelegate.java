@@ -23,7 +23,6 @@ import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
 import com.jakewharton.rxbinding.view.RxView;
 import com.jakewharton.rxbinding.widget.RxCompoundButton;
 import com.jakewharton.rxbinding.widget.RxPopupMenu;
-import com.veyndan.paper.reddit.Filter;
 import com.veyndan.paper.reddit.MainActivity;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
@@ -286,8 +285,9 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         }
                     } else {
                         final Intent commentsIntent = new Intent(context, MainActivity.class);
-                        commentsIntent.putExtra(Filter.COMMENTS_SUBREDDIT, post.getSubreddit());
-                        commentsIntent.putExtra(Filter.COMMENTS_ARTICLE, post.getArticle());
+                        commentsIntent.putExtra(Reddit.Filter.NODE_DEPTH, 0);
+                        commentsIntent.putExtra(Reddit.Filter.COMMENTS_SUBREDDIT, post.getSubreddit());
+                        commentsIntent.putExtra(Reddit.Filter.COMMENTS_ARTICLE, post.getArticle());
                         context.startActivity(commentsIntent);
                     }
                 });

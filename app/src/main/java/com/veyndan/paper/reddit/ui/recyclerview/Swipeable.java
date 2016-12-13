@@ -18,6 +18,7 @@ public interface Swipeable {
 
     /**
      * Called when the current {@link RecyclerView.ViewHolder} is swiped by the user.
+     *
      * @see android.support.v7.widget.helper.ItemTouchHelper.Callback#onSwiped(RecyclerView.ViewHolder, int)
      */
     void onSwipe();

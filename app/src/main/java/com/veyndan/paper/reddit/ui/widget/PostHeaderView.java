@@ -28,9 +28,9 @@ import android.widget.TextView;
 import com.binaryfork.spanny.Spanny;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Splitter;
-import com.veyndan.paper.reddit.Filter;
 import com.veyndan.paper.reddit.MainActivity;
 import com.veyndan.paper.reddit.R;
+import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.post.Flair;
 import com.veyndan.paper.reddit.util.Linkifier;
 
@@ -158,9 +158,10 @@ public class PostHeaderView extends TextView {
             @Override
             public void onClick(final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtra(Filter.USER_NAME, author);
-                intent.putExtra(Filter.USER_COMMENTS, true);
-                intent.putExtra(Filter.USER_SUBMITTED, true);
+                intent.putExtra(Reddit.Filter.NODE_DEPTH, 0);
+                intent.putExtra(Reddit.Filter.USER_NAME, author);
+                intent.putExtra(Reddit.Filter.USER_COMMENTS, true);
+                intent.putExtra(Reddit.Filter.USER_SUBMITTED, true);
                 context.startActivity(intent);
             }
         };
@@ -169,7 +170,8 @@ public class PostHeaderView extends TextView {
             @Override
             public void onClick(final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtra(Filter.SUBREDDIT_NAME, subreddit);
+                intent.putExtra(Reddit.Filter.NODE_DEPTH, 0);
+                intent.putExtra(Reddit.Filter.SUBREDDIT_NAME, subreddit);
                 context.startActivity(intent);
             }
         };
