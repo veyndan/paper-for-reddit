@@ -43,8 +43,8 @@ public class TimePeriodFilterFragment extends Fragment implements Filter {
                 TimePeriod.ALL
         };
 
-        bundle.putInt(Reddit.Filter.NODE_DEPTH, 0);
-        bundle.putSerializable(Reddit.Filter.TIME_PERIOD, timePeriods[binding.filterFormTimePeriod.getSelectedItemPosition()]);
+        bundle.putInt(Reddit.FILTER_NODE_DEPTH, 0);
+        bundle.putSerializable(Reddit.FILTER_TIME_PERIOD, timePeriods[binding.filterFormTimePeriod.getSelectedItemPosition()]);
         return bundle;
     }
 }

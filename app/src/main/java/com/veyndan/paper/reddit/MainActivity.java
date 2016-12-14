@@ -21,8 +21,8 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 @DeepLink({
-        "http://reddit.com/u/{" + Reddit.Filter.USER_NAME + '}',
-        "http://reddit.com/user/{" + Reddit.Filter.USER_NAME + '}'
+        "http://reddit.com/u/{" + Reddit.FILTER_USER_NAME + '}',
+        "http://reddit.com/user/{" + Reddit.FILTER_USER_NAME + '}'
 })
 public class MainActivity extends BaseActivity {
 
@@ -44,11 +44,11 @@ public class MainActivity extends BaseActivity {
         final Bundle intentExtras = IntentUtils.getExtras(intent);
 
         if (intentExtras.isEmpty()) {
-            intentExtras.putInt(Reddit.Filter.NODE_DEPTH, 0);
-            intentExtras.putString(Reddit.Filter.SUBREDDIT_NAME, "all");
+            intentExtras.putInt(Reddit.FILTER_NODE_DEPTH, 0);
+            intentExtras.putString(Reddit.FILTER_SUBREDDIT_NAME, "all");
         }
 
-        subreddit = intentExtras.getString(Reddit.Filter.SUBREDDIT_NAME);
+        subreddit = intentExtras.getString(Reddit.FILTER_SUBREDDIT_NAME);
 
         final Single<Response<Thing<Listing>>> mergedFilters = REDDIT.query(intentExtras, Sort.HOT);
         postsFragment.setRequest(mergedFilters);
@@ -74,36 +74,36 @@ public class MainActivity extends BaseActivity {
                 return true;
             case R.id.action_sort_hot:
                 final Bundle redditQueryParamsHot = new Bundle();
-                redditQueryParamsHot.putInt(Reddit.Filter.NODE_DEPTH, 0);
-                redditQueryParamsHot.putString(Reddit.Filter.SUBREDDIT_NAME, subreddit);
+                redditQueryParamsHot.putInt(Reddit.FILTER_NODE_DEPTH, 0);
+                redditQueryParamsHot.putString(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
 
                 postsFragment.setRequest(REDDIT.query(redditQueryParamsHot, Sort.HOT));
                 return true;
             case R.id.action_sort_new:
                 final Bundle redditQueryParamsNew = new Bundle();
-                redditQueryParamsNew.putInt(Reddit.Filter.NODE_DEPTH, 0);
-                redditQueryParamsNew.putString(Reddit.Filter.SUBREDDIT_NAME, subreddit);
+                redditQueryParamsNew.putInt(Reddit.FILTER_NODE_DEPTH, 0);
+                redditQueryParamsNew.putString(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
 
                 postsFragment.setRequest(REDDIT.query(redditQueryParamsNew, Sort.NEW));
                 return true;
             case R.id.action_sort_rising:
                 final Bundle redditQueryParamsRising = new Bundle();
-                redditQueryParamsRising.putInt(Reddit.Filter.NODE_DEPTH, 0);
-                redditQueryParamsRising.putString(Reddit.Filter.SUBREDDIT_NAME, subreddit);
+                redditQueryParamsRising.putInt(Reddit.FILTER_NODE_DEPTH, 0);
+                redditQueryParamsRising.putString(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
 
                 postsFragment.setRequest(REDDIT.query(redditQueryParamsRising, Sort.RISING));
                 return true;
             case R.id.action_sort_controversial:
                 final Bundle redditQueryParamsControversial = new Bundle();
-                redditQueryParamsControversial.putInt(Reddit.Filter.NODE_DEPTH, 0);
-                redditQueryParamsControversial.putString(Reddit.Filter.SUBREDDIT_NAME, subreddit);
+                redditQueryParamsControversial.putInt(Reddit.FILTER_NODE_DEPTH, 0);
+                redditQueryParamsControversial.putString(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
 
                 postsFragment.setRequest(REDDIT.query(redditQueryParamsControversial, Sort.CONTROVERSIAL));
                 return true;
             case R.id.action_sort_top:
                 final Bundle redditQueryParamsTop = new Bundle();
-                redditQueryParamsTop.putInt(Reddit.Filter.NODE_DEPTH, 0);
-                redditQueryParamsTop.putString(Reddit.Filter.SUBREDDIT_NAME, subreddit);
+                redditQueryParamsTop.putInt(Reddit.FILTER_NODE_DEPTH, 0);
+                redditQueryParamsTop.putString(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
 
                 postsFragment.setRequest(REDDIT.query(redditQueryParamsTop, Sort.TOP));
                 return true;
