@@ -33,10 +33,10 @@ public class SubredditFilterFragment extends Fragment implements Filter {
     public Bundle requestFilter() {
         final Bundle bundle = new Bundle();
 
-        bundle.putInt(Reddit.Filter.NODE_DEPTH, 0);
+        bundle.putInt(Reddit.FILTER_NODE_DEPTH, 0);
 
         final String subreddit = binding.filterFormSubreddit.getText().toString();
-        bundle.putString(Reddit.Filter.SUBREDDIT_NAME, subreddit);
+        bundle.putString(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
 
         return bundle;
     }

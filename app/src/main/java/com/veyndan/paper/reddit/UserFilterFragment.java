@@ -33,19 +33,19 @@ public class UserFilterFragment extends Fragment implements Filter {
     public Bundle requestFilter() {
         final Bundle bundle = new Bundle();
 
-        bundle.putInt(Reddit.Filter.NODE_DEPTH, 0);
+        bundle.putInt(Reddit.FILTER_NODE_DEPTH, 0);
 
         final String username = binding.filterFormUsername.getText().toString();
-        bundle.putString(Reddit.Filter.USER_NAME, username);
+        bundle.putString(Reddit.FILTER_USER_NAME, username);
 
         final boolean comments = binding.filterFormComments.isChecked();
-        bundle.putBoolean(Reddit.Filter.USER_COMMENTS, comments);
+        bundle.putBoolean(Reddit.FILTER_USER_COMMENTS, comments);
 
         final boolean submitted = binding.filterFormSubmitted.isChecked();
-        bundle.putBoolean(Reddit.Filter.USER_SUBMITTED, submitted);
+        bundle.putBoolean(Reddit.FILTER_USER_SUBMITTED, submitted);
 
         final boolean gilded = binding.filterFormGilded.isChecked();
-        bundle.putBoolean(Reddit.Filter.USER_GILDED, gilded);
+        bundle.putBoolean(Reddit.FILTER_USER_GILDED, gilded);
 
         return bundle;
     }
