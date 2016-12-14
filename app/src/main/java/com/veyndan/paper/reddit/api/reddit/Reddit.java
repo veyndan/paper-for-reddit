@@ -1,6 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit;
 
 import android.os.Bundle;
+import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
@@ -49,19 +50,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class Reddit {
 
-    public static final String FILTER_NODE_DEPTH = "node_depth";
+    private static final String FILTER_NODE_DEPTH = "node_depth";
 
-    public static final String FILTER_COMMENTS_SUBREDDIT = "comments_subreddit";
-    public static final String FILTER_COMMENTS_ARTICLE = "comments_article";
+    private static final String FILTER_COMMENTS_SUBREDDIT = "comments_subreddit";
+    private static final String FILTER_COMMENTS_ARTICLE = "comments_article";
 
-    public static final String FILTER_TIME_PERIOD = "time_period";
+    private static final String FILTER_TIME_PERIOD = "time_period";
 
     public static final String FILTER_SUBREDDIT_NAME = "subreddit_name";
 
-    public static final String FILTER_USER_NAME = "user_name";
-    public static final String FILTER_USER_COMMENTS = "user_comments";
-    public static final String FILTER_USER_SUBMITTED = "user_submitted";
-    public static final String FILTER_USER_GILDED = "user_gilded";
+    private static final String FILTER_USER_NAME = "user_name";
+    private static final String FILTER_USER_COMMENTS = "user_comments";
+    private static final String FILTER_USER_SUBMITTED = "user_submitted";
+    private static final String FILTER_USER_GILDED = "user_gilded";
 
     private final RedditService redditService;
 
@@ -322,5 +323,59 @@ public final class Reddit {
                 .filter(query1 -> !query1.build().containsKey("after") || query1.build().get("after") != null)
                 .flatMapSingle(query1 -> page)
                 .doOnSuccess(response -> query.after(response.body().data.after));
+    }
+
+    public static class FilterBuilder {
+
+        private final Bundle bundle = new Bundle();
+
+        public FilterBuilder nodeDepth(@IntRange(from = 0) final int nodeDepth) {
+            bundle.putInt(FILTER_NODE_DEPTH, nodeDepth);
+            return this;
+        }
+
+        public FilterBuilder commentsSubreddit(final String commentsSubreddit) {
+            bundle.putString(FILTER_COMMENTS_SUBREDDIT, commentsSubreddit);
+            return this;
+        }
+
+        public FilterBuilder commentsArticle(final String commentsArticle) {
+            bundle.putString(FILTER_COMMENTS_ARTICLE, commentsArticle);
+            return this;
+        }
+
+        public FilterBuilder timePeriod(final TimePeriod timePeriod) {
+            bundle.putSerializable(FILTER_TIME_PERIOD, timePeriod);
+            return this;
+        }
+
+        public FilterBuilder subredditName(final String subredditName) {
+            bundle.putString(FILTER_SUBREDDIT_NAME, subredditName);
+            return this;
+        }
+
+        public FilterBuilder userName(final String userName) {
+            bundle.putString(FILTER_USER_NAME, userName);
+            return this;
+        }
+
+        public FilterBuilder userComments(final boolean userComments) {
+            bundle.putBoolean(FILTER_USER_COMMENTS, userComments);
+            return this;
+        }
+
+        public FilterBuilder userSubmitted(final boolean userSubmitted) {
+            bundle.putBoolean(FILTER_USER_SUBMITTED, userSubmitted);
+            return this;
+        }
+
+        public FilterBuilder userGilded(final boolean userGilded) {
+            bundle.putBoolean(FILTER_USER_GILDED, userGilded);
+            return this;
+        }
+
+        public Bundle build() {
+            return bundle;
+        }
     }
 }

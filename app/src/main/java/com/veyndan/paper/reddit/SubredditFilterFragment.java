@@ -31,13 +31,9 @@ public class SubredditFilterFragment extends Fragment implements Filter {
 
     @Override
     public Bundle requestFilter() {
-        final Bundle bundle = new Bundle();
-
-        bundle.putInt(Reddit.FILTER_NODE_DEPTH, 0);
-
-        final String subreddit = binding.filterFormSubreddit.getText().toString();
-        bundle.putString(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
-
-        return bundle;
+        return new Reddit.FilterBuilder()
+                .nodeDepth(0)
+                .subredditName(binding.filterFormSubreddit.getText().toString())
+                .build();
     }
 }

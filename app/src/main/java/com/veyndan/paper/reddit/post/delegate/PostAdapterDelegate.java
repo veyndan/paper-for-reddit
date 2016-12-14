@@ -285,9 +285,11 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         }
                     } else {
                         final Intent commentsIntent = new Intent(context, MainActivity.class);
-                        commentsIntent.putExtra(Reddit.FILTER_NODE_DEPTH, 0);
-                        commentsIntent.putExtra(Reddit.FILTER_COMMENTS_SUBREDDIT, post.getSubreddit());
-                        commentsIntent.putExtra(Reddit.FILTER_COMMENTS_ARTICLE, post.getArticle());
+                        commentsIntent.putExtras(new Reddit.FilterBuilder()
+                                .nodeDepth(0)
+                                .commentsSubreddit(post.getSubreddit())
+                                .commentsArticle(post.getArticle())
+                                .build());
                         context.startActivity(commentsIntent);
                     }
                 });
