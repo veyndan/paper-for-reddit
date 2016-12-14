@@ -245,44 +245,60 @@ public final class Reddit {
     public Single<Response<Thing<Listing>>> query(final Bundle params, final Sort sort) {
         final int nodeDepth = params.getInt(Filter.NODE_DEPTH, -1);
 
-        final String commentsSubreddit = params.getString(Filter.COMMENTS_SUBREDDIT);
-        final String commentsArticle = params.getString(Filter.COMMENTS_ARTICLE);
+        final String commentsSubreddit = params.getString(Filter.COMMENTS_SUBREDDIT, "");
+        final String commentsArticle = params.getString(Filter.COMMENTS_ARTICLE, "");
 
         final TimePeriod timePeriod = (TimePeriod) params.getSerializable(Filter.TIME_PERIOD);
 
-        final String subredditName = params.getString(Filter.SUBREDDIT_NAME);
+        final String subredditName = params.getString(Filter.SUBREDDIT_NAME, "");
 
-        final String userName = params.getString(Filter.USER_NAME);
+        final String userName = params.getString(Filter.USER_NAME, "");
         final boolean userComments = params.getBoolean(Filter.USER_COMMENTS, false);
         final boolean userSubmitted = params.getBoolean(Filter.USER_SUBMITTED, false);
         final boolean userGilded = params.getBoolean(Filter.USER_GILDED, false);
-        final User userWhere = (User) params.getSerializable(Filter.USER_WHERE);
 
         if (nodeDepth == -1) {
             // TODO Get every post, along with its comments here i.e. the whole forest of Reddit
             throw new IllegalStateException();
         } else if (nodeDepth == 0) {
-            if (commentsSubreddit == null && commentsArticle == null
-                    && TextUtils.isEmpty(userName) && !userComments && !userSubmitted && !userGilded && userWhere == null) {
+            if (commentsSubreddit.isEmpty() && commentsArticle.isEmpty()
+                    && userName.isEmpty() && !userComments && !userSubmitted && !userGilded) {
                 return subreddit(MoreObjects.firstNonNull(subredditName, "all"), sort, MoreObjects.firstNonNull(timePeriod, TimePeriod.ALL));
             }
 
-            if (commentsSubreddit == null && commentsArticle == null
-                    && subredditName == null
-                    && userName != null && userWhere != null) {
+            if (commentsSubreddit.isEmpty() && commentsArticle.isEmpty()
+                    && subredditName.isEmpty()
+                    && userName.length() > 1) {
+                final User userWhere = toUser(userComments, userSubmitted, userGilded);
                 return user(userName, userWhere, timePeriod);
             }
 
-            if (commentsSubreddit != null && commentsArticle != null
+            if (commentsSubreddit.length() > 1 && commentsArticle.length() > 1
                     && timePeriod == null
-                    && subredditName == null
-                    && userName == null && !userComments && !userSubmitted && !userGilded && userWhere == null) {
+                    && subredditName.isEmpty()
+                    && userName.isEmpty() && !userComments && !userSubmitted && !userGilded) {
                 return subredditComments(commentsSubreddit, commentsArticle);
             }
 
             throw new IllegalStateException();
         } else {
             throw new IllegalStateException("Depths that aren't 0 or -1 aren't available to the Reddit API");
+        }
+    }
+
+    private static User toUser(final boolean comments, final boolean submitted, final boolean gilded) {
+        if (comments == submitted && gilded) {
+            return User.GILDED;
+        } else if (comments != submitted && gilded) {
+            throw new UnsupportedOperationException("User state unsure");
+        } else if (comments && submitted) {
+            return User.OVERVIEW;
+        } else if (comments) {
+            return User.COMMENTS;
+        } else if (submitted) {
+            return User.SUBMITTED;
+        } else {
+            return User.OVERVIEW;
         }
     }
 
@@ -308,6 +324,5 @@ public final class Reddit {
         String USER_COMMENTS = "user_comments";
         String USER_SUBMITTED = "user_submitted";
         String USER_GILDED = "user_gilded";
-        String USER_WHERE = "user_where";
     }
 }
