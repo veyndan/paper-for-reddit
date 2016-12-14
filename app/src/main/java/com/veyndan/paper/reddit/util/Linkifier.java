@@ -47,8 +47,10 @@ public final class Linkifier {
                 @Override
                 public void onClick(final View view) {
                     final Intent subredditIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                    subredditIntent.putExtra(Reddit.FILTER_NODE_DEPTH, 0);
-                    subredditIntent.putExtra(Reddit.FILTER_SUBREDDIT_NAME, subredditName);
+                    subredditIntent.putExtras(new Reddit.FilterBuilder()
+                            .nodeDepth(0)
+                            .subredditName(subredditName)
+                            .build());
                     context.startActivity(subredditIntent);
                 }
             }, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -66,10 +68,12 @@ public final class Linkifier {
                 @Override
                 public void onClick(final View view) {
                     final Intent profileIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                    profileIntent.putExtra(Reddit.FILTER_NODE_DEPTH, 0);
-                    profileIntent.putExtra(Reddit.FILTER_USER_NAME, userName);
-                    profileIntent.putExtra(Reddit.FILTER_USER_COMMENTS, true);
-                    profileIntent.putExtra(Reddit.FILTER_USER_SUBMITTED, true);
+                    profileIntent.putExtras(new Reddit.FilterBuilder()
+                            .nodeDepth(0)
+                            .userName(userName)
+                            .userComments(true)
+                            .userSubmitted(true)
+                            .build());
                     context.startActivity(profileIntent);
                 }
             }, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
