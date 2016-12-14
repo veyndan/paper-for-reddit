@@ -8,6 +8,7 @@ import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import io.reactivex.Maybe;
 
@@ -18,8 +19,16 @@ public abstract class Submission extends RedditObject {
     // TODO: which can be defined in Submission.java.
     // TODO: Could have custom post hints? E.g. Tweets for the converter adapters. Hard part is where to define the attributes for each converter e.g. Tweet id. Could have hash map or something.
     // Votable
-    public int ups;
-    public int downs;
+    private int ups;
+    private int downs;
+
+    public int getUps() {
+        return ups;
+    }
+
+    public int getDowns() {
+        return downs;
+    }
 
     /**
      * How the logged-in user has voted on the submission. {@code true} = upvoted,
@@ -36,8 +45,16 @@ public abstract class Submission extends RedditObject {
     }
 
     // Created
-    public long created;
-    public long createdUtc;
+    private long created;
+    private long createdUtc;
+
+    public long getCreated() {
+        return created;
+    }
+
+    public long getCreatedUtc() {
+        return createdUtc;
+    }
 
     /**
      * Returns {@code true} if the Submission has been clicked on before, else {@code false}.
@@ -193,33 +210,55 @@ public abstract class Submission extends RedditObject {
     @NonNull
     public abstract Thing<Listing> getReplies();
 
+    @Nullable private String author;
+
     /**
      * The account name of the poster. {@code null} if this is a promotional link.
      */
-    @Nullable public String author;
+    @NonNull
+    public String getAuthor() {
+        return Objects.requireNonNull(author);
+    }
 
     @Nullable
     public abstract String getLinkAuthor();
 
+    @Nullable private String authorFlairCssClass;
+
     /**
      * The CSS class of the author's flair. subreddit specific.
      */
-    @Nullable public String authorFlairCssClass;
+    @NonNull
+    public String getAuthorFlairCssClass() {
+        return Objects.requireNonNull(authorFlairCssClass);
+    }
+
+    @Nullable private String authorFlairText;
 
     /**
      * The text of the author's flair. subreddit specific.
      */
-    @Nullable public String authorFlairText;
+    @NonNull
+    public String getAuthorFlairText() {
+        return Objects.requireNonNull(authorFlairText);
+    }
 
     /**
      * Url of the permanent link.
      */
-    @NonNull public abstract String getPermalink();
+    @NonNull
+    public abstract String getPermalink();
+
+    private boolean saved;
 
     /**
      * {@code true} if this post is saved by the logged in user.
      */
-    public boolean saved;
+    public boolean isSaved() {
+        return saved;
+    }
+
+    private int score;
 
     /**
      * The net-score of the link.
@@ -232,49 +271,90 @@ public abstract class Submission extends RedditObject {
      * 21 downvotes, or 12 upvotes, and 10 downvotes. The points score is correct, but the vote
      * totals are "fuzzed".
      */
-    public int score;
+    public int getScore() {
+        return score;
+    }
+
+    @Nullable private String subreddit;
 
     /**
      * Subreddit of thing excluding the /r/ prefix e.g. "pics".
      */
-    @Nullable public String subreddit;
+    @NonNull
+    public String getSubreddit() {
+        return Objects.requireNonNull(subreddit);
+    }
+
+    @Nullable private String subredditId;
 
     /**
      * The id of the subreddit in which the thing is located.
      */
-    @Nullable public String subredditId;
+    @NonNull
+    public String getSubredditId() {
+        return Objects.requireNonNull(subredditId);
+    }
+
+    @Nullable private Object edited;
 
     /**
      * Indicates if link has been edited. Will be the edit timestamp if the link has been edited
      * and return {@code false} otherwise.
      */
-    @Nullable public Object edited;
+    @NonNull
+    public Object getEdited() {
+        return Objects.requireNonNull(edited);
+    }
+
+    @Nullable private Distinguished distinguished;
 
     /**
      * To allow determining whether they have been distinguished by moderators/admins. If
      * {@code null} then not distinguished.
      */
-    @Nullable public Distinguished distinguished;
+    @NonNull
+    public Distinguished getDistinguished() {
+        return Objects.requireNonNull(distinguished);
+    }
+
+    private boolean stickied;
 
     /**
      * {@code true} if the post is set as the sticky in its subreddit.
      */
-    public boolean stickied;
+    public boolean isStickied() {
+        return stickied;
+    }
+
+    @Nullable private String bannedBy;
 
     /**
      * Who removed this submission. {@code null} if nobody or you are not a mod.
      */
-    @Nullable public String bannedBy;
+    @NonNull
+    public String getBannedBy() {
+        return Objects.requireNonNull(bannedBy);
+    }
+
+    @NonNull private List<Object> userReports = new ArrayList<>();
 
     /**
      * #undocumented
      */
-    @NonNull public List<Object> userReports = new ArrayList<>();
+    @NonNull
+    public List<Object> getUserReports() {
+        return userReports;
+    }
+
+    @Nullable private String id;
 
     /**
      * #undocumented
      */
-    @Nullable public String id;
+    @NonNull
+    public String getId() {
+        return Objects.requireNonNull(id);
+    }
 
     /**
      * ID of the link the submission is or is in.
@@ -282,32 +362,55 @@ public abstract class Submission extends RedditObject {
     @Nullable
     public abstract String getLinkId();
 
+    private int gilded;
+
     /**
      * The number of times this submission received Reddit Gold.
      */
-    public int gilded;
+    public int getGilded() {
+        return gilded;
+    }
+
+    private boolean archived;
 
     /**
      * Is this link archived.
      * <p>
      * #inferred
      */
-    public boolean archived;
+    public boolean isArchived() {
+        return archived;
+    }
+
+    @Nullable private Object reportReasons;
 
     /**
      * #undocumented
      */
-    @Nullable public Object reportReasons;
+    @NonNull
+    public Object getReportReasons() {
+        return Objects.requireNonNull(reportReasons);
+    }
+
+    @Nullable private String approvedBy;
 
     /**
      * Who approved this submission. {@code null} if nobody or you are not a mod.
      */
-    @Nullable public String approvedBy;
+    @NonNull
+    public String getApprovedBy() {
+        return Objects.requireNonNull(approvedBy);
+    }
+
+    @Nullable private Object removalReason;
 
     /**
      * #undocumented
      */
-    @Nullable public Object removalReason;
+    @NonNull
+    public Object getRemovalReason() {
+        return Objects.requireNonNull(removalReason);
+    }
 
     @Nullable private String name;
 
@@ -319,32 +422,58 @@ public abstract class Submission extends RedditObject {
         return name;
     }
 
+    @NonNull private List<Object> modReports = new ArrayList<>();
+
     /**
      * #undocumented
      */
-    @NonNull public List<Object> modReports = new ArrayList<>();
+    @NonNull
+    public List<Object> getModReports() {
+        return modReports;
+    }
+
+    @Nullable private Object numReports;
 
     /**
      * How many times this submission has been reported, {@code null} if not a mod.
      */
-    @Nullable public Object numReports;
+    @NonNull
+    public Object getNumReports() {
+        return Objects.requireNonNull(numReports);
+    }
+
+    @SerializedName(value = "score_hidden", alternate = "hide_score") private boolean scoreHidden;
 
     /**
      * Should the score be hidden.
      * <p>
      * #inferred
      */
-    @SerializedName(value = "score_hidden", alternate = "hide_score") public boolean scoreHidden;
+    public boolean isScoreHidden() {
+        return scoreHidden;
+    }
+
+    @NonNull @SerializedName(value = "link_title", alternate = "title") private String linkTitle = "";
 
     /**
      * The title of the link. May contain newlines for some reason.
      */
-    @Nullable @SerializedName(value = "link_title", alternate = "title") public String linkTitle;
+    @NonNull
+    public String getLinkTitle() {
+        return linkTitle;
+    }
+
+    @NonNull @SerializedName(value = "link_url", alternate = "url") private String linkUrl = "";
 
     /**
      * The link of this post. The permalink if this is a self-post.
      */
-    @Nullable @SerializedName(value = "link_url", alternate = "url") public String linkUrl;
+    @NonNull
+    public String getLinkUrl() {
+        return linkUrl;
+    }
+
+    @Nullable @SerializedName(value = "body", alternate = "selftext") private String body;
 
     /**
      * The raw text. This is the unformatted text which includes the raw markup characters such as
@@ -352,7 +481,12 @@ public abstract class Submission extends RedditObject {
      * <p>
      * If it is a {@link Link} then this is the self text if available. Empty if not present.
      */
-    @Nullable @SerializedName(value = "body", alternate = "selftext") public String body;
+    @NonNull
+    public String getBody() {
+        return Objects.requireNonNull(body);
+    }
+
+    @Nullable @SerializedName(value = "body_html", alternate = "selftext_html") private final String bodyHtml = "";
 
     /**
      * The formatted HTML text as displayed on reddit. For example, text that is emphasised by *
@@ -360,9 +494,12 @@ public abstract class Submission extends RedditObject {
      * HTML list format. NOTE: The HTML string will be escaped. You must unescape to get the raw
      * HTML.
      * <p>
-     * If it is a {@link Link} then this is the self text if available. {@code null} if not present.
+     * If it is a {@link Link} then this is the self text if available. Empty string if not present.
      */
-    @Nullable @SerializedName(value = "body_html", alternate = "selftext_html") public String bodyHtml;
+    @NonNull
+    public String getBodyHtml() {
+        return Objects.requireNonNull(bodyHtml);
+    }
 
     /**
      * #undocumented

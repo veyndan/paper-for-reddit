@@ -57,7 +57,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
                 .subscribeOn(Schedulers.io())
                 .map(Response::body)
                 .toObservable()
-                .flatMap(thing -> Observable.fromIterable(thing.data.children)
+                .flatMap(thing -> Observable.fromIterable(thing.getData().getChildren())
                         .observeOn(Schedulers.computation())
                         .concatMap(redditObject -> {
                             if (redditObject instanceof Submission) {
@@ -70,7 +70,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
                                 final More more = (More) redditObject;
                                 return Single.just(new Builder()
                                         .trigger(Observable.just(true))
-                                        .degree(more.count)
+                                        .degree(more.getCount())
                                         .build())
                                         .toObservable();
                             } else {

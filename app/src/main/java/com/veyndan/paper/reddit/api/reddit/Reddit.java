@@ -191,7 +191,7 @@ public final class Reddit {
         return redditService.subredditComments(subreddit, article)
                 .map(response -> {
                     final List<Thing<Listing>> things = response.body();
-                    ((Submission) things.get(0).data.children.get(0)).getReplies().data.children.addAll(things.get(1).data.children);
+                    ((Submission) things.get(0).getData().getChildren().get(0)).getReplies().getData().getChildren().addAll(things.get(1).getData().getChildren());
                     return Response.success(things.get(0));
                 });
     }
@@ -323,7 +323,7 @@ public final class Reddit {
                 // TODO If the query has never been initialized, then we want it to pass.
                 .filter(query1 -> !query1.build().containsKey("after") || query1.build().get("after") != null)
                 .flatMapSingle(query1 -> page)
-                .doOnSuccess(response -> query.after(response.body().data.after));
+                .doOnSuccess(response -> query.after(response.body().getData().getAfter()));
     }
 
     public interface Filter {

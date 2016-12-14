@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import com.veyndan.paper.reddit.R;
@@ -45,7 +44,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
     private final boolean archived;
     @NonNull private final String author;
-    @Nullable private final String bodyHtml;
+    @NonNull private final String bodyHtml;
     private final long createdUtc;
     @NonNull private final Maybe<String> domain;
     @Nullable private final String fullname;
@@ -53,7 +52,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final boolean hideable;
     @NonNull private VoteDirection likes;
     @NonNull private final Maybe<String> linkFlair;
-    @Nullable private final String linkTitle;
+    @NonNull private final String linkTitle;
     @NonNull private String linkUrl;
     private final boolean nsfw;
     @NonNull private final String permalink;
@@ -63,12 +62,12 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private boolean saved;
     private final boolean scoreHidden;
     private final boolean stickied;
-    @Nullable private final String subreddit;
+    @NonNull private final String subreddit;
 
     public Post(@NonNull final Submission submission) {
         isComment = submission instanceof Comment;
 
-        children = Observable.fromIterable(submission.getReplies().data.children)
+        children = Observable.fromIterable(submission.getReplies().getData().getChildren())
                 .concatMap(redditObject -> {
                     if (redditObject instanceof Submission) {
                         return Single.just(redditObject)
@@ -81,7 +80,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
                                 .cast(More.class)
                                 .map(more -> new Progress.Builder()
                                         .trigger(Observable.just(true))
-                                        .degree(more.count)
+                                        .degree(more.getCount())
                                         .build())
                                 .toObservable();
                     } else {
@@ -91,29 +90,29 @@ public class Post extends Node<Response<Thing<Listing>>> {
         setDescendantCount(submission.getNumComments());
         descendantsVisible = isComment;
 
-        archived = submission.archived;
-        author = submission.author == null ? "" : submission.author;
-        bodyHtml = submission.bodyHtml;
-        createdUtc = submission.createdUtc;
+        archived = submission.isArchived();
+        author = submission.getAuthor();
+        bodyHtml = submission.getBodyHtml();
+        createdUtc = submission.getCreatedUtc();
         domain = submission.getDomain();
         fullname = submission.getFullname();
-        gildedCount = submission.gilded;
+        gildedCount = submission.getGilded();
         hideable = submission.isHideable();
         likes = submission.getLikes();
         linkFlair = submission.getLinkFlairText().filter(String::isEmpty);
-        linkTitle = submission.linkTitle;
-        linkUrl = submission.linkUrl == null ? "" : submission.linkUrl;
+        linkTitle = submission.getLinkTitle();
+        linkUrl = submission.getLinkUrl();
         nsfw = submission.isOver18();
         permalink = submission.getPermalink();
-        points = submission.score;
+        points = submission.getScore();
 
         postHint = submission.getPostHint();
 
         preview = submission.getPreview();
-        saved = submission.saved;
-        scoreHidden = submission.scoreHidden;
-        stickied = submission.stickied;
-        subreddit = submission.subreddit;
+        saved = submission.isSaved();
+        scoreHidden = submission.isScoreHidden();
+        stickied = submission.isStickied();
+        subreddit = submission.getSubreddit();
     }
 
     @NonNull
@@ -134,7 +133,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return author;
     }
 
-    @Nullable
+    @NonNull
     public String getBody() {
         return bodyHtml;
     }
@@ -184,7 +183,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return linkFlair;
     }
 
-    @Nullable
+    @NonNull
     public String getLinkTitle() {
         return linkTitle;
     }
@@ -240,7 +239,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         return stickied;
     }
 
-    @Nullable
+    @NonNull
     public String getSubreddit() {
         return subreddit;
     }
@@ -260,7 +259,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
     @NonNull
     public Maybe<Spannable> getDisplayBody(@NonNull final Context context) {
-        if (TextUtils.isEmpty(bodyHtml)) {
+        if (bodyHtml.isEmpty()) {
             return Maybe.empty();
         }
         final Spannable html = new SpannableString(trimTrailingWhitespace(Html.fromHtml(StringEscapeUtils.unescapeHtml4(bodyHtml))));

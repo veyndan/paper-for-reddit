@@ -46,8 +46,8 @@ public class Link extends Submission {
     public PostHint getPostHint() {
         if (isSelf) {
             postHint = PostHint.SELF;
-        } else if (Pattern.compile("(.jpg|.jpeg|.gif|.png)$").matcher(linkUrl).find()
-                || DIRECT_IMAGE_DOMAINS.contains(HttpUrl.parse(linkUrl).host())) {
+        } else if (Pattern.compile("(.jpg|.jpeg|.gif|.png)$").matcher(getLinkUrl()).find()
+                || DIRECT_IMAGE_DOMAINS.contains(HttpUrl.parse(getLinkUrl()).host())) {
             postHint = PostHint.IMAGE;
         }
         return postHint;
@@ -182,7 +182,7 @@ public class Link extends Submission {
     @Nullable
     @Override
     public String getLinkAuthor() {
-        return author;
+        return getAuthor();
     }
 
     @NonNull
@@ -198,7 +198,7 @@ public class Link extends Submission {
     @Nullable
     @Override
     public String getLinkId() {
-        return id;
+        return getId();
     }
 
     @Override

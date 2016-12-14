@@ -174,7 +174,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     .build());
         }
 
-        holder.binding.postHeader.setHeader(post.getLinkTitle() == null ? Maybe.empty() : Maybe.just(post.getLinkTitle()), post.getAuthor(), post.getDisplayAge(),
+        holder.binding.postHeader.setHeader(post.getLinkTitle().isEmpty() ? Maybe.empty() : Maybe.just(post.getLinkTitle()), post.getAuthor(), post.getDisplayAge(),
                 post.getSubreddit(), flairs);
     }
 

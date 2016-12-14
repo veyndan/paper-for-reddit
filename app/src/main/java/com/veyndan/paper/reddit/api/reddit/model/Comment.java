@@ -167,7 +167,7 @@ public class Comment extends Submission {
         if (linkId == null) {
             throw new NullPointerException();
         } else {
-            return String.format("https://www.reddit.com/comments/%s//%s", linkId.split("_")[1], id);
+            return String.format("https://www.reddit.com/comments/%s//%s", linkId.split("_")[1], getId());
         }
     }
 
@@ -190,6 +190,6 @@ public class Comment extends Submission {
     @NonNull
     @Override
     public String toString() {
-        return author;
+        return getAuthor();
     }
 }

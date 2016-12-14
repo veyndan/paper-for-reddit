@@ -5,11 +5,37 @@ import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class More extends RedditObject {
-    public int count;
-    @Nullable public String parentId;
-    @Nullable public String id;
-    @Nullable public String name;
-    @NonNull public List<String> children = new ArrayList<>();
+
+    private int count;
+    @Nullable private String parentId;
+    @Nullable private String id;
+    @Nullable private String name;
+    @NonNull private final List<String> children = new ArrayList<>();
+
+    public int getCount() {
+        return count;
+    }
+
+    @NonNull
+    public String getParentId() {
+        return Objects.requireNonNull(parentId);
+    }
+
+    @NonNull
+    public String getId() {
+        return Objects.requireNonNull(id);
+    }
+
+    @NonNull
+    public String getName() {
+        return Objects.requireNonNull(name);
+    }
+
+    @NonNull
+    public List<String> getChildren() {
+        return children;
+    }
 }
