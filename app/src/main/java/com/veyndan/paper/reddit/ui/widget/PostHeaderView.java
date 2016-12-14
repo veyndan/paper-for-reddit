@@ -158,10 +158,12 @@ public class PostHeaderView extends TextView {
             @Override
             public void onClick(final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtra(Reddit.FILTER_NODE_DEPTH, 0);
-                intent.putExtra(Reddit.FILTER_USER_NAME, author);
-                intent.putExtra(Reddit.FILTER_USER_COMMENTS, true);
-                intent.putExtra(Reddit.FILTER_USER_SUBMITTED, true);
+                intent.putExtras(new Reddit.FilterBuilder()
+                        .nodeDepth(0)
+                        .userName(author)
+                        .userComments(true)
+                        .userSubmitted(true)
+                        .build());
                 context.startActivity(intent);
             }
         };
@@ -170,8 +172,10 @@ public class PostHeaderView extends TextView {
             @Override
             public void onClick(final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtra(Reddit.FILTER_NODE_DEPTH, 0);
-                intent.putExtra(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
+                intent.putExtras(new Reddit.FilterBuilder()
+                        .nodeDepth(0)
+                        .subredditName(subreddit)
+                        .build());
                 context.startActivity(intent);
             }
         };

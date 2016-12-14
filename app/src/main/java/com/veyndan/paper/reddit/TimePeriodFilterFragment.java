@@ -32,19 +32,9 @@ public class TimePeriodFilterFragment extends Fragment implements Filter {
 
     @Override
     public Bundle requestFilter() {
-        final Bundle bundle = new Bundle();
-
-        final TimePeriod[] timePeriods = {
-                TimePeriod.HOUR,
-                TimePeriod.DAY,
-                TimePeriod.WEEK,
-                TimePeriod.MONTH,
-                TimePeriod.YEAR,
-                TimePeriod.ALL
-        };
-
-        bundle.putInt(Reddit.FILTER_NODE_DEPTH, 0);
-        bundle.putSerializable(Reddit.FILTER_TIME_PERIOD, timePeriods[binding.filterFormTimePeriod.getSelectedItemPosition()]);
-        return bundle;
+        return new Reddit.FilterBuilder()
+                .nodeDepth(0)
+                .timePeriod(TimePeriod.values()[binding.filterFormTimePeriod.getSelectedItemPosition()])
+                .build();
     }
 }

@@ -21,10 +21,12 @@ import io.reactivex.Single;
 import retrofit2.Response;
 
 @DeepLink({
-        "http://reddit.com/u/{" + Reddit.FILTER_USER_NAME + '}',
-        "http://reddit.com/user/{" + Reddit.FILTER_USER_NAME + '}'
+        "http://reddit.com/u/{" + MainActivity.DEEP_LINK_USER_NAME + '}',
+        "http://reddit.com/user/{" + MainActivity.DEEP_LINK_USER_NAME + '}'
 })
 public class MainActivity extends BaseActivity {
+
+    static final String DEEP_LINK_USER_NAME = "user_name";
 
     private static final Reddit REDDIT = new Reddit(Config.REDDIT_CREDENTIALS);
 
@@ -44,8 +46,17 @@ public class MainActivity extends BaseActivity {
         final Bundle intentExtras = IntentUtils.getExtras(intent);
 
         if (intentExtras.isEmpty()) {
-            intentExtras.putInt(Reddit.FILTER_NODE_DEPTH, 0);
-            intentExtras.putString(Reddit.FILTER_SUBREDDIT_NAME, "all");
+            intentExtras.putAll(new Reddit.FilterBuilder()
+                    .nodeDepth(0)
+                    .subredditName("all")
+                    .build());
+        } else if (intentExtras.getBoolean(DeepLink.IS_DEEP_LINK, false)) {
+            intentExtras.putAll(new Reddit.FilterBuilder()
+                    .nodeDepth(0)
+                    .userName(intentExtras.getString(DEEP_LINK_USER_NAME))
+                    .userComments(true)
+                    .userSubmitted(true)
+                    .build());
         }
 
         subreddit = intentExtras.getString(Reddit.FILTER_SUBREDDIT_NAME);
@@ -73,37 +84,42 @@ public class MainActivity extends BaseActivity {
                 filterFragment.show(fragmentManager, "fragment_filter");
                 return true;
             case R.id.action_sort_hot:
-                final Bundle redditQueryParamsHot = new Bundle();
-                redditQueryParamsHot.putInt(Reddit.FILTER_NODE_DEPTH, 0);
-                redditQueryParamsHot.putString(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
+                final Bundle redditQueryParamsHot = new Reddit.FilterBuilder()
+                        .nodeDepth(0)
+                        .subredditName(subreddit)
+                        .build();
 
                 postsFragment.setRequest(REDDIT.query(redditQueryParamsHot, Sort.HOT));
                 return true;
             case R.id.action_sort_new:
-                final Bundle redditQueryParamsNew = new Bundle();
-                redditQueryParamsNew.putInt(Reddit.FILTER_NODE_DEPTH, 0);
-                redditQueryParamsNew.putString(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
+                final Bundle redditQueryParamsNew = new Reddit.FilterBuilder()
+                        .nodeDepth(0)
+                        .subredditName(subreddit)
+                        .build();
 
                 postsFragment.setRequest(REDDIT.query(redditQueryParamsNew, Sort.NEW));
                 return true;
             case R.id.action_sort_rising:
-                final Bundle redditQueryParamsRising = new Bundle();
-                redditQueryParamsRising.putInt(Reddit.FILTER_NODE_DEPTH, 0);
-                redditQueryParamsRising.putString(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
+                final Bundle redditQueryParamsRising = new Reddit.FilterBuilder()
+                        .nodeDepth(0)
+                        .subredditName(subreddit)
+                        .build();
 
                 postsFragment.setRequest(REDDIT.query(redditQueryParamsRising, Sort.RISING));
                 return true;
             case R.id.action_sort_controversial:
-                final Bundle redditQueryParamsControversial = new Bundle();
-                redditQueryParamsControversial.putInt(Reddit.FILTER_NODE_DEPTH, 0);
-                redditQueryParamsControversial.putString(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
+                final Bundle redditQueryParamsControversial = new Reddit.FilterBuilder()
+                        .nodeDepth(0)
+                        .subredditName(subreddit)
+                        .build();
 
                 postsFragment.setRequest(REDDIT.query(redditQueryParamsControversial, Sort.CONTROVERSIAL));
                 return true;
             case R.id.action_sort_top:
-                final Bundle redditQueryParamsTop = new Bundle();
-                redditQueryParamsTop.putInt(Reddit.FILTER_NODE_DEPTH, 0);
-                redditQueryParamsTop.putString(Reddit.FILTER_SUBREDDIT_NAME, subreddit);
+                final Bundle redditQueryParamsTop = new Reddit.FilterBuilder()
+                        .nodeDepth(0)
+                        .subredditName(subreddit)
+                        .build();
 
                 postsFragment.setRequest(REDDIT.query(redditQueryParamsTop, Sort.TOP));
                 return true;
