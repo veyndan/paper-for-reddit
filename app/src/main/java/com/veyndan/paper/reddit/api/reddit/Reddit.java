@@ -49,6 +49,20 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class Reddit {
 
+    public static final String FILTER_NODE_DEPTH = "node_depth";
+
+    public static final String FILTER_COMMENTS_SUBREDDIT = "comments_subreddit";
+    public static final String FILTER_COMMENTS_ARTICLE = "comments_article";
+
+    public static final String FILTER_TIME_PERIOD = "time_period";
+
+    public static final String FILTER_SUBREDDIT_NAME = "subreddit_name";
+
+    public static final String FILTER_USER_NAME = "user_name";
+    public static final String FILTER_USER_COMMENTS = "user_comments";
+    public static final String FILTER_USER_SUBMITTED = "user_submitted";
+    public static final String FILTER_USER_GILDED = "user_gilded";
+
     private final RedditService redditService;
 
     public Reddit(final Credentials credentials) {
@@ -243,19 +257,19 @@ public final class Reddit {
     }
 
     public Single<Response<Thing<Listing>>> query(final Bundle params, final Sort sort) {
-        final int nodeDepth = params.getInt(Filter.NODE_DEPTH, -1);
+        final int nodeDepth = params.getInt(FILTER_NODE_DEPTH, -1);
 
-        final String commentsSubreddit = params.getString(Filter.COMMENTS_SUBREDDIT, "");
-        final String commentsArticle = params.getString(Filter.COMMENTS_ARTICLE, "");
+        final String commentsSubreddit = params.getString(FILTER_COMMENTS_SUBREDDIT, "");
+        final String commentsArticle = params.getString(FILTER_COMMENTS_ARTICLE, "");
 
-        final TimePeriod timePeriod = (TimePeriod) params.getSerializable(Filter.TIME_PERIOD);
+        final TimePeriod timePeriod = (TimePeriod) params.getSerializable(FILTER_TIME_PERIOD);
 
-        final String subredditName = params.getString(Filter.SUBREDDIT_NAME, "");
+        final String subredditName = params.getString(FILTER_SUBREDDIT_NAME, "");
 
-        final String userName = params.getString(Filter.USER_NAME, "");
-        final boolean userComments = params.getBoolean(Filter.USER_COMMENTS, false);
-        final boolean userSubmitted = params.getBoolean(Filter.USER_SUBMITTED, false);
-        final boolean userGilded = params.getBoolean(Filter.USER_GILDED, false);
+        final String userName = params.getString(FILTER_USER_NAME, "");
+        final boolean userComments = params.getBoolean(FILTER_USER_COMMENTS, false);
+        final boolean userSubmitted = params.getBoolean(FILTER_USER_SUBMITTED, false);
+        final boolean userGilded = params.getBoolean(FILTER_USER_GILDED, false);
 
         if (nodeDepth == -1) {
             // TODO Get every post, along with its comments here i.e. the whole forest of Reddit
@@ -308,21 +322,5 @@ public final class Reddit {
                 .filter(query1 -> !query1.build().containsKey("after") || query1.build().get("after") != null)
                 .flatMapSingle(query1 -> page)
                 .doOnSuccess(response -> query.after(response.body().data.after));
-    }
-
-    public interface Filter {
-        String NODE_DEPTH = "node_depth";
-
-        String COMMENTS_SUBREDDIT = "comments_subreddit";
-        String COMMENTS_ARTICLE = "comments_article";
-
-        String TIME_PERIOD = "time_period";
-
-        String SUBREDDIT_NAME = "subreddit_name";
-
-        String USER_NAME = "user_name";
-        String USER_COMMENTS = "user_comments";
-        String USER_SUBMITTED = "user_submitted";
-        String USER_GILDED = "user_gilded";
     }
 }
