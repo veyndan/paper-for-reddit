@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit;
 
+import android.support.annotation.Size;
+
 import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
 
 import java.util.HashMap;
@@ -21,6 +23,9 @@ class QueryBuilder {
 
     public QueryBuilder() {
         query = new HashMap<>();
+
+        // restrict_sr="off" is equivalent to the subreddit being /r/all.
+        query.put("restrict_sr", "on");
     }
 
     /**
@@ -98,6 +103,20 @@ class QueryBuilder {
      */
     public QueryBuilder t(final TimePeriod timePeriod) {
         query.put("t", timePeriod.toString());
+        return this;
+    }
+
+    /**
+     * The search query for the request. Must be no longer than 512 characters.
+     * <p>
+     * #inferred
+     */
+    public QueryBuilder q(@Size(max = 512) final String searchQuery) {
+        if (searchQuery.length() > 512) {
+            throw new IllegalStateException("Query parameter 'q' must be no longer than 512 " +
+                    "characters.");
+        }
+        query.put("q", searchQuery);
         return this;
     }
 

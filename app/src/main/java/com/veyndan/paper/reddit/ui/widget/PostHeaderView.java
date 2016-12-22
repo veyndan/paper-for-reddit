@@ -143,7 +143,7 @@ public class PostHeaderView extends TextView {
         textBuilder.subtitle(author, age, subreddit, hasFlairs, subtitleTextAppearanceSpan, titleSubtitleSpacing, subtitleFlairSpacing);
 
         if (hasFlairs) {
-            textBuilder.flairs(flairs, flairTextAppearanceSpan, flairStyleSpan, titleSubtitleSpacing, subtitleFlairSpacing);
+            textBuilder.flairs(flairs, subreddit, flairTextAppearanceSpan, flairStyleSpan, titleSubtitleSpacing, subtitleFlairSpacing);
         }
 
         setText(textBuilder.build());
@@ -239,7 +239,7 @@ public class PostHeaderView extends TextView {
             return this;
         }
 
-        public TextBuilder flairs(final List<Flair> flairs,
+        public TextBuilder flairs(final List<Flair> flairs, final String subreddit,
                                   final TextAppearanceSpan textAppearanceSpan,
                                   final StyleSpan styleSpan, final int titleSubtitleSpacing,
                                   final int subtitleFlairSpacing) {
@@ -254,7 +254,25 @@ public class PostHeaderView extends TextView {
                     divider = "   "; // TODO Replace with margin left and right of 4dp
                 }
 
-                flairsSpanny.append(createFlairSpannable(context, flair, textAppearanceSpan, styleSpan));
+                switch (flair.getType()) {
+                    case LINK:
+                        flairsSpanny.append(createFlairSpannable(context, flair, textAppearanceSpan, styleSpan), new ClickableSpan() {
+                            @Override
+                            public void onClick(final View widget) {
+                                final Intent intent = new Intent(context, MainActivity.class);
+                                intent.putExtras(new Reddit.FilterBuilder()
+                                        .nodeDepth(0)
+                                        .subredditName(subreddit)
+                                        .searchQuery("flair:'" + flair.getText() + "'")
+                                        .build());
+                                context.startActivity(intent);
+                            }
+                        });
+                        break;
+                    default:
+                        flairsSpanny.append(createFlairSpannable(context, flair, textAppearanceSpan, styleSpan));
+                        break;
+                }
             }
 
             spanny.append(flairsSpanny, new LineHeightSpan.WithDensity() {

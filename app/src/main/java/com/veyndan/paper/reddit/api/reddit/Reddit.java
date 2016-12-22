@@ -59,6 +59,8 @@ public final class Reddit {
 
     public static final String FILTER_SUBREDDIT_NAME = "subreddit_name";
 
+    private static final String FILTER_SEARCH_QUERY = "search_subreddit";
+
     private static final String FILTER_USER_NAME = "user_name";
     private static final String FILTER_USER_COMMENTS = "user_comments";
     private static final String FILTER_USER_SUBMITTED = "user_submitted";
@@ -213,6 +215,17 @@ public final class Reddit {
     }
 
     // ================================
+    //              Search
+    // ================================
+
+    private Single<Response<Thing<Listing>>> search(final String subreddit, final String searchQuery) {
+        final QueryBuilder query = new QueryBuilder()
+                .q(searchQuery);
+
+        return redditService.search(subreddit, query.build());
+    }
+
+    // ================================
     //            Subreddits
     // ================================
 
@@ -267,6 +280,8 @@ public final class Reddit {
 
         final String subredditName = params.getString(FILTER_SUBREDDIT_NAME, "");
 
+        final String searchQuery = params.getString(FILTER_SEARCH_QUERY, "");
+
         final String userName = params.getString(FILTER_USER_NAME, "");
         final boolean userComments = params.getBoolean(FILTER_USER_COMMENTS, false);
         final boolean userSubmitted = params.getBoolean(FILTER_USER_SUBMITTED, false);
@@ -277,20 +292,31 @@ public final class Reddit {
             throw new IllegalStateException();
         } else if (nodeDepth == 0) {
             if (commentsSubreddit.isEmpty() && commentsArticle.isEmpty()
+                    && searchQuery.isEmpty()
                     && userName.isEmpty() && !userComments && !userSubmitted && !userGilded) {
                 return subreddit(MoreObjects.firstNonNull(subredditName, "all"), sort, MoreObjects.firstNonNull(timePeriod, TimePeriod.ALL));
             }
 
             if (commentsSubreddit.isEmpty() && commentsArticle.isEmpty()
                     && subredditName.isEmpty()
+                    && searchQuery.isEmpty()
                     && userName.length() > 1) {
                 final User userWhere = toUser(userComments, userSubmitted, userGilded);
                 return user(userName, userWhere, timePeriod);
             }
 
+            if (commentsSubreddit.isEmpty() && commentsArticle.isEmpty()
+                    && timePeriod == null
+                    && subredditName.length() > 0
+                    && searchQuery.length() > 0
+                    && userName.isEmpty() && !userComments && !userSubmitted && !userGilded) {
+                return search(subredditName, searchQuery);
+            }
+
             if (commentsSubreddit.length() > 1 && commentsArticle.length() > 1
                     && timePeriod == null
                     && subredditName.isEmpty()
+                    && searchQuery.isEmpty()
                     && userName.isEmpty() && !userComments && !userSubmitted && !userGilded) {
                 return subredditComments(commentsSubreddit, commentsArticle);
             }
@@ -351,6 +377,11 @@ public final class Reddit {
 
         public FilterBuilder subredditName(final String subredditName) {
             bundle.putString(FILTER_SUBREDDIT_NAME, subredditName);
+            return this;
+        }
+
+        public FilterBuilder searchQuery(final String searchQuery) {
+            bundle.putString(FILTER_SEARCH_QUERY, searchQuery);
             return this;
         }
 

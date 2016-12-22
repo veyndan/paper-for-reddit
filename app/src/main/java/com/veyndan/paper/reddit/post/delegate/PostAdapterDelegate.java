@@ -171,6 +171,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
         if (post.hasLinkFlair()) {
             flairs.add(new Flair.Builder(flairLinkColor)
+                    .type(Flair.Type.LINK)
                     .text(post.getLinkFlair())
                     .build());
         }
