@@ -13,7 +13,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.text.SpannableString;
+import android.text.Spannable;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -73,6 +73,8 @@ public class PostHeaderView extends TextView {
         subtitleTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostSubtitleTextAppearance);
         flairTextAppearanceSpan = new TextAppearanceSpan(context, R.style.PostFlairTextAppearance);
 
+        setMovementMethod(LinkMovementMethod.getInstance());
+
         if (isInEditMode()) {
             final String text = getText().toString();
 
@@ -130,80 +132,117 @@ public class PostHeaderView extends TextView {
 
     public void setHeader(final String title, final String author, final CharSequence age,
                           final String subreddit, @NonNull final List<Flair> flairs) {
-        final LineHeightSpan subtitleLineHeightSpan = new LineHeightSpan.WithDensity() {
-            @Override
-            public void chooseHeight(final CharSequence text, final int start, final int end,
-                                     final int spanstartv, final int v,
-                                     final Paint.FontMetricsInt fm, final TextPaint paint) {
-                fm.ascent -= titleSubtitleSpacing;
-                fm.top -= titleSubtitleSpacing;
-
-                if (!flairs.isEmpty()) {
-                    fm.descent += subtitleFlairSpacing;
-                    fm.bottom += subtitleFlairSpacing;
-                }
-            }
-
-            @Override
-            public void chooseHeight(final CharSequence text, final int start, final int end,
-                                     final int spanstartv, final int v,
-                                     final Paint.FontMetricsInt fm) {
-                chooseHeight(text, start, end, spanstartv, v, fm, null);
-            }
-        };
-
-        setMovementMethod(LinkMovementMethod.getInstance());
-
-        final ClickableSpan authorClickableSpan = new ClickableSpan() {
-            @Override
-            public void onClick(final View widget) {
-                final Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtras(new Reddit.FilterBuilder()
-                        .nodeDepth(0)
-                        .userName(author)
-                        .userComments(true)
-                        .userSubmitted(true)
-                        .build());
-                context.startActivity(intent);
-            }
-        };
-
-        final ClickableSpan subredditClickableSpan = new ClickableSpan() {
-            @Override
-            public void onClick(final View widget) {
-                final Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtras(new Reddit.FilterBuilder()
-                        .nodeDepth(0)
-                        .subredditName(subreddit)
-                        .build());
-                context.startActivity(intent);
-            }
-        };
-
-        final String delimiter = " · ";
-        // Appending space to end of subtitle as no span is associated with it. This fixes a bug
-        // where the subreddit clickable span spans the rest of the line, instead of being confined
-        // to it's textual boundaries. TODO Figure out why this happens and fix it.
-        final Spanny subtitle = new Spanny()
-                .append(author, authorClickableSpan)
-                .append(delimiter)
-                .append(age)
-                .append(delimiter)
-                .append(subreddit, subredditClickableSpan)
-                .append(" ");
-
-        final Spanny spanny = new Spanny();
+        final TextBuilder textBuilder = new TextBuilder(context);
 
         if (title != null) {
-            spanny.append(title, titleTextAppearanceSpan)
+            textBuilder.title(title, titleTextAppearanceSpan);
+        }
+
+        final boolean hasFlairs = !flairs.isEmpty();
+
+        textBuilder.subtitle(author, age, subreddit, hasFlairs, subtitleTextAppearanceSpan, titleSubtitleSpacing, subtitleFlairSpacing);
+
+        if (hasFlairs) {
+            textBuilder.flairs(flairs, flairTextAppearanceSpan, flairStyleSpan, titleSubtitleSpacing, subtitleFlairSpacing);
+        }
+
+        setText(textBuilder.build());
+    }
+
+    public static class TextBuilder {
+
+        private final Spanny spanny = new Spanny();
+
+        private final Context context;
+
+        public TextBuilder(final Context context) {
+            this.context = context;
+        }
+
+        public TextBuilder title(final CharSequence title,
+                                 final TextAppearanceSpan textAppearanceSpan) {
+            spanny.append(title, textAppearanceSpan)
                     .append("\n");
 
             Linkifier.addLinks(context, spanny);
+
+            return this;
         }
 
-        spanny.append(subtitle, subtitleTextAppearanceSpan, subtitleLineHeightSpan);
+        public TextBuilder subtitle(final String author, final CharSequence age,
+                                    final String subreddit, final boolean hasFlairs,
+                                    final TextAppearanceSpan textAppearanceSpan,
+                                    final int titleSubtitleSpacing,
+                                    final int subtitleFlairSpacing) {
+            final LineHeightSpan lineHeightSpan = new LineHeightSpan.WithDensity() {
+                @Override
+                public void chooseHeight(final CharSequence text, final int start, final int end,
+                                         final int spanstartv, final int v,
+                                         final Paint.FontMetricsInt fm, final TextPaint paint) {
+                    fm.ascent -= titleSubtitleSpacing;
+                    fm.top -= titleSubtitleSpacing;
 
-        if (!flairs.isEmpty()) {
+                    if (hasFlairs) {
+                        fm.descent += subtitleFlairSpacing;
+                        fm.bottom += subtitleFlairSpacing;
+                    }
+                }
+
+                @Override
+                public void chooseHeight(final CharSequence text, final int start, final int end,
+                                         final int spanstartv, final int v,
+                                         final Paint.FontMetricsInt fm) {
+                    chooseHeight(text, start, end, spanstartv, v, fm, null);
+                }
+            };
+
+            final ClickableSpan authorClickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(final View widget) {
+                    final Intent intent = new Intent(context, MainActivity.class);
+                    intent.putExtras(new Reddit.FilterBuilder()
+                            .nodeDepth(0)
+                            .userName(author)
+                            .userComments(true)
+                            .userSubmitted(true)
+                            .build());
+                    context.startActivity(intent);
+                }
+            };
+
+            final ClickableSpan subredditClickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(final View widget) {
+                    final Intent intent = new Intent(context, MainActivity.class);
+                    intent.putExtras(new Reddit.FilterBuilder()
+                            .nodeDepth(0)
+                            .subredditName(subreddit)
+                            .build());
+                    context.startActivity(intent);
+                }
+            };
+
+            final String delimiter = " · ";
+            // Appending space to end of subtitle as no span is associated with it. This fixes a bug
+            // where the subreddit clickable span spans the rest of the line, instead of being confined
+            // to it's textual boundaries. TODO Figure out why this happens and fix it.
+            final Spanny subtitle = new Spanny()
+                    .append(author, authorClickableSpan)
+                    .append(delimiter)
+                    .append(age)
+                    .append(delimiter)
+                    .append(subreddit, subredditClickableSpan)
+                    .append(" ");
+
+            spanny.append(Spanny.spanText(subtitle, textAppearanceSpan, lineHeightSpan));
+
+            return this;
+        }
+
+        public TextBuilder flairs(final List<Flair> flairs,
+                                  final TextAppearanceSpan textAppearanceSpan,
+                                  final StyleSpan styleSpan, final int titleSubtitleSpacing,
+                                  final int subtitleFlairSpacing) {
             spanny.append("\n");
 
             final Spanny flairsSpanny = new Spanny();
@@ -215,7 +254,7 @@ public class PostHeaderView extends TextView {
                     divider = "   "; // TODO Replace with margin left and right of 4dp
                 }
 
-                flairsSpanny.append(createFlairSpannable(flair));
+                flairsSpanny.append(createFlairSpannable(context, flair, textAppearanceSpan, styleSpan));
             }
 
             spanny.append(flairsSpanny, new LineHeightSpan.WithDensity() {
@@ -239,18 +278,24 @@ public class PostHeaderView extends TextView {
                     chooseHeight(text, start, end, spanstartv, v, fm, null);
                 }
             });
+
+            return this;
         }
 
-        setText(spanny);
-    }
+        private static Spannable createFlairSpannable(final Context context, final Flair flair,
+                                                      final TextAppearanceSpan textAppearanceSpan,
+                                                      final StyleSpan styleSpan) {
+            final FlairBackgroundSpan flairBackgroundSpan = new FlairBackgroundSpan(context,
+                    flair.getBackgroundColor(), flair.getIcon());
 
-    private SpannableString createFlairSpannable(final Flair flair) {
-        final FlairBackgroundSpan flairBackgroundSpan = new FlairBackgroundSpan(context,
-                flair.getBackgroundColor(), flair.getIcon());
+            final String tag = MoreObjects.firstNonNull(flair.getText(), "");
 
-        final String tag = MoreObjects.firstNonNull(flair.getText(), "");
+            return Spanny.spanText(tag, textAppearanceSpan, styleSpan, flairBackgroundSpan);
+        }
 
-        return Spanny.spanText(tag, flairTextAppearanceSpan, flairStyleSpan, flairBackgroundSpan);
+        public Spannable build() {
+            return spanny;
+        }
     }
 
     private static final class FlairBackgroundSpan extends ReplacementSpan {
