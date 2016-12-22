@@ -51,13 +51,16 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
+    @BindColor(R.color.post_flair_locked) int flairLockedColor;
     @BindColor(R.color.post_flair_stickied) int flairStickiedColor;
     @BindColor(R.color.post_flair_nsfw) int flairNsfwColor;
     @BindColor(R.color.post_flair_link) int flairLinkColor;
     @BindColor(R.color.post_flair_gilded) int flairGildedColor;
 
+    @BindDrawable(R.drawable.ic_lock_outline_white_12sp) Drawable flairLockIcon;
     @BindDrawable(R.drawable.ic_star_white_12sp) Drawable flairGildedIcon;
 
+    @BindString(R.string.post_locked) String flairLockedText;
     @BindString(R.string.post_stickied) String flairStickiedText;
     @BindString(R.string.post_nsfw) String flairNsfwText;
     @BindString(R.string.score_hidden) String scoreHiddenText;
@@ -150,6 +153,13 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         if (post.isStickied()) {
             flairs.add(new Flair.Builder(flairStickiedColor)
                     .text(flairStickiedText)
+                    .build());
+        }
+
+        if (post.isLocked()) {
+            flairs.add(new Flair.Builder(flairLockedColor)
+                    .text(flairLockedText)
+                    .icon(flairLockIcon)
                     .build());
         }
 

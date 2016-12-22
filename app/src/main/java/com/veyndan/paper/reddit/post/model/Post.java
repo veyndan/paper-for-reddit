@@ -54,6 +54,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
     private final String linkFlair;
     private final String linkTitle;
     private String linkUrl;
+    private final boolean locked;
     private final boolean nsfw;
     private final String permalink;
     private int points;
@@ -102,6 +103,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         linkFlair = submission.getLinkFlairText();
         linkTitle = submission.linkTitle;
         linkUrl = submission.linkUrl == null ? "" : submission.linkUrl;
+        locked = submission.isLocked();
         nsfw = submission.isOver18();
         permalink = submission.getPermalink();
         points = submission.score;
@@ -184,6 +186,10 @@ public class Post extends Node<Response<Thing<Listing>>> {
      */
     public String getLinkUrl() {
         return linkUrl;
+    }
+
+    public boolean isLocked() {
+        return locked;
     }
 
     public boolean isNsfw() {
