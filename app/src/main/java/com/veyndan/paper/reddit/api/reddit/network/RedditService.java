@@ -104,6 +104,14 @@ public interface RedditService {
             @Path("where") Message message);
 
     // ================================
+    //              Search
+    // ================================
+
+    @GET("r/{subreddit}/search")
+    Single<Response<Thing<Listing>>> search(@Path("subreddit") String subreddit,
+                                            @QueryMap Map<String, String> queries);
+
+    // ================================
     //            Subreddits
     // ================================
 
