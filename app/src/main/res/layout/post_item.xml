@@ -102,7 +102,8 @@
                         android:minWidth="16dp"
                         android:textColor="@android:color/white"
                         android:textSize="11sp"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        tools:text="@string/placeholder_post_comment_count"/>
 
                 </FrameLayout>
 
