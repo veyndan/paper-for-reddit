@@ -20,11 +20,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreateNonNull(@NonNull final Bundle savedInstanceState) {
     }
 
-    @Override
-    public void setContentView(@LayoutRes final int layoutResID) {
-        super.setContentView(layoutResID);
-    }
-
     @NonNull
     @Override
     public ActionBar getSupportActionBar() {
