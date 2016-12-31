@@ -9,7 +9,7 @@ public final class Constants {
         throw new AssertionError();
     }
 
-    public static final String REDDIT_REDIRECT_URI = "https://github.com/veyndan/reddit-client";
+    public static final String REDDIT_REDIRECT_URI = "https://github.com/veyndan/paper-for-reddit";
     public static final String REDDIT_USER_AGENT = Credentials.createUserAgent(
             "android", "com.veyndan.paper.reddit", "0.0.1", "VeyndanStuart");
 }
