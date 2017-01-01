@@ -9,6 +9,9 @@ import com.google.common.base.MoreObjects;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.veyndan.paper.reddit.api.reddit.model.Account2;
 import com.veyndan.paper.reddit.api.reddit.model.CaptchaNew;
@@ -23,6 +26,7 @@ import com.veyndan.paper.reddit.api.reddit.model.Subreddit;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.api.reddit.model.Trophies;
 import com.veyndan.paper.reddit.api.reddit.network.AboutSubreddit;
+import com.veyndan.paper.reddit.api.reddit.network.AccessToken;
 import com.veyndan.paper.reddit.api.reddit.network.AuthenticationService;
 import com.veyndan.paper.reddit.api.reddit.network.Credentials;
 import com.veyndan.paper.reddit.api.reddit.network.Message;
@@ -43,6 +47,7 @@ import java.util.List;
 
 import io.reactivex.Single;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -68,10 +73,70 @@ public final class Reddit {
 
     private final RedditService redditService;
 
-    public Reddit(final Credentials credentials) {
+    // TODO Move or remove this
+    private static class ErrorMessageBuilder {
+
+        private String cause = "";
+        private String resolution = "";
+
+        private ErrorMessageBuilder cause(final String cause) {
+            this.cause = "Cause: \"" + cause + '"';
+            return this;
+        }
+
+        private ErrorMessageBuilder resolution(final String resolution) {
+            this.resolution = "Resolution: \"" + resolution + '"';
+            return this;
+        }
+
+        private String build() {
+            return cause + ' ' + resolution;
+        }
+    }
+
+    // TODO Move code somewhere else? In credentials maybe, but not really a credential.
+    public Reddit(final Credentials credentials, final String code) {
+        // TODO Make OAuth2 flow more sequential making it more understandable.
+
+        // TODO Are too many unrelated adapters here?
         final Gson gson = new GsonBuilder()
                 .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(RedditObject.class, new RedditObjectDeserializer())
+                // TODO Make class for adapter
+                .registerTypeAdapter(AccessToken.class, (JsonDeserializer<AccessToken>) (json, typeOfT, context) -> {
+                    final JsonObject jsonObject = json.getAsJsonObject();
+                    final JsonElement errorJsonElement = jsonObject.get("error");
+                    if (errorJsonElement != null) {
+                        final String error = errorJsonElement.getAsString();
+                        // TODO Define this in enum, can move ErrorMessageBuilder there
+                        switch (error) {
+                            case "unsupported_grant_type":
+                                throw new IllegalStateException(new ErrorMessageBuilder()
+                                        .cause("`grant_type` parameter was invalid or Http Content type was not set correctly")
+                                        .resolution("Verify that the `grant_type` sent is supported and make sure the content type of the http message is set to `application/x-www-form-urlencoded`")
+                                        .build());
+                            case "invalid_request":
+                                throw new IllegalStateException(new ErrorMessageBuilder()
+                                        .cause("You didn't include the `code` parameter")
+                                        .resolution("Include the `code` parameter in the POST data")
+                                        .build());
+                            case "invalid_grant":
+                                throw new IllegalStateException(new ErrorMessageBuilder()
+                                        .cause("The `code` has expired or already been used")
+                                        .resolution("Ensure that you are not attempting to re-use old `code`s - they are one time use.")
+                                        .build());
+                            default:
+                                throw new IllegalStateException("Unknown error type: " + error);
+                        }
+                    }
+
+                    // TODO Large memory footprint. context.deserialize() causes infinite loop.
+                    final Gson gsonInner = new GsonBuilder()
+                            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                            .create();
+
+                    return gsonInner.fromJson(json, typeOfT);
+                })
                 .create();
 
         final GsonConverterFactory jsonConverterFactory = GsonConverterFactory.create(gson);
@@ -82,10 +147,24 @@ public final class Reddit {
 
         final OkHttpClient.Builder authenticationClientBuilder = client.newBuilder()
                 .addInterceptor(new UserAgentInterceptor(credentials.getUserAgent()))
-                .addInterceptor(new AuthorizationInterceptor(credentials));
+                .addInterceptor(new AuthorizationInterceptor(credentials))
+                // TODO Move interceptor elsewhere
+                .addInterceptor(chain -> {
+                    final Request request = chain.request();
+                    final okhttp3.Response response = chain.proceed(request);
+
+                    if (response.code() == 401) {
+                        throw new IllegalStateException(new ErrorMessageBuilder()
+                                .cause("Client credentials sent as HTTP Basic Authorization were invalid")
+                                .resolution("Verify that you are properly sending HTTP Basic Authorization headers and that your credentials are correct")
+                                .build());
+                    }
+
+                    return response;
+                });
 
         final Retrofit authenticatorRetrofit = new Retrofit.Builder()
-                .baseUrl("https://www.reddit.com")
+                .baseUrl("https://www.reddit.com/api/v1/")
                 .addCallAdapterFactory(rxJava2CallAdapterFactory)
                 .addConverterFactory(jsonConverterFactory)
                 .client(authenticationClientBuilder.build())
@@ -95,7 +174,7 @@ public final class Reddit {
 
         final OkHttpClient.Builder clientBuilder = client.newBuilder()
                 .addInterceptor(new UserAgentInterceptor(credentials.getUserAgent()))
-                .addInterceptor(new AccessTokenInterceptor(authenticationService, credentials))
+                .addInterceptor(new AccessTokenInterceptor(authenticationService, credentials, code))
                 .addInterceptor(new RawJsonInterceptor());
 
         if (Config.DEBUG) {

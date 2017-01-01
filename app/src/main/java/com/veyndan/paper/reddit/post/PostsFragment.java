@@ -12,9 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
-import com.veyndan.paper.reddit.Config;
+import com.veyndan.paper.reddit.MainActivity;
 import com.veyndan.paper.reddit.R;
-import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.post.model.Progress;
@@ -45,8 +44,6 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
     private boolean loadingPosts;
 
-    private Reddit reddit;
-
     @SuppressWarnings("RedundantNoArgConstructor")
     public PostsFragment() {
         // Required empty public constructor
@@ -56,8 +53,6 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
     public void onAttach(final Context context) {
         super.onAttach(context);
         postPresenter.attachView(this);
-
-        reddit = new Reddit(Config.REDDIT_CREDENTIALS);
     }
 
     @Override
@@ -67,6 +62,10 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
     }
 
     public void setRequest(final Single<Response<Thing<Listing>>> request) {
+        // TODO Moved this here as this is where MainActivity.REDDIT is finally non null. BAD.
+        postAdapter = new PostAdapter(getActivity(), nodes, MainActivity.REDDIT);
+        recyclerView.setAdapter(postAdapter);
+
         clearNodes();
         postPresenter.loadNode(new Progress.Builder()
                 .trigger(getTrigger())
@@ -81,12 +80,10 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
 
         layoutManager = new LinearLayoutManager(getActivity());
-        postAdapter = new PostAdapter(getActivity(), nodes, reddit);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new MarginItemDecoration(getActivity(), R.dimen.card_view_margin));
         recyclerView.addItemDecoration(new TreeInsetItemDecoration(getActivity(), R.dimen.post_child_inset_multiplier));
-        recyclerView.setAdapter(postAdapter);
 
         final ItemTouchHelper.Callback swipeCallback = new SwipeItemTouchHelperCallback();
         final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);

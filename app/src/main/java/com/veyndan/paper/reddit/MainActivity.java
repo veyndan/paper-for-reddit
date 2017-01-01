@@ -28,15 +28,23 @@ public class MainActivity extends BaseActivity {
 
     static final String DEEP_LINK_USER_NAME = "user_name";
 
-    private static final Reddit REDDIT = new Reddit(Config.REDDIT_CREDENTIALS);
+    // TODO BAD. No public static
+    public static Reddit REDDIT;
 
     private PostsFragment postsFragment;
 
     private String subreddit;
 
+    // TODO Bad design for this here
+    private Bundle intentExtras;
+
     @Override
     protected void onCreateNonNull(@NonNull final Bundle savedInstanceState) {
         final ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        // TODO This is temporary but better name it. This means that authentication is always required. Will cache or use AccountManager so don't have to sign in each time in future commit.
+        final Intent intent1 = new Intent(this, AuthenticationActivity.class);
+        startActivityForResult(intent1, 0);
 
         setSupportActionBar(binding.toolbar);
 
@@ -61,8 +69,7 @@ public class MainActivity extends BaseActivity {
 
         subreddit = intentExtras.getString(Reddit.FILTER_SUBREDDIT_NAME);
 
-        final Single<Response<Thing<Listing>>> mergedFilters = REDDIT.query(intentExtras, Sort.HOT);
-        postsFragment.setRequest(mergedFilters);
+        this.intentExtras = intentExtras;
     }
 
     @Override
@@ -134,6 +141,13 @@ public class MainActivity extends BaseActivity {
 
         if (resultCode == RESULT_OK) {
             final String code = data.getStringExtra("code");
+
+            // TODO code retrieval has to be improved, REDDIT initialization shouldn't be here.
+            REDDIT = new Reddit(Config.REDDIT_CREDENTIALS, code);
+
+            // TODO No reason for this here except that REDDIT is now non null
+            final Single<Response<Thing<Listing>>> mergedFilters = REDDIT.query(intentExtras, Sort.HOT);
+            postsFragment.setRequest(mergedFilters);
         }
     }
 }

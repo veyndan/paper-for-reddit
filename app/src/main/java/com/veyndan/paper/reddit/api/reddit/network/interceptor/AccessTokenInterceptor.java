@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit.network.interceptor;
 
+import com.veyndan.paper.reddit.Config;
+import com.veyndan.paper.reddit.Constants;
 import com.veyndan.paper.reddit.api.reddit.network.AccessToken;
 import com.veyndan.paper.reddit.api.reddit.network.AuthenticationService;
 import com.veyndan.paper.reddit.api.reddit.network.Credentials;
@@ -15,13 +17,15 @@ public final class AccessTokenInterceptor implements Interceptor {
 
     private final AuthenticationService authenticationService;
     private final Credentials credentials;
+    private final String code;
 
     private AccessToken accessTokenCache = AccessToken.EXPIRED_ACCESS_TOKEN;
 
     public AccessTokenInterceptor(final AuthenticationService authenticationService,
-                                  final Credentials credentials) {
+                                  final Credentials credentials, final String code) {
         this.authenticationService = authenticationService;
         this.credentials = credentials;
+        this.code = code;
     }
 
     @Override
@@ -43,9 +47,12 @@ public final class AccessTokenInterceptor implements Interceptor {
         return Single.just(accessTokenCache);
     }
 
+    // TODO Is this how code should be passed around, be wary as can only use code once.
+    // TODO Also the access token isn't being refreshed.
     private Single<AccessToken> accessTokenNetwork() {
+        final String credential = okhttp3.Credentials.basic(Config.REDDIT_CLIENT_ID, "");
         final Single<AccessToken> single = authenticationService.getAccessToken(
-                "password", credentials.getUsername(), credentials.getPassword());
+                credential, "authorization_code", code, Constants.REDDIT_REDIRECT_URI);
 
         // Save access token from network into the cache.
         return single.doOnSuccess(accessToken -> accessTokenCache = accessToken);
