@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.airbnb.deeplinkdispatch.DeepLinkHandler;
 
+import timber.log.Timber;
+
 @DeepLinkHandler(AppDeepLinkModule.class)
 public class DeepLinkActivity extends AppCompatActivity {
 
@@ -14,12 +16,16 @@ public class DeepLinkActivity extends AppCompatActivity {
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Uri standardizedUri = getIntent().getData().buildUpon()
-                .scheme("http")
-                .authority("reddit.com")
-                .build();
+        Timber.d("DeepLinkActivity ~ ");
 
-        getIntent().setData(standardizedUri);
+        if (!getIntent().getScheme().equals(Constants.REDDIT_REDIRECT_URI_SCHEME)) {
+            final Uri standardizedUri = getIntent().getData().buildUpon()
+                    .scheme("http")
+                    .authority("reddit.com")
+                    .build();
+
+            getIntent().setData(standardizedUri);
+        }
 
         final DeepLinkDelegate deepLinkDelegate = new DeepLinkDelegate(new AppDeepLinkModuleLoader());
         deepLinkDelegate.dispatchFrom(this);

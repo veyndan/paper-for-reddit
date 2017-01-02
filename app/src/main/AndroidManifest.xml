@@ -22,8 +22,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".AuthenticationActivity">
-        </activity>
+        <!--<activity android:name=".AuthenticationActivity">-->
+
+        <!--</activity>-->
 
         <activity
             android:name=".DeepLinkActivity"
@@ -32,6 +33,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="veyndan" android:host="com-veyndan-paper-reddit" />
                 <data android:scheme="http" android:host="*.reddit.com" />
                 <data android:scheme="http" android:host="reddit.com" />
                 <data android:scheme="https" android:host="*.reddit.com" />

@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.airbnb.deeplinkdispatch.DeepLink;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
@@ -19,8 +20,10 @@ import com.veyndan.paper.reddit.util.IntentUtils;
 
 import io.reactivex.Single;
 import retrofit2.Response;
+import timber.log.Timber;
 
 @DeepLink({
+        Constants.REDDIT_REDIRECT_URI,
         "http://reddit.com/u/{" + MainActivity.DEEP_LINK_USER_NAME + '}',
         "http://reddit.com/user/{" + MainActivity.DEEP_LINK_USER_NAME + '}'
 })
@@ -28,11 +31,19 @@ public class MainActivity extends BaseActivity {
 
     static final String DEEP_LINK_USER_NAME = "user_name";
 
+    private static final String ERROR_ACCESS_DENIED = "access_denied";
+    private static final String ERROR_UNSUPPORTED_RESPONSE_TYPE = "unsupported_response_type";
+    private static final String ERROR_INVALID_SCOPE = "invalid_scope";
+    private static final String ERROR_INVALID_REQUEST = "invalid_request";
+
     private static final Reddit REDDIT = new Reddit(Config.REDDIT_CREDENTIALS);
 
     private PostsFragment postsFragment;
 
     private String subreddit;
+
+    // TODO This is hidden from this activity
+    private static String expectedState;
 
     @Override
     protected void onCreateNonNull(@NonNull final Bundle savedInstanceState) {
@@ -44,6 +55,50 @@ public class MainActivity extends BaseActivity {
 
         final Intent intent = getIntent();
         final Bundle intentExtras = IntentUtils.getExtras(intent);
+
+        Timber.d(intentExtras.getString(DeepLink.URI, "Wasn't a deep link"));
+
+        if (intentExtras.getBoolean(DeepLink.IS_DEEP_LINK, false)) {
+            final String uri = intentExtras.getString(DeepLink.URI, "");
+            if (uri.startsWith(Constants.REDDIT_REDIRECT_URI)) {
+                final String returnedState = intentExtras.getString("state", "");
+                final String code = intentExtras.getString("code", "");
+                final String error = intentExtras.getString("error", "");
+
+                // TODO What if the user opens it in Chrome and modifys the url? They could change
+                // the access permissions, which if any of them are deleted could crash the app constantly.
+                // Even if I somehow prevent opening it in Chrome, they can still manually copy the
+                // link into Chrome and modify it. Changing duration and response_type can also cause problems.
+                // Is it required that I show Reddits page or can I parse the HTML and do the login using Retrofit and standard Android views? Probably not allowed to do this
+
+                if (!expectedState.equals(returnedState)) {
+                    // TODO Potentially notify user what had happened?
+                    Timber.e("This app didn't initiate the authorization request. " +
+                            "Authorization request will not be carried out.");
+                } else if (!error.isEmpty()) {
+                    switch (error) {
+                        case ERROR_ACCESS_DENIED:
+                            Toast.makeText(this, R.string.login_aborted, Toast.LENGTH_LONG).show();
+                            break;
+                        case ERROR_UNSUPPORTED_RESPONSE_TYPE:
+                            throw new IllegalStateException("Invalid response_type: " +
+                                    "Ensure that the response_type parameter is one of the " +
+                                    "allowed values");
+                        case ERROR_INVALID_SCOPE:
+                            throw new IllegalStateException("Invalid scope parameter: " +
+                                    "Ensure that the scope parameter is a space-separated " +
+                                    "list of valid scopes");
+                        case ERROR_INVALID_REQUEST:
+                            throw new IllegalStateException("Invalid request: " +
+                                    "Double check url parameters");
+                        default:
+                            throw new IllegalStateException("Unknown error type");
+                    }
+                } else {
+                    // Do something with `code`
+                }
+            }
+        }
 
         if (intentExtras.isEmpty()) {
             intentExtras.putAll(new Reddit.FilterBuilder()
@@ -75,8 +130,7 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_account_add:
-                final Intent intent = new Intent(this, AuthenticationActivity.class);
-                startActivityForResult(intent, 0);
+                expectedState = UserAuthentication.authenticateUser(this);
                 return true;
             case R.id.action_filter:
                 final FragmentManager fragmentManager = getSupportFragmentManager();
@@ -125,15 +179,6 @@ public class MainActivity extends BaseActivity {
                 return true;
             default:
                 return false;
-        }
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            final String code = data.getStringExtra("code");
         }
     }
 }
