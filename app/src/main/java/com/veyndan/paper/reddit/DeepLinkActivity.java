@@ -5,11 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import com.airbnb.deeplinkdispatch.DeepLinkDelegate;
 import com.airbnb.deeplinkdispatch.DeepLinkHandler;
 
-@DeepLinkHandler
-public class CustomDeepLinkHandler extends AppCompatActivity {
+@DeepLinkHandler(AppDeepLinkModule.class)
+public class DeepLinkActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -22,7 +21,8 @@ public class CustomDeepLinkHandler extends AppCompatActivity {
 
         getIntent().setData(standardizedUri);
 
-        DeepLinkDelegate.dispatchFrom(this);
+        final DeepLinkDelegate deepLinkDelegate = new DeepLinkDelegate(new AppDeepLinkModuleLoader());
+        deepLinkDelegate.dispatchFrom(this);
         finish();
     }
 }
