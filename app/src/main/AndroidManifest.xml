@@ -55,6 +55,15 @@
 
         <activity android:name=".authentication.AuthenticatorActivity">
         </activity>
+
+        <service android:name=".authentication.RedditAuthenticatorService">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator"/>
+        </service>
     </application>
 
 </manifest>

@@ -58,7 +58,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         if (TextUtils.isEmpty(authToken)) {
             final String password = Strings.nullToEmpty(accountManager.getPassword(account));
             if (password.isEmpty()) {
-                authToken = sServerAuthenticate.userSignIn(account.name, password, authTokenType);
+//                authToken = sServerAuthenticate.userSignIn(account.name, password, authTokenType);
             }
         }
 
