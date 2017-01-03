@@ -1,5 +1,7 @@
-package com.veyndan.paper.reddit;
+package com.veyndan.paper.reddit.authentication;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -10,14 +12,23 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import com.veyndan.paper.reddit.databinding.AuthenticationActivityBinding;
+import com.veyndan.paper.reddit.Config;
+import com.veyndan.paper.reddit.Constants;
+import com.veyndan.paper.reddit.R;
+import com.veyndan.paper.reddit.databinding.ActivityAuthenticatorBinding;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
 import okhttp3.HttpUrl;
 import timber.log.Timber;
 
-public class AuthenticationActivity extends BaseActivity {
+public class AuthenticatorActivity extends AccountAuthenticatorActivity {
+
+    public static final String ARG_ACCOUNT_TYPE = "arg_account_type";
+    public static final String ARG_AUTH_TYPE = "arg_auth_type";
+    public static final String ARG_IS_ADDING_NEW_ACCOUNT = "arg_is_adding_new_account";
+
+    public static final String PARAM_USER_PASS = "USER_PASS";
 
     private static final String ERROR_ACCESS_DENIED = "access_denied";
     private static final String ERROR_UNSUPPORTED_RESPONSE_TYPE = "unsupported_response_type";
@@ -25,20 +36,30 @@ public class AuthenticationActivity extends BaseActivity {
     private static final String ERROR_INVALID_REQUEST = "invalid_request";
 
     // https://www.reddit.com/api/v1/scopes
-    public static final String[] SCOPES = {
+    private static final String[] SCOPES = {
             "edit", "flair", "history", "identity", "modconfig", "modflair", "modlog", "modposts",
             "modwiki", "mysubreddits", "privatemessages", "read", "report", "save", "submit",
             "subscribe", "vote", "wikiedit", "wikiread"};
 
+    private AccountManager accountManager;
+    private String authTokenType;
+
     @Override
     protected void onCreateNonNull(@NonNull final Bundle savedInstanceState) {
-        final AuthenticationActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.authentication_activity);
+        final ActivityAuthenticatorBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_authenticator);
+
+        accountManager = AccountManager.get(this);
 
         // If previously logged in from another account, clears cookies so account is logged out.
         final CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.removeAllCookies(null);
 
         final String state = RandomStringUtils.randomAlphanumeric(16);
+
+        authTokenType = getIntent().getStringExtra(ARG_AUTH_TYPE);
+        if (authTokenType == null) {
+            authTokenType = TextUtils.join(",", SCOPES);
+        }
 
         binding.webView.setWebViewClient(new WebViewClient() {
             @SuppressWarnings("deprecation")
@@ -78,10 +99,14 @@ public class AuthenticationActivity extends BaseActivity {
                     } else {
                         final Intent data = new Intent();
                         data.putExtra("code", redirectUrl.queryParameter("code"));
-                        setResult(RESULT_OK, data);
-                    }
 
-                    finish();
+                        final Intent res = new Intent();
+                        res.putExtra(AccountManager.KEY_ACCOUNT_NAME, "kingjulien1");
+                        res.putExtra(AccountManager.KEY_ACCOUNT_TYPE, getIntent().getStringExtra(ARG_ACCOUNT_TYPE));
+                        res.putExtra(AccountManager.KEY_AUTHTOKEN, authToken);
+
+                        finishLogin(res);
+                    }
                     return true;
                 }
                 return false;
@@ -99,5 +124,24 @@ public class AuthenticationActivity extends BaseActivity {
                 .build();
 
         binding.webView.loadUrl(url.toString());
+    }
+
+    private void finishLogin(final Intent intent) {
+        final String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+        final String accountPassword = intent.getStringExtra(PARAM_USER_PASS);
+        final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
+        if (getIntent().getBooleanExtra(ARG_IS_ADDING_NEW_ACCOUNT, false)) {
+            final String authtoken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
+            final String authtokenType = authTokenType;
+            // Creating the account on the device and setting the auth token we got
+            // (Not setting the auth token will cause another call to the server to authenticate the user)
+            accountManager.addAccountExplicitly(account, accountPassword, null);
+            accountManager.setAuthToken(account, authtokenType, authtoken);
+        } else {
+            accountManager.setPassword(account, accountPassword);
+        }
+        setAccountAuthenticatorResult(intent.getExtras());
+        setResult(RESULT_OK, intent);
+        finish();
     }
 }

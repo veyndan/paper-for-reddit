@@ -1,10 +1,16 @@
 package com.veyndan.paper.reddit;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
+import android.accounts.AuthenticatorException;
+import android.accounts.OperationCanceledException;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -17,8 +23,13 @@ import com.veyndan.paper.reddit.databinding.ActivityMainBinding;
 import com.veyndan.paper.reddit.post.PostsFragment;
 import com.veyndan.paper.reddit.util.IntentUtils;
 
+import junit.framework.Assert;
+
+import java.io.IOException;
+
 import io.reactivex.Single;
 import retrofit2.Response;
+import timber.log.Timber;
 
 @DeepLink({
         "http://reddit.com/u/{" + MainActivity.DEEP_LINK_USER_NAME + '}',
@@ -39,6 +50,32 @@ public class MainActivity extends BaseActivity {
         final ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         setSupportActionBar(binding.toolbar);
+
+        final AccountManager accountManager = AccountManager.get(this);
+        final Bundle options = new Bundle();
+
+        final Account[] accounts = accountManager.getAccountsByType("com.veyndan");
+
+        Assert.assertTrue(accounts.length == 1);
+
+        accountManager.getAuthToken(
+                accounts[0],
+                TextUtils.join(",", AuthenticationActivity.SCOPES),
+                options,
+                this,
+                accountManagerFuture -> {
+                    try {
+                        final Bundle bundle = accountManagerFuture.getResult();
+                        final String token = bundle.getString(AccountManager.KEY_AUTHTOKEN, "");
+                        Timber.d("token=%s", token);
+                    } catch (final OperationCanceledException | IOException | AuthenticatorException e) {
+                        Timber.e(e);
+                    }
+                },
+                new Handler(msg -> {
+                    throw new IllegalStateException("Something happend");
+                })
+        );
 
         postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
 

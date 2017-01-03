@@ -8,7 +8,8 @@
         <item quantity="other">%1$d points</item>
     </plurals>
 
-{    <plurals name="children">
+    {
+    <plurals name="children">
         <item quantity="one">%d more comment</item>
         <item quantity="other">%d more comments</item>
     </plurals>
