@@ -37,12 +37,23 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
     private RecyclerView recyclerView;
 
+    // TODO This shouldn't be defined here as it should be in ForestModel.
+    // TODO I will need to define a default ForestModel i.e. the trees in the model is empty.
+    //  ??? Where do I define such a model.
+    //  Pos Using startWith(default ForestModel)?
     private final List<Node<Response<Thing<Listing>>>> nodes = new ArrayList<>();
 
     private PostAdapter postAdapter;
 
     private LinearLayoutManager layoutManager;
 
+    // TODO Remove loadingPosts.
+    //  ??? Find out how to define this differently as it is currently used in appendNode() and
+    //      appendNodes(). This means that in the render() method there will have to be
+    //      instanceof checks to see if the AdapterCommand is an insertion command and stop loading.
+    //      In general the below is ugly and should be removed at some point anyway. Is there
+    //      an RxJava operator which can do such a thing? Such as it listens to the trigger stream
+    //      but if there is currently a stream being processed then ignore the trigger.
     private boolean loadingPosts;
 
     private Reddit reddit;
@@ -100,6 +111,13 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         postPresenter.detachView();
         super.onDestroy();
     }
+
+    // TODO Here we would add the render method defined in PostMvpView.
+    // TODO With the ForestModel we will replace the current immutable list of items in the adapter
+    //      to a new list of immutable items.
+    // TODO Update rules can be defined using http://hannesdorfmann.com/android/adapter-commands
+    //  ??? Should the ForestModel define what was inserted and deleted as this feels like a
+    //      thing that the View should deal with.
 
     @Override
     public void appendNode(final Node<Response<Thing<Listing>>> node) {
