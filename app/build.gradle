@@ -45,6 +45,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
 
+    // Adapter Commands
+    compile 'com.hannesdorfmann.adaptercommands:adaptercommands:1.0.3'
+
     // Adapter Delegates
     compile 'com.hannesdorfmann:adapterdelegates3:3.0.1'
 
