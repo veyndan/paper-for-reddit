@@ -322,12 +322,20 @@ public class Post extends Node<Response<Thing<Listing>>> {
     @NonNull
     @Override
     public Observable<Boolean> getTrigger() {
-        return Observable.empty();
+        return Observable.just(true);
     }
 
     @NonNull
     @Override
-    public Observable<Node<Response<Thing<Listing>>>> asObservableImpl() {
-        return Observable.empty();
+    public Observable<Node<Response<Thing<Listing>>>> replacementNodesImpl() {
+        return Observable.just(this);
+    }
+
+    // TODO REMOVE!
+    @Override
+    public String toString() {
+        return "Post{" +
+                "linkTitle='" + linkTitle + '\'' +
+                '}';
     }
 }

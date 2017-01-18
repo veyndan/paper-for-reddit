@@ -55,7 +55,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     @NonNull
     @Override
-    public Observable<Node<Response<Thing<Listing>>>> asObservableImpl() {
+    public Observable<Node<Response<Thing<Listing>>>> replacementNodesImpl() {
         return getRequest()
                 .subscribeOn(Schedulers.io())
                 .map(Response::body)

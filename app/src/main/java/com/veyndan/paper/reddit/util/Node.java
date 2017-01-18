@@ -59,11 +59,11 @@ public abstract class Node<T> {
     }
 
     @NonNull
-    public abstract Observable<Node<T>> asObservableImpl();
+    public abstract Observable<Node<T>> replacementNodesImpl();
 
     @NonNull
-    public Observable<Node<T>> asObservable() {
-        return asObservableImpl()
+    public Observable<Node<T>> replacementNodes() {
+        return replacementNodesImpl()
                 // Node specific calculations are done here. This is the soonest that these
                 // calculations can be performed, as before this point the node data came from
                 // some unknown place, e.g. a network request, disk etc.

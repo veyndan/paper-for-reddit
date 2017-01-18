@@ -11,6 +11,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listing>>>> {
 
@@ -38,12 +39,13 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
                 .flatMap(node -> node.getTrigger()
                         .filter(Boolean::booleanValue)
                         .firstElement()
-                        .flatMapObservable(aBoolean -> node.asObservable()))
+                        .flatMapObservable(aBoolean -> node.replacementNodes()))
                 .observeOn(AndroidSchedulers.mainThread())
                 .concatMap(node -> node.preOrderTraverse(0))
                 .toList()
                 .subscribe(nodes1 -> {
-                    postMvpView.popNode();
+                    Timber.d(nodes1.toString());
+                    postMvpView.clearNodes();
                     loadNodes(nodes1);
                 });
     }
