@@ -33,9 +33,9 @@ public final class Mutators {
      * {@link LinkMutatorFactory} should occur <b><em>after</em></b> {@link TwitterMutatorFactory}.
      */
     private static final List<MutatorFactory> MUTATOR_FACTORIES = ImmutableList.of(
-            TwitterMutatorFactory.create(),
+//            TwitterMutatorFactory.create(),
             XkcdMutatorFactory.create(),
-            ImgurMutatorFactory.create(),
+//            ImgurMutatorFactory.create(),
             ImgflipMutatorFactory.create(),
             ImageMutatorFactory.create(),
             TextMutatorFactory.create(),

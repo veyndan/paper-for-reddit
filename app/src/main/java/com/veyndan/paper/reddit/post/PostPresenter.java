@@ -1,5 +1,6 @@
 package com.veyndan.paper.reddit.post;
 
+import com.veyndan.paper.reddit.ForestModel;
 import com.veyndan.paper.reddit.Presenter;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
@@ -12,12 +13,12 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import retrofit2.Response;
 
-public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listing>>>> {
+public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listing>>, ForestModel<Response<Thing<Listing>>>>> {
 
-    private PostMvpView<Response<Thing<Listing>>> postMvpView;
+    private PostMvpView<Response<Thing<Listing>>, ForestModel<Response<Thing<Listing>>>> postMvpView;
 
     @Override
-    public void attachView(final PostMvpView<Response<Thing<Listing>>> view) {
+    public void attachView(final PostMvpView<Response<Thing<Listing>>, ForestModel<Response<Thing<Listing>>>> view) {
         postMvpView = view;
     }
 

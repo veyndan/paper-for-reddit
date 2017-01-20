@@ -11,8 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.hannesdorfmann.adaptercommands.AdapterCommandProcessor;
+import com.hannesdorfmann.adaptercommands.command.AdapterCommand;
+import com.hannesdorfmann.adaptercommands.command.ItemInsertedCommand;
+import com.hannesdorfmann.adaptercommands.command.ItemRangeInsertedCommand;
+import com.hannesdorfmann.adaptercommands.command.ItemRangeRemovedCommand;
+import com.hannesdorfmann.adaptercommands.command.ItemRemovedCommand;
 import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
 import com.veyndan.paper.reddit.Config;
+import com.veyndan.paper.reddit.ForestModel;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
@@ -22,6 +29,11 @@ import com.veyndan.paper.reddit.ui.recyclerview.SwipeItemTouchHelperCallback;
 import com.veyndan.paper.reddit.ui.recyclerview.itemdecoration.MarginItemDecoration;
 import com.veyndan.paper.reddit.ui.recyclerview.itemdecoration.TreeInsetItemDecoration;
 import com.veyndan.paper.reddit.util.Node;
+import com.veyndan.paper.reddit.util.list.command.AddAllCommand;
+import com.veyndan.paper.reddit.util.list.command.AddCommand;
+import com.veyndan.paper.reddit.util.list.command.ClearCommand;
+import com.veyndan.paper.reddit.util.list.command.ListCommand;
+import com.veyndan.paper.reddit.util.list.command.RemoveCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +43,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.Response;
 
-public class PostsFragment extends Fragment implements PostMvpView<Response<Thing<Listing>>> {
+public class PostsFragment extends Fragment implements PostMvpView<Response<Thing<Listing>>, ForestModel<Response<Thing<Listing>>>> {
 
     private final PostPresenter postPresenter = new PostPresenter();
 
@@ -44,6 +56,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
     private final List<Node<Response<Thing<Listing>>>> nodes = new ArrayList<>();
 
     private PostAdapter postAdapter;
+    private AdapterCommandProcessor postAdapterCommandProcessor;
 
     private LinearLayoutManager layoutManager;
 
@@ -78,7 +91,9 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
     }
 
     public void setRequest(final Single<Response<Thing<Listing>>> request) {
-        clearNodes();
+        if (nodes.size() > 0) {
+            clearNodes();
+        }
         postPresenter.loadNode(new Progress.Builder()
                 .trigger(getTrigger())
                 .request(request.toMaybe())
@@ -93,6 +108,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
         layoutManager = new LinearLayoutManager(getActivity());
         postAdapter = new PostAdapter(getActivity(), nodes, reddit);
+        postAdapterCommandProcessor = new AdapterCommandProcessor(postAdapter);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new MarginItemDecoration(getActivity(), R.dimen.card_view_margin));
@@ -112,7 +128,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         super.onDestroy();
     }
 
-    // TODO Here we would add the render method defined in PostMvpView.
+    // TODO Here we would add the render method defined in MvpView.
     // TODO With the ForestModel we will replace the current immutable list of items in the adapter
     //      to a new list of immutable items.
     // TODO Update rules can be defined using http://hannesdorfmann.com/android/adapter-commands
@@ -121,37 +137,60 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
     @Override
     public void appendNode(final Node<Response<Thing<Listing>>> node) {
-        nodes.add(node);
-        postAdapter.notifyItemInserted(nodes.size() - 1);
-        loadingPosts = false;
+        render(new ForestModel.Builder<Response<Thing<Listing>>>()
+                .previousForest(nodes)
+                .adapterCommand(new ItemInsertedCommand(nodes.size()))
+                .listCommand(new AddCommand<>(node))
+                .build());
     }
 
     @Override
     public void appendNodes(final List<? extends Node<Response<Thing<Listing>>>> nodes) {
-        final int positionStart = this.nodes.size();
-        this.nodes.addAll(nodes);
-        postAdapter.notifyItemRangeInserted(positionStart, nodes.size());
-        loadingPosts = false;
+        render(new ForestModel.Builder<Response<Thing<Listing>>>()
+                .previousForest(this.nodes)
+                .adapterCommand(new ItemRangeInsertedCommand(this.nodes.size(), nodes.size()))
+                .listCommand(new AddAllCommand<>(nodes))
+                .build());
     }
 
     @Override
-    public Node<Response<Thing<Listing>>> popNode() {
-        return popNode(nodes.size() - 1);
+    public void popNode() {
+        popNode(nodes.size() - 1);
     }
 
     @Override
-    public Node<Response<Thing<Listing>>> popNode(final int index) {
-        final Node<Response<Thing<Listing>>> poppedNode = nodes.get(index);
-        nodes.remove(index);
-        postAdapter.notifyItemRemoved(index);
-        return poppedNode;
+    public void popNode(final int index) {
+        render(new ForestModel.Builder<Response<Thing<Listing>>>()
+                .previousForest(nodes)
+                .adapterCommand(new ItemRemovedCommand(index))
+                .listCommand(new RemoveCommand<>(index))
+                .build());
     }
 
     @Override
     public void clearNodes() {
-        final int nodesSize = nodes.size();
+        render(new ForestModel.Builder<Response<Thing<Listing>>>()
+                .previousForest(nodes)
+                .adapterCommand(new ItemRangeRemovedCommand(0, nodes.size()))
+                .listCommand(new ClearCommand<>())
+                .build());
+    }
+
+    @Override
+    public void render(final ForestModel<Response<Thing<Listing>>> forestModel) {
+        for (final AdapterCommand adapterCommand : forestModel.getAdapterCommands()) {
+            if (adapterCommand instanceof ItemRangeInsertedCommand || adapterCommand instanceof ItemInsertedCommand) {
+                loadingPosts = false;
+            }
+        }
+
+        for (final ListCommand<Node<Response<Thing<Listing>>>> collectionCommand : forestModel.getListCommands()) {
+            collectionCommand.execute(forestModel.getPreviousForest());
+        }
+
         nodes.clear();
-        postAdapter.notifyItemRangeRemoved(0, nodesSize);
+        nodes.addAll(forestModel.getPreviousForest());
+        postAdapterCommandProcessor.execute(forestModel.getAdapterCommands());
     }
 
     private Observable<Boolean> getTrigger() {

@@ -1,5 +1,6 @@
 package com.veyndan.paper.reddit.post;
 
+import com.veyndan.paper.reddit.Model;
 import com.veyndan.paper.reddit.MvpView;
 import com.veyndan.paper.reddit.util.Node;
 
@@ -10,15 +11,15 @@ import java.util.List;
 //      Action vs doOnNext(it -> render(…)) with void.
 // TODO Instead of defining it here, delete PostMvpView and define render() in MvpView. MvpView
 //      has a type parameter which is the model, so it is still just as generic as before.
-public interface PostMvpView<T> extends MvpView {
+public interface PostMvpView<T, M extends Model> extends MvpView<M> {
 
     void appendNode(Node<T> node);
 
     void appendNodes(List<? extends Node<T>> nodes);
 
-    Node<T> popNode();
+    void popNode();
 
-    Node<T> popNode(int index);
+    void popNode(int index);
 
     void clearNodes();
 }
