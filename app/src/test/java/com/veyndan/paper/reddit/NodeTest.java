@@ -1,6 +1,7 @@
 package com.veyndan.paper.reddit;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.veyndan.paper.reddit.util.Node;
 
@@ -90,10 +91,29 @@ public class NodeTest {
 
     private static <T> Node<T> setAsChildren(final Node<T>... children) {
         return new Node<T>() {
+
+            @Nullable
+            @Override
+            public Integer getDegree() {
+                return null;
+            }
+
             @NonNull
             @Override
             public Observable<Node<T>> getChildren() {
                 return Observable.fromArray(children);
+            }
+
+            @NonNull
+            @Override
+            public Observable<Boolean> getTrigger() {
+                return null;
+            }
+
+            @NonNull
+            @Override
+            public Observable<Node<T>> asObservableImpl() {
+                return null;
             }
 
             @NonNull
