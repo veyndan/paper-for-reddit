@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.moshi.MoshiConverterFactory;
 
 final class XkcdMutatorFactory implements MutatorFactory {
 
@@ -36,7 +36,7 @@ final class XkcdMutatorFactory implements MutatorFactory {
 
                     final Retrofit retrofit = new Retrofit.Builder()
                             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                            .addConverterFactory(GsonConverterFactory.create())
+                            .addConverterFactory(MoshiConverterFactory.create())
                             .baseUrl("https://xkcd.com")
                             .build();
 
