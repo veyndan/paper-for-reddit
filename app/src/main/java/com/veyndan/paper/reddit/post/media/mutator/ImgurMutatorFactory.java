@@ -22,7 +22,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.moshi.MoshiConverterFactory;
 
 final class ImgurMutatorFactory implements MutatorFactory {
 
@@ -69,7 +69,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
                         final Retrofit retrofit = new Retrofit.Builder()
                                 .baseUrl("https://api.imgur.com/3/")
                                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                                .addConverterFactory(GsonConverterFactory.create())
+                                .addConverterFactory(MoshiConverterFactory.create())
                                 .client(client)
                                 .build();
 
