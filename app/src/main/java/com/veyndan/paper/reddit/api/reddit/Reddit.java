@@ -47,6 +47,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public final class Reddit {
 
@@ -74,7 +75,8 @@ public final class Reddit {
                 .registerTypeAdapter(RedditObject.class, new RedditObjectDeserializer())
                 .create();
 
-        final GsonConverterFactory jsonConverterFactory = GsonConverterFactory.create(gson);
+        final MoshiConverterFactory jsonConverterFactory = MoshiConverterFactory.create();
+        final GsonConverterFactory jsonConverterFactoryDeprecated = GsonConverterFactory.create(gson);
 
         final RxJava2CallAdapterFactory rxJava2CallAdapterFactory = RxJava2CallAdapterFactory.create();
 
@@ -105,7 +107,7 @@ public final class Reddit {
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://oauth.reddit.com/")
                 .addCallAdapterFactory(rxJava2CallAdapterFactory)
-                .addConverterFactory(jsonConverterFactory)
+                .addConverterFactory(jsonConverterFactoryDeprecated)
                 .client(clientBuilder.build())
                 .build();
 

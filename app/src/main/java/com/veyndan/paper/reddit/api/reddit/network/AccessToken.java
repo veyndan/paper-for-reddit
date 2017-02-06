@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit.network;
 
+import com.squareup.moshi.Json;
+
 import java.util.concurrent.TimeUnit;
 
 public final class AccessToken {
@@ -11,13 +13,13 @@ public final class AccessToken {
         EXPIRED_ACCESS_TOKEN.expiresIn = -1;
     }
 
-    private String accessToken;
-    private String tokenType;
+    @Json(name = "access_token") private String accessToken;
+    @Json(name = "token_type") private String tokenType;
 
     /**
      * The number of seconds that this access token is valid for.
      */
-    private int expiresIn;
+    @Json(name = "expires_in") private int expiresIn;
     private String scope;
 
     private final long timestamp;
