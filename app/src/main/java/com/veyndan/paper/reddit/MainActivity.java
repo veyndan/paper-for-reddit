@@ -14,6 +14,7 @@ import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.api.reddit.network.Sort;
 import com.veyndan.paper.reddit.databinding.ActivityMainBinding;
+import com.veyndan.paper.reddit.menuitem.MenuItemCommandRequestHandler;
 import com.veyndan.paper.reddit.post.PostsFragment;
 import com.veyndan.paper.reddit.util.IntentUtils;
 
@@ -84,6 +85,17 @@ public class MainActivity extends BaseActivity {
                 filterFragment.show(fragmentManager, "fragment_filter");
                 return true;
             case R.id.action_sort_hot:
+                final MenuItemCommandRequestHandler handler = new MenuItemCommandRequestHandler();
+
+                // Application state is supposed to represent the application state found in MVI.
+                final Bundle applicationState = new Bundle();
+                applicationState.putString("subreddit", subreddit);
+                // Meh, need to handle postsFragment and don't want to serialize it into Bundle.
+                // I saw onOptionsItemSelected as being you get the right function and you mutate it
+                // but I didn't take into consideration what you do with the output.
+
+                handler.handleRequest(item.getItemId(), this, applicationState);
+
                 final Bundle redditQueryParamsHot = new Reddit.FilterBuilder()
                         .nodeDepth(0)
                         .subredditName(subreddit)
