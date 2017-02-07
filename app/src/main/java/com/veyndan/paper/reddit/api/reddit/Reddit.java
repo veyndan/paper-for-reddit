@@ -6,10 +6,11 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.common.base.MoreObjects;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+import com.veyndan.paper.reddit.api.reddit.json.adapter.DefaultOnDataMismatchAdapter;
+import com.veyndan.paper.reddit.api.reddit.json.adapter.RedditObjectAdapter;
 import com.veyndan.paper.reddit.api.reddit.model.Account2;
 import com.veyndan.paper.reddit.api.reddit.model.CaptchaNew;
 import com.veyndan.paper.reddit.api.reddit.model.Categories;
@@ -17,7 +18,6 @@ import com.veyndan.paper.reddit.api.reddit.model.Karma;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.MoreChildren;
 import com.veyndan.paper.reddit.api.reddit.model.Prefs;
-import com.veyndan.paper.reddit.api.reddit.model.RedditObject;
 import com.veyndan.paper.reddit.api.reddit.model.Submission;
 import com.veyndan.paper.reddit.api.reddit.model.Subreddit;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
@@ -46,7 +46,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public final class Reddit {
@@ -70,13 +69,15 @@ public final class Reddit {
     private final RedditService redditService;
 
     public Reddit(final Credentials credentials) {
-        final Gson gson = new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .registerTypeAdapter(RedditObject.class, new RedditObjectDeserializer())
-                .create();
+        final Moshi moshi = new Moshi.Builder()
+                .add(RedditObjectAdapter.FACTORY)
+                // According to the Reddit json contract, if there are no replies an empty string
+                // is returned instead of an empty object or null as expected. This sets an empty
+                // object if there are no replies.
+                .add(DefaultOnDataMismatchAdapter.newFactory(Types.newParameterizedType(Thing.class, Listing.class), new Thing<>(new Listing())))
+                .build();
 
-        final MoshiConverterFactory jsonConverterFactory = MoshiConverterFactory.create();
-        final GsonConverterFactory jsonConverterFactoryDeprecated = GsonConverterFactory.create(gson);
+        final MoshiConverterFactory jsonConverterFactory = MoshiConverterFactory.create(moshi);
 
         final RxJava2CallAdapterFactory rxJava2CallAdapterFactory = RxJava2CallAdapterFactory.create();
 
@@ -107,7 +108,7 @@ public final class Reddit {
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://oauth.reddit.com/")
                 .addCallAdapterFactory(rxJava2CallAdapterFactory)
-                .addConverterFactory(jsonConverterFactoryDeprecated)
+                .addConverterFactory(jsonConverterFactory)
                 .client(clientBuilder.build())
                 .build();
 

@@ -1,32 +1,35 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import com.squareup.moshi.Json;
+
 public class Account2 extends RedditObject {
+
     // Created
     public long created;
-    public long createdUtc;
+    @Json(name = "created_utc") public long createdUtc;
 
     // Documented
-    public int commentKarma;
-    public boolean hasMail;
-    public boolean hasModMail;
-    public boolean hasVerifiedEmail;
+    @Json(name = "comment_karma") public int commentKarma;
+    @Json(name = "has_mail") public boolean hasMail;
+    @Json(name = "has_mod_mail") public boolean hasModMail;
+    @Json(name = "has_verified_email") public boolean hasVerifiedEmail;
     public String id;
-    public int inboxCount;
-    public boolean isFriend;
-    public boolean isGold;
-    public boolean isMod;
-    public int linkKarma;
+    @Json(name = "inbox_count") public int inboxCount;
+    @Json(name = "is_friend") public boolean isFriend;
+    @Json(name = "is_gold") public boolean isGold;
+    @Json(name = "is_mod") public boolean isMod;
+    @Json(name = "link_karma") public int linkKarma;
     public String modhash;
     public String name;
-    public boolean over18;
+    @Json(name = "over_18") public boolean over18;
 
     // Undocumented
-    public boolean isEmployee;
-    public boolean hideFromRobots;
-    public boolean isSuspended;
-    public boolean inBeta;
+    @Json(name = "is_employee") public boolean isEmployee;
+    @Json(name = "hide_from_robots") public boolean hideFromRobots;
+    @Json(name = "is_suspended") public boolean isSuspended;
+    @Json(name = "in_beta") public boolean inBeta;
     public Features features;
-    public Object goldExpiration;
-    public int goldCreddits;
-    public Object suspensionExpirationUtc; // Type not sure
+    @Json(name = "gold_expiration") public Object goldExpiration;
+    @Json(name = "gold_creddits") public int goldCreddits;
+    @Json(name = "suspension_expiration_utc") public Object suspensionExpirationUtc; // Type not sure
 }

@@ -4,6 +4,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
+import com.squareup.moshi.Json;
 
 import java.util.regex.Pattern;
 
@@ -18,30 +19,31 @@ public class Link extends Submission {
     private boolean clicked;
     private String domain;
     private boolean hidden;
-    private boolean isSelf;
-    private String linkFlairCssClass;
-    private String linkFlairText;
+    @Json(name = "is_self") private boolean isSelf;
+    @Json(name = "link_flair_css_class") private String linkFlairCssClass;
+    @Json(name = "link_flair_text") private String linkFlairText;
     private boolean locked;
     private Media media;
-    private MediaEmbed mediaEmbed;
-    private int numComments;
-    private boolean over18;
+    @Json(name = "media_embed") private MediaEmbed mediaEmbed;
+    @Json(name = "num_comments") private int numComments;
+    @Json(name = "over_18") private boolean over18;
     private String permalink;
     private String thumbnail;
-    private Object suggestedSort;
-    private Media secureMedia;
-    private Object fromKind;
+    @Json(name = "suggested_sort") private Object suggestedSort;
+    @Json(name = "secure_media") private Media secureMedia;
+    @Json(name = "from_kind") private Object fromKind;
     private final Preview preview = new Preview();
-    private MediaEmbed secureMediaEmbed;
-    private PostHint postHint = PostHint.LINK;
+    @Json(name = "secure_media_embed") private MediaEmbed secureMediaEmbed;
+    @Json(name = "post_hint") private PostHint postHint = PostHint.LINK;
     private Object from;
-    private Object fromId;
+    @Json(name = "from_id") private Object fromId;
     private boolean quarantine;
     private boolean visited;
     private Thing<Listing> replies = new Thing<>(new Listing());
 
     @Override
     public PostHint getPostHint() {
+        final String linkUrl = getLinkUrl();
         if (isSelf) {
             postHint = PostHint.SELF;
         } else if (Pattern.compile("(.jpg|.jpeg|.gif|.png)$").matcher(linkUrl).find()

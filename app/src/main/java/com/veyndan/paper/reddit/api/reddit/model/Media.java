@@ -1,6 +1,8 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import com.squareup.moshi.Json;
+
 public class Media {
-    public OEmbed oEmbed;
+    @Json(name = "o_embed") public OEmbed oEmbed;
     public String type;
 }

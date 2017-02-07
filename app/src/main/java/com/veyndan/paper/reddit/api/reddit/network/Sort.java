@@ -1,13 +1,13 @@
 package com.veyndan.paper.reddit.api.reddit.network;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 
 public enum Sort {
-    @SerializedName("hot")HOT,
-    @SerializedName("new")NEW,
-    @SerializedName("rising")RISING,
-    @SerializedName("controversial")CONTROVERSIAL,
-    @SerializedName("top")TOP;
+    @Json(name = "hot")HOT,
+    @Json(name = "new")NEW,
+    @Json(name = "rising")RISING,
+    @Json(name = "controversial")CONTROVERSIAL,
+    @Json(name = "top")TOP;
 
     @Override
     public String toString() {

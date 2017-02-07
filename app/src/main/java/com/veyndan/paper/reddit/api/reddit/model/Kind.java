@@ -1,18 +1,18 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 
 public enum Kind {
-    @SerializedName("t1")COMMENT("t1", Comment.class),
-    @SerializedName("t2")ACCOUNT("t2", Account2.class),
-    @SerializedName("t3")LINK("t3", Link.class),
-    @SerializedName("t4")MESSAGE("t4", Message.class),
-    @SerializedName("t5")SUBREDDIT("t5", Subreddit.class),
-    //@SerializedName("t6") AWARD("t6"),
-    //@SerializedName("t7") PROMO_CAMPAIGN("t8"),
-    @SerializedName("Listing")LISTING("Listing", Listing.class),
-    @SerializedName("TrophyList")TROPHY_LIST("TrophyList", Trophies.class),
-    @SerializedName("more")MORE("more", More.class);
+    @Json(name = "t1")COMMENT("t1", Comment.class),
+    @Json(name = "t2")ACCOUNT("t2", Account2.class),
+    @Json(name = "t3")LINK("t3", Link.class),
+    @Json(name = "t4")MESSAGE("t4", Message.class),
+    @Json(name = "t5")SUBREDDIT("t5", Subreddit.class),
+    //@Json(name = "t6")AWARD("t6"),
+    //@Json(name = "t7")PROMO_CAMPAIGN("t8"),
+    @Json(name = "Listing")LISTING("Listing", Listing.class),
+    @Json(name = "TrophyList")TROPHY_LIST("TrophyList", Trophies.class),
+    @Json(name = "more")MORE("more", More.class);
 
     private final String type;
     private final Class<? extends RedditObject> clazz;

@@ -3,14 +3,16 @@ package com.veyndan.paper.reddit.api.reddit.model;
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 
+import com.squareup.moshi.Json;
+
 import java.util.Objects;
 
 public class Comment extends Submission {
 
     private int controversiality;
-    private String linkAuthor;
-    private String linkId;
-    private String parentId;
+    @Json(name = "link_author") private String linkAuthor;
+    @Json(name = "link_id") private String linkId;
+    @Json(name = "parent_id") private String parentId;
     private Preview preview = new Preview();
     private Thing<Listing> replies;
 

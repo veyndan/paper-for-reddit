@@ -1,6 +1,6 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 
 public enum PostHint {
 
@@ -9,25 +9,25 @@ public enum PostHint {
      * <p>
      * #inferred
      */
-    @SerializedName("self")SELF,
+    @Json(name = "self")SELF,
 
     /**
      * A video file, like an mp4.
      */
-    @SerializedName("video")VIDEO,
+    @Json(name = "video")VIDEO,
 
     /**
      * An image file, like a gif or png.
      */
-    @SerializedName("image")IMAGE,
+    @Json(name = "image")IMAGE,
 
     /**
      * A video embedded in HTML- like youtube or vimeo.
      */
-    @SerializedName("rich:video")RICH_VIDEO,
+    @Json(name = "rich:video")RICH_VIDEO,
 
     /**
      * Catch-all.
      */
-    @SerializedName("link")LINK
+    @Json(name = "link")LINK
 }
