@@ -1,6 +1,8 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import com.squareup.moshi.Json;
+
 public class Experiment {
     public String variant;
-    public int experimentId;
+    @Json(name = "experiment_id") public int experimentId;
 }

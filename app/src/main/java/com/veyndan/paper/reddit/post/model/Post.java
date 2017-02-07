@@ -93,7 +93,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
         archived = submission.archived;
         author = submission.author == null ? "" : submission.author;
-        bodyHtml = submission.bodyHtml;
+        bodyHtml = submission.getBodyHtml();
         createdUtc = submission.createdUtc;
         domain = submission.getDomain();
         fullname = submission.getFullname();
@@ -101,8 +101,8 @@ public class Post extends Node<Response<Thing<Listing>>> {
         hideable = submission.isHideable();
         likes = submission.getLikes();
         linkFlair = submission.getLinkFlairText();
-        linkTitle = submission.linkTitle;
-        linkUrl = submission.linkUrl == null ? "" : submission.linkUrl;
+        linkTitle = submission.getLinkTitle();
+        linkUrl = submission.getLinkUrl() == null ? "" : submission.getLinkUrl();
         locked = submission.isLocked();
         nsfw = submission.isOver18();
         permalink = submission.getPermalink();
@@ -112,7 +112,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
         preview = submission.getPreview();
         saved = submission.saved;
-        scoreHidden = submission.scoreHidden;
+        scoreHidden = submission.isScoreHidden();
         stickied = submission.stickied;
         subreddit = submission.subreddit;
     }

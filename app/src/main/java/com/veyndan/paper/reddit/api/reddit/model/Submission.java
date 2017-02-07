@@ -3,7 +3,7 @@ package com.veyndan.paper.reddit.api.reddit.model;
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public abstract class Submission extends RedditObject {
 
     // Created
     public long created;
-    public long createdUtc;
+    @Json(name = "created_utc") public long createdUtc;
 
     /**
      * Returns {@code true} if the Submission has been clicked on before, else {@code false}.
@@ -185,12 +185,12 @@ public abstract class Submission extends RedditObject {
     /**
      * The CSS class of the author's flair. subreddit specific.
      */
-    public String authorFlairCssClass;
+    @Json(name = "author_flair_css_class") public String authorFlairCssClass;
 
     /**
      * The text of the author's flair. subreddit specific.
      */
-    public String authorFlairText;
+    @Json(name = "author_flair_text") public String authorFlairText;
 
     /**
      * Url of the permanent link.
@@ -223,7 +223,7 @@ public abstract class Submission extends RedditObject {
     /**
      * The id of the subreddit in which the thing is located.
      */
-    public String subredditId;
+    @Json(name = "subreddit_id") public String subredditId;
 
     /**
      * Indicates if link has been edited. Will be the edit timestamp if the link has been edited
@@ -245,12 +245,12 @@ public abstract class Submission extends RedditObject {
     /**
      * Who removed this submission. {@code null} if nobody or you are not a mod.
      */
-    public String bannedBy;
+    @Json(name = "banned_by") public String bannedBy;
 
     /**
      * #undocumented
      */
-    public List<Object> userReports = new ArrayList<>();
+    @Json(name = "user_reports") public List<Object> userReports = new ArrayList<>();
 
     /**
      * #undocumented
@@ -277,17 +277,17 @@ public abstract class Submission extends RedditObject {
     /**
      * #undocumented
      */
-    public Object reportReasons;
+    @Json(name = "report_reasons") public Object reportReasons;
 
     /**
      * Who approved this submission. {@code null} if nobody or you are not a mod.
      */
-    public String approvedBy;
+    @Json(name = "approved_by") public String approvedBy;
 
     /**
      * #undocumented
      */
-    public Object removalReason;
+    @Json(name = "removal_reason") public Object removalReason;
 
     private String name;
 
@@ -301,29 +301,47 @@ public abstract class Submission extends RedditObject {
     /**
      * #undocumented
      */
-    public List<Object> modReports = new ArrayList<>();
+    @Json(name = "mod_reports") public List<Object> modReports = new ArrayList<>();
 
     /**
      * How many times this submission has been reported, {@code null} if not a mod.
      */
-    public Object numReports;
+    @Json(name = "num_reports") public Object numReports;
+
+    @Json(name = "score_hidden") private boolean scoreHidden;
+    @Json(name = "hide_score") private boolean hideScore;
 
     /**
      * Should the score be hidden.
      * <p>
      * #inferred
      */
-    @SerializedName(value = "score_hidden", alternate = "hide_score") public boolean scoreHidden;
+    public boolean isScoreHidden() {
+        return scoreHidden || hideScore;
+    }
+
+    @Json(name = "link_title") private String linkTitle;
+    private String title;
 
     /**
      * The title of the link. May contain newlines for some reason.
      */
-    @SerializedName(value = "link_title", alternate = "title") public String linkTitle;
+    public String getLinkTitle() {
+        return linkTitle != null ? linkTitle : title;
+    }
+
+    @Json(name = "link_url") private String linkUrl;
+    private String url;
 
     /**
      * The link of this post. The permalink if this is a self-post.
      */
-    @SerializedName(value = "link_url", alternate = "url") public String linkUrl;
+    public String getLinkUrl() {
+        return linkUrl != null ? linkUrl : url;
+    }
+
+    private String body = "";
+    @Json(name = "selftext") private String selfText = "";
 
     /**
      * The raw text. This is the unformatted text which includes the raw markup characters such as
@@ -331,7 +349,12 @@ public abstract class Submission extends RedditObject {
      * <p>
      * If it is a {@link Link} then this is the self text if available. Empty if not present.
      */
-    @SerializedName(value = "body", alternate = "selftext") public String body;
+    public String getBody() {
+        return selfText != null ? selfText : body;
+    }
+
+    @Json(name = "body_html") private String bodyHtml;
+    @Json(name = "selftext_html") private String selfTextHtml;
 
     /**
      * The formatted HTML text as displayed on reddit. For example, text that is emphasised by *
@@ -341,7 +364,9 @@ public abstract class Submission extends RedditObject {
      * <p>
      * If it is a {@link Link} then this is the self text if available. {@code null} if not present.
      */
-    @SerializedName(value = "body_html", alternate = "selftext_html") public String bodyHtml;
+    public String getBodyHtml() {
+        return bodyHtml != null ? bodyHtml : selfTextHtml;
+    }
 
     /**
      * #undocumented

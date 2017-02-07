@@ -1,14 +1,14 @@
 package com.veyndan.paper.reddit.api.reddit.network;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 
 public enum TimePeriod {
-    @SerializedName("hour")HOUR,
-    @SerializedName("day")DAY,
-    @SerializedName("week")WEEK,
-    @SerializedName("month")MONTH,
-    @SerializedName("year")YEAR,
-    @SerializedName("all")ALL;
+    @Json(name = "hour") HOUR,
+    @Json(name = "day") DAY,
+    @Json(name = "week") WEEK,
+    @Json(name = "month") MONTH,
+    @Json(name = "year") YEAR,
+    @Json(name = "all") ALL;
 
     @Override
     public String toString() {

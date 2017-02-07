@@ -1,11 +1,11 @@
 package com.veyndan.paper.reddit.api.reddit.network;
 
-import com.google.gson.annotations.SerializedName;
+import com.squareup.moshi.Json;
 
 public enum VoteDirection {
-    @SerializedName("upvote")UPVOTE(1),
-    @SerializedName("downvote")DOWNVOTE(-1),
-    @SerializedName("unvote")UNVOTE(0);
+    @Json(name = "upvote")UPVOTE(1),
+    @Json(name = "downvote")DOWNVOTE(-1),
+    @Json(name = "unvote")UNVOTE(0);
 
     private final int direction;
 
