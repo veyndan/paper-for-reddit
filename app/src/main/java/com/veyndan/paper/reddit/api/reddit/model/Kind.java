@@ -15,14 +15,14 @@ public enum Kind {
     @SerializedName("more")MORE("more", More.class);
 
     private final String type;
-    private final Class clazz;
+    private final Class<? extends RedditObject> clazz;
 
-    Kind(final String type, final Class clazz) {
+    Kind(final String type, final Class<? extends RedditObject> clazz) {
         this.type = type;
         this.clazz = clazz;
     }
 
-    public Class getDerivedClass() {
+    public Class<? extends RedditObject> getDerivedClass() {
         return clazz;
     }
 
