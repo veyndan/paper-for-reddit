@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // t5_
-public class Subreddit {
+public class Subreddit extends RedditObject {
     public String bannerImg;
     public Boolean userSrThemeEnabled;
     public Object submitTextHtml;

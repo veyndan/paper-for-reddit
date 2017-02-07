@@ -2,7 +2,7 @@ package com.veyndan.paper.reddit.api.reddit.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Message {
+public class Message extends RedditObject {
     public String body;
     public Boolean wasComment;
     public Object firstMessage;

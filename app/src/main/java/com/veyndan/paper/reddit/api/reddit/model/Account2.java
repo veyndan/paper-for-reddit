@@ -1,6 +1,6 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-public class Account2 {
+public class Account2 extends RedditObject {
     // Created
     public long created;
     public long createdUtc;
