@@ -1,4 +1,4 @@
-package com.veyndan.paper.reddit;
+package com.veyndan.paper.reddit.deeplink;
 
 import com.airbnb.deeplinkdispatch.DeepLinkModule;
 

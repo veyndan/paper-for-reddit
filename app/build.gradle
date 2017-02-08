@@ -56,8 +56,8 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 
     // Deep Link Dispatch
-    compile 'com.airbnb:deeplinkdispatch:3.0.0-rc1'
-    annotationProcessor 'com.airbnb:deeplinkdispatch-processor:3.0.0-rc1'
+    compile 'com.airbnb:deeplinkdispatch:3.0.0-rc3'
+    annotationProcessor 'com.airbnb:deeplinkdispatch-processor:3.0.0-rc3'
 
     // Glide
     compile 'com.github.bumptech.glide:glide:3.7.0'
