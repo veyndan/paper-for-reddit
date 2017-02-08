@@ -14,15 +14,16 @@ import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.api.reddit.network.Sort;
 import com.veyndan.paper.reddit.databinding.ActivityMainBinding;
+import com.veyndan.paper.reddit.deeplink.WebDeepLink;
 import com.veyndan.paper.reddit.post.PostsFragment;
 import com.veyndan.paper.reddit.util.IntentUtils;
 
 import io.reactivex.Single;
 import retrofit2.Response;
 
-@DeepLink({
-        "http://reddit.com/u/{" + MainActivity.DEEP_LINK_USER_NAME + '}',
-        "http://reddit.com/user/{" + MainActivity.DEEP_LINK_USER_NAME + '}'
+@WebDeepLink({
+        "/u/{" + MainActivity.DEEP_LINK_USER_NAME + '}',
+        "/user/{" + MainActivity.DEEP_LINK_USER_NAME + '}'
 })
 public class MainActivity extends BaseActivity {
 
