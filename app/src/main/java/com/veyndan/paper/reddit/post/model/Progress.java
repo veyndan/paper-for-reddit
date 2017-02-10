@@ -22,10 +22,9 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
     @NonNull private final Observable<Boolean> trigger;
     @Nullable @IntRange(from = 0) private final Integer degree;
 
-    // Suppress default constructor for noninstantiability
     @SuppressWarnings("unused")
     private Progress() {
-        throw new AssertionError();
+        throw new AssertionError("No instances.");
     }
 
     private Progress(@NonNull final Builder builder) {

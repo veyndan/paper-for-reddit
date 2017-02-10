@@ -11,9 +11,8 @@ import io.reactivex.functions.Function;
 
 public final class Mutators {
 
-    // Suppress default constructor for noninstantiability
     private Mutators() {
-        throw new AssertionError();
+        throw new AssertionError("No instances.");
     }
 
     /**
