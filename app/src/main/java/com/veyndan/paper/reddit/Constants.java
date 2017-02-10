@@ -4,9 +4,8 @@ import com.veyndan.paper.reddit.api.reddit.network.Credentials;
 
 public final class Constants {
 
-    // Suppress default constructor for noninstantiability
     private Constants() {
-        throw new AssertionError();
+        throw new AssertionError("No instances.");
     }
 
     public static final String REDDIT_REDIRECT_URI = "https://github.com/veyndan/paper-for-reddit";
