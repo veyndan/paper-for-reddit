@@ -16,7 +16,6 @@ import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.veyndan.paper.reddit.databinding.PostMediaLinkImageBinding;
 import com.veyndan.paper.reddit.image.ImageLoader;
-import com.veyndan.paper.reddit.image.imp.CustomCache;
 import com.veyndan.paper.reddit.image.imp.CustomDecoder;
 import com.veyndan.paper.reddit.image.imp.CustomNetwork;
 import com.veyndan.paper.reddit.post.media.model.LinkImage;
@@ -24,7 +23,9 @@ import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.List;
 
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class LinkImageAdapterDelegate
@@ -75,9 +76,11 @@ public class LinkImageAdapterDelegate
 
         holder.binding.postMediaImageProgress.setVisibility(View.VISIBLE);
 
-        new ImageLoader(CustomCache.getInstance(context), new CustomNetwork(), new CustomDecoder())
-                .load(linkImage.getUrl())
-                .observeOn(AndroidSchedulers.mainThread())
+        Single.just(linkImage.getUrl())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .flatMap(url -> ImageLoader.load(url, context, new CustomNetwork().getImageAsInputStream(url)
+                        .subscribeOn(Schedulers.io())
+                        .map(inputStream -> new CustomDecoder().decodeInputStream(inputStream))))
                 .subscribe(bitmap -> {
                     Timber.d("SUC %s", linkImage.getUrl());
                     holder.binding.postMediaImageProgress.setVisibility(View.GONE);

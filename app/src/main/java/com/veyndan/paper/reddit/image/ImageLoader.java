@@ -1,39 +1,30 @@
 package com.veyndan.paper.reddit.image;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.veyndan.paper.reddit.image.imp.CustomCache;
+import com.veyndan.paper.reddit.util.Maybes;
+
 import io.reactivex.Maybe;
-import io.reactivex.MaybeSource;
+import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
-public class ImageLoader {
+public final class ImageLoader {
 
-    private final Cache cache;
-    private final Network network;
-    private final Decoder decoder;
+    public static Single<Bitmap> load(final String url, final Context context,
+                                      final Single<Bitmap> network) {
+        final Cache cache = CustomCache.getInstance(context);
+        final Maybe<Bitmap> memory = Maybes.ofNullable(cache.get(url));
 
-    public ImageLoader(final Cache cache, final Network network, final Decoder decoder) {
-        this.cache = cache;
-        this.network = network;
-        this.decoder = decoder;
-    }
+        final Maybe<Bitmap> disk = Maybe.empty();
 
-    public Single<Bitmap> load(final String url) {
-        return Maybe.concat(memory(cache, url), network(url, cache, network, decoder).toMaybe())
-                .firstOrError();
-    }
-
-    private static MaybeSource<Bitmap> memory(final Cache cache, final String url) {
-        final Bitmap bitmap = cache.get(url);
-        return bitmap == null ? Maybe.empty() : Maybe.just(bitmap);
-    }
-
-    private static Single<Bitmap> network(final String url,
-                                          final Cache cache, final Network network,
-                                          final Decoder decoder) {
-        return Single.just(url)
-                .flatMap(network::getImageAsInputStream)
-                .map(decoder::decodeInputStream)
+        network
+                .observeOn(AndroidSchedulers.mainThread()) // Ensures writing to cache from same thread.
                 .doOnSuccess(bitmap -> cache.set(url, bitmap));
+
+        return Observable.concat(memory.toObservable(), disk.toObservable(), network.toObservable())
+                .firstOrError();
     }
 }
