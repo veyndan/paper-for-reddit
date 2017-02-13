@@ -11,6 +11,7 @@ import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import com.veyndan.paper.reddit.api.reddit.json.adapter.DefaultOnDataMismatchAdapter;
 import com.veyndan.paper.reddit.api.reddit.json.adapter.RedditObjectAdapter;
+import com.veyndan.paper.reddit.api.reddit.json.adapter.SubmissionAdapter;
 import com.veyndan.paper.reddit.api.reddit.model.Account2;
 import com.veyndan.paper.reddit.api.reddit.model.CaptchaNew;
 import com.veyndan.paper.reddit.api.reddit.model.Categories;
@@ -75,6 +76,7 @@ public final class Reddit {
                 // is returned instead of an empty object or null as expected. This sets an empty
                 // object if there are no replies.
                 .add(DefaultOnDataMismatchAdapter.newFactory(Types.newParameterizedType(Thing.class, Listing.class), new Thing<>(new Listing())))
+                .add(SubmissionAdapter.FACTORY)
                 .build();
 
         final MoshiConverterFactory jsonConverterFactory = MoshiConverterFactory.create(moshi);
