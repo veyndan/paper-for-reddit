@@ -126,10 +126,10 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         bindSaveAction(post, postHolder);
         bindCommentsAction(context, nodes, post, postHolder);
 
-        final PopupMenu otherMenu = new PopupMenu(context, postHolder.binding.postOther);
+        final PopupMenu otherMenu = new PopupMenu(context, postHolder.binding.postActionsLayout.postOther);
         otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
 
-        RxView.clicks(postHolder.binding.postOther)
+        RxView.clicks(postHolder.binding.postActionsLayout.postOther)
                 .subscribe(aVoid -> otherMenu.show());
 
         RxPopupMenu.itemClicks(otherMenu)
@@ -183,25 +183,25 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     .build());
         }
 
-        holder.binding.postHeader.setHeader(post.getLinkTitle(), post.getAuthor(), post.getDisplayAge(),
+        holder.binding.postHeaderLayout.postHeader.setHeader(post.getLinkTitle(), post.getAuthor(), post.getDisplayAge(),
                 post.getSubreddit(), flairs);
     }
 
     private void bindMedia(final Post post, final PostViewHolder holder) {
         final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
                 activity, customTabsClient, customTabsIntent, post, post.getMedias());
-        holder.binding.postMediaView.setAdapter(postMediaAdapter);
+        holder.binding.postMediaLayout.postMediaView.setAdapter(postMediaAdapter);
     }
 
     private void bindPoints(final Context context, final Post post, final PostViewHolder holder) {
         final String points = post.getDisplayPoints(context, scoreHiddenText);
-        holder.binding.postScore.setText(points);
+        holder.binding.postActionsLayout.postScore.setText(points);
     }
 
     private void bindUpvoteAction(final Context context, final Post post, final PostViewHolder holder) {
         final VoteDirection likes = post.getLikes();
-        holder.binding.postUpvoteNew.setChecked(likes == VoteDirection.UPVOTE);
-        RxCompoundButton.checkedChanges(holder.binding.postUpvoteNew)
+        holder.binding.postActionsLayout.postUpvoteNew.setChecked(likes == VoteDirection.UPVOTE);
+        RxCompoundButton.checkedChanges(holder.binding.postActionsLayout.postUpvoteNew)
                 // checkedChanges emits the checked state on subscription. As the voted state of
                 // the Reddit post is the same as the checked state of the button initially,
                 // skipping the initial emission means no unnecessary network requests occur.
@@ -216,15 +216,15 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         post.setPoints(post.getPoints() + (isChecked ? 1 : -1));
 
                         final String points1 = post.getDisplayPoints(context, scoreHiddenText);
-                        holder.binding.postScore.setText(points1);
+                        holder.binding.postActionsLayout.postScore.setText(points1);
                     }
                 });
     }
 
     private void bindDownvoteAction(final Context context, final Post post, final PostViewHolder holder) {
         final VoteDirection likes = post.getLikes();
-        holder.binding.postDownvoteNew.setChecked(likes == VoteDirection.DOWNVOTE);
-        RxCompoundButton.checkedChanges(holder.binding.postDownvoteNew)
+        holder.binding.postActionsLayout.postDownvoteNew.setChecked(likes == VoteDirection.DOWNVOTE);
+        RxCompoundButton.checkedChanges(holder.binding.postActionsLayout.postDownvoteNew)
                 // checkedChanges emits the checked state on subscription. As the voted state of
                 // the Reddit post is the same as the checked state of the button initially,
                 // skipping the initial emission means no unnecessary network requests occur.
@@ -239,17 +239,17 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         post.setPoints(post.getPoints() + (isChecked ? -1 : 1));
 
                         final String points1 = post.getDisplayPoints(context, scoreHiddenText);
-                        holder.binding.postScore.setText(points1);
+                        holder.binding.postActionsLayout.postScore.setText(points1);
                     }
                 });
     }
 
     private void bindSaveAction(final Post post, final PostViewHolder holder) {
-        holder.binding.postSave.setChecked(post.isSaved());
-        RxView.clicks(holder.binding.postSave)
+        holder.binding.postActionsLayout.postSave.setChecked(post.isSaved());
+        RxView.clicks(holder.binding.postActionsLayout.postSave)
                 .subscribe(aVoid -> {
-                    holder.binding.postSave.toggle();
-                    final boolean isChecked = holder.binding.postSave.isChecked();
+                    holder.binding.postActionsLayout.postSave.toggle();
+                    final boolean isChecked = holder.binding.postActionsLayout.postSave.isChecked();
 
                     post.setSaved(isChecked);
                     if (isChecked) {
@@ -265,10 +265,10 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
     }
 
     private void bindCommentsAction(final Context context, final List<Node<Response<Thing<Listing>>>> nodes, final Post post, final PostViewHolder holder) {
-        RxView.clicks(holder.binding.postComments)
+        RxView.clicks(holder.binding.postActionsLayout.postComments)
                 .map(aVoid -> {
-                    holder.binding.postComments.toggle();
-                    return holder.binding.postComments.isChecked();
+                    holder.binding.postActionsLayout.postComments.toggle();
+                    return holder.binding.postActionsLayout.postComments.isChecked();
                 })
                 .subscribe(displayDescendants -> {
                     post.setDescendantsVisible(!displayDescendants);
@@ -281,8 +281,8 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                             nodes.subList(holder.getAdapterPosition() + 1, i).clear();
                             adapter.notifyItemRangeRemoved(holder.getAdapterPosition() + 1, i - (holder.getAdapterPosition() + 1));
 
-                            holder.binding.postCommentCount.setVisibility(View.VISIBLE);
-                            holder.binding.postCommentCount.setText(String.valueOf(i - (holder.getAdapterPosition() + 1)));
+                            holder.binding.postActionsLayout.postCommentCount.setVisibility(View.VISIBLE);
+                            holder.binding.postActionsLayout.postCommentCount.setText(String.valueOf(i - (holder.getAdapterPosition() + 1)));
                         } else {
                             post.preOrderTraverse(post.getDepth())
                                     .skip(1)
@@ -292,7 +292,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                                         adapter.notifyItemRangeInserted(holder.getAdapterPosition() + 1, children.size());
                                     });
 
-                            holder.binding.postCommentCount.setVisibility(View.INVISIBLE);
+                            holder.binding.postActionsLayout.postCommentCount.setVisibility(View.INVISIBLE);
                         }
                     } else {
                         final Intent commentsIntent = new Intent(context, MainActivity.class);
@@ -306,11 +306,11 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 });
 
         if (post.isInternalNode() && !post.isDescendantsVisible()) {
-            holder.binding.postCommentCount.setVisibility(View.VISIBLE);
+            holder.binding.postActionsLayout.postCommentCount.setVisibility(View.VISIBLE);
             final String commentCount = post.getDisplayDescendants();
-            holder.binding.postCommentCount.setText(commentCount);
+            holder.binding.postActionsLayout.postCommentCount.setText(commentCount);
         } else {
-            holder.binding.postCommentCount.setVisibility(View.INVISIBLE);
+            holder.binding.postActionsLayout.postCommentCount.setVisibility(View.INVISIBLE);
         }
     }
 
