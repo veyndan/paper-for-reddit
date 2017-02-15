@@ -10,10 +10,6 @@
         android:orientation="vertical">
 
         <include
-            android:id="@+id/post_header_layout"
-            layout="@layout/item_post_header"/>
-
-        <include
             android:id="@+id/post_media_layout"
             layout="@layout/item_post_media"/>
 

@@ -118,7 +118,6 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         final PostViewHolder postHolder = (PostViewHolder) holder;
         final Post post = (Post) nodes.get(position);
 
-        bindHeader(post, postHolder);
         bindMedia(post, postHolder);
         bindPoints(context, post, postHolder);
         bindUpvoteAction(context, post, postHolder);
@@ -145,46 +144,6 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                             break;
                     }
                 });
-    }
-
-    private void bindHeader(final Post post, final PostViewHolder holder) {
-        final List<Flair> flairs = new ArrayList<>();
-
-        if (post.isStickied()) {
-            flairs.add(new Flair.Builder(flairStickiedColor)
-                    .text(flairStickiedText)
-                    .build());
-        }
-
-        if (post.isLocked()) {
-            flairs.add(new Flair.Builder(flairLockedColor)
-                    .text(flairLockedText)
-                    .icon(flairLockIcon)
-                    .build());
-        }
-
-        if (post.isNsfw()) {
-            flairs.add(new Flair.Builder(flairNsfwColor)
-                    .text(flairNsfwText)
-                    .build());
-        }
-
-        if (post.hasLinkFlair()) {
-            flairs.add(new Flair.Builder(flairLinkColor)
-                    .type(Flair.Type.LINK)
-                    .text(post.getLinkFlair())
-                    .build());
-        }
-
-        if (post.isGilded()) {
-            flairs.add(new Flair.Builder(flairGildedColor)
-                    .text(String.valueOf(post.getGildedCount()))
-                    .icon(flairGildedIcon)
-                    .build());
-        }
-
-        holder.binding.postHeaderLayout.postHeader.setHeader(post.getLinkTitle(), post.getAuthor(), post.getDisplayAge(),
-                post.getSubreddit(), flairs);
     }
 
     private void bindMedia(final Post post, final PostViewHolder holder) {
