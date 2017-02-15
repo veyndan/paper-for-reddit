@@ -52,6 +52,12 @@ public class SwipeItemTouchHelperCallback extends ItemTouchHelper.Callback {
             // Fade out the view as it is swiped out of the parent's bounds
             holder.itemView.setAlpha(1.0f - Math.abs(dX) / (float) (holder.itemView.getWidth()));
             holder.itemView.setTranslationX(dX);
+
+            // TODO Use ((LinearLayoutManager) recyclerView.getLayoutManager()).find(First|Last)VisibleItemPosition() which finds whether to animate the swiping of such a view.
+            // TODO Use recyclerView.findViewHolderForAdapterPosition(position) to get the ViewHolder.
+            // TODO Notify the ViewHolder that it was swiped for each position that is eligible.
+            // TODO Set a tag on holder (e.g. using an interface) which states which node it is and which subpart it is e.g. post 2 sub part 3 out of 10.
+            // TODO From here you can work out whether to swipe it or not.
         } else {
             super.onChildDraw(c, recyclerView, holder, dX, dY, actionState, isCurrentlyActive);
         }
