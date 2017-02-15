@@ -19,7 +19,6 @@ import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.post.model.Progress;
 import com.veyndan.paper.reddit.ui.recyclerview.SwipeItemTouchHelperCallback;
-import com.veyndan.paper.reddit.ui.recyclerview.itemdecoration.MarginItemDecoration;
 import com.veyndan.paper.reddit.ui.recyclerview.itemdecoration.TreeInsetItemDecoration;
 import com.veyndan.paper.reddit.util.Node;
 
@@ -84,7 +83,6 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         postAdapter = new PostAdapter(getActivity(), nodes, reddit);
 
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new MarginItemDecoration(getActivity(), R.dimen.card_view_margin));
         recyclerView.addItemDecoration(new TreeInsetItemDecoration(getActivity(), R.dimen.post_child_inset_multiplier));
         recyclerView.setAdapter(postAdapter);
 
