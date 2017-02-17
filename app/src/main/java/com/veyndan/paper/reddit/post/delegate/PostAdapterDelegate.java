@@ -46,23 +46,12 @@ import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thing<Listing>>>>> {
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
-    @BindColor(R.color.post_flair_locked) int flairLockedColor;
-    @BindColor(R.color.post_flair_stickied) int flairStickiedColor;
-    @BindColor(R.color.post_flair_nsfw) int flairNsfwColor;
-    @BindColor(R.color.post_flair_link) int flairLinkColor;
-    @BindColor(R.color.post_flair_gilded) int flairGildedColor;
-
-    @BindDrawable(R.drawable.ic_lock_outline_white_12sp) Drawable flairLockIcon;
-    @BindDrawable(R.drawable.ic_star_white_12sp) Drawable flairGildedIcon;
-
-    @BindString(R.string.post_locked) String flairLockedText;
-    @BindString(R.string.post_stickied) String flairStickiedText;
-    @BindString(R.string.post_nsfw) String flairNsfwText;
     @BindString(R.string.score_hidden) String scoreHiddenText;
 
     private final PostAdapter adapter;
@@ -97,7 +86,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
     @Override
     public boolean isForViewType(@NonNull final List<Node<Response<Thing<Listing>>>> nodes,
                                  final int position) {
-        return nodes.get(position) instanceof Post;
+        return position % 2 == 1 && nodes.get(position) instanceof Post;
     }
 
     @NonNull
@@ -114,21 +103,24 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                                     final int position,
                                     @NonNull final RecyclerView.ViewHolder holder,
                                     @NonNull final List<Object> payloads) {
+        bindPost((Post) nodes.get(position), (PostViewHolder) holder, nodes);
+    }
+
+    private void bindPost(final Post post, final PostViewHolder holder,
+                          final List<Node<Response<Thing<Listing>>>> nodes) {
         final Context context = holder.itemView.getContext();
-        final PostViewHolder postHolder = (PostViewHolder) holder;
-        final Post post = (Post) nodes.get(position);
 
-        bindMedia(post, postHolder);
-        bindPoints(context, post, postHolder);
-        bindUpvoteAction(context, post, postHolder);
-        bindDownvoteAction(context, post, postHolder);
-        bindSaveAction(post, postHolder);
-        bindCommentsAction(context, nodes, post, postHolder);
+        bindMedia(post, holder);
+        bindPoints(context, post, holder);
+        bindUpvoteAction(context, post, holder);
+        bindDownvoteAction(context, post, holder);
+        bindSaveAction(post, holder);
+        bindCommentsAction(context, nodes, post, holder);
 
-        final PopupMenu otherMenu = new PopupMenu(context, postHolder.binding.postActionsLayout.postOther);
+        final PopupMenu otherMenu = new PopupMenu(context, holder.binding.postActionsLayout.postOther);
         otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
 
-        RxView.clicks(postHolder.binding.postActionsLayout.postOther)
+        RxView.clicks(holder.binding.postActionsLayout.postOther)
                 .subscribe(aVoid -> otherMenu.show());
 
         RxPopupMenu.itemClicks(otherMenu)

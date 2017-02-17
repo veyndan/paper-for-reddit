@@ -18,6 +18,7 @@ import com.veyndan.paper.reddit.util.Node;
 import java.util.List;
 
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements DepthCalculatorDelegate {
 
@@ -25,6 +26,14 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     private final List<Node<Response<Thing<Listing>>>> nodes;
 
     public PostAdapter(final Activity activity, final List<Node<Response<Thing<Listing>>>> nodes, final Reddit reddit) {
+        Timber.d("%s", nodes);
+
+        for (int i = nodes.size() - 1; i >= 0; i--) {
+            nodes.add(i, nodes.get(i));
+        }
+
+        Timber.d("%s", nodes);
+
         this.nodes = nodes;
 
         delegatesManager = new AdapterDelegatesManager<>();
@@ -60,6 +69,10 @@ public class PostAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> i
     @Override
     public int getItemViewType(final int position) {
         return delegatesManager.getItemViewType(nodes, position);
+    }
+
+    public List<Node<Response<Thing<Listing>>>> getItems() {
+        return nodes;
     }
 }
 

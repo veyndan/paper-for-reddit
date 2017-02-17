@@ -42,7 +42,7 @@ public class PostHeaderAdapterDelegate extends AdapterDelegate<List<Node<Respons
     @Override
     protected boolean isForViewType(@NonNull final List<Node<Response<Thing<Listing>>>> nodes,
                                     final int position) {
-        return nodes.get(position) instanceof Post && position % 2 == 0;
+        return position % 2 == 0 && nodes.get(position) instanceof Post;
     }
 
     @NonNull
