@@ -11,6 +11,7 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listing>>>> {
 
@@ -45,6 +46,6 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
                 .subscribe(nodes1 -> {
                     postMvpView.popNode();
                     loadNodes(nodes1);
-                });
+                }, Timber::e);
     }
 }

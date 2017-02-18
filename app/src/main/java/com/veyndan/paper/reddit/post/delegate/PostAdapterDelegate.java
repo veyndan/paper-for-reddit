@@ -46,6 +46,7 @@ import butterknife.BindString;
 import butterknife.ButterKnife;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
+import timber.log.Timber;
 
 public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thing<Listing>>>>> {
 
@@ -130,7 +131,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
 
         RxView.clicks(postHolder.binding.postOther)
-                .subscribe(aVoid -> otherMenu.show());
+                .subscribe(aVoid -> otherMenu.show(), Timber::e);
 
         RxPopupMenu.itemClicks(otherMenu)
                 .subscribe(menuItem -> {
@@ -144,7 +145,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         case R.id.action_post_report:
                             break;
                     }
-                });
+                }, Timber::e);
     }
 
     private void bindHeader(final Post post, final PostViewHolder holder) {
@@ -211,14 +212,14 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     if (!post.isArchived()) {
                         reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.getFullname())
                                 .subscribeOn(Schedulers.io())
-                                .subscribe();
+                                .subscribe(response -> {}, Timber::e);
 
                         post.setPoints(post.getPoints() + (isChecked ? 1 : -1));
 
                         final String points1 = post.getDisplayPoints(context, scoreHiddenText);
                         holder.binding.postScore.setText(points1);
                     }
-                });
+                }, Timber::e);
     }
 
     private void bindDownvoteAction(final Context context, final Post post, final PostViewHolder holder) {
@@ -234,14 +235,14 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     if (!post.isArchived()) {
                         reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.getFullname())
                                 .subscribeOn(Schedulers.io())
-                                .subscribe();
+                                .subscribe(response -> {}, Timber::e);
 
                         post.setPoints(post.getPoints() + (isChecked ? -1 : 1));
 
                         final String points1 = post.getDisplayPoints(context, scoreHiddenText);
                         holder.binding.postScore.setText(points1);
                     }
-                });
+                }, Timber::e);
     }
 
     private void bindSaveAction(final Post post, final PostViewHolder holder) {
@@ -255,13 +256,13 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     if (isChecked) {
                         reddit.save("", post.getFullname())
                                 .subscribeOn(Schedulers.io())
-                                .subscribe();
+                                .subscribe(response -> {}, Timber::e);
                     } else {
                         reddit.unsave(post.getFullname())
                                 .subscribeOn(Schedulers.io())
-                                .subscribe();
+                                .subscribe(response -> {}, Timber::e);
                     }
-                });
+                }, Timber::e);
     }
 
     private void bindCommentsAction(final Context context, final List<Node<Response<Thing<Listing>>>> nodes, final Post post, final PostViewHolder holder) {
@@ -290,7 +291,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                                     .subscribe(children -> {
                                         nodes.addAll(holder.getAdapterPosition() + 1, children);
                                         adapter.notifyItemRangeInserted(holder.getAdapterPosition() + 1, children.size());
-                                    });
+                                    }, Timber::e);
 
                             holder.binding.postCommentCount.setVisibility(View.INVISIBLE);
                         }
@@ -303,7 +304,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                                 .build());
                         context.startActivity(commentsIntent);
                     }
-                });
+                }, Timber::e);
 
         if (post.isInternalNode() && !post.isDescendantsVisible()) {
             holder.binding.postCommentCount.setVisibility(View.VISIBLE);
@@ -371,8 +372,8 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         // hiding network request.
                         reddit.hide(post.getFullname())
                                 .subscribeOn(Schedulers.io())
-                                .subscribe();
-                    });
+                                .subscribe(response -> {}, Timber::e);
+                    }, Timber::e);
 
             snackbar.show();
 

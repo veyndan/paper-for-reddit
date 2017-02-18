@@ -25,6 +25,8 @@ import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class ImageAdapterDelegate
         extends AbsListItemAdapterDelegate<Image, Object, ImageAdapterDelegate.ImageViewHolder> {
 
@@ -71,7 +73,7 @@ public class ImageAdapterDelegate
         RxView.clicks(holder.itemView)
                 .subscribe(aVoid -> {
                     customTabsIntent.launchUrl(activity, Uri.parse(image.getUrl()));
-                });
+                }, Timber::e);
 
         final boolean imageDimensAvailable = image.getSize().getWidth() > 0 && image.getSize().getHeight() > 0;
 
@@ -118,7 +120,7 @@ public class ImageAdapterDelegate
                     if (imageDimensAvailable) {
                         holder.binding.postMediaImage.getLayoutParams().height = (int) ((float) width / image.getSize().getWidth() * image.getSize().getHeight());
                     }
-                });
+                }, Timber::e);
     }
 
     static class ImageViewHolder extends RecyclerView.ViewHolder {

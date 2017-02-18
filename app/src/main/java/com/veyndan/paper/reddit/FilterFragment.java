@@ -19,6 +19,8 @@ import com.jakewharton.rxbinding.support.design.widget.RxTabLayout;
 import com.jakewharton.rxbinding.view.RxView;
 import com.veyndan.paper.reddit.databinding.FragmentFilterBinding;
 
+import timber.log.Timber;
+
 public class FilterFragment extends DialogFragment {
 
     @SuppressWarnings("RedundantNoArgConstructor")
@@ -50,7 +52,7 @@ public class FilterFragment extends DialogFragment {
                     startActivity(intent);
 
                     dismiss();
-                });
+                }, Timber::e);
 
         final FragmentManager fragmentManager = getChildFragmentManager();
         binding.filterViewPager.setAdapter(new FilterSectionAdapter(fragmentManager, fragments));
@@ -83,7 +85,7 @@ public class FilterFragment extends DialogFragment {
                             icon.setAlpha((int) (0.54 * 255));
                             break;
                     }
-                });
+                }, Timber::e);
 
         return binding.getRoot();
     }
