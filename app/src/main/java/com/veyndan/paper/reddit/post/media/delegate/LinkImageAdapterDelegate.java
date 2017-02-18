@@ -24,6 +24,8 @@ import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class LinkImageAdapterDelegate
         extends AbsListItemAdapterDelegate<LinkImage, Object, LinkImageAdapterDelegate.LinkImageViewHolder> {
 
@@ -68,7 +70,7 @@ public class LinkImageAdapterDelegate
         RxView.clicks(holder.itemView)
                 .subscribe(aVoid -> {
                     customTabsIntent.launchUrl(activity, Uri.parse(post.getLinkUrl()));
-                });
+                }, Timber::e);
 
         holder.binding.postMediaImageProgress.setVisibility(View.VISIBLE);
 

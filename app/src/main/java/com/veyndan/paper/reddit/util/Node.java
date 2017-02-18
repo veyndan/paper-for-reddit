@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 public abstract class Node<T> {
 
@@ -70,7 +71,7 @@ public abstract class Node<T> {
                 .doOnNext(node -> node.depth = depth)
                 .doOnNext(node -> {
                     if (node.descendantCount == null) {
-                        node.generateDescendantCount().subscribe(integer -> node.descendantCount = integer);
+                        node.generateDescendantCount().subscribe(integer -> node.descendantCount = integer, Timber::e);
                     }
                 });
     }
@@ -81,7 +82,7 @@ public abstract class Node<T> {
                 .doOnNext(node -> node.depth = depth)
                 .doOnNext(node -> {
                     if (node.descendantCount == null) {
-                        node.generateDescendantCount().subscribe(integer -> node.descendantCount = integer);
+                        node.generateDescendantCount().subscribe(integer -> node.descendantCount = integer, Timber::e);
                     }
                 })
                 .concatMap(node -> Observable.just(node)
