@@ -278,12 +278,26 @@ public class Post extends Node<Response<Thing<Listing>>> {
     }
 
     public String getDisplayDescendants() {
-        final int descendantCount = getDescendantCount();
-        if (descendantCount < 1000) {
-            return String.valueOf(descendantCount);
-        } else if (descendantCount < 100000) {
-            final int beforeDecimal = descendantCount / 1000;
-            final int afterDecimal = descendantCount % 1000 / 100;
+        return quantityString(getDescendantCount());
+    }
+
+    public String getDisplayPoints(final Context context) {
+        final Resources resources = context.getResources();
+
+        if (scoreHidden) {
+            return resources.getString(R.string.score_hidden);
+        } else {
+            final String formattedString = quantityString(points);
+            return resources.getQuantityString(R.plurals.points, points, formattedString);
+        }
+    }
+
+    private static String quantityString(final int num) {
+        if (num < 1000) {
+            return String.valueOf(num);
+        } else {
+            final int beforeDecimal = num / 1000;
+            final int afterDecimal = num % 1000 / 100;
 
             final int maxStringSize = 5; // e.g. "99.9K"
             final StringBuilder result = new StringBuilder(maxStringSize);
@@ -293,18 +307,6 @@ public class Post extends Node<Response<Thing<Listing>>> {
             }
             result.append('K');
             return result.toString();
-        } else {
-            throw new UnsupportedOperationException("Descendant count summarization not implemented yet for: " + descendantCount);
-        }
-    }
-
-    public String getDisplayPoints(final Context context) {
-        final Resources resources = context.getResources();
-
-        if (scoreHidden) {
-            return resources.getString(R.string.score_hidden);
-        } else {
-            return resources.getQuantityString(R.plurals.points, points, points);
         }
     }
 
