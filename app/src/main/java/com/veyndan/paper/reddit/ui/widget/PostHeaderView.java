@@ -13,6 +13,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatTextView;
 import android.text.Spannable;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
@@ -23,7 +24,6 @@ import android.text.style.StyleSpan;
 import android.text.style.TextAppearanceSpan;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.TextView;
 
 import com.binaryfork.spanny.Spanny;
 import com.google.common.base.MoreObjects;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class PostHeaderView extends TextView {
+public class PostHeaderView extends AppCompatTextView {
 
     private final Context context;
 
