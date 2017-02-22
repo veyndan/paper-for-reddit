@@ -9,6 +9,8 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Pair;
+import android.util.Range;
 
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.model.Comment;
@@ -31,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.functions.Function;
 import retrofit2.Response;
 
 public class Post extends Node<Response<Thing<Listing>>> {
@@ -277,8 +280,25 @@ public class Post extends Node<Response<Thing<Listing>>> {
         this.descendantsVisible = descendantsVisible;
     }
 
+    private static final Plurals PLURALS = new Plurals.Builder()
+            .plural(new Range<>(0, 999), String::valueOf)
+            .plural(new Range<>(1000, Integer.MAX_VALUE), num -> {
+                final int beforeDecimal = num / 1000;
+                final int afterDecimal = num % 1000 / 100;
+
+                final int maxStringSize = 5; // e.g. "99.9K"
+                final StringBuilder result = new StringBuilder(maxStringSize);
+                result.append(beforeDecimal);
+                if (afterDecimal > 0) {
+                    result.append('.').append(afterDecimal);
+                }
+                result.append('K');
+                return result.toString();
+            })
+            .build();
+
     public String getDisplayDescendants() {
-        return quantityString(getDescendantCount());
+        return PLURALS.getPlural(getDescendantCount());
     }
 
     public String getDisplayPoints(final Context context) {
@@ -287,26 +307,44 @@ public class Post extends Node<Response<Thing<Listing>>> {
         if (scoreHidden) {
             return resources.getString(R.string.score_hidden);
         } else {
-            final String formattedString = quantityString(points);
+            final String formattedString = PLURALS.getPlural(points);
             return resources.getQuantityString(R.plurals.points, points, formattedString);
         }
     }
 
-    private static String quantityString(final int num) {
-        if (num < 1000) {
-            return String.valueOf(num);
-        } else {
-            final int beforeDecimal = num / 1000;
-            final int afterDecimal = num % 1000 / 100;
+    private static class Plurals {
 
-            final int maxStringSize = 5; // e.g. "99.9K"
-            final StringBuilder result = new StringBuilder(maxStringSize);
-            result.append(beforeDecimal);
-            if (afterDecimal > 0) {
-                result.append('.').append(afterDecimal);
+        private final List<Pair<Range<Integer>, Function<Integer, String>>> plurals;
+
+        private Plurals(final Plurals.Builder builder) {
+            plurals = builder.plurals;
+        }
+
+        private String getPlural(final int num) {
+            for (final Pair<Range<Integer>, Function<Integer, String>> plural : plurals) {
+                if (plural.first.contains(num)) {
+                    try {
+                        return plural.second.apply(num);
+                    } catch (final Exception ignored) {
+                        throw new IllegalStateException();
+                    }
+                }
             }
-            result.append('K');
-            return result.toString();
+            throw new IllegalStateException("No ranges encapsulate " + num + " for a plural");
+        }
+
+        private static class Builder {
+
+            private final List<Pair<Range<Integer>, Function<Integer, String>>> plurals = new ArrayList<>();
+
+            private Builder plural(final Range<Integer> range, final Function<Integer, String> function) {
+                plurals.add(new Pair<>(range, function));
+                return this;
+            }
+
+            private Plurals build() {
+                return new Plurals(this);
+            }
         }
     }
 
