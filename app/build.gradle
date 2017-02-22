@@ -51,10 +51,6 @@ dependencies {
     // Apache Commons
     compile 'org.apache.commons:commons-lang3:3.5'
 
-    // Butterknife
-    compile 'com.jakewharton:butterknife:8.5.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-
     // Deep Link Dispatch
     compile 'com.airbnb:deeplinkdispatch:3.0.0-rc3'
     annotationProcessor 'com.airbnb:deeplinkdispatch-processor:3.0.0-rc3'
