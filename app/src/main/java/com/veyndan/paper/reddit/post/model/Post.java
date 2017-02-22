@@ -10,7 +10,6 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Pair;
-import android.util.Range;
 
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.model.Comment;
@@ -34,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import retrofit2.Response;
 
 public class Post extends Node<Response<Thing<Listing>>> {
@@ -281,8 +281,8 @@ public class Post extends Node<Response<Thing<Listing>>> {
     }
 
     private static final Plurals PLURALS = new Plurals.Builder()
-            .plural(new Range<>(0, 999), String::valueOf)
-            .plural(new Range<>(1000, Integer.MAX_VALUE), num -> {
+            .plural(num -> num >= 0 && num < 1000, String::valueOf)
+            .plural(num -> num >= 1000, num -> {
                 final int beforeDecimal = num / 1000;
                 final int afterDecimal = num % 1000 / 100;
 
@@ -314,20 +314,20 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
     private static class Plurals {
 
-        private final List<Pair<Range<Integer>, Function<Integer, String>>> plurals;
+        private final List<Pair<Predicate<Integer>, Function<Integer, String>>> plurals;
 
         private Plurals(final Plurals.Builder builder) {
             plurals = builder.plurals;
         }
 
         private String getPlural(final int num) {
-            for (final Pair<Range<Integer>, Function<Integer, String>> plural : plurals) {
-                if (plural.first.contains(num)) {
-                    try {
+            for (final Pair<Predicate<Integer>, Function<Integer, String>> plural : plurals) {
+                try {
+                    if (plural.first.test(num)) {
                         return plural.second.apply(num);
-                    } catch (final Exception ignored) {
-                        throw new IllegalStateException();
                     }
+                } catch (final Exception ignored) {
+                    throw new IllegalStateException();
                 }
             }
             throw new IllegalStateException("No ranges encapsulate " + num + " for a plural");
@@ -335,10 +335,10 @@ public class Post extends Node<Response<Thing<Listing>>> {
 
         private static class Builder {
 
-            private final List<Pair<Range<Integer>, Function<Integer, String>>> plurals = new ArrayList<>();
+            private final List<Pair<Predicate<Integer>, Function<Integer, String>>> plurals = new ArrayList<>();
 
-            private Builder plural(final Range<Integer> range, final Function<Integer, String> function) {
-                plurals.add(new Pair<>(range, function));
+            private Builder plural(final Predicate<Integer> predicate, final Function<Integer, String> function) {
+                plurals.add(new Pair<>(predicate, function));
                 return this;
             }
 
