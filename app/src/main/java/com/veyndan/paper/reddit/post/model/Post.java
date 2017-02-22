@@ -9,7 +9,6 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
-import android.util.Pair;
 
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.model.Comment;
@@ -30,10 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import retrofit2.Response;
 
 public class Post extends Node<Response<Thing<Listing>>> {
@@ -280,25 +278,27 @@ public class Post extends Node<Response<Thing<Listing>>> {
         this.descendantsVisible = descendantsVisible;
     }
 
-    private static final Plurals PLURALS = new Plurals.Builder()
-            .plural(num -> num >= 0 && num < 1000, String::valueOf)
-            .plural(num -> num >= 1000, num -> {
-                final int beforeDecimal = num / 1000;
-                final int afterDecimal = num % 1000 / 100;
+    private static String getPlural(final int num) {
+        return Maybe.concat(
+                Single.just(num)
+                        .filter(num1 -> num1 >= 0 && num1 < 1000)
+                        .map(String::valueOf),
+                Single.just(num)
+                        .filter(num1 -> num1 >= 1000 && num1 % 1000 / 100 == 0)
+                        .map(num1 -> num1 / 1000 + "K"),
+                Single.just(num)
+                        .filter(num1 -> num1 >= 1000 && num1 % 1000 / 100 != 0)
+                        .map(num2 -> {
+                            final int beforeDecimal = num2 / 1000;
+                            final int afterDecimal = num2 % 1000 / 100;
 
-                final int maxStringSize = 5; // e.g. "99.9K"
-                final StringBuilder result = new StringBuilder(maxStringSize);
-                result.append(beforeDecimal);
-                if (afterDecimal > 0) {
-                    result.append('.').append(afterDecimal);
-                }
-                result.append('K');
-                return result.toString();
-            })
-            .build();
+                            return String.valueOf(beforeDecimal) + '.' + afterDecimal + 'K';
+                        })
+        ).blockingFirst();
+    }
 
     public String getDisplayDescendants() {
-        return PLURALS.getPlural(getDescendantCount());
+        return getPlural(getDescendantCount());
     }
 
     public String getDisplayPoints(final Context context) {
@@ -307,44 +307,8 @@ public class Post extends Node<Response<Thing<Listing>>> {
         if (scoreHidden) {
             return resources.getString(R.string.score_hidden);
         } else {
-            final String formattedString = PLURALS.getPlural(points);
+            final String formattedString = getPlural(points);
             return resources.getQuantityString(R.plurals.points, points, formattedString);
-        }
-    }
-
-    private static class Plurals {
-
-        private final List<Pair<Predicate<Integer>, Function<Integer, String>>> plurals;
-
-        private Plurals(final Plurals.Builder builder) {
-            plurals = builder.plurals;
-        }
-
-        private String getPlural(final int num) {
-            for (final Pair<Predicate<Integer>, Function<Integer, String>> plural : plurals) {
-                try {
-                    if (plural.first.test(num)) {
-                        return plural.second.apply(num);
-                    }
-                } catch (final Exception ignored) {
-                    throw new IllegalStateException();
-                }
-            }
-            throw new IllegalStateException("No ranges encapsulate " + num + " for a plural");
-        }
-
-        private static class Builder {
-
-            private final List<Pair<Predicate<Integer>, Function<Integer, String>>> plurals = new ArrayList<>();
-
-            private Builder plural(final Predicate<Integer> predicate, final Function<Integer, String> function) {
-                plurals.add(new Pair<>(predicate, function));
-                return this;
-            }
-
-            private Plurals build() {
-                return new Plurals(this);
-            }
         }
     }
 
