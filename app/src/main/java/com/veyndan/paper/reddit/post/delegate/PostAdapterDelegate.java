@@ -40,10 +40,6 @@ import com.veyndan.paper.reddit.util.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindColor;
-import butterknife.BindDrawable;
-import butterknife.BindString;
-import butterknife.ButterKnife;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 import timber.log.Timber;
@@ -51,19 +47,6 @@ import timber.log.Timber;
 public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thing<Listing>>>>> {
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
-
-    @BindColor(R.color.post_flair_locked) int flairLockedColor;
-    @BindColor(R.color.post_flair_stickied) int flairStickiedColor;
-    @BindColor(R.color.post_flair_nsfw) int flairNsfwColor;
-    @BindColor(R.color.post_flair_link) int flairLinkColor;
-    @BindColor(R.color.post_flair_gilded) int flairGildedColor;
-
-    @BindDrawable(R.drawable.ic_lock_outline_white_12sp) Drawable flairLockIcon;
-    @BindDrawable(R.drawable.ic_star_white_12sp) Drawable flairGildedIcon;
-
-    @BindString(R.string.post_locked) String flairLockedText;
-    @BindString(R.string.post_stickied) String flairStickiedText;
-    @BindString(R.string.post_nsfw) String flairNsfwText;
 
     private final PostAdapter adapter;
     private final Activity activity;
@@ -103,7 +86,6 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(final ViewGroup parent) {
-        ButterKnife.bind(this, parent);
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         final PostItemBinding binding = PostItemBinding.inflate(inflater, parent, false);
         return new PostViewHolder(binding, adapter, reddit);
@@ -118,7 +100,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         final PostViewHolder postHolder = (PostViewHolder) holder;
         final Post post = (Post) nodes.get(position);
 
-        bindHeader(post, postHolder);
+        bindHeader(context, post, postHolder);
         bindMedia(post, postHolder);
         bindPoints(context, post, postHolder);
         bindUpvoteAction(context, post, postHolder);
@@ -147,16 +129,23 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 }, Timber::e);
     }
 
-    private void bindHeader(final Post post, final PostViewHolder holder) {
+    private static void bindHeader(final Context context, final Post post, final PostViewHolder holder) {
         final List<Flair> flairs = new ArrayList<>();
 
         if (post.isStickied()) {
+            final int flairStickiedColor = context.getColor(R.color.post_flair_stickied);
+            final String flairStickiedText = context.getString(R.string.post_stickied);
+
             flairs.add(new Flair.Builder(flairStickiedColor)
                     .text(flairStickiedText)
                     .build());
         }
 
         if (post.isLocked()) {
+            final int flairLockedColor = context.getColor(R.color.post_flair_locked);
+            final String flairLockedText = context.getString(R.string.post_locked);
+            final Drawable flairLockIcon = context.getDrawable(R.drawable.ic_lock_outline_white_12sp);
+
             flairs.add(new Flair.Builder(flairLockedColor)
                     .text(flairLockedText)
                     .icon(flairLockIcon)
@@ -164,12 +153,17 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         }
 
         if (post.isNsfw()) {
+            final int flairNsfwColor = context.getColor(R.color.post_flair_nsfw);
+            final String flairNsfwText = context.getString(R.string.post_nsfw);
+
             flairs.add(new Flair.Builder(flairNsfwColor)
                     .text(flairNsfwText)
                     .build());
         }
 
         if (post.hasLinkFlair()) {
+            final int flairLinkColor = context.getColor(R.color.post_flair_link);
+
             flairs.add(new Flair.Builder(flairLinkColor)
                     .type(Flair.Type.LINK)
                     .text(post.getLinkFlair())
@@ -177,6 +171,9 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         }
 
         if (post.isGilded()) {
+            final int flairGildedColor = context.getColor(R.color.post_flair_gilded);
+            final Drawable flairGildedIcon = context.getDrawable(R.drawable.ic_star_white_12sp);
+
             flairs.add(new Flair.Builder(flairGildedColor)
                     .text(String.valueOf(post.getGildedCount()))
                     .icon(flairGildedIcon)
