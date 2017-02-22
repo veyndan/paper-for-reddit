@@ -3,7 +3,6 @@ package com.veyndan.paper.reddit.post.media.mutator;
 import android.support.annotation.StringRes;
 import android.util.Size;
 
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.veyndan.paper.reddit.Config;
 import com.veyndan.paper.reddit.api.imgur.network.ImgurService;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
@@ -22,6 +21,7 @@ import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
 final class ImgurMutatorFactory implements MutatorFactory {
