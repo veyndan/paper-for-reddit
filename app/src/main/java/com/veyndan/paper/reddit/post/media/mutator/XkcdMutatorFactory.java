@@ -1,6 +1,5 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
 import com.veyndan.paper.reddit.api.xkcd.network.XkcdService;
 import com.veyndan.paper.reddit.post.media.model.Image;
@@ -12,6 +11,7 @@ import java.util.regex.Pattern;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
 final class XkcdMutatorFactory implements MutatorFactory {
