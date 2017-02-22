@@ -298,11 +298,12 @@ public class Post extends Node<Response<Thing<Listing>>> {
         }
     }
 
-    public String getDisplayPoints(final Context context, final String scoreHiddenText) {
+    public String getDisplayPoints(final Context context) {
+        final Resources resources = context.getResources();
+
         if (scoreHidden) {
-            return scoreHiddenText;
+            return resources.getString(R.string.score_hidden);
         } else {
-            final Resources resources = context.getResources();
             return resources.getQuantityString(R.plurals.points, points, points);
         }
     }

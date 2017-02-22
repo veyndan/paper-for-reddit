@@ -64,7 +64,6 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
     @BindString(R.string.post_locked) String flairLockedText;
     @BindString(R.string.post_stickied) String flairStickiedText;
     @BindString(R.string.post_nsfw) String flairNsfwText;
-    @BindString(R.string.score_hidden) String scoreHiddenText;
 
     private final PostAdapter adapter;
     private final Activity activity;
@@ -195,7 +194,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
     }
 
     private void bindPoints(final Context context, final Post post, final PostViewHolder holder) {
-        final String points = post.getDisplayPoints(context, scoreHiddenText);
+        final String points = post.getDisplayPoints(context);
         holder.binding.postScore.setText(points);
     }
 
@@ -216,7 +215,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
                         post.setPoints(post.getPoints() + (isChecked ? 1 : -1));
 
-                        final String points1 = post.getDisplayPoints(context, scoreHiddenText);
+                        final String points1 = post.getDisplayPoints(context);
                         holder.binding.postScore.setText(points1);
                     }
                 }, Timber::e);
@@ -239,7 +238,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
                         post.setPoints(post.getPoints() + (isChecked ? -1 : 1));
 
-                        final String points1 = post.getDisplayPoints(context, scoreHiddenText);
+                        final String points1 = post.getDisplayPoints(context);
                         holder.binding.postScore.setText(points1);
                     }
                 }, Timber::e);
