@@ -101,12 +101,12 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         final Post post = (Post) nodes.get(position);
 
         bindHeader(context, post, postHolder);
-        bindMedia(post, postHolder);
+        bindMedia(post, postHolder, activity, customTabsClient, customTabsIntent);
         bindPoints(context, post, postHolder);
-        bindUpvoteAction(context, post, postHolder);
-        bindDownvoteAction(context, post, postHolder);
-        bindSaveAction(post, postHolder);
-        bindCommentsAction(context, nodes, post, postHolder);
+        bindUpvoteAction(context, post, postHolder, reddit);
+        bindDownvoteAction(context, post, postHolder, reddit);
+        bindSaveAction(post, postHolder, reddit);
+        bindCommentsAction(context, nodes, post, postHolder, adapter);
 
         final PopupMenu otherMenu = new PopupMenu(context, postHolder.binding.postOther);
         otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
@@ -184,18 +184,21 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 post.getSubreddit(), flairs);
     }
 
-    private void bindMedia(final Post post, final PostViewHolder holder) {
+    private static void bindMedia(final Post post, final PostViewHolder holder,
+                                  final Activity activity, final CustomTabsClient customTabsClient,
+                                  final CustomTabsIntent customTabsIntent) {
         final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
                 activity, customTabsClient, customTabsIntent, post, post.getMedias());
         holder.binding.postMediaView.setAdapter(postMediaAdapter);
     }
 
-    private void bindPoints(final Context context, final Post post, final PostViewHolder holder) {
+    private static void bindPoints(final Context context, final Post post, final PostViewHolder holder) {
         final String points = post.getDisplayPoints(context);
         holder.binding.postScore.setText(points);
     }
 
-    private void bindUpvoteAction(final Context context, final Post post, final PostViewHolder holder) {
+    private static void bindUpvoteAction(final Context context, final Post post,
+                                         final PostViewHolder holder, final Reddit reddit) {
         final VoteDirection likes = post.getLikes();
         holder.binding.postUpvoteNew.setChecked(likes == VoteDirection.UPVOTE);
         RxCompoundButton.checkedChanges(holder.binding.postUpvoteNew)
@@ -218,7 +221,8 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 }, Timber::e);
     }
 
-    private void bindDownvoteAction(final Context context, final Post post, final PostViewHolder holder) {
+    private static void bindDownvoteAction(final Context context, final Post post,
+                                           final PostViewHolder holder, final Reddit reddit) {
         final VoteDirection likes = post.getLikes();
         holder.binding.postDownvoteNew.setChecked(likes == VoteDirection.DOWNVOTE);
         RxCompoundButton.checkedChanges(holder.binding.postDownvoteNew)
@@ -241,7 +245,8 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 }, Timber::e);
     }
 
-    private void bindSaveAction(final Post post, final PostViewHolder holder) {
+    private static void bindSaveAction(final Post post, final PostViewHolder holder,
+                                       final Reddit reddit) {
         holder.binding.postSave.setChecked(post.isSaved());
         RxView.clicks(holder.binding.postSave)
                 .subscribe(aVoid -> {
@@ -261,7 +266,10 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 }, Timber::e);
     }
 
-    private void bindCommentsAction(final Context context, final List<Node<Response<Thing<Listing>>>> nodes, final Post post, final PostViewHolder holder) {
+    private static void bindCommentsAction(final Context context,
+                                           final List<Node<Response<Thing<Listing>>>> nodes,
+                                           final Post post, final PostViewHolder holder,
+                                           final PostAdapter adapter) {
         RxView.clicks(holder.binding.postComments)
                 .map(aVoid -> {
                     holder.binding.postComments.toggle();
