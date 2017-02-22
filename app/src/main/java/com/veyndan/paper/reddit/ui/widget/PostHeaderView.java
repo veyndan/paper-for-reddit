@@ -38,13 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.BindDimen;
-import butterknife.ButterKnife;
-
 public class PostHeaderView extends TextView {
-
-    @BindDimen(R.dimen.post_title_subtitle_spacing) int titleSubtitleSpacing;
-    @BindDimen(R.dimen.post_subtitle_flair_spacing) int subtitleFlairSpacing;
 
     private final Context context;
 
@@ -65,7 +59,6 @@ public class PostHeaderView extends TextView {
 
     public PostHeaderView(final Context context, final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        ButterKnife.bind(this);
 
         this.context = context;
 
@@ -139,6 +132,9 @@ public class PostHeaderView extends TextView {
         }
 
         final boolean hasFlairs = !flairs.isEmpty();
+
+        final int titleSubtitleSpacing = getResources().getDimensionPixelSize(R.dimen.post_title_subtitle_spacing);
+        final int subtitleFlairSpacing = getResources().getDimensionPixelSize(R.dimen.post_subtitle_flair_spacing);
 
         textBuilder.subtitle(author, age, subreddit, hasFlairs, subtitleTextAppearanceSpan, titleSubtitleSpacing, subtitleFlairSpacing);
 
