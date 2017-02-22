@@ -1,6 +1,5 @@
 package com.veyndan.paper.reddit.image.imp;
 
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.veyndan.paper.reddit.image.Network;
 
 import java.io.InputStream;
@@ -10,6 +9,7 @@ import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Url;
 

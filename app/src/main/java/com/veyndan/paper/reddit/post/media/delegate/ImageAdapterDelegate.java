@@ -123,6 +123,7 @@ public class ImageAdapterDelegate
                             .flatMap(url -> ImageLoader.load(url, context, new CustomNetwork().getImageAsInputStream(url)
                                     .subscribeOn(Schedulers.io())
                                     .map(inputStream -> new CustomDecoder().decodeInputStream(inputStream))))
+                            .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(bitmap -> { // You may want the modified url here?
                                 Timber.d("SUC %s", image.getUrl());
                                 holder.binding.postMediaImageProgress.setVisibility(View.GONE);

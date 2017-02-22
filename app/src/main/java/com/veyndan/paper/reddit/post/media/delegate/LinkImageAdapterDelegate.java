@@ -81,6 +81,7 @@ public class LinkImageAdapterDelegate
                 .flatMap(url -> ImageLoader.load(url, context, new CustomNetwork().getImageAsInputStream(url)
                         .subscribeOn(Schedulers.io())
                         .map(inputStream -> new CustomDecoder().decodeInputStream(inputStream))))
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(bitmap -> {
                     Timber.d("SUC %s", linkImage.getUrl());
                     holder.binding.postMediaImageProgress.setVisibility(View.GONE);
