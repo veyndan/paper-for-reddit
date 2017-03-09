@@ -82,13 +82,12 @@ public class LinkImageAdapterDelegate
                         .subscribeOn(Schedulers.io())
                         .map(inputStream -> new CustomDecoder().decodeInputStream(inputStream))))
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(disposable -> holder.binding.postMediaImageProgress.setVisibility(View.GONE))
                 .subscribe(bitmap -> {
                     Timber.d("SUC %s", linkImage.getUrl());
-                    holder.binding.postMediaImageProgress.setVisibility(View.GONE);
                     holder.binding.postMediaImage.setImageBitmap(bitmap);
                 }, throwable -> {
                     Timber.d("FAI %s", linkImage.getUrl());
-                    holder.binding.postMediaImageProgress.setVisibility(View.GONE);
                 });
 
         holder.binding.postMediaUrl.setText(linkImage.getDomain());

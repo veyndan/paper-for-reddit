@@ -93,30 +93,6 @@ public class ImageAdapterDelegate
                 .subscribe(aVoid -> {
                     final int width = holder.itemView.getWidth();
 
-//                    // Without cache
-//                    Observable.just(image.getUrl())
-//                            .doOnNext(url -> {}) // Modify url such that too large an image isn't requested in the header.
-//                            .map(url -> getImageAsInputStream(url))
-//                            .doOnNext(inputStream -> {}) // Do something with input stream, maybe analyze the output?
-//                            .map(inputStream -> decodeInputStreamToBitmap(inputStream))
-//                            .doOnNext(bitmap -> {}) // Modify bitmap, maybe put a filter over it.
-//                            .subscribe(bitmap -> {}); // Set the ImageView with the bitmap.
-
-//                    // With cache
-//                    Observable.just(image.getUrl())
-//                            .doOnNext(url -> {})
-//                            .flatMap(url -> {
-//                                final Observable<Bitmap> network = Observable.just(getImageAsInputStream(url))
-//                                        .doOnNext(inputStream -> {})
-//                                        .map(inputStream -> decodeInputStreamToBitmap(inputStream))
-//                                        .doOnNext(bitmap -> {}) // This says that if the user modifies the bitmap here, then modifications will be put into the cache.
-//                                        .doOnNext(bitmap -> saveToCache(url, bitmap));
-//
-//                                return Observable.concat(getBitmapFromCache(url), network) // The url is the key for the cache
-//                                        .first(failureImage); // If the image fails on both accounts, load the failureImage.
-//                            })
-//                            .subscribe(bitmap -> {});
-
                     // With cache
                     Single.just(image.getUrl())
                             .subscribeOn(AndroidSchedulers.mainThread())
@@ -124,9 +100,9 @@ public class ImageAdapterDelegate
                                     .subscribeOn(Schedulers.io())
                                     .map(inputStream -> new CustomDecoder().decodeInputStream(inputStream))))
                             .observeOn(AndroidSchedulers.mainThread())
+                            .doOnSubscribe(disposable -> holder.binding.postMediaImageProgress.setVisibility(View.GONE))
                             .subscribe(bitmap -> { // You may want the modified url here?
                                 Timber.d("SUC %s", image.getUrl());
-                                holder.binding.postMediaImageProgress.setVisibility(View.GONE);
 
                                 if (!imageDimensAvailable) {
                                     final BitmapDrawable bitmapDrawable = new BitmapDrawable(context.getResources(), bitmap);
@@ -143,7 +119,6 @@ public class ImageAdapterDelegate
                                 holder.binding.postMediaImage.setImageBitmap(bitmap);
                             }, throwable -> {
                                 Timber.e(throwable, "FAI %s", image.getUrl());
-                                holder.binding.postMediaImageProgress.setVisibility(View.GONE);
                             });
 
                     if (imageDimensAvailable) {
