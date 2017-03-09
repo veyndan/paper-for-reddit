@@ -19,10 +19,10 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegate;
-import com.jakewharton.rxbinding.support.design.widget.RxSnackbar;
-import com.jakewharton.rxbinding.view.RxView;
-import com.jakewharton.rxbinding.widget.RxCompoundButton;
-import com.jakewharton.rxbinding.widget.RxPopupMenu;
+import com.jakewharton.rxbinding2.support.design.widget.RxSnackbar;
+import com.jakewharton.rxbinding2.view.RxView;
+import com.jakewharton.rxbinding2.widget.RxCompoundButton;
+import com.jakewharton.rxbinding2.widget.RxPopupMenu;
 import com.veyndan.paper.reddit.MainActivity;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
@@ -370,7 +370,8 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
             RxSnackbar.dismisses(snackbar)
                     // If undo pressed, don't hide post.
-                    .takeFirst(event -> event != Snackbar.Callback.DISMISS_EVENT_ACTION)
+                    .filter(event -> event != Snackbar.Callback.DISMISS_EVENT_ACTION)
+                    .firstElement()
                     .subscribe(event -> {
                         // Chance to undo post hiding has gone, so follow through with
                         // hiding network request.

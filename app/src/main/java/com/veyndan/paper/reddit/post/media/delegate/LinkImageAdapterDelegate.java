@@ -17,7 +17,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
-import com.jakewharton.rxbinding.view.RxView;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.veyndan.paper.reddit.databinding.PostMediaLinkImageBinding;
 import com.veyndan.paper.reddit.post.media.model.LinkImage;
 import com.veyndan.paper.reddit.post.model.Post;
