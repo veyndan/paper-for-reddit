@@ -15,8 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jakewharton.rxbinding.support.design.widget.RxTabLayout;
-import com.jakewharton.rxbinding.view.RxView;
+import com.jakewharton.rxbinding2.support.design.widget.RxTabLayout;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.veyndan.paper.reddit.databinding.FragmentFilterBinding;
 
 import timber.log.Timber;
@@ -75,15 +75,12 @@ public class FilterFragment extends DialogFragment {
                 .subscribe(selectionEvent -> {
                     final TabLayout.Tab tab1 = selectionEvent.tab();
                     final Drawable icon = tab1.getIcon().mutate();
-                    switch (selectionEvent.kind()) {
-                        case SELECTED:
-                            icon.setColorFilter(colorAccent, PorterDuff.Mode.SRC_IN);
-                            icon.setAlpha(255);
-                            break;
-                        case UNSELECTED:
-                            icon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
-                            icon.setAlpha((int) (0.54 * 255));
-                            break;
+                    if (tab1.isSelected()) {
+                        icon.setColorFilter(colorAccent, PorterDuff.Mode.SRC_IN);
+                        icon.setAlpha(255);
+                    } else {
+                        icon.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+                        icon.setAlpha((int) (0.54 * 255));
                     }
                 }, Timber::e);
 

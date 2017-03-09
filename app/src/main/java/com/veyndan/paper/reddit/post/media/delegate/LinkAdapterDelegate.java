@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
-import com.jakewharton.rxbinding.view.RxView;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.veyndan.paper.reddit.databinding.PostMediaLinkBinding;
 import com.veyndan.paper.reddit.post.media.model.Link;
 import com.veyndan.paper.reddit.post.model.Post;

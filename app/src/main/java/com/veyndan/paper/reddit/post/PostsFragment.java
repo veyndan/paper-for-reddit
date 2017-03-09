@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jakewharton.rxbinding.support.v7.widget.RxRecyclerView;
+import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView;
 import com.veyndan.paper.reddit.Config;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
@@ -26,7 +26,6 @@ import com.veyndan.paper.reddit.util.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-import hu.akarnokd.rxjava.interop.RxJavaInterop;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import retrofit2.Response;
@@ -151,15 +150,13 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
     }
 
     private Observable<Boolean> getNextPageTrigger() {
-        return RxJavaInterop.toV2Observable(
-                RxRecyclerView.scrollEvents(recyclerView)
-                        .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
-                        .map(scrollEvent -> {
-                            final int visibleItemCount = recyclerView.getChildCount();
-                            final int totalItemCount = layoutManager.getItemCount();
-                            final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
-                            return totalItemCount - visibleItemCount <= firstVisibleItem;
-                        })
-        );
+        return RxRecyclerView.scrollEvents(recyclerView)
+                .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
+                .map(scrollEvent -> {
+                    final int visibleItemCount = recyclerView.getChildCount();
+                    final int totalItemCount = layoutManager.getItemCount();
+                    final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+                    return totalItemCount - visibleItemCount <= firstVisibleItem;
+                });
     }
 }
