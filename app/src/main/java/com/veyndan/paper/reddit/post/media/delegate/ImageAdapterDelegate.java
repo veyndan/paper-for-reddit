@@ -93,6 +93,10 @@ public class ImageAdapterDelegate
                 .subscribe(aVoid -> {
                     final int width = holder.itemView.getWidth();
 
+                    // TODO The ImageView functionalities for loading images isn't specific to ImageView.
+                    // Think of it as when any sort of view is off screen, then you should be notified so
+                    // whatever you want to do to clear it up can occur, e.g. cancel a network request for an image.
+
                     // With cache
                     Single.just(image.getUrl())
                             .subscribeOn(AndroidSchedulers.mainThread())
