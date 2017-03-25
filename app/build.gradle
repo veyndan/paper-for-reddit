@@ -3,7 +3,7 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
 apply plugin: 'com.getkeepsafe.dexcount'
 
-final File fabricPropertiesFile = rootProject.file("app/fabric.properties")
+final File fabricPropertiesFile = rootProject.file('app/fabric.properties')
 final Properties fabricProperties = new Properties()
 fabricProperties.load(new FileInputStream(fabricPropertiesFile))
 
@@ -12,11 +12,11 @@ android {
     buildToolsVersion '25.0.2'
 
     defaultConfig {
-        applicationId "com.veyndan.paper.reddit"
+        applicationId 'com.veyndan.paper.reddit'
         minSdkVersion 23
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName '1.0'
         vectorDrawables.useSupportLibrary = true
         manifestPlaceholders = [
                 FABRIC_KEY: fabricProperties['fabricKey']
