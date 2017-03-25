@@ -3,8 +3,8 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
 apply plugin: 'com.getkeepsafe.dexcount'
 
-File fabricPropertiesFile = rootProject.file("app/fabric.properties")
-Properties fabricProperties = new Properties()
+final File fabricPropertiesFile = rootProject.file("app/fabric.properties")
+final Properties fabricProperties = new Properties()
 fabricProperties.load(new FileInputStream(fabricPropertiesFile))
 
 android {
