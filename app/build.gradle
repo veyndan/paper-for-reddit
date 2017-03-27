@@ -51,62 +51,91 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     // Adapter Delegates
-    compile 'com.hannesdorfmann:adapterdelegates3:3.0.1'
+    final String adapterDelegatesVersion = '3.0.1'
+    compile "com.hannesdorfmann:adapterdelegates3:$adapterDelegatesVersion"
 
     // Apache Commons
-    compile 'org.apache.commons:commons-lang3:3.5'
+    final String apacheCommonsVersion = '3.5'
+    compile "org.apache.commons:commons-lang3:$apacheCommonsVersion"
 
     // Deep Link Dispatch
-    compile 'com.airbnb:deeplinkdispatch:3.0.0-rc3'
-    annotationProcessor 'com.airbnb:deeplinkdispatch-processor:3.0.0-rc3'
+    final String deepLinkDispatchVersion = '3.0.0-rc3'
+    compile "com.airbnb:deeplinkdispatch:$deepLinkDispatchVersion"
+    annotationProcessor "com.airbnb:deeplinkdispatch-processor:$deepLinkDispatchVersion"
 
     // Glide
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.github.bumptech.glide:okhttp3-integration:1.4.0@aar'
+    final String glideVersion = '3.7.0'
+    compile "com.github.bumptech.glide:glide:$glideVersion"
+
+    // Glide Integration
+    final String glideOkHttpIntegrationVersion = '1.4.0'
+    compile "com.github.bumptech.glide:okhttp3-integration:$glideOkHttpIntegrationVersion@aar"
 
     // Guava
-    compile 'com.google.guava:guava:20.0'
+    final String guavaVersion = '20.0'
+    compile "com.google.guava:guava:$guavaVersion"
 
     // Leak Canary
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
-    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
+    final String leakCanaryVersion = '1.5'
+    debugCompile "com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
+    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
 
     // Moshi
-    compile 'com.squareup.moshi:moshi:1.4.0'
+    final String moshiVersion = '1.4.0'
+    compile "com.squareup.moshi:moshi:$moshiVersion"
 
-    // Retrofit/OkHttp
-    compile 'com.squareup.retrofit2:retrofit:2.2.0'
-    compile 'com.squareup.retrofit2:converter-moshi:2.2.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+    // OkHttp
+    final String okHttpVersion = '3.6.0'
+    compile "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
 
-    // Rx
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    compile 'io.reactivex.rxjava2:rxjava:2.0.6'
+    // Retrofit
+    final String retrofitVersion = '2.2.0'
+    compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    compile "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+    compile "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
+
+    // RxAndroid
+    final String rxAndroidVersion = '2.0.1'
+    compile "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+
+    // RxJava
+    final String rxJavaVersion = '2.0.6'
+    compile "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 
     // RxBinding
-    compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
-    compile 'com.jakewharton.rxbinding2:rxbinding-design:2.0.0'
-    compile 'com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:2.0.0'
+    final String rxBindingVersion = '2.0.0'
+    compile "com.jakewharton.rxbinding2:rxbinding:$rxBindingVersion"
+    compile "com.jakewharton.rxbinding2:rxbinding-design:$rxBindingVersion"
+    compile "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:$rxBindingVersion"
 
     // Spanny
-    compile 'com.binaryfork:spanny:1.0.4'
+    final String spannyVersion = '1.0.4'
+    compile "com.binaryfork:spanny:$spannyVersion"
 
-    // Support Library
-    compile 'com.android.support:appcompat-v7:25.3.0'
-    compile 'com.android.support:cardview-v7:25.3.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
-    compile 'com.android.support:customtabs:25.3.0'
-    compile 'com.android.support:design:25.3.0'
-    compile 'com.android.support:multidex:1.0.1'
-    compile 'com.android.support:recyclerview-v7:25.3.0'
+    // Support
+    final String supportVersion = '25.3.0'
+    compile "com.android.support:appcompat-v7:$supportVersion"
+    compile "com.android.support:cardview-v7:$supportVersion"
+    compile "com.android.support:customtabs:$supportVersion"
+    compile "com.android.support:design:$supportVersion"
+    compile "com.android.support:recyclerview-v7:$supportVersion"
+
+    // Support Constraint Layout
+    final String supportConstraintLayoutVersion = '1.0.0-beta4'
+    compile "com.android.support.constraint:constraint-layout:$supportConstraintLayoutVersion"
+
+    // Support MultiDex
+    final String supportMultiDexVersion = '1.0.1'
+    compile "com.android.support:multidex:$supportMultiDexVersion"
 
     // Timber
-    compile 'com.jakewharton.timber:timber:4.5.1'
+    final String timberVersion = '4.5.1'
+    compile "com.jakewharton.timber:timber:$timberVersion"
 
     // Twitter
-    compile('com.twitter.sdk.android:twitter:2.3.1@aar') {
+    final String twitterVersion = '2.3.1'
+    compile("com.twitter.sdk.android:twitter:$twitterVersion@aar") {
         transitive = true;
     }
 }
