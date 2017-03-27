@@ -59,7 +59,7 @@ dependencies {
     compile "org.apache.commons:commons-lang3:$apacheCommonsVersion"
 
     // Deep Link Dispatch
-    final String deepLinkDispatchVersion = '3.0.0-rc3'
+    final String deepLinkDispatchVersion = '3.0.0'
     compile "com.airbnb:deeplinkdispatch:$deepLinkDispatchVersion"
     annotationProcessor "com.airbnb:deeplinkdispatch-processor:$deepLinkDispatchVersion"
 
@@ -100,7 +100,7 @@ dependencies {
     compile "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
 
     // RxJava
-    final String rxJavaVersion = '2.0.6'
+    final String rxJavaVersion = '2.0.7'
     compile "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 
     // RxBinding
@@ -134,7 +134,7 @@ dependencies {
     compile "com.jakewharton.timber:timber:$timberVersion"
 
     // Twitter
-    final String twitterVersion = '2.3.1'
+    final String twitterVersion = '2.3.2'
     compile("com.twitter.sdk.android:twitter:$twitterVersion@aar") {
         transitive = true;
     }
