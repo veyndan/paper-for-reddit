@@ -330,22 +330,6 @@ public final class Reddit {
         }
     }
 
-    private static User toUser(final boolean comments, final boolean submitted, final boolean gilded) {
-        if (comments == submitted && gilded) {
-            return User.GILDED;
-        } else if (comments != submitted && gilded) {
-            throw new UnsupportedOperationException("User state unsure");
-        } else if (comments && submitted) {
-            return User.OVERVIEW;
-        } else if (comments) {
-            return User.COMMENTS;
-        } else if (submitted) {
-            return User.SUBMITTED;
-        } else {
-            return User.OVERVIEW;
-        }
-    }
-
     private static Single<Response<Thing<Listing>>> paginate(final Single<Response<Thing<Listing>>> page, final QueryBuilder query) {
         return Single.just(query)
                 // TODO If the query has never been initialized, then we want it to pass.
