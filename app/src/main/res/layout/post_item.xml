@@ -31,14 +31,18 @@
                 android:layout_height="wrap_content"
                 app:layoutManager="android.support.v7.widget.LinearLayoutManager"/>
 
-            <LinearLayout
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:paddingBottom="16dp"
-                android:paddingLeft="@dimen/post_horizontal_margin"
-                android:paddingRight="@dimen/post_horizontal_margin"
-                android:paddingTop="8dp">
+                android:paddingBottom="16dp">
+
+                <android.support.constraint.Guideline
+                    android:id="@+id/guideline_top_actions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_begin="8dp"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
                 <TextView
                     android:id="@+id/post_score"
@@ -46,14 +50,22 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/post_horizontal_margin"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/post_vote"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/guideline_top_actions"
                     tools:text="@string/placeholder_post_score"/>
 
                 <RadioGroup
                     android:id="@+id/post_vote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/post_save"
+                    app:layout_constraintStart_toEndOf="@id/post_score"
+                    app:layout_constraintTop_toBottomOf="@id/guideline_top_actions">
 
                     <com.veyndan.paper.reddit.ui.widget.ToggleableRadioButton
                         android:id="@+id/post_upvote_new"
@@ -75,47 +87,56 @@
                     android:layout_height="40dp"
                     android:background="?selectableItemBackgroundBorderless"
                     android:contentDescription="@string/post_content_description_save"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/post_comments"
+                    app:layout_constraintStart_toEndOf="@id/post_vote"
+                    app:layout_constraintTop_toBottomOf="@id/guideline_top_actions"
                     app:srcCompat="@drawable/ic_bookmark_black_24dp"/>
 
-                <FrameLayout
+                <android.support.design.widget.CheckableImageButton
+                    android:id="@+id/post_comments"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/post_content_description_comments"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/post_other"
+                    app:layout_constraintStart_toEndOf="@id/post_save"
+                    app:layout_constraintTop_toBottomOf="@id/guideline_top_actions"
+                    app:srcCompat="@drawable/ic_comment_black_24dp"/>
+
+                <TextView
+                    android:id="@+id/post_comment_count"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <android.support.design.widget.CheckableImageButton
-                        android:id="@+id/post_comments"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:background="?selectableItemBackgroundBorderless"
-                        android:contentDescription="@string/post_content_description_comments"
-                        app:srcCompat="@drawable/ic_comment_black_24dp"/>
-
-                    <TextView
-                        android:id="@+id/post_comment_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:layout_margin="4dp"
-                        android:background="@drawable/bg_badge"
-                        android:fontFamily="sans-serif-condensed"
-                        android:gravity="center"
-                        android:includeFontPadding="false"
-                        android:minWidth="16dp"
-                        android:textColor="@android:color/white"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        tools:text="@string/placeholder_post_comment_count"/>
-
-                </FrameLayout>
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_badge"
+                    android:fontFamily="sans-serif-condensed"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:minWidth="16dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@id/post_comments"
+                    app:layout_constraintTop_toTopOf="@id/post_comments"
+                    tools:text="@string/placeholder_post_comment_count"/>
 
                 <ImageButton
                     android:id="@+id/post_other"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
+                    android:layout_marginRight="@dimen/post_horizontal_margin"
                     android:background="?selectableItemBackgroundBorderless"
                     android:contentDescription="@string/post_content_description_other"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/post_comments"
+                    app:layout_constraintTop_toBottomOf="@id/guideline_top_actions"
                     app:srcCompat="@drawable/ic_more_vert_black_24dp"/>
 
-            </LinearLayout>
+            </android.support.constraint.ConstraintLayout>
 
         </LinearLayout>
 
