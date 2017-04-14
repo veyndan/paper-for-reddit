@@ -36,7 +36,7 @@ public class PostPresenter implements Presenter<PostMvpView<Response<Thing<Listi
 
         Observable.fromIterable(nodes)
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .flatMap(node -> node.getTrigger()
+                .flatMap(node -> node.getEvents()
                         .filter(Boolean::booleanValue)
                         .firstElement()
                         .flatMapObservable(aBoolean -> node.asObservable()))

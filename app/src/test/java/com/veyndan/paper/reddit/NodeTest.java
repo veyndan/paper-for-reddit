@@ -106,7 +106,7 @@ public class NodeTest {
 
             @NonNull
             @Override
-            public Observable<Boolean> getTrigger() {
+            public Observable<Boolean> getEvents() {
                 return null;
             }
 

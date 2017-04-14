@@ -19,7 +19,7 @@ import retrofit2.Response;
 
 public final class Progress extends Node<Response<Thing<Listing>>> {
 
-    @NonNull private final Observable<Boolean> trigger;
+    @NonNull private final Observable<Boolean> events;
     @Nullable @IntRange(from = 0) private final Integer degree;
 
     @SuppressWarnings("unused")
@@ -29,7 +29,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     private Progress(@NonNull final Builder builder) {
         degree = builder.degree;
-        trigger = builder.trigger;
+        events = builder.events;
         setRequest(builder.request);
     }
 
@@ -48,8 +48,8 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     @NonNull
     @Override
-    public Observable<Boolean> getTrigger() {
-        return trigger;
+    public Observable<Boolean> getEvents() {
+        return events;
     }
 
     @NonNull
@@ -71,7 +71,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
                             } else if (redditObject instanceof More) {
                                 final More more = (More) redditObject;
                                 return Single.just(new Builder()
-                                        .trigger(Observable.just(true))
+                                        .events(Observable.just(true))
                                         .degree(more.count)
                                         .build())
                                         .toObservable();
@@ -80,7 +80,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
                             }
                         })
                         .concatWith(Observable.just(new Builder()
-                                .trigger(getTrigger())
+                                .events(getEvents())
                                 .request(getRequest())
                                 .build())));
     }
@@ -88,7 +88,7 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
     public static class Builder {
 
         @Nullable @IntRange(from = 0) private Integer degree;
-        @NonNull private Observable<Boolean> trigger = Observable.empty();
+        @NonNull private Observable<Boolean> events = Observable.empty();
         @NonNull private Maybe<Response<Thing<Listing>>> request = Maybe.empty();
 
         @NonNull
@@ -98,8 +98,8 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
         }
 
         @NonNull
-        public Builder trigger(@NonNull final Observable<Boolean> trigger) {
-            this.trigger = trigger;
+        public Builder events(@NonNull final Observable<Boolean> events) {
+            this.events = events;
             return this;
         }
 
