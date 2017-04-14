@@ -68,7 +68,7 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
     public void setRequest(final Single<Response<Thing<Listing>>> request) {
         clearNodes();
         postPresenter.loadNode(new Progress.Builder()
-                .trigger(getTrigger())
+                .events(getEvents())
                 .request(request.toMaybe())
                 .build());
     }
@@ -135,21 +135,21 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         postAdapter.notifyItemRangeRemoved(0, nodesSize);
     }
 
-    private Observable<Boolean> getTrigger() {
-        return Observable.concat(getFirstPageTrigger(), getNextPageTrigger())
+    private Observable<Boolean> getEvents() {
+        return Observable.concat(getFirstPageEvents(), getNextPageEvents())
                 .filter(Boolean::booleanValue)
                 .filter(aBoolean -> !loadingPosts)
                 .doOnNext(aBoolean -> loadingPosts = true);
     }
 
-    private Observable<Boolean> getFirstPageTrigger() {
+    private Observable<Boolean> getFirstPageEvents() {
         return Observable.fromIterable(nodes)
                 .count()
                 .map(count -> count == 1)
                 .toObservable();
     }
 
-    private Observable<Boolean> getNextPageTrigger() {
+    private Observable<Boolean> getNextPageEvents() {
         return RxRecyclerView.scrollEvents(recyclerView)
                 .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
                 .map(scrollEvent -> {
