@@ -11,21 +11,21 @@ import retrofit2.Response;
 
 public final class NextPageUiModel {
 
-    public static NextPageUiModel node(final Node<Response<Thing<Listing>>> node) {
-        return new NextPageUiModel(Collections.singletonList(node));
+    public static NextPageUiModel tree(final Node<Response<Thing<Listing>>> tree) {
+        return new NextPageUiModel(Collections.singletonList(tree));
     }
 
-    public static NextPageUiModel nodes(final List<Node<Response<Thing<Listing>>>> nodes) {
-        return new NextPageUiModel(nodes);
+    public static NextPageUiModel forest(final List<Node<Response<Thing<Listing>>>> forest) {
+        return new NextPageUiModel(forest);
     }
 
-    private final List<Node<Response<Thing<Listing>>>> nodes;
+    private final List<Node<Response<Thing<Listing>>>> forest;
 
-    private NextPageUiModel(final List<Node<Response<Thing<Listing>>>> nodes) {
-        this.nodes = nodes;
+    private NextPageUiModel(final List<Node<Response<Thing<Listing>>>> forest) {
+        this.forest = forest;
     }
 
-    public List<Node<Response<Thing<Listing>>>> getNodes() {
-        return nodes;
+    public List<Node<Response<Thing<Listing>>>> getForest() {
+        return forest;
     }
 }
