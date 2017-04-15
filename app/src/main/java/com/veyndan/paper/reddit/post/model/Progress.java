@@ -14,7 +14,6 @@ import retrofit2.Response;
 
 public final class Progress extends Node<Response<Thing<Listing>>> {
 
-    @NonNull private final Observable<Boolean> events;
     @Nullable @IntRange(from = 0) private final Integer degree;
 
     @SuppressWarnings("unused")
@@ -24,7 +23,6 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     private Progress(@NonNull final Builder builder) {
         degree = builder.degree;
-        events = builder.events;
         setRequest(builder.request);
     }
 
@@ -41,27 +39,14 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
         return Observable.empty();
     }
 
-    @NonNull
-    @Override
-    public Observable<Boolean> getEvents() {
-        return events;
-    }
-
     public static class Builder {
 
         @Nullable @IntRange(from = 0) private Integer degree;
-        @NonNull private Observable<Boolean> events = Observable.empty();
         @NonNull private Maybe<Response<Thing<Listing>>> request = Maybe.empty();
 
         @NonNull
         public Builder degree(@IntRange(from = 0) final int degree) {
             this.degree = degree;
-            return this;
-        }
-
-        @NonNull
-        public Builder events(@NonNull final Observable<Boolean> events) {
-            this.events = events;
             return this;
         }
 
