@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView;
 import com.veyndan.paper.reddit.Config;
 import com.veyndan.paper.reddit.NextPageEvent;
+import com.veyndan.paper.reddit.NextPageUiModel;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
@@ -93,7 +94,7 @@ public class PostsFragment extends Fragment {
                 .filter(event -> !loadingPosts)
                 .doOnNext(event -> loadingPosts = true);
 
-        final ObservableTransformer<NextPageEvent, List<Node<Response<Thing<Listing>>>>> nextPage = events -> events
+        final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
                 .map(NextPageEvent::getNode)
                 .flatMap(node -> node.getRequest()
                         .subscribeOn(Schedulers.io())
@@ -124,16 +125,19 @@ public class PostsFragment extends Fragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .concatMap(node1 -> node1.preOrderTraverse(0))
                         .toList()
-                        .toObservable());
+                        .toObservable())
+                .map(NextPageUiModel::nodes)
+                .startWith(NextPageUiModel.node(new Progress.Builder()
+                        .request(request.toMaybe())
+                        .build()));
 
         nextPageEvents.compose(nextPage)
-                .doOnSubscribe(disposable -> appendNode(new Progress.Builder()
-                        .request(request.toMaybe())
-                        .build()))
-                .subscribe(nodes1 -> {
+                .subscribe(model -> {
                     Timber.d("Next page");
-                    popNode();
-                    appendNodes(nodes1);
+                    if (nodes.size() > 0) {
+                        popNode();
+                    }
+                    appendNodes(model.getNodes());
                 }, Timber::e);
     }
 
