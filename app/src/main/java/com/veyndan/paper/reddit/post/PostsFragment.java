@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.MutableBoolean;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,8 +73,6 @@ public class PostsFragment extends Fragment {
     public void setRequest(final Single<Response<Thing<Listing>>> request) {
         clearNodes();
 
-        final MutableBoolean loadingPosts = new MutableBoolean(false);
-
         final Observable<NextPageEvent> nextPageEvents = RxRecyclerView.scrollEvents(recyclerView)
                 .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
                 .map(scrollEvent -> {
@@ -85,15 +82,14 @@ public class PostsFragment extends Fragment {
                     return totalItemCount - visibleItemCount <= firstVisibleItem;
                 })
                 .filter(Boolean::booleanValue)
-                .map(ignored -> new NextPageEvent(nodes.get(nodes.size() - 1)))
+                .map(ignored -> new NextPageEvent(nodes.get(nodes.size() - 1), nodes.size() - 1))
                 // Start with first page event
                 .startWith(Observable.fromIterable(nodes)
                         .count()
                         .filter(count -> count == 1)
-                        .map(count -> new NextPageEvent(nodes.get(nodes.size() - 1)))
+                        .map(count -> new NextPageEvent(nodes.get(nodes.size() - 1), nodes.size() - 1))
                         .toObservable())
-                .filter(event -> !loadingPosts.value) // TODO Unknown if MVI violation; Code smell.
-                .doOnNext(event -> loadingPosts.value = true); // TODO MVI Violation; Code smell.
+                .distinctUntilChanged(NextPageEvent::getPosition);
 
         final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
                 .map(NextPageEvent::getNode)
@@ -139,8 +135,6 @@ public class PostsFragment extends Fragment {
                         popNode();
                     }
                     appendNodes(model.getNodes());
-
-                    loadingPosts.value = false;
                 }, Timber::e);
     }
 
