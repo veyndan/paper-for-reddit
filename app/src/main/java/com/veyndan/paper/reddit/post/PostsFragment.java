@@ -96,14 +96,12 @@ public class PostsFragment extends Fragment {
         final Observable<NextPageEvent> nextPageEvents = RxRecyclerView.scrollEvents(recyclerView)
                 .filter(endOfRecyclerView())
                 // TODO There should be a more robust and intuitive way of doing distinctUntilChanged().
-                //      The only reason why we are passing the node position is for the use of this
-                //      stream as it isn't used in the UiModel stream. Things passed as an event
-                //      should be consumed by the following streams.
                 //
                 //      When to solve: After nodes is no longer a flattened tree but is instead a
                 //      indexable tree.
-                .map(scrollEvent -> new NextPageEvent(nodes.get(nodes.size() - 1), nodes.size() - 1))
-                .distinctUntilChanged(NextPageEvent::getPosition);
+                .map(scrollEvent -> nodes.size() - 1)
+                .distinctUntilChanged()
+                .map(position -> new NextPageEvent(nodes.get(position)));
 
         final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
                 .map(NextPageEvent::getNode)
