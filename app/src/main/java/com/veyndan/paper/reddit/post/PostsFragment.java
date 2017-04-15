@@ -102,19 +102,17 @@ public class PostsFragment extends Fragment {
                         .toObservable()
                         .flatMap(thing -> Observable.fromIterable(thing.data.children)
                                 .observeOn(Schedulers.computation())
-                                .concatMap(redditObject -> {
+                                .flatMapSingle(redditObject -> {
                                     if (redditObject instanceof Submission) {
                                         return Single.just(redditObject)
                                                 .cast(Submission.class)
                                                 .map(Post::new)
-                                                .flatMap(Mutators.mutate())
-                                                .toObservable();
+                                                .flatMap(Mutators.mutate());
                                     } else if (redditObject instanceof More) {
                                         final More more = (More) redditObject;
                                         return Single.just(new Progress.Builder()
                                                 .degree(more.count)
-                                                .build())
-                                                .toObservable();
+                                                .build());
                                     } else {
                                         throw new IllegalStateException("Unknown node class: " + redditObject);
                                     }
