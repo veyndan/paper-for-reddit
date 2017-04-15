@@ -46,7 +46,7 @@ public class PostsFragment extends Fragment {
 
     private RecyclerView recyclerView;
 
-    private final List<Node<Response<Thing<Listing>>>> nodes = new ArrayList<>();
+    private final List<Node<Response<Thing<Listing>>>> forest = new ArrayList<>();
 
     private PostAdapter postAdapter;
 
@@ -89,7 +89,7 @@ public class PostsFragment extends Fragment {
     }
 
     public void setRequest(final Single<Response<Thing<Listing>>> request) {
-        clearNodes();
+        clearForest();
 
         final Observable<NextPageEvent> nextPageEvents = RxRecyclerView.scrollEvents(recyclerView)
                 .filter(endOfRecyclerView())
@@ -97,12 +97,12 @@ public class PostsFragment extends Fragment {
                 //
                 //      When to solve: After nodes is no longer a flattened tree but is instead a
                 //      indexable tree.
-                .map(scrollEvent -> new NextPageEvent(nodes.get(nodes.size() - 1)))
-                .distinctUntilChanged(event -> nodes.size() - 1);
+                .map(scrollEvent -> new NextPageEvent(forest.get(forest.size() - 1)))
+                .distinctUntilChanged(event -> forest.size() - 1);
 
         final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
-                .map(NextPageEvent::getNode)
-                .flatMap(node -> request
+                .map(NextPageEvent::getTree)
+                .flatMap(tree -> request
                         .subscribeOn(Schedulers.io())
                         .map(Response::body)
                         .toObservable()
@@ -126,11 +126,11 @@ public class PostsFragment extends Fragment {
                                 .concatWith(Observable.just(new Progress.Builder()
                                         .build())))
                         .observeOn(AndroidSchedulers.mainThread())
-                        .concatMap(node1 -> node1.preOrderTraverse(0))
+                        .concatMap(tree1 -> tree1.preOrderTraverse(0))
                         .toList()
                         .toObservable())
-                .map(NextPageUiModel::nodes)
-                .startWith(NextPageUiModel.node(new Progress.Builder()
+                .map(NextPageUiModel::forest)
+                .startWith(NextPageUiModel.tree(new Progress.Builder()
                         .build()));
 
         nextPageEvents.compose(nextPage)
@@ -138,10 +138,10 @@ public class PostsFragment extends Fragment {
                     // TODO Logic: The below assumes that the last element is the one to be replaced (i.e. event.getNode())
                     // though it should allow any node i.e. for the comment section.
                     Timber.d("Next page");
-                    if (nodes.size() > 0) { // TODO Code smell: This is done as startWith is called above.
-                        popNode();
+                    if (forest.size() > 0) { // TODO Code smell: This is done as startWith is called above.
+                        popTree();
                     }
-                    appendNodes(model.getNodes());
+                    appendForest(model.getForest());
                 }, Timber::e);
     }
 
@@ -152,7 +152,7 @@ public class PostsFragment extends Fragment {
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        postAdapter = new PostAdapter(getActivity(), nodes, reddit);
+        postAdapter = new PostAdapter(getActivity(), forest, reddit);
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(new MarginItemDecoration(getActivity(), R.dimen.card_view_margin));
@@ -166,31 +166,31 @@ public class PostsFragment extends Fragment {
         return recyclerView;
     }
 
-    public void appendNode(final Node<Response<Thing<Listing>>> node) {
-        nodes.add(node);
-        postAdapter.notifyItemInserted(nodes.size() - 1);
+    public void appendTree(final Node<Response<Thing<Listing>>> node) {
+        forest.add(node);
+        postAdapter.notifyItemInserted(forest.size() - 1);
     }
 
-    public void appendNodes(final List<? extends Node<Response<Thing<Listing>>>> nodes) {
-        final int positionStart = this.nodes.size();
-        this.nodes.addAll(nodes);
-        postAdapter.notifyItemRangeInserted(positionStart, nodes.size());
+    public void appendForest(final List<? extends Node<Response<Thing<Listing>>>> forest) {
+        final int positionStart = this.forest.size();
+        this.forest.addAll(forest);
+        postAdapter.notifyItemRangeInserted(positionStart, forest.size());
     }
 
-    public Node<Response<Thing<Listing>>> popNode() {
-        return popNode(nodes.size() - 1);
+    public Node<Response<Thing<Listing>>> popTree() {
+        return popTree(forest.size() - 1);
     }
 
-    public Node<Response<Thing<Listing>>> popNode(final int index) {
-        final Node<Response<Thing<Listing>>> poppedNode = nodes.get(index);
-        nodes.remove(index);
+    public Node<Response<Thing<Listing>>> popTree(final int index) {
+        final Node<Response<Thing<Listing>>> poppedTree = forest.get(index);
+        forest.remove(index);
         postAdapter.notifyItemRemoved(index);
-        return poppedNode;
+        return poppedTree;
     }
 
-    public void clearNodes() {
-        final int nodesSize = nodes.size();
-        nodes.clear();
-        postAdapter.notifyItemRangeRemoved(0, nodesSize);
+    public void clearForest() {
+        final int treeCount = forest.size();
+        forest.clear();
+        postAdapter.notifyItemRangeRemoved(0, treeCount);
     }
 }

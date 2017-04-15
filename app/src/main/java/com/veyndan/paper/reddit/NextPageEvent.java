@@ -8,13 +8,13 @@ import retrofit2.Response;
 
 public final class NextPageEvent {
 
-    private final Node<Response<Thing<Listing>>> node;
+    private final Node<Response<Thing<Listing>>> tree;
 
-    public NextPageEvent(final Node<Response<Thing<Listing>>> node) {
-        this.node = node;
+    public NextPageEvent(final Node<Response<Thing<Listing>>> tree) {
+        this.tree = tree;
     }
 
-    public Node<Response<Thing<Listing>>> getNode() {
-        return node;
+    public Node<Response<Thing<Listing>>> getTree() {
+        return tree;
     }
 }
