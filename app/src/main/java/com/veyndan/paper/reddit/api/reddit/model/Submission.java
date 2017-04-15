@@ -185,7 +185,7 @@ public abstract class Submission implements Created, RedditObject, Votable {
     public abstract String getParentId();
 
     /**
-     * The comment nodes/leaves exactly one below the current Submission.
+     * The comment forest/leaves exactly one below the current Submission.
      */
     public abstract Thing<Listing> getReplies();
 

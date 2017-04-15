@@ -26,9 +26,9 @@ public class NodeTest {
         final Node<Void> node11 = setAsChildren(node20, node21);
         final Node<Void> node12 = setAsChildren(node22);
 
-        final Node<Void> node00 = setAsChildren(node10, node11, node12);
+        final Node<Void> tree = setAsChildren(node10, node11, node12);
 
-        node00.preOrderTraverse(0)
+        tree.preOrderTraverse(0)
                 .map(Node::getDescendantCount)
                 .test()
                 .assertValues(7, 0, 3, 1, 0, 0, 1, 0)
@@ -58,10 +58,10 @@ public class NodeTest {
         final Node<Void> node12 = setAsChildren(node22);
         node12.setDescendantCount(1);
 
-        final Node<Void> node00 = setAsChildren(node10, node11, node12);
-        node00.setDescendantCount(7);
+        final Node<Void> tree = setAsChildren(node10, node11, node12);
+        tree.setDescendantCount(7);
 
-        node00.preOrderTraverse(0)
+        tree.preOrderTraverse(0)
                 .map(Node::getDescendantCount)
                 .test()
                 .assertValues(7, 0, 3, 1, 0, 0, 1, 0)
@@ -80,9 +80,9 @@ public class NodeTest {
         final Node<Void> node11 = setAsChildren(node20, node21);
         final Node<Void> node12 = setAsChildren(node22);
 
-        final Node<Void> node00 = setAsChildren(node10, node11, node12);
+        final Node<Void> tree = setAsChildren(node10, node11, node12);
 
-        node00.preOrderTraverse(0)
+        tree.preOrderTraverse(0)
                 .map(Node::getDepth)
                 .test()
                 .assertValues(0, 1, 1, 2, 3, 2, 1, 2)
