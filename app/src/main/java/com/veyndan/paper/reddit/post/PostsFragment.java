@@ -74,7 +74,8 @@ public class PostsFragment extends Fragment {
         clearNodes();
 
         final Observable<NextPageEvent> nextPageEvents = RxRecyclerView.scrollEvents(recyclerView)
-                .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
+                // Check for scroll down (scrollEvent.dy() > 0) or initial load (scrollEvent.dy() == 0)
+                .filter(scrollEvent -> scrollEvent.dy() >= 0)
                 .map(scrollEvent -> {
                     final int visibleItemCount = recyclerView.getChildCount();
                     final int totalItemCount = layoutManager.getItemCount();
@@ -83,12 +84,6 @@ public class PostsFragment extends Fragment {
                 })
                 .filter(Boolean::booleanValue)
                 .map(ignored -> new NextPageEvent(nodes.get(nodes.size() - 1), nodes.size() - 1))
-                // Start with first page event
-                .startWith(Observable.fromIterable(nodes)
-                        .count()
-                        .filter(count -> count == 1)
-                        .map(count -> new NextPageEvent(nodes.get(nodes.size() - 1), nodes.size() - 1))
-                        .toObservable())
                 .distinctUntilChanged(NextPageEvent::getPosition);
 
         final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
