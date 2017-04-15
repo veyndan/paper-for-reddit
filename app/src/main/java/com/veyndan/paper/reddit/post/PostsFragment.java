@@ -91,8 +91,8 @@ public class PostsFragment extends Fragment {
                         .filter(count -> count == 1)
                         .map(count -> new NextPageEvent(nodes.get(nodes.size() - 1)))
                         .toObservable())
-                .filter(event -> !loadingPosts)
-                .doOnNext(event -> loadingPosts = true);
+                .filter(event -> !loadingPosts) // TODO Unknown if MVI violation; Code smell.
+                .doOnNext(event -> loadingPosts = true); // TODO MVI Violation; Code smell.
 
         final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
                 .map(NextPageEvent::getNode)
@@ -133,8 +133,10 @@ public class PostsFragment extends Fragment {
 
         nextPageEvents.compose(nextPage)
                 .subscribe(model -> {
+                    // TODO Logic: The below assumes that the last element is the one to be replaced (i.e. event.getNode())
+                    // though it should allow any node i.e. for the comment section.
                     Timber.d("Next page");
-                    if (nodes.size() > 0) {
+                    if (nodes.size() > 0) { // TODO Code smell: This is done as startWith is called above.
                         popNode();
                     }
                     appendNodes(model.getNodes());
