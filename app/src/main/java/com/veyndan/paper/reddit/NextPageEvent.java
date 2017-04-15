@@ -9,18 +9,12 @@ import retrofit2.Response;
 public final class NextPageEvent {
 
     private final Node<Response<Thing<Listing>>> node;
-    private final int position;
 
-    public NextPageEvent(final Node<Response<Thing<Listing>>> node, final int position) {
+    public NextPageEvent(final Node<Response<Thing<Listing>>> node) {
         this.node = node;
-        this.position = position;
     }
 
     public Node<Response<Thing<Listing>>> getNode() {
         return node;
-    }
-
-    public int getPosition() {
-        return position;
     }
 }
