@@ -101,8 +101,7 @@ public class PostsFragment extends Fragment {
                 .distinctUntilChanged(event -> forest.size() - 1);
 
         final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
-                .map(NextPageEvent::getTree)
-                .flatMap(tree -> request
+                .flatMap(event -> request
                         .subscribeOn(Schedulers.io())
                         .map(Response::body)
                         .toObservable()
