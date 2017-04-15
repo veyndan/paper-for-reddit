@@ -16,7 +16,11 @@ import com.veyndan.paper.reddit.Config;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
+import com.veyndan.paper.reddit.api.reddit.model.More;
+import com.veyndan.paper.reddit.api.reddit.model.Submission;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
+import com.veyndan.paper.reddit.post.media.mutator.Mutators;
+import com.veyndan.paper.reddit.post.model.Post;
 import com.veyndan.paper.reddit.post.model.Progress;
 import com.veyndan.paper.reddit.ui.recyclerview.SwipeItemTouchHelperCallback;
 import com.veyndan.paper.reddit.ui.recyclerview.itemdecoration.MarginItemDecoration;
@@ -24,15 +28,17 @@ import com.veyndan.paper.reddit.ui.recyclerview.itemdecoration.TreeInsetItemDeco
 import com.veyndan.paper.reddit.util.Node;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
+import timber.log.Timber;
 
-public class PostsFragment extends Fragment implements PostMvpView<Response<Thing<Listing>>> {
-
-    private final PostPresenter postPresenter = new PostPresenter();
+public class PostsFragment extends Fragment {
 
     private RecyclerView recyclerView;
 
@@ -54,7 +60,6 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
-        postPresenter.attachView(this);
 
         reddit = new Reddit(Config.REDDIT_CREDENTIALS);
     }
@@ -67,10 +72,59 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
 
     public void setRequest(final Single<Response<Thing<Listing>>> request) {
         clearNodes();
-        postPresenter.loadNode(new Progress.Builder()
+        loadNode(new Progress.Builder()
                 .events(getEvents())
                 .request(request.toMaybe())
                 .build());
+    }
+
+    public void loadNode(final Node<Response<Thing<Listing>>> nodeToLoad) {
+        loadNodes(Collections.singletonList(nodeToLoad));
+    }
+
+    public void loadNodes(final List<Node<Response<Thing<Listing>>>> nodesToLoad) {
+        appendNodes(nodesToLoad);
+
+        Observable.fromIterable(nodesToLoad)
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .flatMap(node -> node.getEvents()
+                        .filter(Boolean::booleanValue)
+                        .firstElement()
+                        .flatMapObservable(aBoolean -> node.getRequest()
+                                .subscribeOn(Schedulers.io())
+                                .map(Response::body)
+                                .toObservable()
+                                .flatMap(thing -> Observable.fromIterable(thing.data.children)
+                                        .observeOn(Schedulers.computation())
+                                        .concatMap(redditObject -> {
+                                            if (redditObject instanceof Submission) {
+                                                return Single.just(redditObject)
+                                                        .cast(Submission.class)
+                                                        .map(Post::new)
+                                                        .flatMap(Mutators.mutate())
+                                                        .toObservable();
+                                            } else if (redditObject instanceof More) {
+                                                final More more = (More) redditObject;
+                                                return Single.just(new Progress.Builder()
+                                                        .events(Observable.just(true))
+                                                        .degree(more.count)
+                                                        .build())
+                                                        .toObservable();
+                                            } else {
+                                                throw new IllegalStateException("Unknown node class: " + redditObject);
+                                            }
+                                        })
+                                        .concatWith(Observable.just(new Progress.Builder()
+                                                .events(node.getEvents())
+                                                .request(node.getRequest())
+                                                .build())))))
+                .observeOn(AndroidSchedulers.mainThread())
+                .concatMap(node -> node.preOrderTraverse(0))
+                .toList()
+                .subscribe(nodes1 -> {
+                    popNode();
+                    loadNodes(nodes1);
+                }, Timber::e);
     }
 
     @Override
@@ -94,20 +148,12 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         return recyclerView;
     }
 
-    @Override
-    public void onDestroy() {
-        postPresenter.detachView();
-        super.onDestroy();
-    }
-
-    @Override
     public void appendNode(final Node<Response<Thing<Listing>>> node) {
         nodes.add(node);
         postAdapter.notifyItemInserted(nodes.size() - 1);
         loadingPosts = false;
     }
 
-    @Override
     public void appendNodes(final List<? extends Node<Response<Thing<Listing>>>> nodes) {
         final int positionStart = this.nodes.size();
         this.nodes.addAll(nodes);
@@ -115,12 +161,10 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         loadingPosts = false;
     }
 
-    @Override
     public Node<Response<Thing<Listing>>> popNode() {
         return popNode(nodes.size() - 1);
     }
 
-    @Override
     public Node<Response<Thing<Listing>>> popNode(final int index) {
         final Node<Response<Thing<Listing>>> poppedNode = nodes.get(index);
         nodes.remove(index);
@@ -128,7 +172,6 @@ public class PostsFragment extends Fragment implements PostMvpView<Response<Thin
         return poppedNode;
     }
 
-    @Override
     public void clearNodes() {
         final int nodesSize = nodes.size();
         nodes.clear();
