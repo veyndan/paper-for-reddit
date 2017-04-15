@@ -72,6 +72,12 @@ public class PostsFragment extends Fragment {
         setRetainInstance(true);
     }
 
+    private static Predicate<RecyclerViewScrollEvent> scrollingDownOrInitialLoadOfRecyclerView() {
+        // Scroll down: scrollEvent.dy() > 0
+        // Initial load: scrollEvent.dy() == 0
+        return scrollEvent -> scrollEvent.dy() >= 0;
+    }
+
     private static Predicate<RecyclerViewScrollEvent> endOfRecyclerView() {
         return scrollEvent -> {
             final RecyclerView recyclerView = scrollEvent.view();
@@ -88,8 +94,7 @@ public class PostsFragment extends Fragment {
         clearNodes();
 
         final Observable<NextPageEvent> nextPageEvents = RxRecyclerView.scrollEvents(recyclerView)
-                // Check for scroll down (scrollEvent.dy() > 0) or initial load (scrollEvent.dy() == 0)
-                .filter(scrollEvent -> scrollEvent.dy() >= 0)
+                .filter(scrollingDownOrInitialLoadOfRecyclerView())
                 .filter(endOfRecyclerView())
                 // TODO There should be a more robust and intuitive way of doing distinctUntilChanged().
                 //      The only reason why we are passing the node position is for the use of this
