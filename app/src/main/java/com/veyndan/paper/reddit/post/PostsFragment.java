@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.MutableBoolean;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,8 +51,6 @@ public class PostsFragment extends Fragment {
 
     private LinearLayoutManager layoutManager;
 
-    private boolean loadingPosts;
-
     private Reddit reddit;
 
     @SuppressWarnings("RedundantNoArgConstructor")
@@ -75,6 +74,8 @@ public class PostsFragment extends Fragment {
     public void setRequest(final Single<Response<Thing<Listing>>> request) {
         clearNodes();
 
+        final MutableBoolean loadingPosts = new MutableBoolean(false);
+
         final Observable<NextPageEvent> nextPageEvents = RxRecyclerView.scrollEvents(recyclerView)
                 .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
                 .map(scrollEvent -> {
@@ -91,8 +92,8 @@ public class PostsFragment extends Fragment {
                         .filter(count -> count == 1)
                         .map(count -> new NextPageEvent(nodes.get(nodes.size() - 1)))
                         .toObservable())
-                .filter(event -> !loadingPosts) // TODO Unknown if MVI violation; Code smell.
-                .doOnNext(event -> loadingPosts = true); // TODO MVI Violation; Code smell.
+                .filter(event -> !loadingPosts.value) // TODO Unknown if MVI violation; Code smell.
+                .doOnNext(event -> loadingPosts.value = true); // TODO MVI Violation; Code smell.
 
         final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
                 .map(NextPageEvent::getNode)
@@ -138,6 +139,8 @@ public class PostsFragment extends Fragment {
                         popNode();
                     }
                     appendNodes(model.getNodes());
+
+                    loadingPosts.value = false;
                 }, Timber::e);
     }
 
@@ -165,14 +168,12 @@ public class PostsFragment extends Fragment {
     public void appendNode(final Node<Response<Thing<Listing>>> node) {
         nodes.add(node);
         postAdapter.notifyItemInserted(nodes.size() - 1);
-        loadingPosts = false;
     }
 
     public void appendNodes(final List<? extends Node<Response<Thing<Listing>>>> nodes) {
         final int positionStart = this.nodes.size();
         this.nodes.addAll(nodes);
         postAdapter.notifyItemRangeInserted(positionStart, nodes.size());
-        loadingPosts = false;
     }
 
     public Node<Response<Thing<Listing>>> popNode() {
