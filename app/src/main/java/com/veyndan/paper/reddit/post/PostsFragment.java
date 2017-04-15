@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.jakewharton.rxbinding2.support.v7.widget.RecyclerViewScrollEvent;
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView;
 import com.veyndan.paper.reddit.Config;
 import com.veyndan.paper.reddit.NextPageEvent;
@@ -36,6 +37,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 import timber.log.Timber;
@@ -70,18 +72,25 @@ public class PostsFragment extends Fragment {
         setRetainInstance(true);
     }
 
+    private static Predicate<RecyclerViewScrollEvent> endOfRecyclerView() {
+        return scrollEvent -> {
+            final RecyclerView recyclerView = scrollEvent.view();
+            final LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+
+            final int visibleItemCount = recyclerView.getChildCount();
+            final int totalItemCount = layoutManager.getItemCount();
+            final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+            return totalItemCount - visibleItemCount <= firstVisibleItem;
+        };
+    }
+
     public void setRequest(final Single<Response<Thing<Listing>>> request) {
         clearNodes();
 
         final Observable<NextPageEvent> nextPageEvents = RxRecyclerView.scrollEvents(recyclerView)
                 // Check for scroll down (scrollEvent.dy() > 0) or initial load (scrollEvent.dy() == 0)
                 .filter(scrollEvent -> scrollEvent.dy() >= 0)
-                .filter(scrollEvent -> {
-                    final int visibleItemCount = recyclerView.getChildCount();
-                    final int totalItemCount = layoutManager.getItemCount();
-                    final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
-                    return totalItemCount - visibleItemCount <= firstVisibleItem;
-                })
+                .filter(endOfRecyclerView())
                 // TODO There should be a more robust and intuitive way of doing distinctUntilChanged().
                 //      The only reason why we are passing the node position is for the use of this
                 //      stream as it isn't used in the UiModel stream. Things passed as an event
