@@ -97,9 +97,8 @@ public class PostsFragment extends Fragment {
                 //
                 //      When to solve: After nodes is no longer a flattened tree but is instead a
                 //      indexable tree.
-                .map(scrollEvent -> nodes.size() - 1)
-                .distinctUntilChanged()
-                .map(position -> new NextPageEvent(nodes.get(position)));
+                .map(scrollEvent -> new NextPageEvent(nodes.get(nodes.size() - 1)))
+                .distinctUntilChanged(event -> nodes.size() - 1);
 
         final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
                 .map(NextPageEvent::getNode)
