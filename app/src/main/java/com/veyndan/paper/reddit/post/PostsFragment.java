@@ -50,8 +50,6 @@ public class PostsFragment extends Fragment {
 
     private PostAdapter postAdapter;
 
-    private LinearLayoutManager layoutManager;
-
     private Reddit reddit;
 
     @SuppressWarnings("RedundantNoArgConstructor")
@@ -156,7 +154,7 @@ public class PostsFragment extends Fragment {
         // Inflate the layout for this fragment
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
 
-        layoutManager = new LinearLayoutManager(getActivity());
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         postAdapter = new PostAdapter(getActivity(), nodes, reddit);
 
         recyclerView.setLayoutManager(layoutManager);
