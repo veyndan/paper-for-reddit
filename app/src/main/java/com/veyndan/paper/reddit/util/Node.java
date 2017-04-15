@@ -60,9 +60,6 @@ public abstract class Node<T> {
     }
 
     @NonNull
-    public abstract Observable<Node<T>> asObservable();
-
-    @NonNull
     public Observable<Node<T>> preOrderTraverse(@IntRange(from = 0) final int depth) {
         return Observable.just(this)
                 // Node specific calculations are done here. This is the soonest that these

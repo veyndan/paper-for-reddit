@@ -5,16 +5,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
-import com.veyndan.paper.reddit.api.reddit.model.More;
-import com.veyndan.paper.reddit.api.reddit.model.Submission;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
-import com.veyndan.paper.reddit.post.media.mutator.Mutators;
 import com.veyndan.paper.reddit.util.Node;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
 public final class Progress extends Node<Response<Thing<Listing>>> {
@@ -50,39 +45,6 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
     @Override
     public Observable<Boolean> getEvents() {
         return events;
-    }
-
-    @NonNull
-    @Override
-    public Observable<Node<Response<Thing<Listing>>>> asObservable() {
-        return getRequest()
-                .subscribeOn(Schedulers.io())
-                .map(Response::body)
-                .toObservable()
-                .flatMap(thing -> Observable.fromIterable(thing.data.children)
-                        .observeOn(Schedulers.computation())
-                        .concatMap(redditObject -> {
-                            if (redditObject instanceof Submission) {
-                                return Single.just(redditObject)
-                                        .cast(Submission.class)
-                                        .map(Post::new)
-                                        .flatMap(Mutators.mutate())
-                                        .toObservable();
-                            } else if (redditObject instanceof More) {
-                                final More more = (More) redditObject;
-                                return Single.just(new Builder()
-                                        .events(Observable.just(true))
-                                        .degree(more.count)
-                                        .build())
-                                        .toObservable();
-                            } else {
-                                throw new IllegalStateException("Unknown node class: " + redditObject);
-                            }
-                        })
-                        .concatWith(Observable.just(new Builder()
-                                .events(getEvents())
-                                .request(getRequest())
-                                .build())));
     }
 
     public static class Builder {

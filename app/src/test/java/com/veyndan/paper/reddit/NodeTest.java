@@ -109,12 +109,6 @@ public class NodeTest {
             public Observable<Boolean> getEvents() {
                 return null;
             }
-
-            @NonNull
-            @Override
-            public Observable<Node<T>> asObservable() {
-                return null;
-            }
         };
     }
 }
