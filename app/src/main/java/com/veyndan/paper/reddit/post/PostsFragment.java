@@ -29,7 +29,6 @@ import com.veyndan.paper.reddit.ui.recyclerview.itemdecoration.TreeInsetItemDeco
 import com.veyndan.paper.reddit.util.Node;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.Observable;
@@ -100,51 +99,43 @@ public class PostsFragment extends Fragment {
         nextPageEvents
                 .doOnSubscribe(disposable -> appendNode(progressNode))
                 .subscribe(event -> {
-                    loadNode(progressNode);
+                    Single.just(progressNode)
+                            .subscribeOn(AndroidSchedulers.mainThread())
+                            .flatMapObservable(node -> node.getRequest()
+                                    .subscribeOn(Schedulers.io())
+                                    .map(Response::body)
+                                    .toObservable()
+                                    .flatMap(thing -> Observable.fromIterable(thing.data.children)
+                                            .observeOn(Schedulers.computation())
+                                            .concatMap(redditObject -> {
+                                                if (redditObject instanceof Submission) {
+                                                    return Single.just(redditObject)
+                                                            .cast(Submission.class)
+                                                            .map(Post::new)
+                                                            .flatMap(Mutators.mutate())
+                                                            .toObservable();
+                                                } else if (redditObject instanceof More) {
+                                                    final More more = (More) redditObject;
+                                                    return Single.just(new Progress.Builder()
+                                                            .degree(more.count)
+                                                            .build())
+                                                            .toObservable();
+                                                } else {
+                                                    throw new IllegalStateException("Unknown node class: " + redditObject);
+                                                }
+                                            })
+                                            .concatWith(Observable.just(new Progress.Builder()
+                                                    .request(node.getRequest())
+                                                    .build()))))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .concatMap(node -> node.preOrderTraverse(0))
+                            .toList()
+                            .subscribe(nodes1 -> {
+                                Timber.d("Next page");
+                                popNode();
+                                appendNodes(nodes1);
+                            }, Timber::e);
                 });
-    }
-
-    public void loadNode(final Node<Response<Thing<Listing>>> nodeToLoad) {
-        loadNodes(Collections.singletonList(nodeToLoad));
-    }
-
-    public void loadNodes(final List<Node<Response<Thing<Listing>>>> nodesToLoad) {
-        Observable.fromIterable(nodesToLoad)
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .flatMap(node -> node.getRequest()
-                        .subscribeOn(Schedulers.io())
-                        .map(Response::body)
-                        .toObservable()
-                        .flatMap(thing -> Observable.fromIterable(thing.data.children)
-                                .observeOn(Schedulers.computation())
-                                .concatMap(redditObject -> {
-                                    if (redditObject instanceof Submission) {
-                                        return Single.just(redditObject)
-                                                .cast(Submission.class)
-                                                .map(Post::new)
-                                                .flatMap(Mutators.mutate())
-                                                .toObservable();
-                                    } else if (redditObject instanceof More) {
-                                        final More more = (More) redditObject;
-                                        return Single.just(new Progress.Builder()
-                                                .degree(more.count)
-                                                .build())
-                                                .toObservable();
-                                    } else {
-                                        throw new IllegalStateException("Unknown node class: " + redditObject);
-                                    }
-                                })
-                                .concatWith(Observable.just(new Progress.Builder()
-                                        .request(node.getRequest())
-                                        .build()))))
-                .observeOn(AndroidSchedulers.mainThread())
-                .concatMap(node -> node.preOrderTraverse(0))
-                .toList()
-                .subscribe(nodes1 -> {
-                    Timber.d("Next page");
-                    popNode();
-                    appendNodes(nodes1);
-                }, Timber::e);
     }
 
     @Override
