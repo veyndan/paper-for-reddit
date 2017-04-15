@@ -80,7 +80,6 @@ public class Post extends Node<Response<Thing<Listing>>> {
                         return Single.just(redditObject)
                                 .cast(More.class)
                                 .map(more -> new Progress.Builder()
-                                        .events(Observable.just(true))
                                         .degree(more.count)
                                         .build())
                                 .toObservable();
@@ -320,11 +319,5 @@ public class Post extends Node<Response<Thing<Listing>>> {
     @Override
     public Observable<Node<Response<Thing<Listing>>>> getChildren() {
         return children;
-    }
-
-    @NonNull
-    @Override
-    public Observable<Boolean> getEvents() {
-        return Observable.empty();
     }
 }

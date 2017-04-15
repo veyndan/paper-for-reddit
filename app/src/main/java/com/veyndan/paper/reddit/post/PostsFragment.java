@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView;
 import com.veyndan.paper.reddit.Config;
+import com.veyndan.paper.reddit.NextPageEvent;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
@@ -72,10 +73,18 @@ public class PostsFragment extends Fragment {
 
     public void setRequest(final Single<Response<Thing<Listing>>> request) {
         clearNodes();
-        loadNode(new Progress.Builder()
-                .events(getEvents())
+
+        final Observable<NextPageEvent> nextPageEvents = getEvents();
+
+        final Node<Response<Thing<Listing>>> progressNode = new Progress.Builder()
                 .request(request.toMaybe())
-                .build());
+                .build();
+
+        nextPageEvents
+                .doOnSubscribe(disposable -> appendNode(progressNode))
+                .subscribe(event -> {
+                    loadNode(progressNode);
+                });
     }
 
     public void loadNode(final Node<Response<Thing<Listing>>> nodeToLoad) {
@@ -83,47 +92,41 @@ public class PostsFragment extends Fragment {
     }
 
     public void loadNodes(final List<Node<Response<Thing<Listing>>>> nodesToLoad) {
-        appendNodes(nodesToLoad);
-
         Observable.fromIterable(nodesToLoad)
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .flatMap(node -> node.getEvents()
-                        .filter(Boolean::booleanValue)
-                        .firstElement()
-                        .flatMapObservable(aBoolean -> node.getRequest()
-                                .subscribeOn(Schedulers.io())
-                                .map(Response::body)
-                                .toObservable()
-                                .flatMap(thing -> Observable.fromIterable(thing.data.children)
-                                        .observeOn(Schedulers.computation())
-                                        .concatMap(redditObject -> {
-                                            if (redditObject instanceof Submission) {
-                                                return Single.just(redditObject)
-                                                        .cast(Submission.class)
-                                                        .map(Post::new)
-                                                        .flatMap(Mutators.mutate())
-                                                        .toObservable();
-                                            } else if (redditObject instanceof More) {
-                                                final More more = (More) redditObject;
-                                                return Single.just(new Progress.Builder()
-                                                        .events(Observable.just(true))
-                                                        .degree(more.count)
-                                                        .build())
-                                                        .toObservable();
-                                            } else {
-                                                throw new IllegalStateException("Unknown node class: " + redditObject);
-                                            }
-                                        })
-                                        .concatWith(Observable.just(new Progress.Builder()
-                                                .events(node.getEvents())
-                                                .request(node.getRequest())
-                                                .build())))))
+                .flatMap(node -> node.getRequest()
+                        .subscribeOn(Schedulers.io())
+                        .map(Response::body)
+                        .toObservable()
+                        .flatMap(thing -> Observable.fromIterable(thing.data.children)
+                                .observeOn(Schedulers.computation())
+                                .concatMap(redditObject -> {
+                                    if (redditObject instanceof Submission) {
+                                        return Single.just(redditObject)
+                                                .cast(Submission.class)
+                                                .map(Post::new)
+                                                .flatMap(Mutators.mutate())
+                                                .toObservable();
+                                    } else if (redditObject instanceof More) {
+                                        final More more = (More) redditObject;
+                                        return Single.just(new Progress.Builder()
+                                                .degree(more.count)
+                                                .build())
+                                                .toObservable();
+                                    } else {
+                                        throw new IllegalStateException("Unknown node class: " + redditObject);
+                                    }
+                                })
+                                .concatWith(Observable.just(new Progress.Builder()
+                                        .request(node.getRequest())
+                                        .build()))))
                 .observeOn(AndroidSchedulers.mainThread())
                 .concatMap(node -> node.preOrderTraverse(0))
                 .toList()
                 .subscribe(nodes1 -> {
+                    Timber.d("Next page");
                     popNode();
-                    loadNodes(nodes1);
+                    appendNodes(nodes1);
                 }, Timber::e);
     }
 
@@ -178,11 +181,12 @@ public class PostsFragment extends Fragment {
         postAdapter.notifyItemRangeRemoved(0, nodesSize);
     }
 
-    private Observable<Boolean> getEvents() {
+    private Observable<NextPageEvent> getEvents() {
         return Observable.concat(getFirstPageEvents(), getNextPageEvents())
                 .filter(Boolean::booleanValue)
                 .filter(aBoolean -> !loadingPosts)
-                .doOnNext(aBoolean -> loadingPosts = true);
+                .doOnNext(aBoolean -> loadingPosts = true)
+                .map(ignored -> new NextPageEvent());
     }
 
     private Observable<Boolean> getFirstPageEvents() {

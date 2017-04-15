@@ -103,12 +103,6 @@ public class NodeTest {
             public Observable<Node<T>> getChildren() {
                 return Observable.fromArray(children);
             }
-
-            @NonNull
-            @Override
-            public Observable<Boolean> getEvents() {
-                return null;
-            }
         };
     }
 }
