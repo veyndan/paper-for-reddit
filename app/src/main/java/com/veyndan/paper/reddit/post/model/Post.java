@@ -327,10 +327,4 @@ public class Post extends Node<Response<Thing<Listing>>> {
     public Observable<Boolean> getEvents() {
         return Observable.empty();
     }
-
-    @NonNull
-    @Override
-    public Observable<Node<Response<Thing<Listing>>>> asObservable() {
-        return Observable.empty();
-    }
 }
