@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView;
 import com.veyndan.paper.reddit.Config;
 import com.veyndan.paper.reddit.NextPageEvent;
+import com.veyndan.paper.reddit.NextPageUiModel;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableTransformer;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -92,13 +94,16 @@ public class PostsFragment extends Fragment {
                 .filter(event -> !loadingPosts)
                 .doOnNext(event -> loadingPosts = true);
 
+        final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
+                .map(event -> new NextPageUiModel());
+
         final Node<Response<Thing<Listing>>> progressNode = new Progress.Builder()
                 .request(request.toMaybe())
                 .build();
 
-        nextPageEvents
+        nextPageEvents.compose(nextPage)
                 .doOnSubscribe(disposable -> appendNode(progressNode))
-                .subscribe(event -> {
+                .subscribe(model -> {
                     Single.just(progressNode)
                             .subscribeOn(AndroidSchedulers.mainThread())
                             .flatMapObservable(node -> node.getRequest()
