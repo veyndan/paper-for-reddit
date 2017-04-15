@@ -74,7 +74,24 @@ public class PostsFragment extends Fragment {
     public void setRequest(final Single<Response<Thing<Listing>>> request) {
         clearNodes();
 
-        final Observable<NextPageEvent> nextPageEvents = getEvents();
+        final Observable<NextPageEvent> nextPageEvents = RxRecyclerView.scrollEvents(recyclerView)
+                .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
+                .map(scrollEvent -> {
+                    final int visibleItemCount = recyclerView.getChildCount();
+                    final int totalItemCount = layoutManager.getItemCount();
+                    final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+                    return totalItemCount - visibleItemCount <= firstVisibleItem;
+                })
+                .filter(Boolean::booleanValue)
+                .map(ignored -> new NextPageEvent())
+                // Start with first page event
+                .startWith(Observable.fromIterable(nodes)
+                        .count()
+                        .filter(count -> count == 1)
+                        .map(count -> new NextPageEvent())
+                        .toObservable())
+                .filter(event -> !loadingPosts)
+                .doOnNext(event -> loadingPosts = true);
 
         final Node<Response<Thing<Listing>>> progressNode = new Progress.Builder()
                 .request(request.toMaybe())
@@ -179,31 +196,5 @@ public class PostsFragment extends Fragment {
         final int nodesSize = nodes.size();
         nodes.clear();
         postAdapter.notifyItemRangeRemoved(0, nodesSize);
-    }
-
-    private Observable<NextPageEvent> getEvents() {
-        return Observable.concat(getFirstPageEvents(), getNextPageEvents())
-                .filter(Boolean::booleanValue)
-                .filter(aBoolean -> !loadingPosts)
-                .doOnNext(aBoolean -> loadingPosts = true)
-                .map(ignored -> new NextPageEvent());
-    }
-
-    private Observable<Boolean> getFirstPageEvents() {
-        return Observable.fromIterable(nodes)
-                .count()
-                .map(count -> count == 1)
-                .toObservable();
-    }
-
-    private Observable<Boolean> getNextPageEvents() {
-        return RxRecyclerView.scrollEvents(recyclerView)
-                .filter(scrollEvent -> scrollEvent.dy() > 0) //check for scroll down
-                .map(scrollEvent -> {
-                    final int visibleItemCount = recyclerView.getChildCount();
-                    final int totalItemCount = layoutManager.getItemCount();
-                    final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
-                    return totalItemCount - visibleItemCount <= firstVisibleItem;
-                });
     }
 }
