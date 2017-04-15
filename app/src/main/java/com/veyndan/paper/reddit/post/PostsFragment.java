@@ -82,6 +82,13 @@ public class PostsFragment extends Fragment {
                     final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
                     return totalItemCount - visibleItemCount <= firstVisibleItem;
                 })
+                // TODO There should be a more robust and intuitive way of doing distinctUntilChanged().
+                //      The only reason why we are passing the node position is for the use of this
+                //      stream as it isn't used in the UiModel stream. Things passed as an event
+                //      should be consumed by the following streams.
+                //
+                //      When to solve: After nodes is no longer a flattened tree but is instead a
+                //      indexable tree.
                 .map(scrollEvent -> new NextPageEvent(nodes.get(nodes.size() - 1), nodes.size() - 1))
                 .distinctUntilChanged(NextPageEvent::getPosition);
 
