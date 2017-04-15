@@ -72,21 +72,21 @@ public class PostsFragment extends Fragment {
         setRetainInstance(true);
     }
 
-    private static Predicate<RecyclerViewScrollEvent> scrollingDownOrInitialLoadOfRecyclerView() {
-        // Scroll down: scrollEvent.dy() > 0
-        // Initial load: scrollEvent.dy() == 0
-        return scrollEvent -> scrollEvent.dy() >= 0;
-    }
-
     private static Predicate<RecyclerViewScrollEvent> endOfRecyclerView() {
         return scrollEvent -> {
-            final RecyclerView recyclerView = scrollEvent.view();
-            final LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+            // Scroll down: scrollEvent.dy() > 0
+            // Initial load: scrollEvent.dy() == 0
+            if (scrollEvent.dy() >= 0) {
+                final RecyclerView recyclerView = scrollEvent.view();
+                final LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
-            final int visibleItemCount = recyclerView.getChildCount();
-            final int totalItemCount = layoutManager.getItemCount();
-            final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
-            return totalItemCount - visibleItemCount <= firstVisibleItem;
+                final int visibleItemCount = recyclerView.getChildCount();
+                final int totalItemCount = layoutManager.getItemCount();
+                final int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+                return totalItemCount - visibleItemCount <= firstVisibleItem;
+            }
+
+            return false;
         };
     }
 
@@ -94,7 +94,6 @@ public class PostsFragment extends Fragment {
         clearNodes();
 
         final Observable<NextPageEvent> nextPageEvents = RxRecyclerView.scrollEvents(recyclerView)
-                .filter(scrollingDownOrInitialLoadOfRecyclerView())
                 .filter(endOfRecyclerView())
                 // TODO There should be a more robust and intuitive way of doing distinctUntilChanged().
                 //      The only reason why we are passing the node position is for the use of this
