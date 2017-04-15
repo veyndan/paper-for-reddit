@@ -8,7 +8,6 @@ import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.util.Node;
 
-import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import retrofit2.Response;
 
@@ -23,7 +22,6 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
 
     private Progress(@NonNull final Builder builder) {
         degree = builder.degree;
-        setRequest(builder.request);
     }
 
     @Nullable
@@ -42,17 +40,10 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
     public static class Builder {
 
         @Nullable @IntRange(from = 0) private Integer degree;
-        @NonNull private Maybe<Response<Thing<Listing>>> request = Maybe.empty();
 
         @NonNull
         public Builder degree(@IntRange(from = 0) final int degree) {
             this.degree = degree;
-            return this;
-        }
-
-        @NonNull
-        public Builder request(@NonNull final Maybe<Response<Thing<Listing>>> request) {
-            this.request = request;
             return this;
         }
 
