@@ -48,9 +48,6 @@ public abstract class Node<T> {
     }
 
     @NonNull
-    public abstract Observable<Boolean> getEvents();
-
-    @NonNull
     public Maybe<T> getRequest() {
         return request;
     }
