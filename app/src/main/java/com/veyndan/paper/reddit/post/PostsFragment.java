@@ -103,7 +103,7 @@ public class PostsFragment extends Fragment {
 
         final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
                 .map(NextPageEvent::getNode)
-                .flatMap(node -> node.getRequest()
+                .flatMap(node -> request
                         .subscribeOn(Schedulers.io())
                         .map(Response::body)
                         .toObservable()
@@ -125,7 +125,6 @@ public class PostsFragment extends Fragment {
                                     }
                                 })
                                 .concatWith(Observable.just(new Progress.Builder()
-                                        .request(node.getRequest())
                                         .build())))
                         .observeOn(AndroidSchedulers.mainThread())
                         .concatMap(node1 -> node1.preOrderTraverse(0))
@@ -133,7 +132,6 @@ public class PostsFragment extends Fragment {
                         .toObservable())
                 .map(NextPageUiModel::nodes)
                 .startWith(NextPageUiModel.node(new Progress.Builder()
-                        .request(request.toMaybe())
                         .build()));
 
         nextPageEvents.compose(nextPage)

@@ -4,7 +4,6 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
@@ -12,7 +11,6 @@ public abstract class Node<T> {
 
     @IntRange(from = 0) private int depth;
     @Nullable @IntRange(from = 0) private Integer descendantCount;
-    @NonNull private Maybe<T> request = Maybe.empty();
 
     @IntRange(from = 0)
     public int getDepth() {
@@ -45,15 +43,6 @@ public abstract class Node<T> {
 
     public void setDescendantCount(@Nullable @IntRange(from = 0) final Integer descendantCount) {
         this.descendantCount = descendantCount;
-    }
-
-    @NonNull
-    public Maybe<T> getRequest() {
-        return request;
-    }
-
-    public void setRequest(@NonNull final Maybe<T> request) {
-        this.request = request;
     }
 
     @NonNull
