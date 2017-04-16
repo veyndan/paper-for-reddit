@@ -147,7 +147,6 @@ public class PostsFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
