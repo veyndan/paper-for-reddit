@@ -94,7 +94,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
         archived = submission.archived;
         author = submission.author == null ? "" : submission.author;
         bodyHtml = submission.getBodyHtml();
-        createdUtc = submission.createdUtc;
+        createdUtc = submission.getCreatedUtc();
         domain = submission.getDomain();
         fullname = submission.getFullname();
         gildedCount = submission.gilded;

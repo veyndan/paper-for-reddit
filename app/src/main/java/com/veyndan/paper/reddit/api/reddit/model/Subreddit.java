@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 // t5_
-public class Subreddit extends RedditObject {
+public class Subreddit extends RedditObject implements Created {
+
+    private long created;
+    @Json(name = "created_utc") private long createdUtc;
     @Json(name = "banner_img") public String bannerImg;
     @Json(name = "user_sr_theme_enabled") public Boolean userSrThemeEnabled;
     @Json(name = "submit_text_html") public Object submitTextHtml;
@@ -37,11 +40,9 @@ public class Subreddit extends RedditObject {
     @Json(name = "user_is_moderator") public Boolean userIsModerator;
     @Json(name = "key_color") public String keyColor;
     public String name;
-    public Integer created;
     public String url;
     public Boolean quarantine;
     @Json(name = "hide_ads") public Boolean hideAds;
-    @Json(name = "created_utc") public Integer createdUtc;
     @Json(name = "banner_size") public List<Integer> bannerSize = new ArrayList<>();
     @Json(name = "user_is_contributor") public Boolean userIsContributor;
     @Json(name = "public_description") public String publicDescription;
@@ -49,4 +50,14 @@ public class Subreddit extends RedditObject {
     @Json(name = "subreddit_type") public String subredditType;
     @Json(name = "submission_type") public String submissionType;
     @Json(name = "user_is_subscriber") public Boolean userIsSubscriber;
+
+    @Override
+    public long getCreated() {
+        return created;
+    }
+
+    @Override
+    public long getCreatedUtc() {
+        return createdUtc;
+    }
 }
