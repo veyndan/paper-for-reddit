@@ -13,5 +13,6 @@ public interface ImgurService {
 
     @NonNull
     @GET("album/{id}")
-    Single<Basic<Album>> album(@NonNull @Path("id") String id);
+    Single<Basic<Album>> album(
+            @NonNull @Path("id") String id);
 }
