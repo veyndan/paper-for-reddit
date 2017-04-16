@@ -9,9 +9,10 @@ import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO Votable and Created should be super classes some how.
-public abstract class Submission extends RedditObject implements Votable {
+public abstract class Submission extends RedditObject implements Created, Votable {
 
+    private long created;
+    @Json(name = "created_utc") private long createdUtc;
     private int ups;
     private int downs;
 
@@ -20,6 +21,16 @@ public abstract class Submission extends RedditObject implements Votable {
      * {@code false} = downvoted, {@code null} = no vote.
      */
     private Boolean likes;
+
+    @Override
+    public long getCreated() {
+        return created;
+    }
+
+    @Override
+    public long getCreatedUtc() {
+        return createdUtc;
+    }
 
     @Override
     public int getUps() {
@@ -38,10 +49,6 @@ public abstract class Submission extends RedditObject implements Votable {
         }
         return likes ? VoteDirection.UPVOTE : VoteDirection.DOWNVOTE;
     }
-
-    // Created
-    public long created;
-    @Json(name = "created_utc") public long createdUtc;
 
     /**
      * Returns {@code true} if the Submission has been clicked on before, else {@code false}.

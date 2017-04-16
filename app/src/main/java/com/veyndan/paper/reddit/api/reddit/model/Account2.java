@@ -2,11 +2,10 @@ package com.veyndan.paper.reddit.api.reddit.model;
 
 import com.squareup.moshi.Json;
 
-public class Account2 extends RedditObject {
+public class Account2 extends RedditObject implements Created {
 
-    // Created
-    public long created;
-    @Json(name = "created_utc") public long createdUtc;
+    private long created;
+    @Json(name = "created_utc") private long createdUtc;
 
     // Documented
     @Json(name = "comment_karma") public int commentKarma;
@@ -32,4 +31,14 @@ public class Account2 extends RedditObject {
     @Json(name = "gold_expiration") public Object goldExpiration;
     @Json(name = "gold_creddits") public int goldCreddits;
     @Json(name = "suspension_expiration_utc") public Object suspensionExpirationUtc; // Type not sure
+
+    @Override
+    public long getCreated() {
+        return created;
+    }
+
+    @Override
+    public long getCreatedUtc() {
+        return createdUtc;
+    }
 }
