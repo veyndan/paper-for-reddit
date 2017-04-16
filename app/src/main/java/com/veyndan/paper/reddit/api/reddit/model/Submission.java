@@ -10,14 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 // TODO Votable and Created should be super classes some how.
-public abstract class Submission extends RedditObject {
+public abstract class Submission extends RedditObject implements Votable {
 
-    // TODO: Make a Body class which encapsulates post hint, media and body text so Comment can have the same with a constant post hint of SELF.
-    // TODO: which can be defined in Submission.java.
-    // TODO: Could have custom post hints? E.g. Tweets for the converter adapters. Hard part is where to define the attributes for each converter e.g. Tweet id. Could have hash map or something.
-    // Votable
-    public int ups;
-    public int downs;
+    private int ups;
+    private int downs;
 
     /**
      * How the logged-in user has voted on the submission. {@code true} = upvoted,
@@ -25,6 +21,17 @@ public abstract class Submission extends RedditObject {
      */
     private Boolean likes;
 
+    @Override
+    public int getUps() {
+        return ups;
+    }
+
+    @Override
+    public int getDowns() {
+        return downs;
+    }
+
+    @Override
     public VoteDirection getLikes() {
         if (likes == null) {
             return VoteDirection.UNVOTE;
