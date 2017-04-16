@@ -38,7 +38,7 @@ public final class ImageMutatorFactory implements MutatorFactory {
                     @StringRes final int type = post1.getLinkUrl().endsWith(".gif")
                             ? Image.IMAGE_TYPE_GIF
                             : Image.IMAGE_TYPE_STANDARD;
-                    final Image image = new Image(post1.getLinkUrl(), size, type);
+                    final Image image = Image.create(post1.getLinkUrl(), size, type);
                     post1.getMedias().add(image);
                     return post1;
                 });

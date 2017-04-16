@@ -91,25 +91,25 @@ public class PostHeaderView extends AppCompatTextView {
             final List<Flair> flairs = new ArrayList<>(4);
 
             if (Boolean.valueOf(properties.getOrDefault("stickied", "false"))) {
-                flairs.add(new Flair.Builder(flairStickiedColor)
+                flairs.add(Flair.builder(flairStickiedColor)
                         .text(flairStickiedText)
                         .build());
             }
 
             if (Boolean.valueOf(properties.getOrDefault("nsfw", "false"))) {
-                flairs.add(new Flair.Builder(flairNsfwColor)
+                flairs.add(Flair.builder(flairNsfwColor)
                         .text(flairNsfwText)
                         .build());
             }
 
             if (properties.containsKey("linkFlair")) {
-                flairs.add(new Flair.Builder(flairLinkColor)
+                flairs.add(Flair.builder(flairLinkColor)
                         .text(properties.get("linkFlair"))
                         .build());
             }
 
             if (properties.containsKey("gildedCount")) {
-                flairs.add(new Flair.Builder(flairGildedColor)
+                flairs.add(Flair.builder(flairGildedColor)
                         .text(properties.get("gildedCount"))
                         .icon(flairGildedIcon)
                         .build());
@@ -250,7 +250,7 @@ public class PostHeaderView extends AppCompatTextView {
                     divider = "   "; // TODO Replace with margin left and right of 4dp
                 }
 
-                switch (flair.getType()) {
+                switch (flair.type()) {
                     case LINK:
                         flairsSpanny.append(createFlairSpannable(context, flair, textAppearanceSpan, styleSpan), new ClickableSpan() {
                             @Override
@@ -259,7 +259,7 @@ public class PostHeaderView extends AppCompatTextView {
                                 intent.putExtras(new Reddit.FilterBuilder()
                                         .nodeDepth(0)
                                         .subredditName(subreddit)
-                                        .searchQuery("flair:'" + flair.getText() + "'")
+                                        .searchQuery("flair:'" + flair.text() + "'")
                                         .build());
                                 context.startActivity(intent);
                             }
@@ -300,9 +300,9 @@ public class PostHeaderView extends AppCompatTextView {
                                                       final TextAppearanceSpan textAppearanceSpan,
                                                       final StyleSpan styleSpan) {
             final FlairBackgroundSpan flairBackgroundSpan = new FlairBackgroundSpan(context,
-                    flair.getBackgroundColor(), flair.getIcon());
+                    flair.backgroundColor(), flair.icon());
 
-            final String tag = MoreObjects.firstNonNull(flair.getText(), "");
+            final String tag = MoreObjects.firstNonNull(flair.text(), "");
 
             return Spanny.spanText(tag, textAppearanceSpan, styleSpan, flairBackgroundSpan);
         }

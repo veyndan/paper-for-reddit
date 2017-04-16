@@ -1,20 +1,15 @@
 package com.veyndan.paper.reddit.post.media.model;
 
-public class LinkImage {
+import com.google.auto.value.AutoValue;
 
-    private final String url;
-    private final String domain;
+@AutoValue
+public abstract class LinkImage {
 
-    public LinkImage(final String url, final String domain) {
-        this.url = url;
-        this.domain = domain;
-    }
+    public abstract String url();
 
-    public String getUrl() {
-        return url;
-    }
+    public abstract String domain();
 
-    public String getDomain() {
-        return domain;
+    public static LinkImage create(final String url, final String domain) {
+        return new AutoValue_LinkImage(url, domain);
     }
 }

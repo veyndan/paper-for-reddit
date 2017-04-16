@@ -79,7 +79,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
                         return imgurService.album(id)
                                 .flatMapObservable(basic -> Observable.fromIterable(basic.getData().getImages()))
-                                .map(image -> new Image(image.getLink(), new Size(image.getWidth(), image.getHeight())))
+                                .map(image -> Image.create(image.getLink(), new Size(image.getWidth(), image.getHeight())))
                                 .toList()
                                 .toMaybe();
                     } else {
@@ -101,7 +101,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
                                 ? Image.IMAGE_TYPE_GIF
                                 : Image.IMAGE_TYPE_STANDARD;
 
-                        return Maybe.just(Collections.singletonList(new Image(url, size, type)));
+                        return Maybe.just(Collections.singletonList(Image.create(url, size, type)));
                     }
                 }, (post1, images) -> {
                     post1.getMedias().addAll(images);
