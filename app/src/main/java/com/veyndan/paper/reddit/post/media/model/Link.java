@@ -1,14 +1,13 @@
 package com.veyndan.paper.reddit.post.media.model;
 
-public class Link {
+import com.google.auto.value.AutoValue;
 
-    private final String domain;
+@AutoValue
+public abstract class Link {
 
-    public Link(final String domain) {
-        this.domain = domain;
-    }
+    public abstract String domain();
 
-    public String getDomain() {
-        return domain;
+    public static Link create(final String domain) {
+        return new AutoValue_Link(domain);
     }
 }

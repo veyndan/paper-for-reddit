@@ -65,7 +65,7 @@ public class LinkAdapterDelegate
                     customTabsIntent.launchUrl(activity, Uri.parse(post.getLinkUrl()));
                 }, Timber::e);
 
-        holder.binding.postMediaUrl.setText(link.getDomain());
+        holder.binding.postMediaUrl.setText(link.domain());
     }
 
     static class LinkViewHolder extends RecyclerView.ViewHolder {

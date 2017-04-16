@@ -75,7 +75,7 @@ public class LinkImageAdapterDelegate
         holder.binding.postMediaImageProgress.setVisibility(View.VISIBLE);
 
         Glide.with(context)
-                .load(linkImage.getUrl())
+                .load(linkImage.url())
                 .listener(new RequestListener<String, GlideDrawable>() {
                     @Override
                     public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
@@ -91,7 +91,7 @@ public class LinkImageAdapterDelegate
                 })
                 .into(holder.binding.postMediaImage);
 
-        holder.binding.postMediaUrl.setText(linkImage.getDomain());
+        holder.binding.postMediaUrl.setText(linkImage.domain());
     }
 
     static class LinkImageViewHolder extends RecyclerView.ViewHolder {

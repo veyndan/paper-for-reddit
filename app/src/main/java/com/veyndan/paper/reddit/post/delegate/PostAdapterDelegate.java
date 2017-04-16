@@ -136,7 +136,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
             final int flairStickiedColor = context.getColor(R.color.post_flair_stickied);
             final String flairStickiedText = context.getString(R.string.post_stickied);
 
-            flairs.add(new Flair.Builder(flairStickiedColor)
+            flairs.add(Flair.builder(flairStickiedColor)
                     .text(flairStickiedText)
                     .build());
         }
@@ -146,7 +146,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
             final String flairLockedText = context.getString(R.string.post_locked);
             final Drawable flairLockIcon = context.getDrawable(R.drawable.ic_lock_outline_white_12sp);
 
-            flairs.add(new Flair.Builder(flairLockedColor)
+            flairs.add(Flair.builder(flairLockedColor)
                     .text(flairLockedText)
                     .icon(flairLockIcon)
                     .build());
@@ -156,7 +156,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
             final int flairNsfwColor = context.getColor(R.color.post_flair_nsfw);
             final String flairNsfwText = context.getString(R.string.post_nsfw);
 
-            flairs.add(new Flair.Builder(flairNsfwColor)
+            flairs.add(Flair.builder(flairNsfwColor)
                     .text(flairNsfwText)
                     .build());
         }
@@ -164,7 +164,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         if (post.hasLinkFlair()) {
             final int flairLinkColor = context.getColor(R.color.post_flair_link);
 
-            flairs.add(new Flair.Builder(flairLinkColor)
+            flairs.add(Flair.builder(flairLinkColor)
                     .type(Flair.Type.LINK)
                     .text(post.getLinkFlair())
                     .build());
@@ -174,7 +174,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
             final int flairGildedColor = context.getColor(R.color.post_flair_gilded);
             final Drawable flairGildedIcon = context.getDrawable(R.drawable.ic_star_white_12sp);
 
-            flairs.add(new Flair.Builder(flairGildedColor)
+            flairs.add(Flair.builder(flairGildedColor)
                     .text(String.valueOf(post.getGildedCount()))
                     .icon(flairGildedIcon)
                     .build());

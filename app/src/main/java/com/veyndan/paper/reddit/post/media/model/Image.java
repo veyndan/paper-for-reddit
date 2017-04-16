@@ -3,45 +3,32 @@ package com.veyndan.paper.reddit.post.media.model;
 import android.support.annotation.StringRes;
 import android.util.Size;
 
+import com.google.auto.value.AutoValue;
 import com.veyndan.paper.reddit.R;
+import com.veyndan.paper.reddit.util.MutableObject;
 
-public class Image {
+@AutoValue
+public abstract class Image {
 
     public static final int IMAGE_TYPE_STANDARD = -1;
     @StringRes public static final int IMAGE_TYPE_GIF = R.string.post_media_image_type_gif;
 
-    private final int type;
-    private final String url;
-    private Size size;
+    public abstract String url();
 
-    public Image(final String url) {
-        this(url, new Size(0, 0));
-    }
-
-    public Image(final String url, final Size size) {
-        this(url, size, IMAGE_TYPE_STANDARD);
-    }
-
-    public Image(final String url, final Size size, @StringRes final int type) {
-        this.url = url;
-        this.size = size;
-        this.type = type;
-    }
+    public abstract MutableObject<Size> size();
 
     @StringRes
-    public int getType() {
-        return type;
+    public abstract int type();
+
+    public static Image create(final String url) {
+        return create(url, new Size(0, 0));
     }
 
-    public String getUrl() {
-        return url;
+    public static Image create(final String url, final Size size) {
+        return create(url, size, IMAGE_TYPE_STANDARD);
     }
 
-    public Size getSize() {
-        return size;
-    }
-
-    public void setSize(final Size size) {
-        this.size = size;
+    public static Image create(final String url, final Size size, @StringRes final int type) {
+        return new AutoValue_Image(url, new MutableObject<>(size), type);
     }
 }

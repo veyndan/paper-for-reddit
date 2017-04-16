@@ -58,6 +58,11 @@ dependencies {
     final String apacheCommonsVersion = '3.5'
     compile "org.apache.commons:commons-lang3:$apacheCommonsVersion"
 
+    // Auto Value
+    final String autoValueVersion = '1.2'
+    provided "com.google.auto.value:auto-value:1.2"
+    annotationProcessor "com.google.auto.value:auto-value:1.2"
+
     // Deep Link Dispatch
     final String deepLinkDispatchVersion = '3.0.0'
     compile "com.airbnb:deeplinkdispatch:$deepLinkDispatchVersion"

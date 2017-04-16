@@ -5,72 +5,43 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-public final class Flair {
+import com.google.auto.value.AutoValue;
+
+@AutoValue
+public abstract class Flair {
 
     public enum Type {
         LINK, UNDEFINED
     }
 
-    @NonNull private final Type type;
-    @Nullable private final String text;
-    @Nullable private final Drawable icon;
-    private final int backgroundColor;
-
-    private Flair(final Builder builder) {
-        type = builder.type;
-        text = builder.text;
-        icon = builder.icon;
-        backgroundColor = builder.backgroundColor;
-    }
-
     @NonNull
-    public Type getType() {
-        return type;
-    }
+    public abstract Type type();
 
     @Nullable
-    public String getText() {
-        return text;
-    }
+    public abstract String text();
 
     @Nullable
-    public Drawable getIcon() {
-        return icon;
+    public abstract Drawable icon();
+
+    public abstract int backgroundColor();
+
+    public static Builder builder(@ColorInt final int backgroundColor) {
+        return new AutoValue_Flair.Builder()
+                .backgroundColor(backgroundColor)
+                .type(Type.UNDEFINED);
     }
 
-    @ColorInt
-    public int getBackgroundColor() {
-        return backgroundColor;
-    }
+    @AutoValue.Builder
+    public abstract static class Builder {
 
-    public static class Builder {
+        public abstract Builder type(Type type);
 
-        private Type type = Type.UNDEFINED;
-        private String text;
-        private Drawable icon;
-        @ColorInt private final int backgroundColor;
+        public abstract Builder text(String text);
 
-        public Builder(@ColorInt final int backgroundColor) {
-            this.backgroundColor = backgroundColor;
-        }
+        public abstract Builder icon(Drawable icon);
 
-        public Builder type(final Type type) {
-            this.type = type;
-            return this;
-        }
+        public abstract Builder backgroundColor(@ColorInt int backgroundColor);
 
-        public Builder text(final String text) {
-            this.text = text;
-            return this;
-        }
-
-        public Builder icon(final Drawable icon) {
-            this.icon = icon;
-            return this;
-        }
-
-        public Flair build() {
-            return new Flair(this);
-        }
+        public abstract Flair build();
     }
 }

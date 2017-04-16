@@ -67,21 +67,21 @@ public class ImageAdapterDelegate
 
         if (customTabsClient != null) {
             final CustomTabsSession session = customTabsClient.newSession(null);
-            session.mayLaunchUrl(Uri.parse(image.getUrl()), null, null);
+            session.mayLaunchUrl(Uri.parse(image.url()), null, null);
         }
 
         RxView.clicks(holder.itemView)
                 .subscribe(aVoid -> {
-                    customTabsIntent.launchUrl(activity, Uri.parse(image.getUrl()));
+                    customTabsIntent.launchUrl(activity, Uri.parse(image.url()));
                 }, Timber::e);
 
-        final boolean imageDimensAvailable = image.getSize().getWidth() > 0 && image.getSize().getHeight() > 0;
+        final boolean imageDimensAvailable = image.size().value.getWidth() > 0 && image.size().value.getHeight() > 0;
 
-        if (image.getType() == Image.IMAGE_TYPE_STANDARD) {
+        if (image.type() == Image.IMAGE_TYPE_STANDARD) {
             holder.binding.postMediaImageType.setVisibility(View.GONE);
         } else {
             holder.binding.postMediaImageType.setVisibility(View.VISIBLE);
-            holder.binding.postMediaImageType.setText(image.getType());
+            holder.binding.postMediaImageType.setText(image.type());
         }
 
         // TODO Once media adapter is shared between posts, width can be calculated in the holder constructor.
@@ -91,7 +91,7 @@ public class ImageAdapterDelegate
                     final int width = holder.itemView.getWidth();
 
                     Glide.with(context)
-                            .load(image.getUrl())
+                            .load(image.url())
                             .listener(new RequestListener<String, GlideDrawable>() {
                                 @Override
                                 public boolean onException(final Exception e, final String model, final Target<GlideDrawable> target, final boolean isFirstResource) {
@@ -106,7 +106,7 @@ public class ImageAdapterDelegate
                                         final int imageWidth = resource.getIntrinsicWidth();
                                         final int imageHeight = resource.getIntrinsicHeight();
 
-                                        image.setSize(new Size(imageWidth, imageHeight));
+                                        image.size().value = new Size(imageWidth, imageHeight);
 
                                         post.getMedias().add(image);
 
@@ -118,7 +118,7 @@ public class ImageAdapterDelegate
                             .into(holder.binding.postMediaImage);
 
                     if (imageDimensAvailable) {
-                        holder.binding.postMediaImage.getLayoutParams().height = (int) ((float) width / image.getSize().getWidth() * image.getSize().getHeight());
+                        holder.binding.postMediaImage.getLayoutParams().height = (int) ((float) width / image.size().value.getWidth() * image.size().value.getHeight());
                     }
                 }, Timber::e);
     }

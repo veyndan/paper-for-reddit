@@ -3,19 +3,22 @@ package com.veyndan.paper.reddit.post.media.model;
 import android.content.Context;
 import android.text.Spannable;
 
+import com.google.auto.value.AutoValue;
+
 import io.reactivex.functions.Function;
 
-public class Text {
+@AutoValue
+public abstract class Text {
 
-    private final Function<Context, Spannable> body;
+    abstract Function<Context, Spannable> body();
 
-    public Text(final Function<Context, Spannable> body) {
-        this.body = body;
+    public static Text create(final Function<Context, Spannable> body) {
+        return new AutoValue_Text(body);
     }
 
     public Spannable getBody(final Context context) {
         try {
-            return body.apply(context);
+            return body().apply(context);
         } catch (final Exception e) {
             throw new IllegalStateException();
         }

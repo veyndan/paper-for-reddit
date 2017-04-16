@@ -43,7 +43,7 @@ final class XkcdMutatorFactory implements MutatorFactory {
                     final XkcdService xkcdService = retrofit.create(XkcdService.class);
 
                     final Single<Image> imageObservable = xkcdService.num(comicNum)
-                            .map(comic -> new Image(comic.getImg()));
+                            .map(comic -> Image.create(comic.getImg()));
 
                     post.setPostHint(PostHint.IMAGE);
 
