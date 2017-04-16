@@ -12,5 +12,6 @@ public interface XkcdService {
 
     @NonNull
     @GET("{num}/info.0.json")
-    Single<XkcdComic> num(@Path("num") int num);
+    Single<XkcdComic> num(
+            @Path("num") int num);
 }

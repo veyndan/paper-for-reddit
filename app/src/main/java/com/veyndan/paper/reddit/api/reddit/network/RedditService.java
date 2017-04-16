@@ -48,10 +48,12 @@ public interface RedditService {
 
     @FormUrlEncoded
     @POST("api/new_captcha")
-    Single<Response<CaptchaNew>> newCaptcha(@Field("api_type") String apiType);
+    Single<Response<CaptchaNew>> newCaptcha(
+            @Field("api_type") String apiType);
 
     @GET("captcha/{iden}")
-    Single<Response<Void>> idenCaptcha(@Path("iden") String iden);
+    Single<Response<Void>> idenCaptcha(
+            @Path("iden") String iden);
 
     // ================================
     //         Links & Comments
@@ -59,28 +61,34 @@ public interface RedditService {
 
     @FormUrlEncoded
     @POST("api/hide")
-    Single<Response<Void>> hide(@Field("id") String ids);
+    Single<Response<Void>> hide(
+            @Field("id") String ids);
 
     @GET("api/morechildren")
-    Single<MoreChildren> moreChildren(@Query("api_type") String apiType,
-                                      @Query("children") String children,
-                                      @Query("link_id") String linkId);
+    Single<MoreChildren> moreChildren(
+            @Query("api_type") String apiType,
+            @Query("children") String children,
+            @Query("link_id") String linkId);
 
     @FormUrlEncoded
     @POST("api/save")
-    Single<Response<Void>> save(@Field("category") String category, @Field("id") String id);
+    Single<Response<Void>> save(
+            @Field("category") String category,
+            @Field("id") String id);
 
     @GET("api/saved_categories")
     Single<Response<Categories>> savedCategories();
 
     @FormUrlEncoded
     @POST("api/unsave")
-    Single<Response<Void>> unsave(@Field("id") String id);
+    Single<Response<Void>> unsave(
+            @Field("id") String id);
 
     @FormUrlEncoded
     @POST("api/vote")
     Single<Response<Void>> vote(
-            @Field("dir") VoteDirection voteDirection, @Field("id") String id);
+            @Field("dir") VoteDirection voteDirection,
+            @Field("id") String id);
 
     // ================================
     //             Listings
@@ -88,11 +96,13 @@ public interface RedditService {
 
     @GET("r/{subreddit}/comments/{article}")
     Single<Response<List<Thing<Listing>>>> subredditComments(
-            @Path("subreddit") String subreddit, @Path("article") String article);
+            @Path("subreddit") String subreddit,
+            @Path("article") String article);
 
     @GET("r/{subreddit}/{where}")
     Single<Response<Thing<Listing>>> subreddit(
-            @Path("subreddit") String subreddit, @Path("where") Sort sort,
+            @Path("subreddit") String subreddit,
+            @Path("where") Sort sort,
             @QueryMap Map<String, String> queries);
 
     // ================================
@@ -108,21 +118,25 @@ public interface RedditService {
     // ================================
 
     @GET("r/{subreddit}/search")
-    Single<Response<Thing<Listing>>> search(@Path("subreddit") String subreddit,
-                                            @QueryMap Map<String, String> queries);
+    Single<Response<Thing<Listing>>> search(
+            @Path("subreddit") String subreddit,
+            @QueryMap Map<String, String> queries);
 
     // ================================
     //            Subreddits
     // ================================
 
     @GET("r/{subreddit}/about")
-    Single<Response<Thing<Subreddit>>> subredditAbout(@Path("subreddit") String subreddit);
+    Single<Response<Thing<Subreddit>>> subredditAbout(
+            @Path("subreddit") String subreddit);
 
     @GET("subreddits/mine/{where}")
-    Single<Response<Thing<Listing>>> mySubreddits(@Path("where") MySubreddits mySubreddits);
+    Single<Response<Thing<Listing>>> mySubreddits(
+            @Path("where") MySubreddits mySubreddits);
 
     @GET("subreddits/{where}")
-    Single<Response<Thing<Listing>>> subreddits(@Path("where") SubredditSort sort);
+    Single<Response<Thing<Listing>>> subreddits(
+            @Path("where") SubredditSort sort);
 
     // ================================
     //              Users
@@ -130,16 +144,20 @@ public interface RedditService {
 
     @GET("r/{subreddit}/about/{where}")
     Single<Response<Thing<Listing>>> aboutSubreddit(
-            @Path("subreddit") String subreddit, @Path("where") AboutSubreddit aboutSubreddit);
+            @Path("subreddit") String subreddit,
+            @Path("where") AboutSubreddit aboutSubreddit);
 
     @GET("api/v1/user/{username}/trophies")
-    Single<Response<Thing<Trophies>>> userTrophies(@Path("username") String username);
+    Single<Response<Thing<Trophies>>> userTrophies(
+            @Path("username") String username);
 
     @GET("user/{username}/about")
-    Single<Response<Thing<Account2>>> userAbout(@Path("username") String username);
+    Single<Response<Thing<Account2>>> userAbout(
+            @Path("username") String username);
 
     @GET("user/{username}/{where}")
     Single<Response<Thing<Listing>>> user(
-            @Path("username") String username, @Path("where") User where,
+            @Path("username") String username,
+            @Path("where") User where,
             @QueryMap Map<String, String> queries);
 }
