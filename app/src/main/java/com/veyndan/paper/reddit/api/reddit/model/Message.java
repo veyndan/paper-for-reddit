@@ -2,7 +2,7 @@ package com.veyndan.paper.reddit.api.reddit.model;
 
 import com.squareup.moshi.Json;
 
-public class Message extends RedditObject implements Created {
+public class Message implements Created, RedditObject {
 
     private long created;
     @Json(name = "created_utc") private long createdUtc;

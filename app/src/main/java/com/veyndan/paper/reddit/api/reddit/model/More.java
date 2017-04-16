@@ -5,7 +5,7 @@ import com.squareup.moshi.Json;
 import java.util.ArrayList;
 import java.util.List;
 
-public class More extends RedditObject {
+public class More implements RedditObject {
     public int count;
     @Json(name = "parent_id") public String parentId;
     public String id;

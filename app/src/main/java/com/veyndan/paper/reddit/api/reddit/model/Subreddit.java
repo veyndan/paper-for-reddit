@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // t5_
-public class Subreddit extends RedditObject implements Created {
+public class Subreddit implements Created, RedditObject {
 
     private long created;
     @Json(name = "created_utc") private long createdUtc;
