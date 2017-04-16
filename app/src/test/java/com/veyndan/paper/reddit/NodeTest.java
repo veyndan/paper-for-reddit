@@ -112,12 +112,6 @@ public class NodeTest {
 
             @NonNull
             @Override
-            public Observable<Node<T>> asObservableImpl() {
-                return null;
-            }
-
-            @NonNull
-            @Override
             public Observable<Node<T>> asObservable() {
                 return null;
             }

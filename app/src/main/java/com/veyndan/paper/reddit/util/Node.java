@@ -60,25 +60,14 @@ public abstract class Node<T> {
     }
 
     @NonNull
-    public abstract Observable<Node<T>> asObservableImpl();
-
-    @NonNull
-    public Observable<Node<T>> asObservable() {
-        return asObservableImpl()
-                // Node specific calculations are done here. This is the soonest that these
-                // calculations can be performed, as before this point the node data came from
-                // some unknown place, e.g. a network request, disk etc.
-                .doOnNext(node -> node.depth = depth)
-                .doOnNext(node -> {
-                    if (node.descendantCount == null) {
-                        node.generateDescendantCount().subscribe(integer -> node.descendantCount = integer, Timber::e);
-                    }
-                });
-    }
+    public abstract Observable<Node<T>> asObservable();
 
     @NonNull
     public Observable<Node<T>> preOrderTraverse(@IntRange(from = 0) final int depth) {
         return Observable.just(this)
+                // Node specific calculations are done here. This is the soonest that these
+                // calculations can be performed, as before this point the node data came from
+                // some unknown place, e.g. a network request, disk etc.
                 .doOnNext(node -> node.depth = depth)
                 .doOnNext(node -> {
                     if (node.descendantCount == null) {
