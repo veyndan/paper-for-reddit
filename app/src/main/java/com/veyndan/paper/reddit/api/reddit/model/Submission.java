@@ -9,7 +9,7 @@ import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Submission extends RedditObject implements Created, Votable {
+public abstract class Submission implements Created, RedditObject, Votable {
 
     private long created;
     @Json(name = "created_utc") private long createdUtc;
