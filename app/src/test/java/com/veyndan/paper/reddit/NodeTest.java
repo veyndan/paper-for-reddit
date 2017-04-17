@@ -3,7 +3,7 @@ package com.veyndan.paper.reddit;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.veyndan.paper.reddit.util.Node;
+import com.veyndan.paper.reddit.node.Node;
 
 import org.junit.Test;
 

@@ -1,0 +1,55 @@
+package com.veyndan.paper.reddit.node.something.post.media.mutator;
+
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.tweetui.TweetUtils;
+import com.veyndan.paper.reddit.node.something.post.Post;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import io.reactivex.Maybe;
+import io.reactivex.Single;
+
+final class TwitterMutatorFactory implements MutatorFactory {
+
+    private static final Pattern PATTERN = Pattern.compile("^https?://(?:www\\.)?twitter\\.com/\\w*/status/(\\d+)\\??.*$");
+
+    static TwitterMutatorFactory create() {
+        return new TwitterMutatorFactory();
+    }
+
+    private TwitterMutatorFactory() {
+    }
+
+    @Override
+    public Maybe<Post> mutate(final Post post) {
+        final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
+
+        return Single.just(post)
+                .filter(post1 -> matcher.matches())
+                .flatMap(post1 -> {
+                    final Long tweetId = Long.parseLong(matcher.group(1));
+                    // TODO Replace Observable.create with an Observable returned by Retrofit.
+                    return Maybe.create(subscriber -> {
+                        TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
+                            @Override
+                            public void success(final Result<Tweet> result) {
+                                subscriber.onSuccess(result.data);
+                                subscriber.onComplete();
+                            }
+
+                            @Override
+                            public void failure(final TwitterException exception) {
+                                subscriber.onError(exception);
+                            }
+                        });
+                    });
+                }, (post1, tweet) -> {
+                    post1.getMedias().add(tweet);
+                    return post1;
+                });
+    }
+}

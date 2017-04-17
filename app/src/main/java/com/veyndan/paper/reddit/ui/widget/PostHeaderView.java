@@ -31,7 +31,7 @@ import com.google.common.base.Splitter;
 import com.veyndan.paper.reddit.MainActivity;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
-import com.veyndan.paper.reddit.post.Flair;
+import com.veyndan.paper.reddit.node.something.post.Flair;
 import com.veyndan.paper.reddit.util.Linkifier;
 
 import java.util.ArrayList;

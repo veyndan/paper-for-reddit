@@ -15,7 +15,7 @@ import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.api.reddit.network.Sort;
 import com.veyndan.paper.reddit.databinding.ActivityMainBinding;
 import com.veyndan.paper.reddit.deeplink.WebDeepLink;
-import com.veyndan.paper.reddit.post.PostsFragment;
+import com.veyndan.paper.reddit.node.something.SomethingFragment;
 import com.veyndan.paper.reddit.util.IntentUtils;
 
 import io.reactivex.Single;
@@ -31,7 +31,7 @@ public class MainActivity extends BaseActivity {
 
     private static final Reddit REDDIT = new Reddit(Config.REDDIT_CREDENTIALS);
 
-    private PostsFragment postsFragment;
+    private SomethingFragment somethingFragment;
 
     private String subreddit;
 
@@ -41,7 +41,7 @@ public class MainActivity extends BaseActivity {
 
         setSupportActionBar(binding.toolbar);
 
-        postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
+        somethingFragment = (SomethingFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
 
         final Intent intent = getIntent();
         final Bundle intentExtras = IntentUtils.getExtras(intent);
@@ -63,7 +63,7 @@ public class MainActivity extends BaseActivity {
         subreddit = intentExtras.getString(Reddit.FILTER_SUBREDDIT_NAME);
 
         final Single<Response<Thing<Listing>>> mergedFilters = REDDIT.query(intentExtras, Sort.HOT);
-        postsFragment.setRequest(mergedFilters);
+        somethingFragment.setRequest(mergedFilters);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class MainActivity extends BaseActivity {
                         .subredditName(subreddit)
                         .build();
 
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsHot, Sort.HOT));
+                somethingFragment.setRequest(REDDIT.query(redditQueryParamsHot, Sort.HOT));
                 return true;
             case R.id.action_sort_new:
                 final Bundle redditQueryParamsNew = new Reddit.FilterBuilder()
@@ -98,7 +98,7 @@ public class MainActivity extends BaseActivity {
                         .subredditName(subreddit)
                         .build();
 
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsNew, Sort.NEW));
+                somethingFragment.setRequest(REDDIT.query(redditQueryParamsNew, Sort.NEW));
                 return true;
             case R.id.action_sort_rising:
                 final Bundle redditQueryParamsRising = new Reddit.FilterBuilder()
@@ -106,7 +106,7 @@ public class MainActivity extends BaseActivity {
                         .subredditName(subreddit)
                         .build();
 
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsRising, Sort.RISING));
+                somethingFragment.setRequest(REDDIT.query(redditQueryParamsRising, Sort.RISING));
                 return true;
             case R.id.action_sort_controversial:
                 final Bundle redditQueryParamsControversial = new Reddit.FilterBuilder()
@@ -114,7 +114,7 @@ public class MainActivity extends BaseActivity {
                         .subredditName(subreddit)
                         .build();
 
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsControversial, Sort.CONTROVERSIAL));
+                somethingFragment.setRequest(REDDIT.query(redditQueryParamsControversial, Sort.CONTROVERSIAL));
                 return true;
             case R.id.action_sort_top:
                 final Bundle redditQueryParamsTop = new Reddit.FilterBuilder()
@@ -122,7 +122,7 @@ public class MainActivity extends BaseActivity {
                         .subredditName(subreddit)
                         .build();
 
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsTop, Sort.TOP));
+                somethingFragment.setRequest(REDDIT.query(redditQueryParamsTop, Sort.TOP));
                 return true;
             default:
                 return false;

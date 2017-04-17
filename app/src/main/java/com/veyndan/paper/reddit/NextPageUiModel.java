@@ -2,7 +2,7 @@ package com.veyndan.paper.reddit;
 
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
-import com.veyndan.paper.reddit.util.Node;
+import com.veyndan.paper.reddit.node.Node;
 
 import java.util.Collections;
 import java.util.List;
