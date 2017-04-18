@@ -7,6 +7,8 @@
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:fitsSystemWindows="true"
         tools:context="com.veyndan.paper.reddit.MainActivity">
 
@@ -23,14 +25,11 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <!-- TODO Unsure why marginTop and marginBottom needed. -->
         <fragment
             android:id="@+id/main_fragment_posts"
             android:name="com.veyndan.paper.reddit.post.PostsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="24dp"
-            android:layout_marginTop="-24dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             tools:layout="@layout/fragment_posts"/>
 
