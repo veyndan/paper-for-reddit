@@ -21,6 +21,7 @@ import com.veyndan.paper.reddit.util.IntentUtils;
 
 import io.reactivex.Single;
 import retrofit2.Response;
+import timber.log.Timber;
 
 @WebDeepLink({
         "/u/{" + MainActivity.DEEP_LINK_USER_NAME + '}',
@@ -38,6 +39,7 @@ public class MainActivity extends BaseActivity {
 
     public MainActivity() {
         RxNavi.observe(this, Event.CREATE)
+                .takeUntil(RxNavi.observe(this, Event.DESTROY))
                 .subscribe(savedInstanceState -> {
                     final ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
@@ -69,6 +71,7 @@ public class MainActivity extends BaseActivity {
                 });
 
         RxNavi.observe(this, Event.ACTIVITY_RESULT)
+                .takeUntil(RxNavi.observe(this, Event.DESTROY))
                 .subscribe(activityResult -> {
                     if (activityResult.resultCode() == RESULT_OK) {
                         final String code = activityResult.data().getStringExtra("code");

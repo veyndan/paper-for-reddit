@@ -32,6 +32,7 @@ public class AuthenticationActivity extends BaseActivity {
 
     public AuthenticationActivity() {
         RxNavi.observe(this, Event.CREATE)
+                .takeUntil(RxNavi.observe(this, Event.DESTROY))
                 .subscribe(savedInstanceState -> {
                     final AuthenticationActivityBinding binding = DataBindingUtil.setContentView(this, R.layout.authentication_activity);
 
