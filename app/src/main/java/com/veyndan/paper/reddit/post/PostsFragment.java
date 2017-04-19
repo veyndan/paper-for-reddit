@@ -136,7 +136,11 @@ public class PostsFragment extends Fragment {
                 .subscribe(model -> {
                     // TODO Logic: The below assumes that the last element is the one to be replaced (i.e. event.getNode())
                     // though it should allow any node i.e. for the comment section.
-                    Timber.d("Next page");
+                    if (model.getForest().size() == 1) {
+                        Timber.d("Progress page");
+                    } else {
+                        Timber.d("Next page");
+                    }
                     if (forest.size() > 0) { // TODO Code smell: This is done as startWith is called above.
                         popTree();
                     }

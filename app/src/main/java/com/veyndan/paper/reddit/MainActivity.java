@@ -3,11 +3,13 @@ package com.veyndan.paper.reddit;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.airbnb.deeplinkdispatch.DeepLink;
+import com.google.common.collect.ImmutableList;
 import com.trello.navi2.Event;
 import com.trello.navi2.rx.RxNavi;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
@@ -20,6 +22,8 @@ import com.veyndan.paper.reddit.post.PostsFragment;
 import com.veyndan.paper.reddit.util.IntentUtils;
 
 import io.reactivex.Single;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 import retrofit2.Response;
 import timber.log.Timber;
 
@@ -33,9 +37,7 @@ public class MainActivity extends BaseActivity {
 
     private static final Reddit REDDIT = new Reddit(Config.REDDIT_CREDENTIALS);
 
-    private PostsFragment postsFragment;
-
-    private String subreddit;
+    private final Subject<MenuItem> optionsItemSelected = PublishSubject.create();
 
     public MainActivity() {
         RxNavi.observe(this, Event.CREATE)
@@ -45,7 +47,7 @@ public class MainActivity extends BaseActivity {
 
                     setSupportActionBar(binding.toolbar);
 
-                    postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
+                    final PostsFragment postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
 
                     final Intent intent = getIntent();
                     final Bundle intentExtras = IntentUtils.getExtras(intent);
@@ -64,10 +66,69 @@ public class MainActivity extends BaseActivity {
                                 .build());
                     }
 
-                    subreddit = intentExtras.getString(Reddit.FILTER_SUBREDDIT_NAME);
+                    final String subreddit = intentExtras.getString(Reddit.FILTER_SUBREDDIT_NAME);
 
                     final Single<Response<Thing<Listing>>> mergedFilters = REDDIT.query(intentExtras, Sort.HOT);
                     postsFragment.setRequest(mergedFilters);
+
+                    // TODO I can't see any reason why onOptionsItemSelected would be called before onCreate or after onDestroy so this should be valid but find some documentation to back up intuition.
+                    // TODO Not very elegant subscribing to an Observable inside an Observable. Also this is called in onNext() remember so potentially called more than once (though I can't see why).
+                    // TODO Also the reason why we are doing this is to reduce the scope of PostsFragment so we know it is non null. We haven't changed the logic of the code to ensure that it is non null so maybe my first TODO assumption is incorrect.
+                    optionsItemSelected.subscribe(menuItem -> {
+                        switch (menuItem.getItemId()) {
+                            case R.id.action_account_add:
+                                final Intent addAccountIntent = new Intent(this, AuthenticationActivity.class);
+                                startActivityForResult(addAccountIntent, 0);
+                                break;
+                            case R.id.action_filter:
+                                final FragmentManager fragmentManager = getSupportFragmentManager();
+                                final FilterFragment filterFragment = FilterFragment.newInstance();
+                                filterFragment.show(fragmentManager, "fragment_filter");
+                                break;
+                            case R.id.action_sort_hot:
+                                final Bundle redditQueryParamsHot = new Reddit.FilterBuilder()
+                                        .nodeDepth(0)
+                                        .subredditName(subreddit)
+                                        .build();
+
+                                postsFragment.setRequest(REDDIT.query(redditQueryParamsHot, Sort.HOT));
+                                break;
+                            case R.id.action_sort_new:
+                                final Bundle redditQueryParamsNew = new Reddit.FilterBuilder()
+                                        .nodeDepth(0)
+                                        .subredditName(subreddit)
+                                        .build();
+
+                                postsFragment.setRequest(REDDIT.query(redditQueryParamsNew, Sort.NEW));
+                                break;
+                            case R.id.action_sort_rising:
+                                final Bundle redditQueryParamsRising = new Reddit.FilterBuilder()
+                                        .nodeDepth(0)
+                                        .subredditName(subreddit)
+                                        .build();
+
+                                postsFragment.setRequest(REDDIT.query(redditQueryParamsRising, Sort.RISING));
+                                break;
+                            case R.id.action_sort_controversial:
+                                final Bundle redditQueryParamsControversial = new Reddit.FilterBuilder()
+                                        .nodeDepth(0)
+                                        .subredditName(subreddit)
+                                        .build();
+
+                                postsFragment.setRequest(REDDIT.query(redditQueryParamsControversial, Sort.CONTROVERSIAL));
+                                break;
+                            case R.id.action_sort_top:
+                                final Bundle redditQueryParamsTop = new Reddit.FilterBuilder()
+                                        .nodeDepth(0)
+                                        .subredditName(subreddit)
+                                        .build();
+
+                                postsFragment.setRequest(REDDIT.query(redditQueryParamsTop, Sort.TOP));
+                                break;
+                            default:
+                                break;
+                        }
+                    });
                 });
 
         RxNavi.observe(this, Event.ACTIVITY_RESULT)
@@ -87,58 +148,22 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_account_add:
-                final Intent intent = new Intent(this, AuthenticationActivity.class);
-                startActivityForResult(intent, 0);
-                return true;
-            case R.id.action_filter:
-                final FragmentManager fragmentManager = getSupportFragmentManager();
-                final FilterFragment filterFragment = FilterFragment.newInstance();
-                filterFragment.show(fragmentManager, "fragment_filter");
-                return true;
-            case R.id.action_sort_hot:
-                final Bundle redditQueryParamsHot = new Reddit.FilterBuilder()
-                        .nodeDepth(0)
-                        .subredditName(subreddit)
-                        .build();
+        final ImmutableList<Integer> consumableOptionsItemIds = new ImmutableList.Builder<Integer>()
+                .add(R.id.action_account_add)
+                .add(R.id.action_filter)
+                .add(R.id.action_sort_hot)
+                .add(R.id.action_sort_new)
+                .add(R.id.action_sort_rising)
+                .add(R.id.action_sort_controversial)
+                .add(R.id.action_sort_top)
+                .build();
 
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsHot, Sort.HOT));
-                return true;
-            case R.id.action_sort_new:
-                final Bundle redditQueryParamsNew = new Reddit.FilterBuilder()
-                        .nodeDepth(0)
-                        .subredditName(subreddit)
-                        .build();
+        final boolean consumed = consumableOptionsItemIds.contains(item.getItemId());
 
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsNew, Sort.NEW));
-                return true;
-            case R.id.action_sort_rising:
-                final Bundle redditQueryParamsRising = new Reddit.FilterBuilder()
-                        .nodeDepth(0)
-                        .subredditName(subreddit)
-                        .build();
-
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsRising, Sort.RISING));
-                return true;
-            case R.id.action_sort_controversial:
-                final Bundle redditQueryParamsControversial = new Reddit.FilterBuilder()
-                        .nodeDepth(0)
-                        .subredditName(subreddit)
-                        .build();
-
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsControversial, Sort.CONTROVERSIAL));
-                return true;
-            case R.id.action_sort_top:
-                final Bundle redditQueryParamsTop = new Reddit.FilterBuilder()
-                        .nodeDepth(0)
-                        .subredditName(subreddit)
-                        .build();
-
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsTop, Sort.TOP));
-                return true;
-            default:
-                return false;
+        if (consumed) {
+            optionsItemSelected.onNext(item);
         }
+
+        return consumed;
     }
 }
