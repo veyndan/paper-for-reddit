@@ -3,12 +3,13 @@ package com.veyndan.paper.reddit;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.airbnb.deeplinkdispatch.DeepLink;
+import com.trello.navi2.Event;
+import com.trello.navi2.rx.RxNavi;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
@@ -35,35 +36,44 @@ public class MainActivity extends BaseActivity {
 
     private String subreddit;
 
-    @Override
-    protected void onCreateNonNull(@NonNull final Bundle savedInstanceState) {
-        final ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+    public MainActivity() {
+        RxNavi.observe(this, Event.CREATE)
+                .subscribe(savedInstanceState -> {
+                    final ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        setSupportActionBar(binding.toolbar);
+                    setSupportActionBar(binding.toolbar);
 
-        postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
+                    postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
 
-        final Intent intent = getIntent();
-        final Bundle intentExtras = IntentUtils.getExtras(intent);
+                    final Intent intent = getIntent();
+                    final Bundle intentExtras = IntentUtils.getExtras(intent);
 
-        if (intentExtras.isEmpty()) {
-            intentExtras.putAll(new Reddit.FilterBuilder()
-                    .nodeDepth(0)
-                    .subredditName("all")
-                    .build());
-        } else if (intentExtras.getBoolean(DeepLink.IS_DEEP_LINK, false)) {
-            intentExtras.putAll(new Reddit.FilterBuilder()
-                    .nodeDepth(0)
-                    .userName(intentExtras.getString(DEEP_LINK_USER_NAME))
-                    .userComments(true)
-                    .userSubmitted(true)
-                    .build());
-        }
+                    if (intentExtras.isEmpty()) {
+                        intentExtras.putAll(new Reddit.FilterBuilder()
+                                .nodeDepth(0)
+                                .subredditName("all")
+                                .build());
+                    } else if (intentExtras.getBoolean(DeepLink.IS_DEEP_LINK, false)) {
+                        intentExtras.putAll(new Reddit.FilterBuilder()
+                                .nodeDepth(0)
+                                .userName(intentExtras.getString(DEEP_LINK_USER_NAME))
+                                .userComments(true)
+                                .userSubmitted(true)
+                                .build());
+                    }
 
-        subreddit = intentExtras.getString(Reddit.FILTER_SUBREDDIT_NAME);
+                    subreddit = intentExtras.getString(Reddit.FILTER_SUBREDDIT_NAME);
 
-        final Single<Response<Thing<Listing>>> mergedFilters = REDDIT.query(intentExtras, Sort.HOT);
-        postsFragment.setRequest(mergedFilters);
+                    final Single<Response<Thing<Listing>>> mergedFilters = REDDIT.query(intentExtras, Sort.HOT);
+                    postsFragment.setRequest(mergedFilters);
+                });
+
+        RxNavi.observe(this, Event.ACTIVITY_RESULT)
+                .subscribe(activityResult -> {
+                    if (activityResult.resultCode() == RESULT_OK) {
+                        final String code = activityResult.data().getStringExtra("code");
+                    }
+                });
     }
 
     @Override
@@ -126,15 +136,6 @@ public class MainActivity extends BaseActivity {
                 return true;
             default:
                 return false;
-        }
-    }
-
-    @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            final String code = data.getStringExtra("code");
         }
     }
 }
