@@ -90,6 +90,10 @@ dependencies {
     final String moshiVersion = '1.4.0'
     compile "com.squareup.moshi:moshi:$moshiVersion"
 
+    // Navi
+    final String naviVersion = '2.0'
+    compile "com.trello.navi2:navi:$naviVersion"
+
     // OkHttp
     final String okHttpVersion = '3.6.0'
     compile "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"

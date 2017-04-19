@@ -1,23 +1,13 @@
 package com.veyndan.paper.reddit;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+
+import com.trello.navi2.component.support.NaviAppCompatActivity;
 
 import java.util.Objects;
 
-public abstract class BaseActivity extends AppCompatActivity {
-
-    @Override
-    protected final void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        onCreateNonNull(savedInstanceState == null ? new Bundle() : savedInstanceState);
-    }
-
-    protected void onCreateNonNull(@NonNull final Bundle savedInstanceState) {
-    }
+public abstract class BaseActivity extends NaviAppCompatActivity {
 
     @NonNull
     @Override
