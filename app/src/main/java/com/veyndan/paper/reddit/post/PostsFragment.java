@@ -101,11 +101,10 @@ public class PostsFragment extends Fragment {
                 .distinctUntilChanged(event -> forest.size() - 1);
 
         final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
-                .flatMap(event -> request
+                .flatMapSingle(event -> request
                         .subscribeOn(Schedulers.io())
                         .map(Response::body)
-                        .toObservable()
-                        .flatMap(thing -> Observable.fromIterable(thing.data.children)
+                        .flatMapObservable(thing -> Observable.fromIterable(thing.data.children)
                                 .observeOn(Schedulers.computation())
                                 .flatMapSingle(redditObject -> {
                                     if (redditObject instanceof Submission) {
@@ -126,8 +125,7 @@ public class PostsFragment extends Fragment {
                                         .build())))
                         .observeOn(AndroidSchedulers.mainThread())
                         .concatMap(tree1 -> tree1.preOrderTraverse(0))
-                        .toList()
-                        .toObservable())
+                        .toList())
                 .map(NextPageUiModel::forest)
                 .startWith(NextPageUiModel.tree(new Progress.Builder()
                         .build()));
