@@ -47,7 +47,7 @@ public final class Mutators {
      */
     public static Function<Post, Single<Post>> mutate() {
         return post -> Observable.fromIterable(MUTATOR_FACTORIES)
-                .concatMap(mutatorFactory -> mutatorFactory.mutate(post).toObservable())
+                .flatMapMaybe(mutatorFactory -> mutatorFactory.mutate(post))
                 .first(post);
     }
 }
