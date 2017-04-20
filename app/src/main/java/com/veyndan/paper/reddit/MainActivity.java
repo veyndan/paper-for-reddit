@@ -44,11 +44,25 @@ public class MainActivity extends BaseActivity {
                 .takeUntil(RxNavi.observe(this, Event.DESTROY))
                 .subscribe(savedInstanceState -> {
                     final ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-
                     setSupportActionBar(binding.toolbar);
 
-                    final PostsFragment postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
+                    optionsItemSelected.subscribe(menuItem -> {
+                        switch (menuItem.getItemId()) {
+                            case R.id.action_account_add:
+                                final Intent addAccountIntent = new Intent(this, AuthenticationActivity.class);
+                                startActivityForResult(addAccountIntent, 0);
+                                break;
+                            case R.id.action_filter:
+                                final FragmentManager fragmentManager = getSupportFragmentManager();
+                                final FilterFragment filterFragment = FilterFragment.newInstance();
+                                filterFragment.show(fragmentManager, "fragment_filter");
+                                break;
+                        }
+                    });
+                });
 
+        RxNavi.observe(this, Event.CREATE)
+                .map(savedInstanceState -> {
                     final Intent intent = getIntent();
                     final Bundle intentExtras = IntentUtils.getExtras(intent);
 
@@ -66,6 +80,61 @@ public class MainActivity extends BaseActivity {
                                 .build());
                     }
 
+                    return intentExtras;
+                })
+                .concatWith(optionsItemSelected.map(menuItem -> {
+                    optionsItemSelected.subscribe(menuItem -> {
+                        switch (menuItem.getItemId()) {
+                            case R.id.action_sort_hot:
+                                final Bundle redditQueryParamsHot = new Reddit.FilterBuilder()
+                                        .nodeDepth(0)
+                                        .subredditName(subreddit)
+                                        .build();
+
+                                postsFragment.setRequest(REDDIT.query(redditQueryParamsHot, Sort.HOT));
+                                break;
+                            case R.id.action_sort_new:
+                                final Bundle redditQueryParamsNew = new Reddit.FilterBuilder()
+                                        .nodeDepth(0)
+                                        .subredditName(subreddit)
+                                        .build();
+
+                                postsFragment.setRequest(REDDIT.query(redditQueryParamsNew, Sort.NEW));
+                                break;
+                            case R.id.action_sort_rising:
+                                final Bundle redditQueryParamsRising = new Reddit.FilterBuilder()
+                                        .nodeDepth(0)
+                                        .subredditName(subreddit)
+                                        .build();
+
+                                postsFragment.setRequest(REDDIT.query(redditQueryParamsRising, Sort.RISING));
+                                break;
+                            case R.id.action_sort_controversial:
+                                final Bundle redditQueryParamsControversial = new Reddit.FilterBuilder()
+                                        .nodeDepth(0)
+                                        .subredditName(subreddit)
+                                        .build();
+
+                                postsFragment.setRequest(REDDIT.query(redditQueryParamsControversial, Sort.CONTROVERSIAL));
+                                break;
+                            case R.id.action_sort_top:
+                                final Bundle redditQueryParamsTop = new Reddit.FilterBuilder()
+                                        .nodeDepth(0)
+                                        .subredditName(subreddit)
+                                        .build();
+
+                                postsFragment.setRequest(REDDIT.query(redditQueryParamsTop, Sort.TOP));
+                                break;
+                            default:
+                                break;
+                        }
+                        return null;
+                    });
+                }))
+                .takeUntil(RxNavi.observe(this, Event.DESTROY))
+                .subscribe(intentExtras -> {
+                    final PostsFragment postsFragment = (PostsFragment) getSupportFragmentManager().findFragmentById(R.id.main_fragment_posts);
+
                     final String subreddit = intentExtras.getString(Reddit.FILTER_SUBREDDIT_NAME);
 
                     final Single<Response<Thing<Listing>>> mergedFilters = REDDIT.query(intentExtras, Sort.HOT);
@@ -76,15 +145,6 @@ public class MainActivity extends BaseActivity {
                     // TODO Also the reason why we are doing this is to reduce the scope of PostsFragment so we know it is non null. We haven't changed the logic of the code to ensure that it is non null so maybe my first TODO assumption is incorrect.
                     optionsItemSelected.subscribe(menuItem -> {
                         switch (menuItem.getItemId()) {
-                            case R.id.action_account_add:
-                                final Intent addAccountIntent = new Intent(this, AuthenticationActivity.class);
-                                startActivityForResult(addAccountIntent, 0);
-                                break;
-                            case R.id.action_filter:
-                                final FragmentManager fragmentManager = getSupportFragmentManager();
-                                final FilterFragment filterFragment = FilterFragment.newInstance();
-                                filterFragment.show(fragmentManager, "fragment_filter");
-                                break;
                             case R.id.action_sort_hot:
                                 final Bundle redditQueryParamsHot = new Reddit.FilterBuilder()
                                         .nodeDepth(0)
