@@ -21,7 +21,6 @@ import com.veyndan.paper.reddit.util.IntentUtils;
 
 import io.reactivex.Single;
 import retrofit2.Response;
-import timber.log.Timber;
 
 @WebDeepLink({
         "/u/{" + MainActivity.DEEP_LINK_USER_NAME + '}',
