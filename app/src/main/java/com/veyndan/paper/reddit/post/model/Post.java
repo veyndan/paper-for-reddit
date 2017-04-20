@@ -69,22 +69,20 @@ public class Post extends Node<Response<Thing<Listing>>> {
         isComment = submission instanceof Comment;
 
         children = Observable.fromIterable(submission.getReplies().data.children)
-                .concatMap(redditObject -> {
+                .flatMapSingle(redditObject -> {
                     if (redditObject instanceof Submission) {
                         return Single.just(redditObject)
                                 .cast(Submission.class)
                                 .map(Post::new)
-                                .flatMap(Mutators.mutate())
-                                .toObservable();
+                                .flatMap(Mutators.mutate());
                     } else if (redditObject instanceof More) {
                         return Single.just(redditObject)
                                 .cast(More.class)
                                 .map(more -> new Progress.Builder()
                                         .degree(more.count)
-                                        .build())
-                                .toObservable();
+                                        .build());
                     } else {
-                        return Observable.error(new IllegalStateException("Unknown node class: " + redditObject));
+                        return Single.error(new IllegalStateException("Unknown node class: " + redditObject));
                     }
                 });
         setDescendantCount(submission.getNumComments());

@@ -65,8 +65,7 @@ public abstract class Node<T> {
     private Observable<Integer> generateDescendantCount() {
         return getChildren()
                 .toList()
-                .toObservable()
-                .flatMap(nodes -> Observable.fromIterable(nodes)
+                .flatMapObservable(nodes -> Observable.fromIterable(nodes)
                         .flatMap(Node::generateDescendantCount)
                         .concatWith(Observable.just(nodes.size()))
                         .scan((sum, item) -> sum + item))
