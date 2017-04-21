@@ -97,7 +97,7 @@ public class PostsFragment extends Fragment {
                 //
                 //      When to solve: After nodes is no longer a flattened tree but is instead a
                 //      indexable tree.
-                .map(scrollEvent -> new NextPageEvent(forest.get(forest.size() - 1)))
+                .map(scrollEvent -> NextPageEvent.create(forest.get(forest.size() - 1)))
                 .distinctUntilChanged(event -> forest.size() - 1);
 
         final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
@@ -138,7 +138,7 @@ public class PostsFragment extends Fragment {
                     if (forest.size() > 0) { // TODO Code smell: This is done as startWith is called above.
                         popTree();
                     }
-                    appendForest(model.getForest());
+                    appendForest(model.forest());
                 }, Timber::e);
     }
 

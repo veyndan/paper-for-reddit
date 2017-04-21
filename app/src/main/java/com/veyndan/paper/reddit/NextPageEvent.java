@@ -1,20 +1,18 @@
 package com.veyndan.paper.reddit;
 
+import com.google.auto.value.AutoValue;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.util.Node;
 
 import retrofit2.Response;
 
-public final class NextPageEvent {
+@AutoValue
+public abstract class NextPageEvent {
 
-    private final Node<Response<Thing<Listing>>> tree;
+    public abstract Node<Response<Thing<Listing>>> tree();
 
-    public NextPageEvent(final Node<Response<Thing<Listing>>> tree) {
-        this.tree = tree;
-    }
-
-    public Node<Response<Thing<Listing>>> getTree() {
-        return tree;
+    public static NextPageEvent create(final Node<Response<Thing<Listing>>> tree) {
+        return new AutoValue_NextPageEvent(tree);
     }
 }
