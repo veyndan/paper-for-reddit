@@ -16,7 +16,7 @@ public abstract class Text {
         return new AutoValue_Text(body);
     }
 
-    public Spannable getBody(final Context context) {
+    public final Spannable getBody(final Context context) {
         try {
             return body().apply(context);
         } catch (final Exception e) {

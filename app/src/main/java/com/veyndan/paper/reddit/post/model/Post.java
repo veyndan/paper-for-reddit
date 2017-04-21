@@ -159,15 +159,15 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
         return fullname().substring(3, fullname().length());
     }
 
-    public boolean isGilded() {
+    public final boolean isGilded() {
         return gildedCount() > 0;
     }
 
-    public boolean hasLinkFlair() {
+    public final boolean hasLinkFlair() {
         return !TextUtils.isEmpty(linkFlair());
     }
 
-    public CharSequence getDisplayAge() {
+    public final CharSequence getDisplayAge() {
         return DateUtils.getRelativeTimeSpanString(
                 TimeUnit.SECONDS.toMillis(createdUtc()), System.currentTimeMillis(),
                 DateUtils.SECOND_IN_MILLIS,
@@ -176,7 +176,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
     }
 
     @Nullable
-    public Spannable getDisplayBody(final Context context) {
+    public final Spannable getDisplayBody(final Context context) {
         if (TextUtils.isEmpty(bodyHtml())) {
             return null;
         }
@@ -196,11 +196,11 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
         return source.subSequence(0, i + 1);
     }
 
-    public String getDisplayDescendants() {
+    public final String getDisplayDescendants() {
         return quantityString(getDescendantCount());
     }
 
-    public String getDisplayPoints(final Context context) {
+    public final String getDisplayPoints(final Context context) {
         final Resources resources = context.getResources();
 
         if (scoreHidden()) {
@@ -231,13 +231,13 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
     @Nullable
     @Override
-    public Integer getDegree() {
+    public final Integer getDegree() {
         return null;
     }
 
     @NonNull
     @Override
-    public Observable<Node<Response<Thing<Listing>>>> getChildren() {
+    public final Observable<Node<Response<Thing<Listing>>>> getChildren() {
         return children();
     }
 }
