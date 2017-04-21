@@ -104,25 +104,25 @@ public class PostsFragment extends Fragment {
                 .flatMapSingle(event -> request
                         .subscribeOn(Schedulers.io())
                         .map(Response::body)
-                        .flatMapObservable(thing -> Observable.fromIterable(thing.data.children)
-                                .observeOn(Schedulers.computation())
-                                .flatMapSingle(redditObject -> {
-                                    if (redditObject instanceof Submission) {
-                                        return Single.just(redditObject)
-                                                .cast(Submission.class)
-                                                .map(Post::new)
-                                                .flatMap(Mutators.mutate());
-                                    } else if (redditObject instanceof More) {
-                                        final More more = (More) redditObject;
-                                        return Single.just(new Progress.Builder()
-                                                .degree(more.count)
-                                                .build());
-                                    } else {
-                                        throw new IllegalStateException("Unknown node class: " + redditObject);
-                                    }
-                                })
-                                .concatWith(Observable.just(new Progress.Builder()
-                                        .build())))
+                        .flattenAsObservable(thing -> thing.data.children)
+                        .observeOn(Schedulers.computation())
+                        .flatMapSingle(redditObject -> {
+                            if (redditObject instanceof Submission) {
+                                return Single.just(redditObject)
+                                        .cast(Submission.class)
+                                        .map(Post::new)
+                                        .flatMap(Mutators.mutate());
+                            } else if (redditObject instanceof More) {
+                                final More more = (More) redditObject;
+                                return Single.just(new Progress.Builder()
+                                        .degree(more.count)
+                                        .build());
+                            } else {
+                                final String message = "Unknown node class: " + redditObject;
+                                return Single.error(new IllegalStateException(message));
+                            }
+                        })
+                        .concatWith(Observable.just(new Progress.Builder().build()))
                         .observeOn(AndroidSchedulers.mainThread())
                         .concatMap(tree1 -> tree1.preOrderTraverse(0))
                         .toList())
