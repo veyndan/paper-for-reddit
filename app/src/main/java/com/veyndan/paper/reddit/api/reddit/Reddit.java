@@ -164,7 +164,7 @@ public final class Reddit {
         return redditService.hide(TextUtils.join(",", ids));
     }
 
-    public Single<MoreChildren> moreChildren(final List<String> children, final String linkId) {
+    public Single<Response<MoreChildren>> moreChildren(final List<String> children, final String linkId) {
         return redditService.moreChildren("json", TextUtils.join(",", children), linkId);
     }
 
