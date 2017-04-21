@@ -82,7 +82,8 @@ public class Post extends Node<Response<Thing<Listing>>> {
                                         .degree(more.count)
                                         .build());
                     } else {
-                        return Single.error(new IllegalStateException("Unknown node class: " + redditObject));
+                        final String message = "Unknown node class: " + redditObject;
+                        return Single.error(new IllegalStateException(message));
                     }
                 });
         setDescendantCount(submission.getNumComments());
