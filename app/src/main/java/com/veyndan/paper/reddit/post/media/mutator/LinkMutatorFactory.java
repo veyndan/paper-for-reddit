@@ -19,9 +19,9 @@ final class LinkMutatorFactory implements MutatorFactory {
     @Override
     public Maybe<Post> mutate(final Post post) {
         return Single.just(post)
-                .filter(post1 -> post1.getPostHint() != PostHint.SELF)
+                .filter(post1 -> post1.postHint().value != PostHint.SELF)
                 .map(post1 -> {
-                    post1.getMedias().add(Link.create(post1.getDomain()));
+                    post1.medias().add(Link.create(post1.domain()));
                     return post1;
                 });
     }

@@ -108,7 +108,7 @@ public class ImageAdapterDelegate
 
                                         image.size().value = new Size(imageWidth, imageHeight);
 
-                                        post.getMedias().add(image);
+                                        post.medias().add(image);
 
                                         holder.binding.postMediaImage.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
                                     }

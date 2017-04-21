@@ -110,7 +110,7 @@ public class PostsFragment extends Fragment {
                             if (redditObject instanceof Submission) {
                                 return Single.just(redditObject)
                                         .cast(Submission.class)
-                                        .map(Post::new)
+                                        .map(Post::create)
                                         .flatMap(Mutators.mutate());
                             } else if (redditObject instanceof More) {
                                 final More more = (More) redditObject;

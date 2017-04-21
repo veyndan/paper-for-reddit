@@ -27,7 +27,7 @@ final class XkcdMutatorFactory implements MutatorFactory {
 
     @Override
     public Maybe<Post> mutate(final Post post) {
-        final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
+        final Matcher matcher = PATTERN.matcher(post.linkUrl().value);
 
         return Single.just(post)
                 .filter(post1 -> matcher.matches())
@@ -45,11 +45,11 @@ final class XkcdMutatorFactory implements MutatorFactory {
                     final Single<Image> imageObservable = xkcdService.num(comicNum)
                             .map(comic -> Image.create(comic.getImg()));
 
-                    post.setPostHint(PostHint.IMAGE);
+                    post.postHint().value = PostHint.IMAGE;
 
                     return imageObservable.toMaybe();
                 }, (post1, image) -> {
-                    post1.getMedias().add(image);
+                    post1.medias().add(image);
                     return post1;
                 });
     }

@@ -21,11 +21,11 @@ final class TextMutatorFactory implements MutatorFactory {
     @Override
     public Maybe<Post> mutate(final Post post) {
         return Single.just(post)
-                .filter(post1 -> post1.getPostHint() == PostHint.SELF &&
-                        !TextUtils.isEmpty(post1.getBody()))
+                .filter(post1 -> post1.postHint().value == PostHint.SELF &&
+                        !TextUtils.isEmpty(post1.bodyHtml()))
                 .map(post1 -> {
                     final Text text = Text.create(post1::getDisplayBody);
-                    post1.getMedias().add(text);
+                    post1.medias().add(text);
                     return post1;
                 });
     }

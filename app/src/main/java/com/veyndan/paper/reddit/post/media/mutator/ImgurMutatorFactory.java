@@ -36,7 +36,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
     @Override
     public Maybe<Post> mutate(final Post post) {
-        final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
+        final Matcher matcher = PATTERN.matcher(post.linkUrl().value);
 
         return Single.just(post)
                 .filter(post1 -> matcher.matches())
@@ -46,15 +46,15 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
                     if (!isAlbum && !isDirectImage) {
                         // TODO .gifv links are HTML 5 videos so the PostHint should be set accordingly.
-                        if (!post1.getLinkUrl().endsWith(".gifv")) {
-                            post1.setLinkUrl(singleImageUrlToDirectImageUrl(post1.getLinkUrl()));
+                        if (!post1.linkUrl().value.endsWith(".gifv")) {
+                            post1.linkUrl().value = singleImageUrlToDirectImageUrl(post1.linkUrl().value);
 
-                            post.setPostHint(PostHint.IMAGE);
+                            post.postHint().value = PostHint.IMAGE;
                         }
                     }
 
                     if (isAlbum) {
-                        post.setPostHint(PostHint.IMAGE);
+                        post.postHint().value = PostHint.IMAGE;
 
                         final OkHttpClient client = new OkHttpClient.Builder()
                                 .addInterceptor(chain -> {
@@ -82,28 +82,28 @@ final class ImgurMutatorFactory implements MutatorFactory {
                                 .toList()
                                 .toMaybe();
                     } else {
-                        final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
+                        final boolean imageDimensAvailable = !post.preview().images.isEmpty();
 
-                        final String url = post.getLinkUrl().endsWith(".gifv") && imageDimensAvailable
-                                ? post.getPreview().images.get(0).source.url
-                                : post.getLinkUrl();
+                        final String url = post.linkUrl().value.endsWith(".gifv") && imageDimensAvailable
+                                ? post.preview().images.get(0).source.url
+                                : post.linkUrl().value;
 
                         final Size size;
                         if (imageDimensAvailable) {
-                            final Source source = post.getPreview().images.get(0).source;
+                            final Source source = post.preview().images.get(0).source;
                             size = new Size(source.width, source.height);
                         } else {
                             size = new Size(0, 0);
                         }
 
-                        @StringRes final int type = post.getLinkUrl().endsWith(".gif") || post.getLinkUrl().endsWith(".gifv")
+                        @StringRes final int type = post.linkUrl().value.endsWith(".gif") || post.linkUrl().value.endsWith(".gifv")
                                 ? Image.IMAGE_TYPE_GIF
                                 : Image.IMAGE_TYPE_STANDARD;
 
                         return Maybe.just(Collections.singletonList(Image.create(url, size, type)));
                     }
                 }, (post1, images) -> {
-                    post1.getMedias().addAll(images);
+                    post1.medias().addAll(images);
                     return post1;
                 });
     }

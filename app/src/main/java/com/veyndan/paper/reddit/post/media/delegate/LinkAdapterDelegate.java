@@ -57,12 +57,12 @@ public class LinkAdapterDelegate
         if (customTabsClient != null) {
             final CustomTabsSession session = customTabsClient.newSession(null);
 
-            session.mayLaunchUrl(Uri.parse(post.getLinkUrl()), null, null);
+            session.mayLaunchUrl(Uri.parse(post.linkUrl().value), null, null);
         }
 
         RxView.clicks(holder.binding.postMediaUrl)
                 .subscribe(aVoid -> {
-                    customTabsIntent.launchUrl(activity, Uri.parse(post.getLinkUrl()));
+                    customTabsIntent.launchUrl(activity, Uri.parse(post.linkUrl().value));
                 }, Timber::e);
 
         holder.binding.postMediaUrl.setText(link.domain());

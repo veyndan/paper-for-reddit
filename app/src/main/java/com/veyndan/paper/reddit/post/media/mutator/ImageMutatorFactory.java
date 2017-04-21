@@ -23,23 +23,23 @@ public final class ImageMutatorFactory implements MutatorFactory {
     @Override
     public Maybe<Post> mutate(final Post post) {
         return Single.just(post)
-                .filter(post1 -> post1.getPostHint() == PostHint.IMAGE)
+                .filter(post1 -> post1.postHint().value == PostHint.IMAGE)
                 .map(post1 -> {
-                    final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
+                    final boolean imageDimensAvailable = !post.preview().images.isEmpty();
 
                     final Size size;
                     if (imageDimensAvailable) {
-                        final Source source = post.getPreview().images.get(0).source;
+                        final Source source = post.preview().images.get(0).source;
                         size = new Size(source.width, source.height);
                     } else {
                         size = new Size(0, 0);
                     }
 
-                    @StringRes final int type = post1.getLinkUrl().endsWith(".gif")
+                    @StringRes final int type = post1.linkUrl().value.endsWith(".gif")
                             ? Image.IMAGE_TYPE_GIF
                             : Image.IMAGE_TYPE_STANDARD;
-                    final Image image = Image.create(post1.getLinkUrl(), size, type);
-                    post1.getMedias().add(image);
+                    final Image image = Image.create(post1.linkUrl().value, size, type);
+                    post1.medias().add(image);
                     return post1;
                 });
     }
