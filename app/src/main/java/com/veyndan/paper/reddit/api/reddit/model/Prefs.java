@@ -2,8 +2,9 @@ package com.veyndan.paper.reddit.api.reddit.model;
 
 import com.squareup.moshi.Json;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+
+import io.reactivex.Observable;
 
 public class Prefs {
     @Json(name = "default_theme_sr") public String defaultThemeSr;
@@ -39,7 +40,7 @@ public class Prefs {
     @Json(name = "min_link_score") public Integer minLinkScore;
     @Json(name = "media_preview") public String mediaPreview;
     @Json(name = "enable_default_themes") public Boolean enableDefaultThemes;
-    @Json(name = "content_langs") public List<String> contentLangs = new ArrayList<>();
+    @Json(name = "content_langs") private final Iterable<String> contentLangs = Collections.emptyList();
     @Json(name = "show_promote") public Object showPromote;
     @Json(name = "min_comment_score") public Integer minCommentScore;
     @Json(name = "public_votes") public Boolean publicVotes;
@@ -58,4 +59,8 @@ public class Prefs {
     @Json(name = "highlight_new_comments") public Boolean highlightNewComments;
     @Json(name = "default_comment_sort") public String defaultCommentSort;
     @Json(name = "hide_locationbar") public Boolean hideLocationbar;
+
+    public Observable<String> getContentLangs() {
+        return Observable.fromIterable(contentLangs);
+    }
 }

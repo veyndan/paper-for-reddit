@@ -15,7 +15,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.reactivex.Maybe;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -78,20 +77,20 @@ final class ImgurMutatorFactory implements MutatorFactory {
                         final String id = matcher.group(3);
 
                         return imgurService.album(id)
-                                .flatMapObservable(basic -> Observable.fromIterable(basic.getData().getImages()))
+                                .flatMapObservable(basic -> basic.getData().getImages())
                                 .map(image -> Image.create(image.getLink(), new Size(image.getWidth(), image.getHeight())))
                                 .toList()
                                 .toMaybe();
                     } else {
-                        final boolean imageDimensAvailable = !post.getPreview().images.isEmpty();
+                        final boolean imageDimensAvailable = !post.getPreview().getImages().isEmpty().blockingGet();
 
                         final String url = post.getLinkUrl().endsWith(".gifv") && imageDimensAvailable
-                                ? post.getPreview().images.get(0).source.url
+                                ? post.getPreview().getImages().blockingFirst().source.url
                                 : post.getLinkUrl();
 
                         final Size size;
                         if (imageDimensAvailable) {
-                            final Source source = post.getPreview().images.get(0).source;
+                            final Source source = post.getPreview().getImages().blockingFirst().source;
                             size = new Size(source.width, source.height);
                         } else {
                             size = new Size(0, 0);

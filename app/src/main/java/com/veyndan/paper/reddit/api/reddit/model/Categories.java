@@ -1,8 +1,13 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+
+import io.reactivex.Observable;
 
 public class Categories {
-    public final List<Category> categories = new ArrayList<>();
+    private final Iterable<Category> categories = Collections.emptyList();
+
+    public Observable<Category> getCategories() {
+        return Observable.fromIterable(categories);
+    }
 }

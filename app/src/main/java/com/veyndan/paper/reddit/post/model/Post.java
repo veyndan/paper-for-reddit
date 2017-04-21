@@ -68,7 +68,7 @@ public class Post extends Node<Response<Thing<Listing>>> {
     public Post(@NonNull final Submission submission) {
         isComment = submission instanceof Comment;
 
-        children = Observable.fromIterable(submission.getReplies().data.children)
+        children = submission.getReplies().data.getChildren()
                 .flatMapSingle(redditObject -> {
                     if (redditObject instanceof Submission) {
                         return Single.just(redditObject)

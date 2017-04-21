@@ -6,8 +6,9 @@ import android.support.annotation.Nullable;
 import com.squareup.moshi.Json;
 import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+
+import io.reactivex.Observable;
 
 public abstract class Submission implements Created, RedditObject, Votable {
 
@@ -264,7 +265,11 @@ public abstract class Submission implements Created, RedditObject, Votable {
     /**
      * #undocumented
      */
-    @Json(name = "user_reports") public List<Object> userReports = new ArrayList<>();
+    @Json(name = "user_reports") private final Iterable<Object> userReports = Collections.emptyList();
+
+    public Observable<Object> getUserReports() {
+        return Observable.fromIterable(userReports);
+    }
 
     /**
      * #undocumented
@@ -315,7 +320,11 @@ public abstract class Submission implements Created, RedditObject, Votable {
     /**
      * #undocumented
      */
-    @Json(name = "mod_reports") public List<Object> modReports = new ArrayList<>();
+    @Json(name = "mod_reports") private final Iterable<Object> modReports = Collections.emptyList();
+
+    public Observable<Object> getModReports() {
+        return Observable.fromIterable(modReports);
+    }
 
     /**
      * How many times this submission has been reported, {@code null} if not a mod.

@@ -1,9 +1,14 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+
+import io.reactivex.Observable;
 
 public class Json {
-    public List<Object> errors = new ArrayList<>();
+    private Iterable<Object> errors = Collections.emptyList();
     public Things data;
+
+    public Observable<Object> getErrors() {
+        return Observable.fromIterable(errors);
+    }
 }
