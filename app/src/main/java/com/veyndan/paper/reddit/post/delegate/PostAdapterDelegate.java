@@ -132,7 +132,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
     private static void bindHeader(final Context context, final Post post, final PostViewHolder holder) {
         final List<Flair> flairs = new ArrayList<>();
 
-        if (post.isStickied()) {
+        if (post.stickied()) {
             final int flairStickiedColor = context.getColor(R.color.post_flair_stickied);
             final String flairStickiedText = context.getString(R.string.post_stickied);
 
@@ -141,7 +141,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     .build());
         }
 
-        if (post.isLocked()) {
+        if (post.locked()) {
             final int flairLockedColor = context.getColor(R.color.post_flair_locked);
             final String flairLockedText = context.getString(R.string.post_locked);
             final Drawable flairLockIcon = context.getDrawable(R.drawable.ic_lock_outline_white_12sp);
@@ -152,7 +152,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     .build());
         }
 
-        if (post.isNsfw()) {
+        if (post.nsfw()) {
             final int flairNsfwColor = context.getColor(R.color.post_flair_nsfw);
             final String flairNsfwText = context.getString(R.string.post_nsfw);
 
@@ -166,7 +166,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
             flairs.add(Flair.builder(flairLinkColor)
                     .type(Flair.Type.LINK)
-                    .text(post.getLinkFlair())
+                    .text(post.linkFlair())
                     .build());
         }
 
@@ -175,20 +175,20 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
             final Drawable flairGildedIcon = context.getDrawable(R.drawable.ic_star_white_12sp);
 
             flairs.add(Flair.builder(flairGildedColor)
-                    .text(String.valueOf(post.getGildedCount()))
+                    .text(String.valueOf(post.gildedCount()))
                     .icon(flairGildedIcon)
                     .build());
         }
 
-        holder.binding.postHeader.setHeader(post.getLinkTitle(), post.getAuthor(), post.getDisplayAge(),
-                post.getSubreddit(), flairs);
+        holder.binding.postHeader.setHeader(post.linkTitle(), post.author(), post.getDisplayAge(),
+                post.subreddit(), flairs);
     }
 
     private static void bindMedia(final Post post, final PostViewHolder holder,
                                   final Activity activity, final CustomTabsClient customTabsClient,
                                   final CustomTabsIntent customTabsIntent) {
         final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
-                activity, customTabsClient, customTabsIntent, post, post.getMedias());
+                activity, customTabsClient, customTabsIntent, post, post.medias());
         holder.binding.postMediaView.setAdapter(postMediaAdapter);
     }
 
@@ -199,7 +199,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
     private static void bindUpvoteAction(final Context context, final Post post,
                                          final PostViewHolder holder, final Reddit reddit) {
-        final VoteDirection likes = post.getLikes();
+        final VoteDirection likes = post.likes().value;
         holder.binding.postUpvoteNew.setChecked(likes == VoteDirection.UPVOTE);
         RxCompoundButton.checkedChanges(holder.binding.postUpvoteNew)
                 // checkedChanges emits the checked state on subscription. As the voted state of
@@ -207,13 +207,13 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 // skipping the initial emission means no unnecessary network requests occur.
                 .skip(1)
                 .subscribe(isChecked -> {
-                    post.setLikes(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE);
-                    if (!post.isArchived()) {
-                        reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.getFullname())
+                    post.likes().value = isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE;
+                    if (!post.archived()) {
+                        reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.fullname())
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(response -> {}, Timber::e);
 
-                        post.setPoints(post.getPoints() + (isChecked ? 1 : -1));
+                        post.points().value += isChecked ? 1 : -1;
 
                         final String points1 = post.getDisplayPoints(context);
                         holder.binding.postScore.setText(points1);
@@ -223,7 +223,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
     private static void bindDownvoteAction(final Context context, final Post post,
                                            final PostViewHolder holder, final Reddit reddit) {
-        final VoteDirection likes = post.getLikes();
+        final VoteDirection likes = post.likes().value;
         holder.binding.postDownvoteNew.setChecked(likes == VoteDirection.DOWNVOTE);
         RxCompoundButton.checkedChanges(holder.binding.postDownvoteNew)
                 // checkedChanges emits the checked state on subscription. As the voted state of
@@ -231,13 +231,13 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 // skipping the initial emission means no unnecessary network requests occur.
                 .skip(1)
                 .subscribe(isChecked -> {
-                    post.setLikes(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE);
-                    if (!post.isArchived()) {
-                        reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.getFullname())
+                    post.likes().value = isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE;
+                    if (!post.archived()) {
+                        reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.fullname())
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(response -> {}, Timber::e);
 
-                        post.setPoints(post.getPoints() + (isChecked ? -1 : 1));
+                        post.points().value += isChecked ? -1 : 1;
 
                         final String points1 = post.getDisplayPoints(context);
                         holder.binding.postScore.setText(points1);
@@ -247,19 +247,19 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
     private static void bindSaveAction(final Post post, final PostViewHolder holder,
                                        final Reddit reddit) {
-        holder.binding.postSave.setChecked(post.isSaved());
+        holder.binding.postSave.setChecked(post.saved().value);
         RxView.clicks(holder.binding.postSave)
                 .subscribe(aVoid -> {
                     holder.binding.postSave.toggle();
                     final boolean isChecked = holder.binding.postSave.isChecked();
 
-                    post.setSaved(isChecked);
+                    post.saved().value = isChecked;
                     if (isChecked) {
-                        reddit.save("", post.getFullname())
+                        reddit.save("", post.fullname())
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(response -> {}, Timber::e);
                     } else {
-                        reddit.unsave(post.getFullname())
+                        reddit.unsave(post.fullname())
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(response -> {}, Timber::e);
                     }
@@ -276,8 +276,8 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     return holder.binding.postComments.isChecked();
                 })
                 .subscribe(displayDescendants -> {
-                    post.setDescendantsVisible(!displayDescendants);
-                    if (post.isComment()) {
+                    post.descendantsVisible().value = !displayDescendants;
+                    if (post.comment()) {
                         if (displayDescendants) {
                             int i;
                             for (i = holder.getAdapterPosition() + 1; i < nodes.size() && nodes.get(i).getDepth() > post.getDepth(); i++)
@@ -303,14 +303,14 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         final Intent commentsIntent = new Intent(context, MainActivity.class);
                         commentsIntent.putExtras(new Reddit.FilterBuilder()
                                 .nodeDepth(0)
-                                .commentsSubreddit(post.getSubreddit())
-                                .commentsArticle(post.getArticle())
+                                .commentsSubreddit(post.subreddit())
+                                .commentsArticle(post.article())
                                 .build());
                         context.startActivity(commentsIntent);
                     }
                 }, Timber::e);
 
-        if (post.isInternalNode() && !post.isDescendantsVisible()) {
+        if (post.isInternalNode() && !post.descendantsVisible().value) {
             holder.binding.postCommentCount.setVisibility(View.VISIBLE);
             final String commentCount = post.getDisplayDescendants();
             holder.binding.postCommentCount.setText(commentCount);
@@ -321,13 +321,13 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
     private static void bindShareAction(final Context context, final Post post) {
         final Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_TEXT, post.getPermalink());
+        intent.putExtra(Intent.EXTRA_TEXT, post.permalink());
         intent.setType("text/plain");
         context.startActivity(intent);
     }
 
     private static void bindBrowserAction(final Context context, final Post post) {
-        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.getLinkUrl()));
+        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.linkUrl().value));
         context.startActivity(intent);
     }
 
@@ -349,7 +349,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         public boolean swipeable() {
             final int position = getAdapterPosition();
             final Post post = (Post) adapter.getItems().get(position);
-            return post.isHideable();
+            return post.hideable();
         }
 
         @Override
@@ -375,7 +375,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     .subscribe(event -> {
                         // Chance to undo post hiding has gone, so follow through with
                         // hiding network request.
-                        reddit.hide(post.getFullname())
+                        reddit.hide(post.fullname())
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(response -> {}, Timber::e);
                     }, Timber::e);

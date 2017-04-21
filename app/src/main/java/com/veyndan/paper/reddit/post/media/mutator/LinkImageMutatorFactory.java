@@ -19,11 +19,11 @@ final class LinkImageMutatorFactory implements MutatorFactory {
     @Override
     public Maybe<Post> mutate(final Post post) {
         return Single.just(post)
-                .filter(post1 -> !post1.getPreview().images.isEmpty())
+                .filter(post1 -> !post1.preview().images.isEmpty())
                 .map(post1 -> {
-                    final Source source = post1.getPreview().images.get(0).source;
-                    final LinkImage linkImage = LinkImage.create(source.url, post1.getDomain());
-                    post1.getMedias().add(linkImage);
+                    final Source source = post1.preview().images.get(0).source;
+                    final LinkImage linkImage = LinkImage.create(source.url, post1.domain());
+                    post1.medias().add(linkImage);
                     return post1;
                 });
     }

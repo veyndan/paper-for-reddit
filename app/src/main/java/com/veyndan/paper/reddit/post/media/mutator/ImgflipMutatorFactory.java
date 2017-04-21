@@ -22,13 +22,13 @@ final class ImgflipMutatorFactory implements MutatorFactory {
 
     @Override
     public Maybe<Post> mutate(final Post post) {
-        final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
+        final Matcher matcher = PATTERN.matcher(post.linkUrl().value);
 
         return Single.just(post)
                 .filter(post1 -> matcher.matches())
                 .map(post1 -> {
                     final String directImageUrl = "https://i.imgflip.com/" + matcher.group(1) + ".jpg";
-                    post1.getMedias().add(Image.create(directImageUrl));
+                    post1.medias().add(Image.create(directImageUrl));
                     return post1;
                 });
     }

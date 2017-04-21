@@ -26,7 +26,7 @@ final class TwitterMutatorFactory implements MutatorFactory {
 
     @Override
     public Maybe<Post> mutate(final Post post) {
-        final Matcher matcher = PATTERN.matcher(post.getLinkUrl());
+        final Matcher matcher = PATTERN.matcher(post.linkUrl().value);
 
         return Single.just(post)
                 .filter(post1 -> matcher.matches())
@@ -48,7 +48,7 @@ final class TwitterMutatorFactory implements MutatorFactory {
                         });
                     });
                 }, (post1, tweet) -> {
-                    post1.getMedias().add(tweet);
+                    post1.medias().add(tweet);
                     return post1;
                 });
     }
