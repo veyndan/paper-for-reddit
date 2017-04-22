@@ -10,11 +10,11 @@ import com.veyndan.paper.reddit.api.reddit.model.Source;
 import com.veyndan.paper.reddit.post.media.model.Image;
 import com.veyndan.paper.reddit.post.model.Post;
 
-import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
@@ -40,7 +40,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
         return Single.just(post)
                 .filter(post1 -> BuildConfig.HAS_IMGUR_API_CREDENTIALS && matcher.matches())
-                .flatMap(post1 -> {
+                .map(post1 -> {
                     final boolean isAlbum = matcher.group(2) != null;
                     final boolean isDirectImage = matcher.group(1) != null;
 
@@ -52,6 +52,8 @@ final class ImgurMutatorFactory implements MutatorFactory {
                             post.postHint().value = PostHint.IMAGE;
                         }
                     }
+
+                    final Observable<Image> images;
 
                     if (isAlbum) {
                         post.postHint().value = PostHint.IMAGE;
@@ -76,11 +78,9 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
                         final String id = matcher.group(3);
 
-                        return imgurService.album(id)
+                        images = imgurService.album(id)
                                 .flattenAsObservable(basic -> basic.body().getData().images())
-                                .map(image -> Image.create(image.getLink(), new Size(image.getWidth(), image.getHeight())))
-                                .toList()
-                                .toMaybe();
+                                .map(image -> Image.create(image.getLink(), new Size(image.getWidth(), image.getHeight())));
                     } else {
                         final boolean imageDimensAvailable = !post.preview().images.isEmpty();
 
@@ -100,11 +100,10 @@ final class ImgurMutatorFactory implements MutatorFactory {
                                 ? Image.IMAGE_TYPE_GIF
                                 : Image.IMAGE_TYPE_STANDARD;
 
-                        return Maybe.just(Collections.singletonList(Image.create(url, size, type)));
+                        images = Observable.just(Image.create(url, size, type));
                     }
-                }, (post1, images) -> {
-                    post1.medias().addAll(images);
-                    return post1;
+
+                    return post1.withMedias(post1.medias().value.concatWith(images));
                 });
     }
 

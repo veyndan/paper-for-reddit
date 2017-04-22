@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 final class ImgflipMutatorFactory implements MutatorFactory {
@@ -28,8 +29,8 @@ final class ImgflipMutatorFactory implements MutatorFactory {
                 .filter(post1 -> matcher.matches())
                 .map(post1 -> {
                     final String directImageUrl = "https://i.imgflip.com/" + matcher.group(1) + ".jpg";
-                    post1.medias().add(Image.create(directImageUrl));
-                    return post1;
+                    final Image image = Image.create(directImageUrl);
+                    return post1.withMedias(post1.medias().value.concatWith(Observable.just(image)));
                 });
     }
 }

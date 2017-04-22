@@ -25,6 +25,7 @@ import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import timber.log.Timber;
 
 public class ImageAdapterDelegate
@@ -108,7 +109,7 @@ public class ImageAdapterDelegate
 
                                         image.size().value = new Size(imageWidth, imageHeight);
 
-                                        post.medias().add(image);
+                                        post.medias().value = post.medias().value.concatWith(Observable.just(image));
 
                                         holder.binding.postMediaImage.getLayoutParams().height = (int) ((float) width / imageWidth * imageHeight);
                                     }

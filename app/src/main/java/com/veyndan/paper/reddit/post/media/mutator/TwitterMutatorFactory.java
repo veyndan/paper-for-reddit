@@ -31,15 +31,14 @@ final class TwitterMutatorFactory implements MutatorFactory {
 
         return Single.just(post)
                 .filter(post1 -> BuildConfig.HAS_TWITTER_API_CREDENTIALS && matcher.matches())
-                .flatMap(post1 -> {
+                .map(post1 -> {
                     final Long tweetId = Long.parseLong(matcher.group(1));
                     // TODO Replace Observable.create with an Observable returned by Retrofit.
-                    return Maybe.create(subscriber -> {
+                    final Single<Tweet> tweet = Single.create(subscriber -> {
                         TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
                             @Override
                             public void success(final Result<Tweet> result) {
                                 subscriber.onSuccess(result.data);
-                                subscriber.onComplete();
                             }
 
                             @Override
@@ -48,9 +47,8 @@ final class TwitterMutatorFactory implements MutatorFactory {
                             }
                         });
                     });
-                }, (post1, tweet) -> {
-                    post1.medias().add(tweet);
-                    return post1;
+
+                    return post1.withMedias(post1.medias().value.concatWith(tweet.toObservable()));
                 });
     }
 }

@@ -5,6 +5,7 @@ import com.veyndan.paper.reddit.post.media.model.Link;
 import com.veyndan.paper.reddit.post.model.Post;
 
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 final class LinkMutatorFactory implements MutatorFactory {
@@ -21,8 +22,8 @@ final class LinkMutatorFactory implements MutatorFactory {
         return Single.just(post)
                 .filter(post1 -> post1.postHint().value != PostHint.SELF)
                 .map(post1 -> {
-                    post1.medias().add(Link.create(post1.domain()));
-                    return post1;
+                    final Link link = Link.create(post1.domain());
+                    return post1.withMedias(post1.medias().value.concatWith(Observable.just(link)));
                 });
     }
 }

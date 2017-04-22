@@ -40,6 +40,7 @@ import com.veyndan.paper.reddit.util.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 import timber.log.Timber;
@@ -187,9 +188,15 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
     private static void bindMedia(final Post post, final PostViewHolder holder,
                                   final Activity activity, final CustomTabsClient customTabsClient,
                                   final CustomTabsIntent customTabsIntent) {
-        final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
-                activity, customTabsClient, customTabsIntent, post, post.medias());
-        holder.binding.postMediaView.setAdapter(postMediaAdapter);
+        post.medias().value
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .toList()
+                .subscribe(medias -> {
+                    final PostMediaAdapter postMediaAdapter = new PostMediaAdapter(
+                            activity, customTabsClient, customTabsIntent, post, medias);
+                    holder.binding.postMediaView.setAdapter(postMediaAdapter);
+                });
     }
 
     private static void bindPoints(final Context context, final Post post, final PostViewHolder holder) {

@@ -7,6 +7,7 @@ import com.veyndan.paper.reddit.post.media.model.Text;
 import com.veyndan.paper.reddit.post.model.Post;
 
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 final class TextMutatorFactory implements MutatorFactory {
@@ -25,8 +26,7 @@ final class TextMutatorFactory implements MutatorFactory {
                         !TextUtils.isEmpty(post1.bodyHtml()))
                 .map(post1 -> {
                     final Text text = Text.create(post1::getDisplayBody);
-                    post1.medias().add(text);
-                    return post1;
+                    return post1.withMedias(post1.medias().value.concatWith(Observable.just(text)));
                 });
     }
 }
