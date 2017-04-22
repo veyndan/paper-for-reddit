@@ -22,7 +22,7 @@ final class TextMutatorFactory implements MutatorFactory {
     @Override
     public Maybe<Post> mutate(final Post post) {
         return Single.just(post)
-                .filter(post1 -> post1.postHint().value == PostHint.SELF &&
+                .filter(post1 -> post1.postHint() == PostHint.SELF &&
                         !TextUtils.isEmpty(post1.bodyHtml()))
                 .map(post1 -> {
                     final Text text = Text.create(post1::getDisplayBody);

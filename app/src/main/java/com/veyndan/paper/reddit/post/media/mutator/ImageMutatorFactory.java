@@ -24,7 +24,7 @@ public final class ImageMutatorFactory implements MutatorFactory {
     @Override
     public Maybe<Post> mutate(final Post post) {
         return Single.just(post)
-                .filter(post1 -> post1.postHint().value == PostHint.IMAGE)
+                .filter(post1 -> post1.postHint() == PostHint.IMAGE)
                 .map(post1 -> {
                     final boolean imageDimensAvailable = !post1.preview().images.isEmpty();
 
