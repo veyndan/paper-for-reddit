@@ -92,7 +92,7 @@ public class AuthenticationActivity extends BaseActivity {
 
                     final HttpUrl url = HttpUrl.parse("https://www.reddit.com/api/v1/authorize.compact")
                             .newBuilder()
-                            .addQueryParameter("client_id", Config.REDDIT_CLIENT_ID)
+                            .addQueryParameter("client_id", BuildConfig.REDDIT_API_KEY)
                             .addQueryParameter("response_type", "code")
                             .addQueryParameter("state", state)
                             .addQueryParameter("redirect_uri", Constants.REDDIT_REDIRECT_URI)

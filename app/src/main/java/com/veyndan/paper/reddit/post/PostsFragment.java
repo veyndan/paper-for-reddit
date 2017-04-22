@@ -13,9 +13,9 @@ import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding2.support.v7.widget.RecyclerViewScrollEvent;
 import com.jakewharton.rxbinding2.support.v7.widget.RxRecyclerView;
-import com.veyndan.paper.reddit.Config;
 import com.veyndan.paper.reddit.NextPageEvent;
 import com.veyndan.paper.reddit.NextPageUiModel;
+import com.veyndan.paper.reddit.PaperForRedditApp;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
@@ -61,7 +61,7 @@ public class PostsFragment extends Fragment {
     public void onAttach(final Context context) {
         super.onAttach(context);
 
-        reddit = new Reddit(Config.REDDIT_CREDENTIALS);
+        reddit = new Reddit(PaperForRedditApp.REDDIT_CREDENTIALS);
     }
 
     @Override

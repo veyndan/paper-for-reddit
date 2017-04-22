@@ -7,11 +7,19 @@ import android.support.multidex.MultiDex;
 import com.squareup.leakcanary.LeakCanary;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.veyndan.paper.reddit.api.reddit.network.Credentials;
 
 import io.fabric.sdk.android.Fabric;
 import timber.log.Timber;
 
 public class PaperForRedditApp extends Application {
+
+    // TODO These should be defined somewhere else which is more descriptive e.g. ServiceConfig.java? Maybe put TwitterAuthConfig there as well in future commit?
+    private static final String REDDIT_USER_AGENT = Credentials.createUserAgent("android",
+            BuildConfig.APPLICATION_ID, BuildConfig.VERSION_NAME, BuildConfig.REDDIT_USER_NAME);
+    public static final Credentials REDDIT_CREDENTIALS = new Credentials(
+            BuildConfig.REDDIT_API_KEY, BuildConfig.REDDIT_API_SECRET, REDDIT_USER_AGENT,
+            BuildConfig.REDDIT_USER_NAME, BuildConfig.REDDIT_USER_PASSWORD);
 
     @Override
     public void onCreate() {
@@ -25,7 +33,7 @@ public class PaperForRedditApp extends Application {
                 }
             });
         }
-        final TwitterAuthConfig authConfig = new TwitterAuthConfig(Config.TWITTER_KEY, Config.TWITTER_SECRET);
+        final TwitterAuthConfig authConfig = new TwitterAuthConfig(BuildConfig.TWITTER_API_KEY, BuildConfig.TWITTER_API_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         LeakCanary.install(this);
     }

@@ -6,4 +6,4 @@
 /build
 /captures
 app/fabric.properties
-app/src/main/java/com/veyndan/paper/reddit/Config.java
+app/keystore.properties
