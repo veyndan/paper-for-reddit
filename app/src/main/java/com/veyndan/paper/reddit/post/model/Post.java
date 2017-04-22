@@ -132,6 +132,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
     public abstract long createdUtc();
 
+    @Nullable
     public abstract String domain();
 
     public abstract String fullname();
@@ -145,6 +146,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
     @Nullable
     public abstract String linkFlair();
 
+    @Nullable
     public abstract String linkTitle();
 
     /**
@@ -277,7 +279,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
         Builder createdUtc(long createdUtc);
 
-        Builder domain(String domain);
+        Builder domain(@Nullable String domain);
 
         Builder fullname(String fullname);
 
@@ -289,7 +291,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
         Builder linkFlair(@Nullable String linkFlair);
 
-        Builder linkTitle(String linkTitle);
+        Builder linkTitle(@Nullable String linkTitle);
 
         Builder linkUrl(String linkUrl);
 
