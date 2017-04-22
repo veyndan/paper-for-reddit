@@ -62,40 +62,41 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
                     }
                 });
 
-        final MutableBoolean descendantsVisible = new MutableBoolean(comment);
+        final Post post = builder()
+                .comment(comment)
+                .children(children)
+                .descendantsVisible(new MutableBoolean(comment))
+                .archived(submission.archived)
+                .author(submission.author == null ? "" : submission.author)
+                .bodyHtml(submission.getBodyHtml())
+                .createdUtc(submission.getCreatedUtc())
+                .domain(submission.getDomain())
+                .fullname(submission.getFullname())
+                .gildedCount(submission.gilded)
+                .hideable(submission.isHideable())
+                .likes(new MutableObject<>(submission.getLikes()))
+                .linkFlair(submission.getLinkFlairText())
+                .linkTitle(submission.getLinkTitle())
+                .linkUrl(new MutableObject<>(submission.getLinkUrl() == null ? "" : submission.getLinkUrl()))
+                .locked(submission.isLocked())
+                .nsfw(submission.isOver18())
+                .permalink(submission.getPermalink())
+                .points(new MutableInt(submission.score))
+                .postHint(new MutableObject<>(submission.getPostHint()))
+                .preview(submission.getPreview())
+                .saved(new MutableBoolean(submission.saved))
+                .scoreHidden(submission.isScoreHidden())
+                .stickied(submission.stickied)
+                .subreddit(submission.subreddit)
+                .build();
 
-        final boolean archived = submission.archived;
-        final String author = submission.author == null ? "" : submission.author;
-        final String bodyHtml = submission.getBodyHtml();
-        final long createdUtc = submission.getCreatedUtc();
-        final String domain = submission.getDomain();
-        final String fullname = submission.getFullname();
-        final int gildedCount = submission.gilded;
-        final boolean hideable = submission.isHideable();
-        final MutableObject<VoteDirection> likes = new MutableObject<>(submission.getLikes());
-        final String linkFlair = submission.getLinkFlairText();
-        final String linkTitle = submission.getLinkTitle();
-        final MutableObject<String> linkUrl = new MutableObject<>(
-                submission.getLinkUrl() == null ? "" : submission.getLinkUrl());
-        final boolean locked = submission.isLocked();
-        final boolean nsfw = submission.isOver18();
-        final String permalink = submission.getPermalink();
-        final MutableInt points = new MutableInt(submission.score);
-
-        final MutableObject<PostHint> postHint = new MutableObject<>(submission.getPostHint());
-
-        final Preview preview = submission.getPreview();
-        final MutableBoolean saved = new MutableBoolean(submission.saved);
-        final boolean scoreHidden = submission.isScoreHidden();
-        final boolean stickied = submission.stickied;
-        final String subreddit = submission.subreddit;
-
-        final Post post = new AutoValue_Post(new ArrayList<>(), comment, children,
-                descendantsVisible, archived, author, bodyHtml, createdUtc, domain, fullname,
-                gildedCount, hideable, likes, linkFlair, linkTitle, linkUrl, locked, nsfw,
-                permalink, points, postHint, preview, saved, scoreHidden, stickied, subreddit);
         post.setDescendantCount(submission.getNumComments());
         return post;
+    }
+
+    static Builder builder() {
+        return new AutoValue_Post.Builder()
+                .medias(new ArrayList<>());
     }
 
     public abstract List<Object> medias();
@@ -239,5 +240,63 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
     @Override
     public final Observable<Node<Response<Thing<Listing>>>> getChildren() {
         return children();
+    }
+
+    @AutoValue.Builder
+    interface Builder {
+
+        Builder medias(List<Object> medias);
+
+        Builder comment(boolean comment);
+
+        Builder children(Observable<Node<Response<Thing<Listing>>>> children);
+
+        Builder descendantsVisible(MutableBoolean descendantsVisible);
+
+        Builder archived(boolean archived);
+
+        Builder author(String author);
+
+        Builder bodyHtml(@Nullable String bodyHtml);
+
+        Builder createdUtc(long createdUtc);
+
+        Builder domain(String domain);
+
+        Builder fullname(String fullname);
+
+        Builder gildedCount(int gildedCount);
+
+        Builder hideable(boolean hideable);
+
+        Builder likes(MutableObject<VoteDirection> likes);
+
+        Builder linkFlair(@Nullable String linkFlair);
+
+        Builder linkTitle(String linkTitle);
+
+        Builder linkUrl(MutableObject<String> linkUrl);
+
+        Builder locked(boolean locked);
+
+        Builder nsfw(boolean nsfw);
+
+        Builder permalink(String permalink);
+
+        Builder points(MutableInt points);
+
+        Builder postHint(MutableObject<PostHint> postHint);
+
+        Builder preview(Preview preview);
+
+        Builder saved(MutableBoolean saved);
+
+        Builder scoreHidden(boolean scoreHidden);
+
+        Builder stickied(boolean stickied);
+
+        Builder subreddit(String subreddit);
+
+        Post build();
     }
 }
