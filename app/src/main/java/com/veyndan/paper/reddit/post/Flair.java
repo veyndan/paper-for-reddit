@@ -32,16 +32,16 @@ public abstract class Flair {
     }
 
     @AutoValue.Builder
-    public abstract static class Builder {
+    public interface Builder {
 
-        public abstract Builder type(Type type);
+        Builder type(Type type);
 
-        public abstract Builder text(String text);
+        Builder text(String text);
 
-        public abstract Builder icon(Drawable icon);
+        Builder icon(Drawable icon);
 
-        public abstract Builder backgroundColor(@ColorInt int backgroundColor);
+        Builder backgroundColor(@ColorInt int backgroundColor);
 
-        public abstract Flair build();
+        Flair build();
     }
 }
