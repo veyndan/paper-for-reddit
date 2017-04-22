@@ -30,7 +30,7 @@ public class MainActivity extends BaseActivity {
 
     static final String DEEP_LINK_USER_NAME = "user_name";
 
-    private static final Reddit REDDIT = new Reddit(Config.REDDIT_CREDENTIALS);
+    private static final Reddit REDDIT = new Reddit(PaperForRedditApp.REDDIT_CREDENTIALS);
 
     private PostsFragment postsFragment;
 

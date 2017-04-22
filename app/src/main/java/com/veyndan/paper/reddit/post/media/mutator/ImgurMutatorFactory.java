@@ -3,7 +3,7 @@ package com.veyndan.paper.reddit.post.media.mutator;
 import android.support.annotation.StringRes;
 import android.util.Size;
 
-import com.veyndan.paper.reddit.Config;
+import com.veyndan.paper.reddit.BuildConfig;
 import com.veyndan.paper.reddit.api.imgur.network.ImgurService;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
 import com.veyndan.paper.reddit.api.reddit.model.Source;
@@ -39,7 +39,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
         final Matcher matcher = PATTERN.matcher(post.linkUrl().value);
 
         return Single.just(post)
-                .filter(post1 -> matcher.matches())
+                .filter(post1 -> BuildConfig.HAS_IMGUR_API_CREDENTIALS && matcher.matches())
                 .flatMap(post1 -> {
                     final boolean isAlbum = matcher.group(2) != null;
                     final boolean isDirectImage = matcher.group(1) != null;
@@ -59,7 +59,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
                         final OkHttpClient client = new OkHttpClient.Builder()
                                 .addInterceptor(chain -> {
                                     Request request = chain.request().newBuilder()
-                                            .addHeader("Authorization", "Client-ID " + Config.IMGUR_CLIENT_ID)
+                                            .addHeader("Authorization", "Client-ID " + BuildConfig.IMGUR_API_KEY)
                                             .build();
                                     return chain.proceed(request);
                                 })

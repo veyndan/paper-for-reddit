@@ -3,6 +3,7 @@ apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
 apply plugin: 'com.getkeepsafe.dexcount'
 
+final Properties keystoreProperties = loadProperties('app/keystore.properties')
 final Properties fabricProperties = loadProperties('app/fabric.properties')
 
 Properties loadProperties(final String absolutePath) {
@@ -29,6 +30,43 @@ android {
         manifestPlaceholders = [
                 FABRIC_KEY: fabricProperties['fabricKey']
         ]
+        // TODO Should display this better by putting the below somewhere else (a different gradle file like keystore.gradle) and also making the services (e.g. Reddit, Imgur) separated either through comments or functions
+
+        /**
+         * Using Boolean.valueOf(…) suppresses the warnings in Java code that constant bool is
+         * always the same.
+         */
+        final Closure<Boolean> suppressWarningsConstantConditionBoolean = Boolean.&valueOf
+
+        final Closure<String> dotCaseToCamelCase = { final String string ->
+            string.replaceAll('\\.', '_').toUpperCase()
+        }
+
+        // TODO Improve naming for function name, parameters, and variables in function
+        final Closure<Void> serviceBuildConfigFields = { final String api,
+                                                         final List<String> expectedPropertyKeys ->
+            assert expectedPropertyKeys
+                    .collect { it.split('\\.')[0] }
+                    .every { it == api }
+
+            expectedPropertyKeys.each {
+                final String keystorePropertyName = dotCaseToCamelCase it
+                final String keystoreProperty = keystoreProperties[it]
+                buildConfigField 'String', keystorePropertyName, "\"$keystoreProperty\""
+            }
+
+            final String hasApiCredentialsName = "HAS_${api.toUpperCase()}_API_CREDENTIALS"
+            final boolean hasApiCredentials = expectedPropertyKeys
+                    .collect { keystoreProperties.containsKey it }
+                    .every { it }
+
+            buildConfigField 'boolean', hasApiCredentialsName, "${suppressWarningsConstantConditionBoolean(hasApiCredentials)}"
+        }
+
+        // TODO Should the service parameter be passed in. It is very easy to infer from the second parameter but may not be as readable.
+        serviceBuildConfigFields 'imgur', ['imgur.api.key']
+        serviceBuildConfigFields 'reddit', ['reddit.api.key', 'reddit.api.secret', 'reddit.user.name', 'reddit.user.password']
+        serviceBuildConfigFields 'twitter', ['twitter.api.key', 'twitter.api.secret']
     }
     buildTypes {
         debug {
