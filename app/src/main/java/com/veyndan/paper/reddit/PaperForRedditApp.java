@@ -17,7 +17,7 @@ public class PaperForRedditApp extends Application {
     // TODO These should be defined somewhere else which is more descriptive e.g. ServiceConfig.java? Maybe put TwitterAuthConfig there as well in future commit?
     private static final String REDDIT_USER_AGENT = Credentials.createUserAgent("android",
             BuildConfig.APPLICATION_ID, BuildConfig.VERSION_NAME, BuildConfig.REDDIT_USER_NAME);
-    public static final Credentials REDDIT_CREDENTIALS = new Credentials(
+    public static final Credentials REDDIT_CREDENTIALS = Credentials.create(
             BuildConfig.REDDIT_API_KEY, BuildConfig.REDDIT_API_SECRET, REDDIT_USER_AGENT,
             BuildConfig.REDDIT_USER_NAME, BuildConfig.REDDIT_USER_PASSWORD);
 

@@ -1,41 +1,25 @@
 package com.veyndan.paper.reddit.api.reddit.network;
 
-public final class Credentials {
+import com.google.auto.value.AutoValue;
 
-    private final String clientId;
-    private final String clientSecret;
-    private final String userAgent;
-    private final String username;
-    private final String password;
+@AutoValue
+public abstract class Credentials {
 
-    public Credentials(final String clientId, final String clientSecret, final String userAgent,
-                       final String username, final String password) {
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.userAgent = userAgent;
-        this.username = username;
-        this.password = password;
+    public static Credentials create(final String clientId, final String clientSecret,
+                                     final String userAgent, final String username,
+                                     final String password) {
+        return new AutoValue_Credentials(clientId, clientSecret, userAgent, username, password);
     }
 
-    public String getClientId() {
-        return clientId;
-    }
+    public abstract String clientId();
 
-    public String getClientSecret() {
-        return clientSecret;
-    }
+    public abstract String clientSecret();
 
-    public String getUserAgent() {
-        return userAgent;
-    }
+    public abstract String userAgent();
 
-    public String getUsername() {
-        return username;
-    }
+    public abstract String username();
 
-    public String getPassword() {
-        return password;
-    }
+    public abstract String password();
 
     public static String createUserAgent(final String platform, final String appId,
                                          final String version, final String username) {

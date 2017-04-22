@@ -45,7 +45,7 @@ public final class AccessTokenInterceptor implements Interceptor {
 
     private Single<AccessToken> accessTokenNetwork() {
         final Single<AccessToken> single = authenticationService.getAccessToken(
-                "password", credentials.getUsername(), credentials.getPassword())
+                "password", credentials.username(), credentials.password())
                 .map(retrofit2.Response::body);
 
         // Save access token from network into the cache.
