@@ -49,14 +49,14 @@ final class ImgurMutatorFactory implements MutatorFactory {
                         if (!post1.linkUrl().value.endsWith(".gifv")) {
                             post1.linkUrl().value = singleImageUrlToDirectImageUrl(post1.linkUrl().value);
 
-                            post.postHint().value = PostHint.IMAGE;
+                            post1.postHint().value = PostHint.IMAGE;
                         }
                     }
 
                     final Observable<Image> images;
 
                     if (isAlbum) {
-                        post.postHint().value = PostHint.IMAGE;
+                        post1.postHint().value = PostHint.IMAGE;
 
                         final OkHttpClient client = new OkHttpClient.Builder()
                                 .addInterceptor(chain -> {
@@ -82,21 +82,21 @@ final class ImgurMutatorFactory implements MutatorFactory {
                                 .flattenAsObservable(basic -> basic.body().getData().images())
                                 .map(image -> Image.create(image.getLink(), new Size(image.getWidth(), image.getHeight())));
                     } else {
-                        final boolean imageDimensAvailable = !post.preview().images.isEmpty();
+                        final boolean imageDimensAvailable = !post1.preview().images.isEmpty();
 
-                        final String url = post.linkUrl().value.endsWith(".gifv") && imageDimensAvailable
-                                ? post.preview().images.get(0).source.url
-                                : post.linkUrl().value;
+                        final String url = post1.linkUrl().value.endsWith(".gifv") && imageDimensAvailable
+                                ? post1.preview().images.get(0).source.url
+                                : post1.linkUrl().value;
 
                         final Size size;
                         if (imageDimensAvailable) {
-                            final Source source = post.preview().images.get(0).source;
+                            final Source source = post1.preview().images.get(0).source;
                             size = new Size(source.width, source.height);
                         } else {
                             size = new Size(0, 0);
                         }
 
-                        @StringRes final int type = post.linkUrl().value.endsWith(".gif") || post.linkUrl().value.endsWith(".gifv")
+                        @StringRes final int type = post1.linkUrl().value.endsWith(".gif") || post1.linkUrl().value.endsWith(".gifv")
                                 ? Image.IMAGE_TYPE_GIF
                                 : Image.IMAGE_TYPE_STANDARD;
 

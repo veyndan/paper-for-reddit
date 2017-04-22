@@ -45,7 +45,7 @@ final class XkcdMutatorFactory implements MutatorFactory {
                     final Single<Image> image = xkcdService.num(comicNum)
                             .map(comic -> Image.create(comic.body().getImg()));
 
-                    post.postHint().value = PostHint.IMAGE;
+                    post1.postHint().value = PostHint.IMAGE;
 
                     return post1.withMedias(post1.medias().value.concatWith(image.toObservable()));
                 });
