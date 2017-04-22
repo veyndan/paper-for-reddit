@@ -80,7 +80,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
                 .nsfw(submission.isOver18())
                 .permalink(submission.getPermalink())
                 .points(new MutableInt(submission.score))
-                .postHint(new MutableObject<>(submission.getPostHint()))
+                .postHint(submission.getPostHint())
                 .preview(submission.getPreview())
                 .saved(new MutableBoolean(submission.saved))
                 .scoreHidden(submission.isScoreHidden())
@@ -105,6 +105,10 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
     public Post withLinkUrl(final String linkUrl) {
         return toBuilder().linkUrl(linkUrl).build();
+    }
+
+    public Post withPostHint(final PostHint postHint) {
+        return toBuilder().postHint(postHint).build();
     }
 
     public abstract MutableObject<Observable<Object>> medias();
@@ -152,7 +156,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
     public abstract MutableInt points();
 
-    public abstract MutableObject<PostHint> postHint();
+    public abstract PostHint postHint();
 
     public abstract Preview preview();
 
@@ -293,7 +297,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
         Builder points(MutableInt points);
 
-        Builder postHint(MutableObject<PostHint> postHint);
+        Builder postHint(PostHint postHint);
 
         Builder preview(Preview preview);
 

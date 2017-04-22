@@ -20,7 +20,7 @@ final class LinkMutatorFactory implements MutatorFactory {
     @Override
     public Maybe<Post> mutate(final Post post) {
         return Single.just(post)
-                .filter(post1 -> post1.postHint().value != PostHint.SELF)
+                .filter(post1 -> post1.postHint() != PostHint.SELF)
                 .map(post1 -> {
                     final Link link = Link.create(post1.domain());
                     return post1.withMedias(post1.medias().value.concatWith(Observable.just(link)));

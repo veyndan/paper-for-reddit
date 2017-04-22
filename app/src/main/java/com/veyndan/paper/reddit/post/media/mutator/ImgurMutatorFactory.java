@@ -47,16 +47,16 @@ final class ImgurMutatorFactory implements MutatorFactory {
                     if (!isAlbum && !isDirectImage) {
                         // TODO .gifv links are HTML 5 videos so the PostHint should be set accordingly.
                         if (!post1.linkUrl().endsWith(".gifv")) {
-                            post1 = post1.withLinkUrl(singleImageUrlToDirectImageUrl(post1.linkUrl()));
-
-                            post1.postHint().value = PostHint.IMAGE;
+                            post1 = post1
+                                    .withLinkUrl(singleImageUrlToDirectImageUrl(post1.linkUrl()))
+                                    .withPostHint(PostHint.IMAGE);
                         }
                     }
 
                     final Observable<Image> images;
 
                     if (isAlbum) {
-                        post1.postHint().value = PostHint.IMAGE;
+                        post1 = post1.withPostHint(PostHint.IMAGE);
 
                         final OkHttpClient client = new OkHttpClient.Builder()
                                 .addInterceptor(chain -> {
