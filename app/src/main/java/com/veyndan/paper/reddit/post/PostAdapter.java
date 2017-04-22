@@ -16,8 +16,7 @@ import java.util.List;
 
 import retrofit2.Response;
 
-public class PostAdapter extends ListDelegationAdapter<List<Node<Response<Thing<Listing>>>>>
-        implements DepthCalculatorDelegate {
+public class PostAdapter extends ListDelegationAdapter<List<Node<Response<Thing<Listing>>>>> {
 
     public PostAdapter(final Activity activity, final List<Node<Response<Thing<Listing>>>> posts, final Reddit reddit) {
         delegatesManager
@@ -26,11 +25,5 @@ public class PostAdapter extends ListDelegationAdapter<List<Node<Response<Thing<
                 .addDelegate(new MoreAdapterDelegate());
 
         setItems(posts);
-    }
-
-    @Override
-    @IntRange(from = 0)
-    public int depthForPosition(@IntRange(from = 0) final int position) {
-        return items.get(position).getDepth();
     }
 }

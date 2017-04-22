@@ -8,7 +8,10 @@ import android.support.annotation.Px;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.veyndan.paper.reddit.post.DepthCalculatorDelegate;
+import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter;
+import com.veyndan.paper.reddit.util.Node;
+
+import java.util.List;
 
 public class TreeInsetItemDecoration extends RecyclerView.ItemDecoration {
 
@@ -22,19 +25,26 @@ public class TreeInsetItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent,
                                final RecyclerView.State state) {
-        if (parent.getAdapter() instanceof DepthCalculatorDelegate) {
-            final DepthCalculatorDelegate depthCalculatorDelegate = (DepthCalculatorDelegate) parent.getAdapter();
+        if (parent.getAdapter() instanceof ListDelegationAdapter) {
+            final ListDelegationAdapter<List<Node<?>>> listDelegationAdapter =
+                    (ListDelegationAdapter<List<Node<?>>>) parent.getAdapter();
             final int position = parent.getChildAdapterPosition(view);
+            final List<Node<?>> nodes = listDelegationAdapter.getItems();
 
-            final int inset = position == RecyclerView.NO_POSITION
-                    ? 0
-                    : depthCalculatorDelegate.depthForPosition(position) * childInsetMultiplier;
+            final int inset;
+            if (position == RecyclerView.NO_POSITION) {
+                inset = 0;
+            } else {
+                final Node<?> node = nodes.get(position);
+                final int depth = node.getDepth();
+                inset = depth * childInsetMultiplier;
+            }
 
             outRect.set(inset, 0, 0, 0);
         } else {
             throw new IllegalStateException("RecyclerView's Adapter must implement " +
-                    "DepthCalculatorDelegate in order for TreeInsetItemDecoration to be used as " +
-                    "a decoration");
+                    "ListDelegationAdapter<List<Node<?>>> in order for TreeInsetItemDecoration " +
+                    "to be used as a decoration");
         }
     }
 }
