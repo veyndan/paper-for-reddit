@@ -8,6 +8,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public final class UserAgentInterceptor implements Interceptor {
+
     private static final String USER_AGENT_HEADER_NAME = "User-Agent";
     private final String userAgentHeaderValue;
 

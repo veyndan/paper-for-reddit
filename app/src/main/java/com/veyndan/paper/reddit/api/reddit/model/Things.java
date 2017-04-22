@@ -4,5 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Things {
+
     public List<RedditObject> things = new ArrayList<>();
 }

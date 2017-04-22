@@ -9,5 +9,6 @@ import com.airbnb.deeplinkdispatch.DeepLinkSpec;
         "https://reddit.com"
 })
 public @interface WebDeepLink {
+
     String[] value();
 }

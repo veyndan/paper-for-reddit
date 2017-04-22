@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Prefs {
+
     @Json(name = "default_theme_sr") public String defaultThemeSr;
     @Json(name = "threaded_messages") public Boolean threadedMessages;
     @Json(name = "hide_downs") public Boolean hideDowns;

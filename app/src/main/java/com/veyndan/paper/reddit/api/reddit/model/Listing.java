@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Listing implements RedditObject {
+
     public String before;
     public String after;
     public String modhash;

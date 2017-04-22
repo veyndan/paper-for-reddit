@@ -1,6 +1,7 @@
 package com.veyndan.paper.reddit.api.reddit.network;
 
 public final class Credentials {
+
     private final String clientId;
     private final String clientSecret;
     private final String userAgent;
