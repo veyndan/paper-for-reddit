@@ -2,6 +2,7 @@ package com.veyndan.paper.reddit.post.model;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.Html;
@@ -99,14 +100,17 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
     abstract Builder toBuilder();
 
+    @CheckResult
     public Post withMedias(final Observable<Object> medias) {
         return toBuilder().medias(new MutableObject<>(medias)).build();
     }
 
+    @CheckResult
     public Post withLinkUrl(final String linkUrl) {
         return toBuilder().linkUrl(linkUrl).build();
     }
 
+    @CheckResult
     public Post withPostHint(final PostHint postHint) {
         return toBuilder().postHint(postHint).build();
     }
