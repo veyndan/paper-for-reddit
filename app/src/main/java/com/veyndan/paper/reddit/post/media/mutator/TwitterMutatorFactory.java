@@ -13,6 +13,9 @@ import java.util.regex.Pattern;
 
 import io.reactivex.Maybe;
 import io.reactivex.Single;
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 
 final class TwitterMutatorFactory implements MutatorFactory {
 
@@ -34,21 +37,21 @@ final class TwitterMutatorFactory implements MutatorFactory {
                 .map(post1 -> {
                     final Long tweetId = Long.parseLong(matcher.group(1));
                     // TODO Replace Observable.create with an Observable returned by Retrofit.
-                    final Single<Tweet> tweet = Single.create(subscriber -> {
+                    final Single<Response<Tweet>> tweet = Single.create(subscriber -> {
                         TweetUtils.loadTweet(tweetId, new Callback<Tweet>() {
                             @Override
                             public void success(final Result<Tweet> result) {
-                                subscriber.onSuccess(result.data);
+                                subscriber.onSuccess(Response.success(result.data));
                             }
 
                             @Override
                             public void failure(final TwitterException exception) {
-                                subscriber.onError(exception);
+                                subscriber.onSuccess(Response.error(404, ResponseBody.create(MediaType.parse("application/json"), "{}")));
                             }
                         });
                     });
 
-                    return post1.withMedias(post1.medias().value.concatWith(tweet.toObservable()));
+                    return post1.withMedias(post1.medias().value.concatWith(tweet.map(Response::body).toObservable()));
                 });
     }
 }
