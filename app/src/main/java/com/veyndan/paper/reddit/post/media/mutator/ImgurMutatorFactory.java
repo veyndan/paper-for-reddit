@@ -44,19 +44,21 @@ final class ImgurMutatorFactory implements MutatorFactory {
                     final boolean isAlbum = matcher.group(2) != null;
                     final boolean isDirectImage = matcher.group(1) != null;
 
+                    String linkUrl = post1.linkUrl();
+                    PostHint postHint = post1.postHint();
+
                     if (!isAlbum && !isDirectImage) {
                         // TODO .gifv links are HTML 5 videos so the PostHint should be set accordingly.
-                        if (!post1.linkUrl().endsWith(".gifv")) {
-                            post1 = post1
-                                    .withLinkUrl(singleImageUrlToDirectImageUrl(post1.linkUrl()))
-                                    .withPostHint(PostHint.IMAGE);
+                        if (!linkUrl.endsWith(".gifv")) {
+                            linkUrl = singleImageUrlToDirectImageUrl(linkUrl);
+                            postHint = PostHint.IMAGE;
                         }
                     }
 
                     final Observable<Image> images;
 
                     if (isAlbum) {
-                        post1 = post1.withPostHint(PostHint.IMAGE);
+                        postHint = PostHint.IMAGE;
 
                         final OkHttpClient client = new OkHttpClient.Builder()
                                 .addInterceptor(chain -> {
@@ -84,9 +86,9 @@ final class ImgurMutatorFactory implements MutatorFactory {
                     } else {
                         final boolean imageDimensAvailable = !post1.preview().images.isEmpty();
 
-                        final String url = post1.linkUrl().endsWith(".gifv") && imageDimensAvailable
+                        final String url = linkUrl.endsWith(".gifv") && imageDimensAvailable
                                 ? post1.preview().images.get(0).source.url
-                                : post1.linkUrl();
+                                : linkUrl;
 
                         final Size size;
                         if (imageDimensAvailable) {
@@ -96,14 +98,17 @@ final class ImgurMutatorFactory implements MutatorFactory {
                             size = new Size(0, 0);
                         }
 
-                        @StringRes final int type = post1.linkUrl().endsWith(".gif") || post1.linkUrl().endsWith(".gifv")
+                        @StringRes final int type = linkUrl.endsWith(".gif") || linkUrl.endsWith(".gifv")
                                 ? Image.IMAGE_TYPE_GIF
                                 : Image.IMAGE_TYPE_STANDARD;
 
                         images = Observable.just(Image.create(url, size, type));
                     }
 
-                    return post1.withMedias(post1.medias().value.concatWith(images));
+                    return post1
+                            .withMedias(post1.medias().value.concatWith(images))
+                            .withLinkUrl(linkUrl)
+                            .withPostHint(postHint);
                 });
     }
 
