@@ -31,7 +31,7 @@ final class XkcdMutatorFactory implements MutatorFactory {
 
         return Single.just(post)
                 .filter(post1 -> matcher.matches())
-                .flatMap(post1 -> {
+                .map(post1 -> {
                     final int comicNum = Integer.parseInt(matcher.group(1));
 
                     final Retrofit retrofit = new Retrofit.Builder()
@@ -42,15 +42,12 @@ final class XkcdMutatorFactory implements MutatorFactory {
 
                     final XkcdService xkcdService = retrofit.create(XkcdService.class);
 
-                    final Single<Image> imageObservable = xkcdService.num(comicNum)
+                    final Single<Image> image = xkcdService.num(comicNum)
                             .map(comic -> Image.create(comic.body().getImg()));
 
                     post.postHint().value = PostHint.IMAGE;
 
-                    return imageObservable.toMaybe();
-                }, (post1, image) -> {
-                    post1.medias().add(image);
-                    return post1;
+                    return post1.withMedias(post1.medias().value.concatWith(image.toObservable()));
                 });
     }
 }

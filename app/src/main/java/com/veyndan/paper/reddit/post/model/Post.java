@@ -29,8 +29,6 @@ import com.veyndan.paper.reddit.util.Node;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -96,10 +94,16 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
     static Builder builder() {
         return new AutoValue_Post.Builder()
-                .medias(new ArrayList<>());
+                .medias(new MutableObject<>(Observable.empty()));
     }
 
-    public abstract List<Object> medias();
+    abstract Builder toBuilder();
+
+    public Post withMedias(final Observable<Object> medias) {
+        return toBuilder().medias(new MutableObject<>(medias)).build();
+    }
+
+    public abstract MutableObject<Observable<Object>> medias();
 
     public abstract boolean comment();
 
@@ -245,7 +249,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
     @AutoValue.Builder
     interface Builder {
 
-        Builder medias(List<Object> medias);
+        Builder medias(MutableObject<Observable<Object>> medias);
 
         Builder comment(boolean comment);
 

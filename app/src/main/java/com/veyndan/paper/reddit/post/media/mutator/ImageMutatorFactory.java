@@ -9,6 +9,7 @@ import com.veyndan.paper.reddit.post.media.model.Image;
 import com.veyndan.paper.reddit.post.model.Post;
 
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public final class ImageMutatorFactory implements MutatorFactory {
@@ -39,8 +40,7 @@ public final class ImageMutatorFactory implements MutatorFactory {
                             ? Image.IMAGE_TYPE_GIF
                             : Image.IMAGE_TYPE_STANDARD;
                     final Image image = Image.create(post1.linkUrl().value, size, type);
-                    post1.medias().add(image);
-                    return post1;
+                    return post1.withMedias(post1.medias().value.concatWith(Observable.just(image)));
                 });
     }
 }

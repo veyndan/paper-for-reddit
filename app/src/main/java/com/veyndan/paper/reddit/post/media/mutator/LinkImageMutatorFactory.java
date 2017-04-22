@@ -5,6 +5,7 @@ import com.veyndan.paper.reddit.post.media.model.LinkImage;
 import com.veyndan.paper.reddit.post.model.Post;
 
 import io.reactivex.Maybe;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 final class LinkImageMutatorFactory implements MutatorFactory {
@@ -23,8 +24,7 @@ final class LinkImageMutatorFactory implements MutatorFactory {
                 .map(post1 -> {
                     final Source source = post1.preview().images.get(0).source;
                     final LinkImage linkImage = LinkImage.create(source.url, post1.domain());
-                    post1.medias().add(linkImage);
-                    return post1;
+                    return post1.withMedias(post1.medias().value.concatWith(Observable.just(linkImage)));
                 });
     }
 }
