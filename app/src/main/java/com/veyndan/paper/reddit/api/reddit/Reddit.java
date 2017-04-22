@@ -84,7 +84,7 @@ public final class Reddit {
         final OkHttpClient client = new OkHttpClient();
 
         final OkHttpClient.Builder authenticationClientBuilder = client.newBuilder()
-                .addInterceptor(new UserAgentInterceptor(credentials.getUserAgent()))
+                .addInterceptor(new UserAgentInterceptor(credentials.userAgent()))
                 .addInterceptor(new AuthorizationInterceptor(credentials));
 
         final Retrofit authenticatorRetrofit = new Retrofit.Builder()
@@ -97,7 +97,7 @@ public final class Reddit {
         final AuthenticationService authenticationService = authenticatorRetrofit.create(AuthenticationService.class);
 
         final OkHttpClient.Builder clientBuilder = client.newBuilder()
-                .addInterceptor(new UserAgentInterceptor(credentials.getUserAgent()))
+                .addInterceptor(new UserAgentInterceptor(credentials.userAgent()))
                 .addInterceptor(new AccessTokenInterceptor(authenticationService, credentials))
                 .addInterceptor(new RawJsonInterceptor());
 

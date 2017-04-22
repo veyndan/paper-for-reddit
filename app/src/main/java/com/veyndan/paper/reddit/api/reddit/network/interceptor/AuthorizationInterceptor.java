@@ -19,7 +19,7 @@ public class AuthorizationInterceptor implements Interceptor {
     @Override
     public Response intercept(final Chain chain) throws IOException {
         final Request request = chain.request();
-        final String credential = okhttp3.Credentials.basic(credentials.getClientId(), credentials.getClientSecret());
+        final String credential = okhttp3.Credentials.basic(credentials.clientId(), credentials.clientSecret());
         final Request authenticatedRequest = request.newBuilder()
                 .header("Authorization", credential).build();
         return chain.proceed(authenticatedRequest);
