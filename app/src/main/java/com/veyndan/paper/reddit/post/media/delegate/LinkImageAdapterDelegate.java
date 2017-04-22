@@ -64,12 +64,12 @@ public class LinkImageAdapterDelegate
 
         if (customTabsClient != null) {
             final CustomTabsSession session = customTabsClient.newSession(null);
-            session.mayLaunchUrl(Uri.parse(post.linkUrl().value), null, null);
+            session.mayLaunchUrl(Uri.parse(post.linkUrl()), null, null);
         }
 
         RxView.clicks(holder.itemView)
                 .subscribe(aVoid -> {
-                    customTabsIntent.launchUrl(activity, Uri.parse(post.linkUrl().value));
+                    customTabsIntent.launchUrl(activity, Uri.parse(post.linkUrl()));
                 }, Timber::e);
 
         holder.binding.postMediaImageProgress.setVisibility(View.VISIBLE);

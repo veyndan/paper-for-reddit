@@ -75,7 +75,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
                 .likes(new MutableObject<>(submission.getLikes()))
                 .linkFlair(submission.getLinkFlairText())
                 .linkTitle(submission.getLinkTitle())
-                .linkUrl(new MutableObject<>(submission.getLinkUrl() == null ? "" : submission.getLinkUrl()))
+                .linkUrl(submission.getLinkUrl() == null ? "" : submission.getLinkUrl())
                 .locked(submission.isLocked())
                 .nsfw(submission.isOver18())
                 .permalink(submission.getPermalink())
@@ -101,6 +101,10 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
     public Post withMedias(final Observable<Object> medias) {
         return toBuilder().medias(new MutableObject<>(medias)).build();
+    }
+
+    public Post withLinkUrl(final String linkUrl) {
+        return toBuilder().linkUrl(linkUrl).build();
     }
 
     public abstract MutableObject<Observable<Object>> medias();
@@ -138,7 +142,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
     /**
      * Returns the url of the link and the empty string if there is no link url e.g. for a comment.
      */
-    public abstract MutableObject<String> linkUrl();
+    public abstract String linkUrl();
 
     public abstract boolean locked();
 
@@ -279,7 +283,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
         Builder linkTitle(String linkTitle);
 
-        Builder linkUrl(MutableObject<String> linkUrl);
+        Builder linkUrl(String linkUrl);
 
         Builder locked(boolean locked);
 

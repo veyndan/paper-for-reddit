@@ -334,7 +334,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
     }
 
     private static void bindBrowserAction(final Context context, final Post post) {
-        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.linkUrl().value));
+        final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.linkUrl()));
         context.startActivity(intent);
     }
 

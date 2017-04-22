@@ -36,10 +36,10 @@ public final class ImageMutatorFactory implements MutatorFactory {
                         size = new Size(0, 0);
                     }
 
-                    @StringRes final int type = post1.linkUrl().value.endsWith(".gif")
+                    @StringRes final int type = post1.linkUrl().endsWith(".gif")
                             ? Image.IMAGE_TYPE_GIF
                             : Image.IMAGE_TYPE_STANDARD;
-                    final Image image = Image.create(post1.linkUrl().value, size, type);
+                    final Image image = Image.create(post1.linkUrl(), size, type);
                     return post1.withMedias(post1.medias().value.concatWith(Observable.just(image)));
                 });
     }

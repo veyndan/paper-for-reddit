@@ -27,7 +27,7 @@ final class TwitterMutatorFactory implements MutatorFactory {
 
     @Override
     public Maybe<Post> mutate(final Post post) {
-        final Matcher matcher = PATTERN.matcher(post.linkUrl().value);
+        final Matcher matcher = PATTERN.matcher(post.linkUrl());
 
         return Single.just(post)
                 .filter(post1 -> BuildConfig.HAS_TWITTER_API_CREDENTIALS && matcher.matches())
