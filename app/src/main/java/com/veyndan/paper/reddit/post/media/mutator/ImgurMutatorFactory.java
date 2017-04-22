@@ -36,7 +36,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
     @Override
     public Maybe<Post> mutate(final Post post) {
-        final Matcher matcher = PATTERN.matcher(post.linkUrl().value);
+        final Matcher matcher = PATTERN.matcher(post.linkUrl());
 
         return Single.just(post)
                 .filter(post1 -> BuildConfig.HAS_IMGUR_API_CREDENTIALS && matcher.matches())
@@ -46,8 +46,8 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
                     if (!isAlbum && !isDirectImage) {
                         // TODO .gifv links are HTML 5 videos so the PostHint should be set accordingly.
-                        if (!post1.linkUrl().value.endsWith(".gifv")) {
-                            post1.linkUrl().value = singleImageUrlToDirectImageUrl(post1.linkUrl().value);
+                        if (!post1.linkUrl().endsWith(".gifv")) {
+                            post1 = post1.withLinkUrl(singleImageUrlToDirectImageUrl(post1.linkUrl()));
 
                             post1.postHint().value = PostHint.IMAGE;
                         }
@@ -84,9 +84,9 @@ final class ImgurMutatorFactory implements MutatorFactory {
                     } else {
                         final boolean imageDimensAvailable = !post1.preview().images.isEmpty();
 
-                        final String url = post1.linkUrl().value.endsWith(".gifv") && imageDimensAvailable
+                        final String url = post1.linkUrl().endsWith(".gifv") && imageDimensAvailable
                                 ? post1.preview().images.get(0).source.url
-                                : post1.linkUrl().value;
+                                : post1.linkUrl();
 
                         final Size size;
                         if (imageDimensAvailable) {
@@ -96,7 +96,7 @@ final class ImgurMutatorFactory implements MutatorFactory {
                             size = new Size(0, 0);
                         }
 
-                        @StringRes final int type = post1.linkUrl().value.endsWith(".gif") || post1.linkUrl().value.endsWith(".gifv")
+                        @StringRes final int type = post1.linkUrl().endsWith(".gif") || post1.linkUrl().endsWith(".gifv")
                                 ? Image.IMAGE_TYPE_GIF
                                 : Image.IMAGE_TYPE_STANDARD;
 

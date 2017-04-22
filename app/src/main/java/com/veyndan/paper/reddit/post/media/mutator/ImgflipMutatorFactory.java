@@ -23,7 +23,7 @@ final class ImgflipMutatorFactory implements MutatorFactory {
 
     @Override
     public Maybe<Post> mutate(final Post post) {
-        final Matcher matcher = PATTERN.matcher(post.linkUrl().value);
+        final Matcher matcher = PATTERN.matcher(post.linkUrl());
 
         return Single.just(post)
                 .filter(post1 -> matcher.matches())
