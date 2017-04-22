@@ -5,12 +5,10 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
-import com.veyndan.paper.reddit.R;
+import com.veyndan.paper.reddit.databinding.PostMediaTextBinding;
 import com.veyndan.paper.reddit.post.media.model.Text;
 
 import java.util.List;
@@ -28,26 +26,26 @@ public class TextAdapterDelegate
     @Override
     public TextViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final View view = inflater.inflate(R.layout.post_media_text, parent, false);
-        return new TextViewHolder(view);
+        final PostMediaTextBinding binding = PostMediaTextBinding.inflate(inflater, parent, false);
+        return new TextViewHolder(binding);
     }
 
     @Override
     protected void onBindViewHolder(@NonNull final Text text, @NonNull final TextViewHolder holder,
                                     @NonNull final List<Object> payloads) {
         final Context context = holder.itemView.getContext();
-        holder.textView.setText(text.getBody(context));
-        holder.textView.setMovementMethod(LinkMovementMethod.getInstance());
+        holder.binding.postMediaText.setText(text.getBody(context));
+        holder.binding.postMediaText.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     static class TextViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView textView;
+        private final PostMediaTextBinding binding;
 
-        TextViewHolder(final View itemView) {
-            super(itemView);
+        TextViewHolder(final PostMediaTextBinding binding) {
+            super(binding.getRoot());
 
-            textView = (TextView) itemView;
+            this.binding = binding;
         }
     }
 }
