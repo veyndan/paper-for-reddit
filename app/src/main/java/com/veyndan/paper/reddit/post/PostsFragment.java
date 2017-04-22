@@ -22,6 +22,7 @@ import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.More;
 import com.veyndan.paper.reddit.api.reddit.model.Submission;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
+import com.veyndan.paper.reddit.databinding.FragmentPostsBinding;
 import com.veyndan.paper.reddit.post.media.mutator.Mutators;
 import com.veyndan.paper.reddit.post.model.Post;
 import com.veyndan.paper.reddit.post.model.Progress;
@@ -44,7 +45,7 @@ import timber.log.Timber;
 
 public class PostsFragment extends Fragment {
 
-    private RecyclerView recyclerView;
+    private FragmentPostsBinding binding;
 
     private final List<Node<Response<Thing<Listing>>>> forest = new ArrayList<>();
 
@@ -91,7 +92,7 @@ public class PostsFragment extends Fragment {
     public void setRequest(final Single<Response<Thing<Listing>>> request) {
         clearForest();
 
-        final Observable<NextPageEvent> nextPageEvents = RxRecyclerView.scrollEvents(recyclerView)
+        final Observable<NextPageEvent> nextPageEvents = RxRecyclerView.scrollEvents(binding.recyclerView)
                 .filter(endOfRecyclerView())
                 // TODO There should be a more robust and intuitive way of doing distinctUntilChanged().
                 //
@@ -145,21 +146,21 @@ public class PostsFragment extends Fragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
-        recyclerView = (RecyclerView) inflater.inflate(R.layout.fragment_posts, container, false);
+        binding = FragmentPostsBinding.inflate(inflater, container, false);
 
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         postAdapter = new PostAdapter(getActivity(), forest, reddit);
 
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addItemDecoration(new MarginItemDecoration(getActivity(), R.dimen.card_view_margin));
-        recyclerView.addItemDecoration(new TreeInsetItemDecoration(getActivity(), R.dimen.post_child_inset_multiplier));
-        recyclerView.setAdapter(postAdapter);
+        binding.recyclerView.setLayoutManager(layoutManager);
+        binding.recyclerView.addItemDecoration(new MarginItemDecoration(getActivity(), R.dimen.card_view_margin));
+        binding.recyclerView.addItemDecoration(new TreeInsetItemDecoration(getActivity(), R.dimen.post_child_inset_multiplier));
+        binding.recyclerView.setAdapter(postAdapter);
 
         final ItemTouchHelper.Callback swipeCallback = new SwipeItemTouchHelperCallback();
         final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        itemTouchHelper.attachToRecyclerView(binding.recyclerView);
 
-        return recyclerView;
+        return binding.getRoot();
     }
 
     public void appendTree(final Node<Response<Thing<Listing>>> node) {
