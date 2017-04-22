@@ -3,6 +3,7 @@ package com.veyndan.paper.reddit.api.reddit.model;
 import com.squareup.moshi.Json;
 
 public class Trophy {
+
     @Json(name = "icon_70") public String icon70;
     public String description;
     public String url;

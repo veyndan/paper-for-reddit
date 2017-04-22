@@ -3,6 +3,7 @@ package com.veyndan.paper.reddit.api.reddit.model;
 import com.squareup.moshi.Json;
 
 public class OEmbed {
+
     @Json(name = "provider_url") public String providerUrl;
     public String description;
     public String title;

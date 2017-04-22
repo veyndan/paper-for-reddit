@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class More implements RedditObject {
+
     public int count;
     @Json(name = "parent_id") public String parentId;
     public String id;

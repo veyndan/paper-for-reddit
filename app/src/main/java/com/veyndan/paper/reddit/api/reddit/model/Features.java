@@ -3,6 +3,7 @@ package com.veyndan.paper.reddit.api.reddit.model;
 import com.squareup.moshi.Json;
 
 public class Features {
+
     @Json(name = "inline_image_previews_logged_out") public boolean inlineImagePreviewsLoggedOut;
     @Json(name = "relevancy_M_web") public Experiment relevancyMweb;
     @Json(name = "relevancy_sidebar") public Experiment relevancySidebar;
