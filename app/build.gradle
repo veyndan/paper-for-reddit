@@ -33,10 +33,12 @@ android {
         // TODO Should display this better by putting the below somewhere else (a different gradle file like keystore.gradle) and also making the services (e.g. Reddit, Imgur) separated either through comments or functions
 
         /**
-         * Using Boolean.valueOf(…) suppresses the warnings in Java code that constant bool is
+         * Using Boolean.parseBoolean(…) suppresses the warnings in Java code that constant bool is
          * always the same.
          */
-        final Closure<Boolean> suppressWarningsConstantConditionBoolean = Boolean.&valueOf
+        final Closure<String> suppressWarningsConstantConditionBoolean = { final Boolean bool ->
+            "Boolean.parseBoolean(\"${bool.toString()}\")"
+        }
 
         final Closure<String> dotCaseToCamelCase = { final String string ->
             string.replaceAll('\\.', '_').toUpperCase()
