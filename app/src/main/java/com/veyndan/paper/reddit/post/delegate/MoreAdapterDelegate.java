@@ -4,14 +4,13 @@ import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
 import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
+import com.veyndan.paper.reddit.databinding.MoreItemBinding;
 import com.veyndan.paper.reddit.post.model.Progress;
 import com.veyndan.paper.reddit.util.Node;
 
@@ -32,8 +31,8 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Progress, No
     @Override
     public MoreViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final View view = inflater.inflate(R.layout.more_item, parent, false);
-        return new MoreViewHolder(view);
+        final MoreItemBinding binding = MoreItemBinding.inflate(inflater, parent, false);
+        return new MoreViewHolder(binding);
     }
 
     @Override
@@ -43,16 +42,17 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Progress, No
         final int count = progress.getDegree();
         final Resources resources = holder.itemView.getResources();
 
-        holder.textView.setText(resources.getQuantityString(R.plurals.children, count, count));
+        holder.binding.moreText.setText(resources.getQuantityString(R.plurals.children, count, count));
     }
 
     class MoreViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView textView;
+        final MoreItemBinding binding;
 
-        MoreViewHolder(final View itemView) {
-            super(itemView);
-            textView = (TextView) itemView;
+        MoreViewHolder(final MoreItemBinding binding) {
+            super(binding.getRoot());
+
+            this.binding = binding;
         }
     }
 }

@@ -3,14 +3,12 @@ package com.veyndan.paper.reddit.post.delegate;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
-import com.veyndan.paper.reddit.R;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
+import com.veyndan.paper.reddit.databinding.ProgressItemBinding;
 import com.veyndan.paper.reddit.post.model.Progress;
 import com.veyndan.paper.reddit.util.Node;
 
@@ -32,8 +30,8 @@ public class ProgressAdapterDelegate
     @Override
     public ProgressViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final View progressView = inflater.inflate(R.layout.progress_item, parent, false);
-        return new ProgressViewHolder(progressView);
+        final ProgressItemBinding binding = ProgressItemBinding.inflate(inflater, parent, false);
+        return new ProgressViewHolder(binding);
     }
 
     @Override
@@ -44,11 +42,12 @@ public class ProgressAdapterDelegate
 
     static final class ProgressViewHolder extends RecyclerView.ViewHolder {
 
-        final ProgressBar progress;
+        private final ProgressItemBinding binding;
 
-        ProgressViewHolder(final View itemView) {
-            super(itemView);
-            progress = (ProgressBar) itemView;
+        ProgressViewHolder(final ProgressItemBinding binding) {
+            super(binding.getRoot());
+
+            this.binding = binding;
         }
     }
 }

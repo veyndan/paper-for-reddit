@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/post_media_text"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:autoLink="all"
-    android:linksClickable="true"
-    android:paddingLeft="@dimen/post_horizontal_margin"
-    android:paddingRight="@dimen/post_horizontal_margin"
-    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-    tools:text="@string/placeholder_post_media_text"/>
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:id="@+id/post_media_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autoLink="all"
+        android:linksClickable="true"
+        android:paddingLeft="@dimen/post_horizontal_margin"
+        android:paddingRight="@dimen/post_horizontal_margin"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        tools:text="@string/placeholder_post_media_text"/>
+
+</layout>

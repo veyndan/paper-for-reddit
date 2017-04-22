@@ -4,13 +4,12 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.tweetui.TweetView;
-import com.veyndan.paper.reddit.R;
+import com.veyndan.paper.reddit.databinding.PostMediaTweetBinding;
 
 import java.util.List;
 
@@ -27,8 +26,8 @@ public class TweetAdapterDelegate
     @Override
     public TweetViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         final LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        final View view = inflater.inflate(R.layout.post_media_tweet, parent, false);
-        return new TweetViewHolder(view);
+        final PostMediaTweetBinding binding = PostMediaTweetBinding.inflate(inflater, parent, false);
+        return new TweetViewHolder(binding);
     }
 
     @Override
@@ -39,17 +38,17 @@ public class TweetAdapterDelegate
 
         // Can't recycle TweetView as tweet must be specified on TweetView creation. Shit.
         // Could just create custom TweetView using the tweet object.
-        holder.container.addView(new TweetView(context, tweet));
+        holder.binding.tweetContainer.addView(new TweetView(context, tweet));
     }
 
     static class TweetViewHolder extends RecyclerView.ViewHolder {
 
-        final ViewGroup container;
+        private final PostMediaTweetBinding binding;
 
-        TweetViewHolder(final View itemView) {
-            super(itemView);
+        TweetViewHolder(final PostMediaTweetBinding binding) {
+            super(binding.getRoot());
 
-            container = (ViewGroup) itemView;
+            this.binding = binding;
         }
     }
 }
