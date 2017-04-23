@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import com.google.common.base.MoreObjects;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+import com.veyndan.paper.reddit.BuildConfig;
 import com.veyndan.paper.reddit.api.reddit.json.adapter.DefaultOnDataMismatchAdapter;
 import com.veyndan.paper.reddit.api.reddit.json.adapter.RedditObjectAdapter;
 import com.veyndan.paper.reddit.api.reddit.model.Account2;
@@ -101,7 +102,7 @@ public final class Reddit {
                 .addInterceptor(new AccessTokenInterceptor(authenticationService, credentials))
                 .addInterceptor(new RawJsonInterceptor());
 
-        if (Config.DEBUG) {
+        if (BuildConfig.DEBUG) {
             clientBuilder.addInterceptor(loggingInterceptor());
         }
 
