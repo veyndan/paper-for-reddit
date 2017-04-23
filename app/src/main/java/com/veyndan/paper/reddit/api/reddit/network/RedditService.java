@@ -64,9 +64,8 @@ public interface RedditService {
     Single<Response<Void>> hide(
             @Field("id") String ids);
 
-    @GET("api/morechildren")
+    @GET("api/morechildren?api_type=json")
     Single<Response<MoreChildren>> moreChildren(
-            @Query("api_type") String apiType,
             @Query("children") String children,
             @Query("link_id") String linkId);
 
