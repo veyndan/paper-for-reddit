@@ -213,18 +213,17 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 // the Reddit post is the same as the checked state of the button initially,
                 // skipping the initial emission means no unnecessary network requests occur.
                 .skip(1)
+                .filter(isChecked -> !post.archived())
                 .subscribe(isChecked -> {
                     post.likes().value = isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE;
-                    if (!post.archived()) {
-                        reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.fullname())
-                                .subscribeOn(Schedulers.io())
-                                .subscribe(response -> {}, Timber::e);
+                    reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.fullname())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(response -> {}, Timber::e);
 
-                        post.points().value += isChecked ? 1 : -1;
+                    post.points().value += isChecked ? 1 : -1;
 
-                        final String points1 = post.getDisplayPoints(context);
-                        holder.binding.postScore.setText(points1);
-                    }
+                    final String points1 = post.getDisplayPoints(context);
+                    holder.binding.postScore.setText(points1);
                 }, Timber::e);
     }
 
@@ -237,18 +236,17 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 // the Reddit post is the same as the checked state of the button initially,
                 // skipping the initial emission means no unnecessary network requests occur.
                 .skip(1)
+                .filter(isChecked -> !post.archived())
                 .subscribe(isChecked -> {
                     post.likes().value = isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE;
-                    if (!post.archived()) {
-                        reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.fullname())
-                                .subscribeOn(Schedulers.io())
-                                .subscribe(response -> {}, Timber::e);
+                    reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.fullname())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(response -> {}, Timber::e);
 
-                        post.points().value += isChecked ? -1 : 1;
+                    post.points().value += isChecked ? -1 : 1;
 
-                        final String points1 = post.getDisplayPoints(context);
-                        holder.binding.postScore.setText(points1);
-                    }
+                    final String points1 = post.getDisplayPoints(context);
+                    holder.binding.postScore.setText(points1);
                 }, Timber::e);
     }
 
