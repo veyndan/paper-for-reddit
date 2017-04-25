@@ -13,6 +13,8 @@ import com.veyndan.paper.reddit.util.Node;
 
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 public class TreeInsetItemDecoration extends RecyclerView.ItemDecoration {
 
     @Px private final int childInsetMultiplier;
@@ -25,26 +27,24 @@ public class TreeInsetItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent,
                                final RecyclerView.State state) {
-        if (parent.getAdapter() instanceof ListDelegationAdapter) {
-            final ListDelegationAdapter<List<Node<?>>> listDelegationAdapter =
-                    (ListDelegationAdapter<List<Node<?>>>) parent.getAdapter();
-            final int position = parent.getChildAdapterPosition(view);
-            final List<Node<?>> nodes = listDelegationAdapter.getItems();
+        checkArgument(parent.getAdapter() instanceof ListDelegationAdapter,
+                "RecyclerView's Adapter must implement ListDelegationAdapter<List<Node<?>>> in " +
+                        "order for TreeInsetItemDecoration to be used as a decoration");
 
-            final int inset;
-            if (position == RecyclerView.NO_POSITION) {
-                inset = 0;
-            } else {
-                final Node<?> node = nodes.get(position);
-                final int depth = node.getDepth();
-                inset = depth * childInsetMultiplier;
-            }
+        final ListDelegationAdapter<List<Node<?>>> listDelegationAdapter =
+                (ListDelegationAdapter<List<Node<?>>>) parent.getAdapter();
+        final int position = parent.getChildAdapterPosition(view);
+        final List<Node<?>> nodes = listDelegationAdapter.getItems();
 
-            outRect.set(inset, 0, 0, 0);
+        final int inset;
+        if (position == RecyclerView.NO_POSITION) {
+            inset = 0;
         } else {
-            throw new IllegalStateException("RecyclerView's Adapter must implement " +
-                    "ListDelegationAdapter<List<Node<?>>> in order for TreeInsetItemDecoration " +
-                    "to be used as a decoration");
+            final Node<?> node = nodes.get(position);
+            final int depth = node.getDepth();
+            inset = depth * childInsetMultiplier;
         }
+
+        outRect.set(inset, 0, 0, 0);
     }
 }

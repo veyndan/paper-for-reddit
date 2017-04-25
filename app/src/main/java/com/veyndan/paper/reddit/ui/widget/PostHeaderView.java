@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class PostHeaderView extends AppCompatTextView {
 
     private final Context context;
@@ -115,9 +117,10 @@ public class PostHeaderView extends AppCompatTextView {
                         .build());
             }
 
-            if (title == null || author == null || age == null || subreddit == null) {
-                throw new IllegalStateException("title, author, age, and subreddit must be set");
-            }
+            checkNotNull(title, "title must be set");
+            checkNotNull(author, "author must be set");
+            checkNotNull(age, "age must be set");
+            checkNotNull(subreddit, "subreddit must be set");
 
             setHeader(title, author, age, subreddit, flairs);
         }
