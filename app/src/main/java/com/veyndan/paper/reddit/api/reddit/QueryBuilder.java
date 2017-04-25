@@ -1,5 +1,6 @@
 package com.veyndan.paper.reddit.api.reddit;
 
+import android.support.annotation.IntRange;
 import android.support.annotation.Size;
 
 import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
@@ -63,7 +64,7 @@ class QueryBuilder {
      *
      * @param count A positive integer (default: 0)
      */
-    public QueryBuilder count(final int count) {
+    public QueryBuilder count(@IntRange(from = 0) final int count) {
         checkArgument(count >= 0, "Query parameter 'count' must be non negative.");
 
         query.put("count", String.valueOf(count));
@@ -75,7 +76,7 @@ class QueryBuilder {
      *
      * @param limit The maximum number of items desired (default: 25, maximum: 100)
      */
-    public QueryBuilder limit(final int limit) {
+    public QueryBuilder limit(@IntRange(from = 0, to = 100) final int limit) {
         checkArgument(limit >= 0 && limit <= 100, "Query parameter 'limit' must be between 0 and 100");
 
         query.put("limit", String.valueOf(limit));
