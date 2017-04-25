@@ -7,6 +7,8 @@ import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 /**
  * Convenience class to create a {@link Map map} of queries.
  * <p>
@@ -62,9 +64,8 @@ class QueryBuilder {
      * @param count A positive integer (default: 0)
      */
     public QueryBuilder count(final int count) {
-        if (count < 0) {
-            throw new IllegalStateException("Query parameter 'count' must be non negative.");
-        }
+        checkArgument(count >= 0, "Query parameter 'count' must be non negative.");
+
         query.put("count", String.valueOf(count));
         return this;
     }
@@ -75,9 +76,8 @@ class QueryBuilder {
      * @param limit The maximum number of items desired (default: 25, maximum: 100)
      */
     public QueryBuilder limit(final int limit) {
-        if (limit < 0 || limit > 100) {
-            throw new IllegalStateException("Query parameter 'limit' must be between 0 and 100");
-        }
+        checkArgument(limit >= 0 && limit <= 100, "Query parameter 'limit' must be between 0 and 100");
+
         query.put("limit", String.valueOf(limit));
         return this;
     }
@@ -112,10 +112,9 @@ class QueryBuilder {
      * #inferred
      */
     public QueryBuilder q(@Size(max = 512) final String searchQuery) {
-        if (searchQuery.length() > 512) {
-            throw new IllegalStateException("Query parameter 'q' must be no longer than 512 " +
-                    "characters.");
-        }
+        checkArgument(searchQuery.length() <= 512, "Query parameter 'q' must be no longer than " +
+                "512 characters.");
+
         query.put("q", searchQuery);
         return this;
     }
