@@ -41,7 +41,7 @@ public class TreeInsetItemDecoration extends RecyclerView.ItemDecoration {
             inset = 0;
         } else {
             final Node<?> node = nodes.get(position);
-            final int depth = node.getDepth();
+            final int depth = node.depth();
             inset = depth * childInsetMultiplier;
         }
 

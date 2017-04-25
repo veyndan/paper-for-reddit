@@ -24,7 +24,7 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Progress, No
     protected boolean isForViewType(@NonNull final Node<Response<Thing<Listing>>> node,
                                     @NonNull final List<Node<Response<Thing<Listing>>>> nodes,
                                     final int position) {
-        return node instanceof Progress && node.getDegree() != null;
+        return node instanceof Progress && node.degree() != null;
     }
 
     @NonNull
@@ -39,7 +39,7 @@ public class MoreAdapterDelegate extends AbsListItemAdapterDelegate<Progress, No
     protected void onBindViewHolder(@NonNull final Progress progress,
                                     @NonNull final MoreViewHolder holder,
                                     @NonNull final List<Object> payloads) {
-        final int count = progress.getDegree();
+        final int count = progress.degree();
         final Resources resources = holder.itemView.getResources();
 
         holder.binding.moreText.setText(resources.getQuantityString(R.plurals.children, count, count));
