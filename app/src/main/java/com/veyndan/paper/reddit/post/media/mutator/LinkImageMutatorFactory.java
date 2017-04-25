@@ -20,7 +20,7 @@ final class LinkImageMutatorFactory implements MutatorFactory {
     @Override
     public Maybe<Post> mutate(final Post post) {
         return Single.just(post)
-                .filter(post1 -> !post1.preview().images.isEmpty())
+                .filter(post1 -> post1.preview().images.size() > 0)
                 .map(post1 -> {
                     final Source source = post1.preview().images.get(0).source;
                     final LinkImage linkImage = LinkImage.create(source.url, post1.domain());

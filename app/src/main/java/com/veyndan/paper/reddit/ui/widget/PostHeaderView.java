@@ -134,7 +134,7 @@ public class PostHeaderView extends AppCompatTextView {
             textBuilder.title(title, titleTextAppearanceSpan);
         }
 
-        final boolean hasFlairs = !flairs.isEmpty();
+        final boolean hasFlairs = flairs.size() > 0;
 
         final int titleSubtitleSpacing = getResources().getDimensionPixelSize(R.dimen.post_title_subtitle_spacing);
         final int subtitleFlairSpacing = getResources().getDimensionPixelSize(R.dimen.post_subtitle_flair_spacing);
