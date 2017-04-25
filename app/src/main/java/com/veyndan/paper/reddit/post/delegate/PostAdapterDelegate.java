@@ -216,7 +216,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 .filter(isChecked -> !post.archived())
                 .subscribe(isChecked -> {
                     post.likes().value = isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE;
-                    reddit.vote(isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE, post.fullname())
+                    reddit.vote(post.likes().value, post.fullname())
                             .subscribeOn(Schedulers.io())
                             .subscribe(response -> {}, Timber::e);
 
@@ -239,7 +239,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 .filter(isChecked -> !post.archived())
                 .subscribe(isChecked -> {
                     post.likes().value = isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE;
-                    reddit.vote(isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE, post.fullname())
+                    reddit.vote(post.likes().value, post.fullname())
                             .subscribeOn(Schedulers.io())
                             .subscribe(response -> {}, Timber::e);
 
