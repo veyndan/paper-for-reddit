@@ -29,7 +29,7 @@ public class NodeTest {
         final Node<Void> tree = setAsChildren(node10, node11, node12);
 
         tree.preOrderTraverse(0)
-                .map(Node::getDescendantCount)
+                .map(Node::descendantCount)
                 .test()
                 .assertValues(7, 0, 3, 1, 0, 0, 1, 0)
                 .assertComplete();
@@ -38,31 +38,31 @@ public class NodeTest {
     @Test
     public void descendantCount_knownDescendantCount_isCorrect() {
         final Node<Void> node30 = setAsChildren();
-        node30.setDescendantCount(0);
+        node30.descendantCount(0);
 
         final Node<Void> node20 = setAsChildren(node30);
-        node20.setDescendantCount(1);
+        node20.descendantCount(1);
 
         final Node<Void> node21 = setAsChildren();
-        node21.setDescendantCount(0);
+        node21.descendantCount(0);
 
         final Node<Void> node22 = setAsChildren();
-        node22.setDescendantCount(0);
+        node22.descendantCount(0);
 
         final Node<Void> node10 = setAsChildren();
-        node10.setDescendantCount(0);
+        node10.descendantCount(0);
 
         final Node<Void> node11 = setAsChildren(node20, node21);
-        node11.setDescendantCount(3);
+        node11.descendantCount(3);
 
         final Node<Void> node12 = setAsChildren(node22);
-        node12.setDescendantCount(1);
+        node12.descendantCount(1);
 
         final Node<Void> tree = setAsChildren(node10, node11, node12);
-        tree.setDescendantCount(7);
+        tree.descendantCount(7);
 
         tree.preOrderTraverse(0)
-                .map(Node::getDescendantCount)
+                .map(Node::descendantCount)
                 .test()
                 .assertValues(7, 0, 3, 1, 0, 0, 1, 0)
                 .assertComplete();
@@ -83,7 +83,7 @@ public class NodeTest {
         final Node<Void> tree = setAsChildren(node10, node11, node12);
 
         tree.preOrderTraverse(0)
-                .map(Node::getDepth)
+                .map(Node::depth)
                 .test()
                 .assertValues(0, 1, 1, 2, 3, 2, 1, 2)
                 .assertComplete();
@@ -94,13 +94,13 @@ public class NodeTest {
 
             @Nullable
             @Override
-            public Integer getDegree() {
+            public Integer degree() {
                 return null;
             }
 
             @NonNull
             @Override
-            public Observable<Node<T>> getChildren() {
+            public Observable<Node<T>> children() {
                 return Observable.fromArray(children);
             }
         };

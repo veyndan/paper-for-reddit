@@ -13,7 +13,7 @@ public abstract class Node<T> {
     @Nullable @IntRange(from = 0) private Integer descendantCount;
 
     @IntRange(from = 0)
-    public int getDepth() {
+    public int depth() {
         return depth;
     }
 
@@ -22,14 +22,14 @@ public abstract class Node<T> {
      */
     @Nullable
     @IntRange(from = 0)
-    public abstract Integer getDegree();
+    public abstract Integer degree();
 
-    public boolean isInternalNode() {
-        return getDescendantCount() > 0;
+    public boolean internalNode() {
+        return descendantCount() > 0;
     }
 
     @NonNull
-    public abstract Observable<Node<T>> getChildren();
+    public abstract Observable<Node<T>> children();
 
     /**
      * Returns the descendant count of this node, or else {@code null} if the descendant count is
@@ -37,11 +37,11 @@ public abstract class Node<T> {
      */
     @Nullable
     @IntRange(from = 0)
-    public Integer getDescendantCount() {
+    public Integer descendantCount() {
         return descendantCount;
     }
 
-    public void setDescendantCount(@Nullable @IntRange(from = 0) final Integer descendantCount) {
+    public void descendantCount(@Nullable @IntRange(from = 0) final Integer descendantCount) {
         this.descendantCount = descendantCount;
     }
 
@@ -58,12 +58,12 @@ public abstract class Node<T> {
                     }
                 })
                 .concatMap(node -> Observable.just(node)
-                        .concatWith(node.getChildren()
+                        .concatWith(node.children()
                                 .concatMap(childNode -> childNode.preOrderTraverse(depth + 1))));
     }
 
     private Observable<Integer> generateDescendantCount() {
-        return getChildren()
+        return children()
                 .toList()
                 .flatMapObservable(nodes -> Observable.fromIterable(nodes)
                         .flatMap(Node::generateDescendantCount)

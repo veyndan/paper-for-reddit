@@ -287,7 +287,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     if (post.comment()) {
                         if (displayDescendants) {
                             int i;
-                            for (i = holder.getAdapterPosition() + 1; i < nodes.size() && nodes.get(i).getDepth() > post.getDepth(); i++)
+                            for (i = holder.getAdapterPosition() + 1; i < nodes.size() && nodes.get(i).depth() > post.depth(); i++)
                                 ;
 
                             nodes.subList(holder.getAdapterPosition() + 1, i).clear();
@@ -296,7 +296,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                             holder.binding.postCommentCount.setVisibility(View.VISIBLE);
                             holder.binding.postCommentCount.setText(String.valueOf(i - (holder.getAdapterPosition() + 1)));
                         } else {
-                            post.preOrderTraverse(post.getDepth())
+                            post.preOrderTraverse(post.depth())
                                     .skip(1)
                                     .toList()
                                     .subscribe(children -> {
@@ -317,7 +317,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     }
                 }, Timber::e);
 
-        if (post.isInternalNode() && !post.descendantsVisible().value) {
+        if (post.internalNode() && !post.descendantsVisible().value) {
             holder.binding.postCommentCount.setVisibility(View.VISIBLE);
             final String commentCount = post.getDisplayDescendants();
             holder.binding.postCommentCount.setText(commentCount);

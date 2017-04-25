@@ -27,13 +27,13 @@ public final class Progress extends Node<Response<Thing<Listing>>> {
     @Nullable
     @IntRange(from = 0)
     @Override
-    public Integer getDegree() {
+    public Integer degree() {
         return degree;
     }
 
     @NonNull
     @Override
-    public Observable<Node<Response<Thing<Listing>>>> getChildren() {
+    public Observable<Node<Response<Thing<Listing>>>> children() {
         return Observable.empty();
     }
 

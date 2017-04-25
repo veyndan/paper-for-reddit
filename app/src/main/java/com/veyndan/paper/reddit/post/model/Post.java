@@ -89,7 +89,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
                 .subreddit(submission.subreddit)
                 .build();
 
-        post.setDescendantCount(submission.getNumComments());
+        post.descendantCount(submission.getNumComments());
         return post;
     }
 
@@ -119,6 +119,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
     public abstract boolean comment();
 
+    @NonNull
     public abstract Observable<Node<Response<Thing<Listing>>>> children();
 
     public abstract MutableBoolean descendantsVisible();
@@ -216,7 +217,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
     }
 
     public final String getDisplayDescendants() {
-        return quantityString(getDescendantCount());
+        return quantityString(descendantCount());
     }
 
     public final String getDisplayPoints(final Context context) {
@@ -250,14 +251,8 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
     @Nullable
     @Override
-    public final Integer getDegree() {
+    public final Integer degree() {
         return null;
-    }
-
-    @NonNull
-    @Override
-    public final Observable<Node<Response<Thing<Listing>>>> getChildren() {
-        return children();
     }
 
     @AutoValue.Builder
