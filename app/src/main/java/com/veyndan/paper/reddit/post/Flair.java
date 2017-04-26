@@ -3,7 +3,6 @@ package com.veyndan.paper.reddit.post;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 
@@ -15,13 +14,8 @@ import static com.google.common.base.Preconditions.checkState;
 @AutoValue
 public abstract class Flair {
 
-    public enum Type {
-        STICKIED, LOCKED, NSFW, LINK, GILDED
-    }
-
     public static Flair stickied(final Context context) {
         return builder()
-                .type(Type.STICKIED)
                 .backgroundColor(ContextCompat.getColor(context, R.color.post_flair_stickied))
                 .text(context.getString(R.string.post_stickied))
                 .build();
@@ -29,7 +23,6 @@ public abstract class Flair {
 
     public static Flair locked(final Context context) {
         return builder()
-                .type(Type.LOCKED)
                 .backgroundColor(ContextCompat.getColor(context, R.color.post_flair_locked))
                 .text(context.getString(R.string.post_locked))
                 .icon(ContextCompat.getDrawable(context, R.drawable.ic_lock_outline_white_12sp))
@@ -38,7 +31,6 @@ public abstract class Flair {
 
     public static Flair nsfw(final Context context) {
         return builder()
-                .type(Type.NSFW)
                 .backgroundColor(ContextCompat.getColor(context, R.color.post_flair_nsfw))
                 .text(context.getString(R.string.post_nsfw))
                 .searchQuery("nsfw:yes")
@@ -47,7 +39,6 @@ public abstract class Flair {
 
     public static Flair link(final Context context, final String text) {
         return builder()
-                .type(Type.LINK)
                 .backgroundColor(ContextCompat.getColor(context, R.color.post_flair_link))
                 .text(text)
                 .searchQuery(String.format("flair:'%s'", text))
@@ -56,15 +47,11 @@ public abstract class Flair {
 
     public static Flair gilded(final Context context, final int gildedCount) {
         return builder()
-                .type(Type.GILDED)
                 .backgroundColor(ContextCompat.getColor(context, R.color.post_flair_gilded))
                 .text(String.valueOf(gildedCount))
                 .icon(ContextCompat.getDrawable(context, R.drawable.ic_star_white_12sp))
                 .build();
     }
-
-    @NonNull
-    public abstract Type type();
 
     public abstract int backgroundColor();
 
@@ -87,8 +74,6 @@ public abstract class Flair {
 
     @AutoValue.Builder
     abstract static class Builder {
-
-        abstract Builder type(Type type);
 
         abstract Builder backgroundColor(@ColorInt int backgroundColor);
 
