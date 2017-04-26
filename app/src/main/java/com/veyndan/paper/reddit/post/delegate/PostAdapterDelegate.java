@@ -101,12 +101,16 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         final PostViewHolder postHolder = (PostViewHolder) holder;
         final Post post = (Post) nodes.get(position);
 
-        bindTitle(post, postHolder);
-        bindSubtitle(post, postHolder);
-        bindFlairs(context, post, postHolder);
-        bindMedia(post, postHolder, activity, customTabsClient, customTabsIntent);
-        bindPoints(context, post, postHolder);
-        bindActions(context, nodes, post, postHolder, reddit, adapter);
+        if (payloads.isEmpty()) {
+            bindTitle(post, postHolder);
+            bindSubtitle(post, postHolder);
+            bindFlairs(context, post, postHolder);
+            bindMedia(post, postHolder, activity, customTabsClient, customTabsIntent);
+            bindPoints(context, post, postHolder);
+            bindActions(context, nodes, post, postHolder, reddit, adapter);
+        } else if (payloads.get(0) == PostPayload.VOTE) {
+            bindPoints(context, post, postHolder);
+        }
     }
 
     private static void bindTitle(final Post post, final PostViewHolder holder) {
@@ -166,15 +170,15 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                                     final List<Node<Response<Thing<Listing>>>> nodes,
                                     final Post post, final PostViewHolder holder,
                                     final Reddit reddit, final PostAdapter adapter) {
-        bindUpvoteAction(context, post, holder, reddit);
-        bindDownvoteAction(context, post, holder, reddit);
+        bindUpvoteAction(post, holder, reddit, adapter);
+        bindDownvoteAction(post, holder, reddit, adapter);
         bindSaveAction(post, holder, reddit);
         bindCommentsAction(context, nodes, post, holder, adapter);
         bindPopupActions(context, post, holder);
     }
 
-    private static void bindUpvoteAction(final Context context, final Post post,
-                                         final PostViewHolder holder, final Reddit reddit) {
+    private static void bindUpvoteAction(final Post post, final PostViewHolder holder,
+                                         final Reddit reddit, final PostAdapter adapter) {
         final VoteDirection likes = post.likes().value;
         holder.binding.postUpvoteNew.setChecked(likes == VoteDirection.UPVOTE);
         RxCompoundButton.checkedChanges(holder.binding.postUpvoteNew)
@@ -191,13 +195,12 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
                     post.points().value += isChecked ? 1 : -1;
 
-                    final String points1 = post.getDisplayPoints(context);
-                    holder.binding.postScore.setText(points1);
+                    adapter.notifyItemChanged(holder.getAdapterPosition(), PostPayload.VOTE);
                 }, Timber::e);
     }
 
-    private static void bindDownvoteAction(final Context context, final Post post,
-                                           final PostViewHolder holder, final Reddit reddit) {
+    private static void bindDownvoteAction(final Post post, final PostViewHolder holder,
+                                           final Reddit reddit, final PostAdapter adapter) {
         final VoteDirection likes = post.likes().value;
         holder.binding.postDownvoteNew.setChecked(likes == VoteDirection.DOWNVOTE);
         RxCompoundButton.checkedChanges(holder.binding.postDownvoteNew)
@@ -214,8 +217,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
                     post.points().value += isChecked ? -1 : 1;
 
-                    final String points1 = post.getDisplayPoints(context);
-                    holder.binding.postScore.setText(points1);
+                    adapter.notifyItemChanged(holder.getAdapterPosition(), PostPayload.VOTE);
                 }, Timber::e);
     }
 
@@ -326,6 +328,10 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
     private static void bindBrowserAction(final Context context, final Post post) {
         final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(post.linkUrl()));
         context.startActivity(intent);
+    }
+
+    private enum PostPayload {
+        VOTE
     }
 
     static class PostViewHolder extends RecyclerView.ViewHolder implements Swipeable {
