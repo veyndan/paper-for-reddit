@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <corners
+        android:radius="@dimen/post_flair_corner_radius"/>
+
+    <padding
+        android:bottom="@dimen/post_flair_padding_vertical"
+        android:left="@dimen/post_flair_padding_horizontal"
+        android:right="@dimen/post_flair_padding_horizontal"
+        android:top="@dimen/post_flair_padding_vertical"/>
+
+</shape>

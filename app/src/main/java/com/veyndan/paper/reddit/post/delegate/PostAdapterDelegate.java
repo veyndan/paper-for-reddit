@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,6 +37,7 @@ import com.veyndan.paper.reddit.ui.recyclerview.Swipeable;
 import com.veyndan.paper.reddit.util.Node;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -101,7 +101,9 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         final PostViewHolder postHolder = (PostViewHolder) holder;
         final Post post = (Post) nodes.get(position);
 
-        bindHeader(context, post, postHolder);
+        bindTitle(post, postHolder);
+        bindSubtitle(post, postHolder);
+        bindFlairs(context, post, postHolder);
         bindMedia(post, postHolder, activity, customTabsClient, customTabsIntent);
         bindPoints(context, post, postHolder);
         bindUpvoteAction(context, post, postHolder, reddit);
@@ -130,8 +132,16 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                 }, Timber::e);
     }
 
-    private static void bindHeader(final Context context, final Post post, final PostViewHolder holder) {
-        final List<Flair> flairs = new ArrayList<>();
+    private static void bindTitle(final Post post, final PostViewHolder holder) {
+        holder.binding.postTitle.setTitle(post.linkTitle());
+    }
+
+    private static void bindSubtitle(final Post post, final PostViewHolder holder) {
+        holder.binding.postSubtitle.setSubtitle(post.author(), post.getDisplayAge(), post.subreddit());
+    }
+
+    private static void bindFlairs(final Context context, final Post post, final PostViewHolder holder) {
+        final Collection<Flair> flairs = new ArrayList<>();
 
         if (post.stickied()) {
             flairs.add(Flair.stickied(context));
@@ -153,8 +163,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
             flairs.add(Flair.gilded(context, post.gildedCount()));
         }
 
-        holder.binding.postHeader.setHeader(post.linkTitle(), post.author(), post.getDisplayAge(),
-                post.subreddit(), flairs);
+        holder.binding.postFlairs.setFlairs(flairs, post.subreddit());
     }
 
     private static void bindMedia(final Post post, final PostViewHolder holder,

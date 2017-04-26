@@ -1,7 +1,6 @@
 package com.veyndan.paper.reddit.post;
 
 import android.app.Activity;
-import android.support.annotation.IntRange;
 
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter;
 import com.veyndan.paper.reddit.api.reddit.Reddit;
