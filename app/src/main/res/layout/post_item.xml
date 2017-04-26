@@ -15,15 +15,33 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.veyndan.paper.reddit.ui.widget.PostHeaderView
-                android:id="@+id/post_header"
+            <com.veyndan.paper.reddit.ui.widget.PostTitleView
+                android:id="@+id/post_title"
+                style="@style/PostTitleTextAppearance"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="16dp"
-                android:paddingLeft="@dimen/post_horizontal_margin"
-                android:paddingRight="@dimen/post_horizontal_margin"
-                android:paddingTop="24dp"
+                android:layout_marginBottom="@dimen/post_title_subtitle_spacing"
+                android:layout_marginLeft="@dimen/post_horizontal_margin"
+                android:layout_marginRight="@dimen/post_horizontal_margin"
+                android:layout_marginTop="24dp"
+                android:bufferType="spannable"
                 tools:text="@string/placeholder_post_title"/>
+
+            <com.veyndan.paper.reddit.ui.widget.PostSubtitleView
+                android:id="@+id/post_subtitle"
+                style="@style/PostSubtitleTextAppearance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/post_horizontal_margin"
+                android:layout_marginRight="@dimen/post_horizontal_margin"
+                tools:text="@string/placeholder_post_subtitle"/>
+
+            <com.veyndan.paper.reddit.ui.widget.PostFlairsLayout
+                android:id="@+id/post_flairs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="12dp"
+                app:flexWrap="wrap"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/post_media_view"
