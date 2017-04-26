@@ -234,24 +234,21 @@ public class PostHeaderView extends AppCompatTextView {
                     divider = "   "; // TODO Replace with margin left and right of 4dp
                 }
 
-                switch (flair.type()) {
-                    case LINK:
-                        flairsSpanny.append(createFlairSpannable(context, flair, textAppearanceSpan, styleSpan), new ClickableSpan() {
-                            @Override
-                            public void onClick(final View widget) {
-                                final Intent intent = new Intent(context, MainActivity.class);
-                                intent.putExtras(new Reddit.FilterBuilder()
-                                        .nodeDepth(0)
-                                        .subredditName(subreddit)
-                                        .searchQuery("flair:'" + flair.text() + "'")
-                                        .build());
-                                context.startActivity(intent);
-                            }
-                        });
-                        break;
-                    default:
-                        flairsSpanny.append(createFlairSpannable(context, flair, textAppearanceSpan, styleSpan));
-                        break;
+                if (flair.searchable()) {
+                    flairsSpanny.append(createFlairSpannable(context, flair, textAppearanceSpan, styleSpan), new ClickableSpan() {
+                        @Override
+                        public void onClick(final View widget) {
+                            final Intent intent = new Intent(context, MainActivity.class);
+                            intent.putExtras(new Reddit.FilterBuilder()
+                                    .nodeDepth(0)
+                                    .subredditName(subreddit)
+                                    .searchQuery(flair.searchQuery())
+                                    .build());
+                            context.startActivity(intent);
+                        }
+                    });
+                } else {
+                    flairsSpanny.append(createFlairSpannable(context, flair, textAppearanceSpan, styleSpan));
                 }
             }
 
