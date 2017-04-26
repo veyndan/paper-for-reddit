@@ -17,6 +17,8 @@ public class PostFlairsLayout extends FlexboxLayout {
     }
 
     public void setFlairs(final Collection<Flair> flairs, final String subreddit) {
+        removeAllViews();
+
         if (flairs.isEmpty()) {
             setVisibility(GONE);
             return;
