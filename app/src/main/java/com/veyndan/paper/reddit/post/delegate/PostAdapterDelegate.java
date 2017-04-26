@@ -134,51 +134,23 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         final List<Flair> flairs = new ArrayList<>();
 
         if (post.stickied()) {
-            final int flairStickiedColor = context.getColor(R.color.post_flair_stickied);
-            final String flairStickiedText = context.getString(R.string.post_stickied);
-
-            flairs.add(Flair.builder(flairStickiedColor)
-                    .text(flairStickiedText)
-                    .build());
+            flairs.add(Flair.stickied(context));
         }
 
         if (post.locked()) {
-            final int flairLockedColor = context.getColor(R.color.post_flair_locked);
-            final String flairLockedText = context.getString(R.string.post_locked);
-            final Drawable flairLockIcon = context.getDrawable(R.drawable.ic_lock_outline_white_12sp);
-
-            flairs.add(Flair.builder(flairLockedColor)
-                    .text(flairLockedText)
-                    .icon(flairLockIcon)
-                    .build());
+            flairs.add(Flair.locked(context));
         }
 
         if (post.nsfw()) {
-            final int flairNsfwColor = context.getColor(R.color.post_flair_nsfw);
-            final String flairNsfwText = context.getString(R.string.post_nsfw);
-
-            flairs.add(Flair.builder(flairNsfwColor)
-                    .text(flairNsfwText)
-                    .build());
+            flairs.add(Flair.nsfw(context));
         }
 
         if (post.hasLinkFlair()) {
-            final int flairLinkColor = context.getColor(R.color.post_flair_link);
-
-            flairs.add(Flair.builder(flairLinkColor)
-                    .type(Flair.Type.LINK)
-                    .text(post.linkFlair())
-                    .build());
+            flairs.add(Flair.link(context, post.linkFlair()));
         }
 
         if (post.isGilded()) {
-            final int flairGildedColor = context.getColor(R.color.post_flair_gilded);
-            final Drawable flairGildedIcon = context.getDrawable(R.drawable.ic_star_white_12sp);
-
-            flairs.add(Flair.builder(flairGildedColor)
-                    .text(String.valueOf(post.gildedCount()))
-                    .icon(flairGildedIcon)
-                    .build());
+            flairs.add(Flair.gilded(context, post.gildedCount()));
         }
 
         holder.binding.postHeader.setHeader(post.linkTitle(), post.author(), post.getDisplayAge(),

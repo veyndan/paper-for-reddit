@@ -73,16 +73,6 @@ public class PostHeaderView extends AppCompatTextView {
         if (isInEditMode()) {
             final String text = getText().toString();
 
-            final int flairStickiedColor = ContextCompat.getColor(context, R.color.post_flair_stickied);
-            final int flairNsfwColor = ContextCompat.getColor(context, R.color.post_flair_nsfw);
-            final int flairLinkColor = ContextCompat.getColor(context, R.color.post_flair_link);
-            final int flairGildedColor = ContextCompat.getColor(context, R.color.post_flair_gilded);
-
-            final Drawable flairGildedIcon = context.getDrawable(R.drawable.ic_star_white_12sp);
-
-            final String flairStickiedText = context.getString(R.string.post_stickied);
-            final String flairNsfwText = context.getString(R.string.post_nsfw);
-
             // Using regex (Pattern and Matcher) doesn't seem to work in edit mode.
             final Map<String, String> properties = Splitter.on(',').withKeyValueSeparator(':').split(text);
 
@@ -93,28 +83,19 @@ public class PostHeaderView extends AppCompatTextView {
             final List<Flair> flairs = new ArrayList<>(4);
 
             if (Boolean.valueOf(properties.getOrDefault("stickied", "false"))) {
-                flairs.add(Flair.builder(flairStickiedColor)
-                        .text(flairStickiedText)
-                        .build());
+                flairs.add(Flair.stickied(context));
             }
 
             if (Boolean.valueOf(properties.getOrDefault("nsfw", "false"))) {
-                flairs.add(Flair.builder(flairNsfwColor)
-                        .text(flairNsfwText)
-                        .build());
+                flairs.add(Flair.nsfw(context));
             }
 
             if (properties.containsKey("linkFlair")) {
-                flairs.add(Flair.builder(flairLinkColor)
-                        .text(properties.get("linkFlair"))
-                        .build());
+                flairs.add(Flair.link(context, properties.get("linkFlair")));
             }
 
             if (properties.containsKey("gildedCount")) {
-                flairs.add(Flair.builder(flairGildedColor)
-                        .text(properties.get("gildedCount"))
-                        .icon(flairGildedIcon)
-                        .build());
+                flairs.add(Flair.gilded(context, Integer.parseInt(properties.get("gildedCount"))));
             }
 
             checkNotNull(title, "title must be set");
