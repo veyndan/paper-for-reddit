@@ -106,30 +106,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         bindFlairs(context, post, postHolder);
         bindMedia(post, postHolder, activity, customTabsClient, customTabsIntent);
         bindPoints(context, post, postHolder);
-        bindUpvoteAction(context, post, postHolder, reddit);
-        bindDownvoteAction(context, post, postHolder, reddit);
-        bindSaveAction(post, postHolder, reddit);
-        bindCommentsAction(context, nodes, post, postHolder, adapter);
-
-        final PopupMenu otherMenu = new PopupMenu(context, postHolder.binding.postOther);
-        otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
-
-        RxView.clicks(postHolder.binding.postOther)
-                .subscribe(aVoid -> otherMenu.show(), Timber::e);
-
-        RxPopupMenu.itemClicks(otherMenu)
-                .subscribe(menuItem -> {
-                    switch (menuItem.getItemId()) {
-                        case R.id.action_post_share:
-                            bindShareAction(context, post);
-                            break;
-                        case R.id.action_post_browser:
-                            bindBrowserAction(context, post);
-                            break;
-                        case R.id.action_post_report:
-                            break;
-                    }
-                }, Timber::e);
+        bindActions(context, nodes, post, postHolder, reddit, adapter);
     }
 
     private static void bindTitle(final Post post, final PostViewHolder holder) {
@@ -183,6 +160,17 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
     private static void bindPoints(final Context context, final Post post, final PostViewHolder holder) {
         final String points = post.getDisplayPoints(context);
         holder.binding.postScore.setText(points);
+    }
+
+    private static void bindActions(final Context context,
+                                    final List<Node<Response<Thing<Listing>>>> nodes,
+                                    final Post post, final PostViewHolder holder,
+                                    final Reddit reddit, final PostAdapter adapter) {
+        bindUpvoteAction(context, post, holder, reddit);
+        bindDownvoteAction(context, post, holder, reddit);
+        bindSaveAction(post, holder, reddit);
+        bindCommentsAction(context, nodes, post, holder, adapter);
+        bindPopupActions(context, post, holder);
     }
 
     private static void bindUpvoteAction(final Context context, final Post post,
@@ -303,6 +291,29 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         } else {
             holder.binding.postCommentCount.setVisibility(View.INVISIBLE);
         }
+    }
+
+    private static void bindPopupActions(final Context context, final Post post,
+                                         final PostViewHolder holder) {
+        final PopupMenu otherMenu = new PopupMenu(context, holder.binding.postOther);
+        otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
+
+        RxView.clicks(holder.binding.postOther)
+                .subscribe(aVoid -> otherMenu.show(), Timber::e);
+
+        RxPopupMenu.itemClicks(otherMenu)
+                .subscribe(menuItem -> {
+                    switch (menuItem.getItemId()) {
+                        case R.id.action_post_share:
+                            bindShareAction(context, post);
+                            break;
+                        case R.id.action_post_browser:
+                            bindBrowserAction(context, post);
+                            break;
+                        case R.id.action_post_report:
+                            break;
+                    }
+                }, Timber::e);
     }
 
     private static void bindShareAction(final Context context, final Post post) {
