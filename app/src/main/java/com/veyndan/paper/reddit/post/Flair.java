@@ -41,6 +41,7 @@ public abstract class Flair {
                 .type(Type.NSFW)
                 .backgroundColor(ContextCompat.getColor(context, R.color.post_flair_nsfw))
                 .text(context.getString(R.string.post_nsfw))
+                .searchQuery("nsfw:yes")
                 .build();
     }
 
@@ -49,6 +50,7 @@ public abstract class Flair {
                 .type(Type.LINK)
                 .backgroundColor(ContextCompat.getColor(context, R.color.post_flair_link))
                 .text(text)
+                .searchQuery(String.format("flair:'%s'", text))
                 .build();
     }
 
@@ -72,6 +74,13 @@ public abstract class Flair {
     @Nullable
     public abstract Drawable icon();
 
+    @Nullable
+    public abstract String searchQuery();
+
+    public final boolean searchable() {
+        return searchQuery() != null;
+    }
+
     public static Builder builder() {
         return new AutoValue_Flair.Builder();
     }
@@ -86,6 +95,8 @@ public abstract class Flair {
         abstract Builder text(String text);
 
         abstract Builder icon(Drawable icon);
+
+        abstract Builder searchQuery(String searchQuery);
 
         abstract Flair autoBuild();
 
