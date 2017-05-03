@@ -50,6 +50,8 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
+import static com.google.common.base.Preconditions.checkState;
+
 public final class Reddit {
 
     public static final String FILTER = "filter";
@@ -264,7 +266,11 @@ public final class Reddit {
     @AutoValue
     public abstract static class Filter implements Parcelable {
 
-        @IntRange(from = -1)
+        /**
+         * If the nodeDepth() == Integer.MAX_VALUE, this is synonymous with nodeDepth() being
+         * infinite. This means that every node should be retrieved.
+         */
+        @IntRange(from = 0)
         public abstract int nodeDepth();
 
         public abstract String commentsSubreddit();
@@ -288,7 +294,7 @@ public final class Reddit {
 
         public static Builder builder() {
             return new AutoValue_Reddit_Filter.Builder()
-                    .nodeDepth(-1)
+                    .nodeDepth(Integer.MAX_VALUE)
                     .commentsSubreddit("")
                     .commentsArticle("")
                     .subredditName("")
@@ -302,7 +308,7 @@ public final class Reddit {
         @AutoValue.Builder
         public abstract static class Builder {
 
-            public abstract Builder nodeDepth(@IntRange(from = -1) final int nodeDepth);
+            public abstract Builder nodeDepth(@IntRange(from = 0) final int nodeDepth);
 
             public abstract Builder commentsSubreddit(final String commentsSubreddit);
 
@@ -322,15 +328,18 @@ public final class Reddit {
 
             public abstract Builder userGilded(final boolean userGilded);
 
-            public abstract Filter build();
+            abstract Filter autoBuild();
+
+            public Filter build() {
+                final Filter filter = autoBuild();
+                checkState(filter.nodeDepth() >= 0, "nodeDepth must be non negative");
+                return filter;
+            }
         }
     }
 
     public Single<Response<Thing<Listing>>> query(final Filter filter, final Sort sort) {
-        if (filter.nodeDepth() == -1) {
-            // TODO Get every post, along with its comments here i.e. the whole forest of Reddit
-            throw new IllegalStateException();
-        } else if (filter.nodeDepth() == 0) {
+        if (filter.nodeDepth() == 0) {
             if (filter.commentsSubreddit().isEmpty() && filter.commentsArticle().isEmpty()
                     && filter.searchQuery().isEmpty()
                     && filter.userName().isEmpty() && !filter.userComments() && !filter.userSubmitted() && !filter.userGilded()) {
@@ -362,8 +371,11 @@ public final class Reddit {
             }
 
             throw new IllegalStateException();
+        } else if (filter.nodeDepth() == Integer.MAX_VALUE) {
+            // TODO Get every post, along with its comments here i.e. the whole forest of Reddit
+            throw new IllegalStateException();
         } else {
-            throw new IllegalStateException("Depths that aren't 0 or -1 aren't available to the Reddit API");
+            throw new IllegalStateException("Depths that aren't 0 or Integer.MAX_VALUE aren't available to the Reddit API");
         }
     }
 
