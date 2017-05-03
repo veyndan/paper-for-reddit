@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.jakewharton.rxbinding2.support.design.widget.RxTabLayout;
 import com.jakewharton.rxbinding2.view.RxView;
+import com.veyndan.paper.reddit.api.reddit.Reddit;
 import com.veyndan.paper.reddit.databinding.FragmentFilterBinding;
 
 public class FilterFragment extends DialogFragment {
@@ -45,7 +46,7 @@ public class FilterFragment extends DialogFragment {
                 .subscribe(aVoid -> {
                     final Intent intent = new Intent(getContext(), MainActivity.class);
                     for (final Fragment fragment : fragments) {
-                        intent.putExtras(((Filter) fragment).requestFilter());
+                        intent.putExtra(Reddit.FILTER, ((Filter) fragment).requestFilter());
                     }
                     startActivity(intent);
 

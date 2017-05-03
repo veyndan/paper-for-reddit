@@ -1,8 +1,8 @@
 package com.veyndan.paper.reddit;
 
-import android.os.Bundle;
+import com.veyndan.paper.reddit.api.reddit.Reddit;
 
 public interface Filter {
 
-    Bundle requestFilter();
+    Reddit.Filter requestFilter();
 }

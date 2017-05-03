@@ -30,8 +30,8 @@ public class UserFilterFragment extends Fragment implements Filter {
     }
 
     @Override
-    public Bundle requestFilter() {
-        return new Reddit.FilterBuilder()
+    public Reddit.Filter requestFilter() {
+        return Reddit.Filter.builder()
                 .nodeDepth(0)
                 .userName(binding.filterFormUsername.getText().toString())
                 .userComments(binding.filterFormComments.isChecked())

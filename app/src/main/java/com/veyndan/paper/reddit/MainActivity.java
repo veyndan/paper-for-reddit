@@ -49,23 +49,27 @@ public class MainActivity extends BaseActivity {
                     final Intent intent = getIntent();
                     final Bundle intentExtras = IntentUtils.getExtras(intent);
 
+                    final Reddit.Filter filter;
+
                     if (intentExtras.isEmpty()) {
-                        intentExtras.putAll(new Reddit.FilterBuilder()
+                        filter = Reddit.Filter.builder()
                                 .nodeDepth(0)
                                 .subredditName("all")
-                                .build());
+                                .build();
                     } else if (intentExtras.getBoolean(DeepLink.IS_DEEP_LINK, false)) {
-                        intentExtras.putAll(new Reddit.FilterBuilder()
+                        filter = Reddit.Filter.builder()
                                 .nodeDepth(0)
                                 .userName(intentExtras.getString(DEEP_LINK_USER_NAME))
                                 .userComments(true)
                                 .userSubmitted(true)
-                                .build());
+                                .build();
+                    } else {
+                        filter = intentExtras.getParcelable(Reddit.FILTER);
                     }
 
-                    subreddit = intentExtras.getString(Reddit.FILTER_SUBREDDIT_NAME);
+                    subreddit = filter.subredditName();
 
-                    final Single<Response<Thing<Listing>>> mergedFilters = REDDIT.query(intentExtras, Sort.HOT);
+                    final Single<Response<Thing<Listing>>> mergedFilters = REDDIT.query(filter, Sort.HOT);
                     postsFragment.setRequest(mergedFilters);
                 });
 
@@ -97,44 +101,44 @@ public class MainActivity extends BaseActivity {
                 filterFragment.show(fragmentManager, "fragment_filter");
                 return true;
             case R.id.action_sort_hot:
-                final Bundle redditQueryParamsHot = new Reddit.FilterBuilder()
+                final Reddit.Filter filterHot = Reddit.Filter.builder()
                         .nodeDepth(0)
                         .subredditName(subreddit)
                         .build();
 
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsHot, Sort.HOT));
+                postsFragment.setRequest(REDDIT.query(filterHot, Sort.HOT));
                 return true;
             case R.id.action_sort_new:
-                final Bundle redditQueryParamsNew = new Reddit.FilterBuilder()
+                final Reddit.Filter filterNew = Reddit.Filter.builder()
                         .nodeDepth(0)
                         .subredditName(subreddit)
                         .build();
 
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsNew, Sort.NEW));
+                postsFragment.setRequest(REDDIT.query(filterNew, Sort.NEW));
                 return true;
             case R.id.action_sort_rising:
-                final Bundle redditQueryParamsRising = new Reddit.FilterBuilder()
+                final Reddit.Filter filterRising = Reddit.Filter.builder()
                         .nodeDepth(0)
                         .subredditName(subreddit)
                         .build();
 
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsRising, Sort.RISING));
+                postsFragment.setRequest(REDDIT.query(filterRising, Sort.RISING));
                 return true;
             case R.id.action_sort_controversial:
-                final Bundle redditQueryParamsControversial = new Reddit.FilterBuilder()
+                final Reddit.Filter filterControversial = Reddit.Filter.builder()
                         .nodeDepth(0)
                         .subredditName(subreddit)
                         .build();
 
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsControversial, Sort.CONTROVERSIAL));
+                postsFragment.setRequest(REDDIT.query(filterControversial, Sort.CONTROVERSIAL));
                 return true;
             case R.id.action_sort_top:
-                final Bundle redditQueryParamsTop = new Reddit.FilterBuilder()
+                final Reddit.Filter filterTop = Reddit.Filter.builder()
                         .nodeDepth(0)
                         .subredditName(subreddit)
                         .build();
 
-                postsFragment.setRequest(REDDIT.query(redditQueryParamsTop, Sort.TOP));
+                postsFragment.setRequest(REDDIT.query(filterTop, Sort.TOP));
                 return true;
             default:
                 return false;

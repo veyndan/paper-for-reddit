@@ -276,7 +276,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         }
                     } else {
                         final Intent commentsIntent = new Intent(context, MainActivity.class);
-                        commentsIntent.putExtras(new Reddit.FilterBuilder()
+                        commentsIntent.putExtra(Reddit.FILTER, Reddit.Filter.builder()
                                 .nodeDepth(0)
                                 .commentsSubreddit(post.subreddit())
                                 .commentsArticle(post.article())
