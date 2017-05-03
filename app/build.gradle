@@ -99,7 +99,7 @@ dependencies {
     compile "org.apache.commons:commons-lang3:$apacheCommonsVersion"
 
     // Auto Value
-    final String autoValueVersion = '1.2'
+    final String autoValueVersion = '1.4.1'
     provided "com.google.auto.value:auto-value:$autoValueVersion"
     annotationProcessor "com.google.auto.value:auto-value:$autoValueVersion"
 
