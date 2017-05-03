@@ -43,7 +43,6 @@ import java.util.List;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
-import timber.log.Timber;
 
 public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thing<Listing>>>>> {
 
@@ -191,12 +190,12 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     post.likes().value = isChecked ? VoteDirection.UPVOTE : VoteDirection.UNVOTE;
                     reddit.vote(post.likes().value, post.fullname())
                             .subscribeOn(Schedulers.io())
-                            .subscribe(response -> {}, Timber::e);
+                            .subscribe(response -> {});
 
                     post.points().value += isChecked ? 1 : -1;
 
                     adapter.notifyItemChanged(holder.getAdapterPosition(), PostPayload.VOTE);
-                }, Timber::e);
+                });
     }
 
     private static void bindDownvoteAction(final Post post, final PostViewHolder holder,
@@ -213,12 +212,12 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     post.likes().value = isChecked ? VoteDirection.DOWNVOTE : VoteDirection.UNVOTE;
                     reddit.vote(post.likes().value, post.fullname())
                             .subscribeOn(Schedulers.io())
-                            .subscribe(response -> {}, Timber::e);
+                            .subscribe(response -> {});
 
                     post.points().value += isChecked ? -1 : 1;
 
                     adapter.notifyItemChanged(holder.getAdapterPosition(), PostPayload.VOTE);
-                }, Timber::e);
+                });
     }
 
     private static void bindSaveAction(final Post post, final PostViewHolder holder,
@@ -233,13 +232,13 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     if (isChecked) {
                         reddit.save("", post.fullname())
                                 .subscribeOn(Schedulers.io())
-                                .subscribe(response -> {}, Timber::e);
+                                .subscribe(response -> {});
                     } else {
                         reddit.unsave(post.fullname())
                                 .subscribeOn(Schedulers.io())
-                                .subscribe(response -> {}, Timber::e);
+                                .subscribe(response -> {});
                     }
-                }, Timber::e);
+                });
     }
 
     private static void bindCommentsAction(final Context context,
@@ -271,7 +270,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                                     .subscribe(children -> {
                                         nodes.addAll(holder.getAdapterPosition() + 1, children);
                                         adapter.notifyItemRangeInserted(holder.getAdapterPosition() + 1, children.size());
-                                    }, Timber::e);
+                                    });
 
                             holder.binding.postCommentCount.setVisibility(View.INVISIBLE);
                         }
@@ -284,7 +283,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                                 .build());
                         context.startActivity(commentsIntent);
                     }
-                }, Timber::e);
+                });
 
         if (post.internalNode() && !post.descendantsVisible().value) {
             holder.binding.postCommentCount.setVisibility(View.VISIBLE);
@@ -301,7 +300,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
         otherMenu.getMenuInflater().inflate(R.menu.menu_post_other, otherMenu.getMenu());
 
         RxView.clicks(holder.binding.postOther)
-                .subscribe(aVoid -> otherMenu.show(), Timber::e);
+                .subscribe(aVoid -> otherMenu.show());
 
         RxPopupMenu.itemClicks(otherMenu)
                 .subscribe(menuItem -> {
@@ -315,7 +314,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         case R.id.action_post_report:
                             break;
                     }
-                }, Timber::e);
+                });
     }
 
     private static void bindShareAction(final Context context, final Post post) {
@@ -380,8 +379,8 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                         // hiding network request.
                         reddit.hide(post.fullname())
                                 .subscribeOn(Schedulers.io())
-                                .subscribe(response -> {}, Timber::e);
-                    }, Timber::e);
+                                .subscribe(response -> {});
+                    });
 
             snackbar.show();
 

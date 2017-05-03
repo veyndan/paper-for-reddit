@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import io.reactivex.Observable;
-import timber.log.Timber;
 
 public abstract class Node<T> {
 
@@ -54,7 +53,7 @@ public abstract class Node<T> {
                 .doOnNext(node -> node.depth = depth)
                 .doOnNext(node -> {
                     if (node.descendantCount == null) {
-                        node.generateDescendantCount().subscribe(integer -> node.descendantCount = integer, Timber::e);
+                        node.generateDescendantCount().subscribe(integer -> node.descendantCount = integer);
                     }
                 })
                 .concatMap(node -> Observable.just(node)
