@@ -31,8 +31,8 @@ public class TimePeriodFilterFragment extends Fragment implements Filter {
     }
 
     @Override
-    public Bundle requestFilter() {
-        return new Reddit.FilterBuilder()
+    public Reddit.Filter requestFilter() {
+        return Reddit.Filter.builder()
                 .nodeDepth(0)
                 .timePeriod(TimePeriod.values()[binding.filterFormTimePeriod.getSelectedItemPosition()])
                 .build();

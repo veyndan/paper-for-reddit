@@ -1,10 +1,11 @@
 package com.veyndan.paper.reddit.api.reddit;
 
-import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.google.auto.value.AutoValue;
 import com.google.common.base.MoreObjects;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
@@ -51,21 +52,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory;
 
 public final class Reddit {
 
-    private static final String FILTER_NODE_DEPTH = "node_depth";
-
-    private static final String FILTER_COMMENTS_SUBREDDIT = "comments_subreddit";
-    private static final String FILTER_COMMENTS_ARTICLE = "comments_article";
-
-    private static final String FILTER_TIME_PERIOD = "time_period";
-
-    public static final String FILTER_SUBREDDIT_NAME = "subreddit_name";
-
-    private static final String FILTER_SEARCH_QUERY = "search_subreddit";
-
-    private static final String FILTER_USER_NAME = "user_name";
-    private static final String FILTER_USER_COMMENTS = "user_comments";
-    private static final String FILTER_USER_SUBMITTED = "user_submitted";
-    private static final String FILTER_USER_GILDED = "user_gilded";
+    public static final String FILTER = "filter";
 
     private final RedditService redditService;
 
@@ -274,55 +261,104 @@ public final class Reddit {
         return paginate(request, query);
     }
 
-    public Single<Response<Thing<Listing>>> query(final Bundle params, final Sort sort) {
-        final int nodeDepth = params.getInt(FILTER_NODE_DEPTH, -1);
+    @AutoValue
+    public abstract static class Filter implements Parcelable {
 
-        final String commentsSubreddit = params.getString(FILTER_COMMENTS_SUBREDDIT, "");
-        final String commentsArticle = params.getString(FILTER_COMMENTS_ARTICLE, "");
+        @IntRange(from = -1)
+        public abstract int nodeDepth();
 
-        final TimePeriod timePeriod = (TimePeriod) params.getSerializable(FILTER_TIME_PERIOD);
+        public abstract String commentsSubreddit();
 
-        final String subredditName = params.getString(FILTER_SUBREDDIT_NAME, "");
+        public abstract String commentsArticle();
 
-        final String searchQuery = params.getString(FILTER_SEARCH_QUERY, "");
+        @Nullable
+        public abstract TimePeriod timePeriod();
 
-        final String userName = params.getString(FILTER_USER_NAME, "");
-        final boolean userComments = params.getBoolean(FILTER_USER_COMMENTS, false);
-        final boolean userSubmitted = params.getBoolean(FILTER_USER_SUBMITTED, false);
-        final boolean userGilded = params.getBoolean(FILTER_USER_GILDED, false);
+        public abstract String subredditName();
 
-        if (nodeDepth == -1) {
+        public abstract String searchQuery();
+
+        public abstract String userName();
+
+        public abstract boolean userComments();
+
+        public abstract boolean userSubmitted();
+
+        public abstract boolean userGilded();
+
+        public static Builder builder() {
+            return new AutoValue_Reddit_Filter.Builder()
+                    .nodeDepth(-1)
+                    .commentsSubreddit("")
+                    .commentsArticle("")
+                    .subredditName("")
+                    .searchQuery("")
+                    .userName("")
+                    .userComments(false)
+                    .userSubmitted(false)
+                    .userGilded(false);
+        }
+
+        @AutoValue.Builder
+        public abstract static class Builder {
+
+            public abstract Builder nodeDepth(@IntRange(from = -1) final int nodeDepth);
+
+            public abstract Builder commentsSubreddit(final String commentsSubreddit);
+
+            public abstract Builder commentsArticle(final String commentsArticle);
+
+            public abstract Builder timePeriod(@Nullable final TimePeriod timePeriod);
+
+            public abstract Builder subredditName(final String subredditName);
+
+            public abstract Builder searchQuery(final String searchQuery);
+
+            public abstract Builder userName(final String userName);
+
+            public abstract Builder userComments(final boolean userComments);
+
+            public abstract Builder userSubmitted(final boolean userSubmitted);
+
+            public abstract Builder userGilded(final boolean userGilded);
+
+            public abstract Filter build();
+        }
+    }
+
+    public Single<Response<Thing<Listing>>> query(final Filter filter, final Sort sort) {
+        if (filter.nodeDepth() == -1) {
             // TODO Get every post, along with its comments here i.e. the whole forest of Reddit
             throw new IllegalStateException();
-        } else if (nodeDepth == 0) {
-            if (commentsSubreddit.isEmpty() && commentsArticle.isEmpty()
-                    && searchQuery.isEmpty()
-                    && userName.isEmpty() && !userComments && !userSubmitted && !userGilded) {
-                return subreddit(MoreObjects.firstNonNull(subredditName, "all"), sort, MoreObjects.firstNonNull(timePeriod, TimePeriod.ALL));
+        } else if (filter.nodeDepth() == 0) {
+            if (filter.commentsSubreddit().isEmpty() && filter.commentsArticle().isEmpty()
+                    && filter.searchQuery().isEmpty()
+                    && filter.userName().isEmpty() && !filter.userComments() && !filter.userSubmitted() && !filter.userGilded()) {
+                return subreddit(MoreObjects.firstNonNull(filter.subredditName(), "all"), sort, MoreObjects.firstNonNull(filter.timePeriod(), TimePeriod.ALL));
             }
 
-            if (commentsSubreddit.isEmpty() && commentsArticle.isEmpty()
-                    && subredditName.isEmpty()
-                    && searchQuery.isEmpty()
-                    && userName.length() > 1) {
-                final User userWhere = toUser(userComments, userSubmitted, userGilded);
-                return user(userName, userWhere, timePeriod);
+            if (filter.commentsSubreddit().isEmpty() && filter.commentsArticle().isEmpty()
+                    && filter.subredditName().isEmpty()
+                    && filter.searchQuery().isEmpty()
+                    && filter.userName().length() > 1) {
+                final User userWhere = toUser(filter.userComments(), filter.userSubmitted(), filter.userGilded());
+                return user(filter.userName(), userWhere, filter.timePeriod());
             }
 
-            if (commentsSubreddit.isEmpty() && commentsArticle.isEmpty()
-                    && timePeriod == null
-                    && subredditName.length() > 0
-                    && searchQuery.length() > 0
-                    && userName.isEmpty() && !userComments && !userSubmitted && !userGilded) {
-                return search(subredditName, searchQuery);
+            if (filter.commentsSubreddit().isEmpty() && filter.commentsArticle().isEmpty()
+                    && filter.timePeriod() == null
+                    && filter.subredditName().length() > 0
+                    && filter.searchQuery().length() > 0
+                    && filter.userName().isEmpty() && !filter.userComments() && !filter.userSubmitted() && !filter.userGilded()) {
+                return search(filter.subredditName(), filter.searchQuery());
             }
 
-            if (commentsSubreddit.length() > 1 && commentsArticle.length() > 1
-                    && timePeriod == null
-                    && subredditName.isEmpty()
-                    && searchQuery.isEmpty()
-                    && userName.isEmpty() && !userComments && !userSubmitted && !userGilded) {
-                return subredditComments(commentsSubreddit, commentsArticle);
+            if (filter.commentsSubreddit().length() > 1 && filter.commentsArticle().length() > 1
+                    && filter.timePeriod() == null
+                    && filter.subredditName().isEmpty()
+                    && filter.searchQuery().isEmpty()
+                    && filter.userName().isEmpty() && !filter.userComments() && !filter.userSubmitted() && !filter.userGilded()) {
+                return subredditComments(filter.commentsSubreddit(), filter.commentsArticle());
             }
 
             throw new IllegalStateException();
@@ -353,64 +389,5 @@ public final class Reddit {
                 .filter(query1 -> !query1.build().containsKey("after") || query1.build().get("after") != null)
                 .flatMapSingle(query1 -> page)
                 .doOnSuccess(response -> query.after(response.body().data.after));
-    }
-
-    public static class FilterBuilder {
-
-        private final Bundle bundle = new Bundle();
-
-        public FilterBuilder nodeDepth(@IntRange(from = 0) final int nodeDepth) {
-            bundle.putInt(FILTER_NODE_DEPTH, nodeDepth);
-            return this;
-        }
-
-        public FilterBuilder commentsSubreddit(final String commentsSubreddit) {
-            bundle.putString(FILTER_COMMENTS_SUBREDDIT, commentsSubreddit);
-            return this;
-        }
-
-        public FilterBuilder commentsArticle(final String commentsArticle) {
-            bundle.putString(FILTER_COMMENTS_ARTICLE, commentsArticle);
-            return this;
-        }
-
-        public FilterBuilder timePeriod(final TimePeriod timePeriod) {
-            bundle.putSerializable(FILTER_TIME_PERIOD, timePeriod);
-            return this;
-        }
-
-        public FilterBuilder subredditName(final String subredditName) {
-            bundle.putString(FILTER_SUBREDDIT_NAME, subredditName);
-            return this;
-        }
-
-        public FilterBuilder searchQuery(final String searchQuery) {
-            bundle.putString(FILTER_SEARCH_QUERY, searchQuery);
-            return this;
-        }
-
-        public FilterBuilder userName(final String userName) {
-            bundle.putString(FILTER_USER_NAME, userName);
-            return this;
-        }
-
-        public FilterBuilder userComments(final boolean userComments) {
-            bundle.putBoolean(FILTER_USER_COMMENTS, userComments);
-            return this;
-        }
-
-        public FilterBuilder userSubmitted(final boolean userSubmitted) {
-            bundle.putBoolean(FILTER_USER_SUBMITTED, userSubmitted);
-            return this;
-        }
-
-        public FilterBuilder userGilded(final boolean userGilded) {
-            bundle.putBoolean(FILTER_USER_GILDED, userGilded);
-            return this;
-        }
-
-        public Bundle build() {
-            return bundle;
-        }
     }
 }

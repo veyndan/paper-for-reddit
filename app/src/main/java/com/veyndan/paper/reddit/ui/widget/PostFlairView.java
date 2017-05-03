@@ -33,7 +33,7 @@ public class PostFlairView extends AppCompatTextView {
                 public void onClick(final View widget) {
                     final Context context = getContext();
                     final Intent intent = new Intent(context, MainActivity.class);
-                    intent.putExtras(new Reddit.FilterBuilder()
+                    intent.putExtra(Reddit.FILTER, Reddit.Filter.builder()
                             .nodeDepth(0)
                             .subredditName(subreddit)
                             .searchQuery(flair.searchQuery())

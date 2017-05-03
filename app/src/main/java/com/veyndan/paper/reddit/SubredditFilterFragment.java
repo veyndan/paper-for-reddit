@@ -30,8 +30,8 @@ public class SubredditFilterFragment extends Fragment implements Filter {
     }
 
     @Override
-    public Bundle requestFilter() {
-        return new Reddit.FilterBuilder()
+    public Reddit.Filter requestFilter() {
+        return Reddit.Filter.builder()
                 .nodeDepth(0)
                 .subredditName(binding.filterFormSubreddit.getText().toString())
                 .build();

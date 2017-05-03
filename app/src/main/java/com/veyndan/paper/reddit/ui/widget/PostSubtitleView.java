@@ -27,7 +27,7 @@ public class PostSubtitleView extends AppCompatTextView {
             @Override
             public void onClick(final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtras(new Reddit.FilterBuilder()
+                intent.putExtra(Reddit.FILTER, Reddit.Filter.builder()
                         .nodeDepth(0)
                         .userName(author)
                         .userComments(true)
@@ -41,7 +41,7 @@ public class PostSubtitleView extends AppCompatTextView {
             @Override
             public void onClick(final View widget) {
                 final Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtras(new Reddit.FilterBuilder()
+                intent.putExtra(Reddit.FILTER, Reddit.Filter.builder()
                         .nodeDepth(0)
                         .subredditName(subreddit)
                         .build());

@@ -47,7 +47,7 @@ public final class Linkifier {
                 @Override
                 public void onClick(final View view) {
                     final Intent subredditIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                    subredditIntent.putExtras(new Reddit.FilterBuilder()
+                    subredditIntent.putExtra(Reddit.FILTER, Reddit.Filter.builder()
                             .nodeDepth(0)
                             .subredditName(subredditName)
                             .build());
@@ -68,7 +68,7 @@ public final class Linkifier {
                 @Override
                 public void onClick(final View view) {
                     final Intent profileIntent = new Intent(context.getApplicationContext(), MainActivity.class);
-                    profileIntent.putExtras(new Reddit.FilterBuilder()
+                    profileIntent.putExtra(Reddit.FILTER, Reddit.Filter.builder()
                             .nodeDepth(0)
                             .userName(userName)
                             .userComments(true)
