@@ -18,8 +18,6 @@ import com.veyndan.paper.reddit.post.model.Post;
 
 import java.util.List;
 
-import timber.log.Timber;
-
 public class LinkAdapterDelegate
         extends AbsListItemAdapterDelegate<Link, Object, LinkAdapterDelegate.LinkViewHolder> {
 
@@ -63,7 +61,7 @@ public class LinkAdapterDelegate
         RxView.clicks(holder.binding.postMediaUrl)
                 .subscribe(aVoid -> {
                     customTabsIntent.launchUrl(activity, Uri.parse(post.linkUrl()));
-                }, Timber::e);
+                });
 
         holder.binding.postMediaUrl.setText(link.domain());
     }

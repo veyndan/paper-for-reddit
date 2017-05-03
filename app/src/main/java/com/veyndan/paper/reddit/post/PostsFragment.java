@@ -140,7 +140,7 @@ public class PostsFragment extends Fragment {
                         popTree();
                     }
                     appendForest(model.forest());
-                }, Timber::e);
+                });
     }
 
     @Override
