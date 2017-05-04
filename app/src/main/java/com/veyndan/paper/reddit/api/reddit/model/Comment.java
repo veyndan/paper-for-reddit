@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.squareup.moshi.Json;
 
-import java.util.Objects;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Comment extends Submission {
 
@@ -18,7 +18,7 @@ public class Comment extends Submission {
 
     @Override
     public Thing<Listing> getReplies() {
-        return Objects.requireNonNull(replies);
+        return checkNotNull(replies);
     }
 
     @Override

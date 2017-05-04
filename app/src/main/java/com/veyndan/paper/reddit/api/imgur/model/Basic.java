@@ -3,7 +3,7 @@ package com.veyndan.paper.reddit.api.imgur.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Objects;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Basic<T> {
 
@@ -13,7 +13,7 @@ public class Basic<T> {
 
     @NonNull
     public T getData() {
-        return Objects.requireNonNull(data);
+        return checkNotNull(data);
     }
 
     public boolean isSuccess() {

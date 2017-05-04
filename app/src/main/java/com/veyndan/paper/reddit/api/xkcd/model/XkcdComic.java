@@ -3,7 +3,7 @@ package com.veyndan.paper.reddit.api.xkcd.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Objects;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class XkcdComic {
 
@@ -11,6 +11,6 @@ public class XkcdComic {
 
     @NonNull
     public String getImg() {
-        return Objects.requireNonNull(img);
+        return checkNotNull(img);
     }
 }
