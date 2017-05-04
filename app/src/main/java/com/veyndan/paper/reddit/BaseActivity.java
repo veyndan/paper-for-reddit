@@ -5,7 +5,7 @@ import android.support.v7.app.ActionBar;
 
 import com.trello.navi2.component.support.NaviAppCompatActivity;
 
-import java.util.Objects;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class BaseActivity extends NaviAppCompatActivity {
 
@@ -13,6 +13,6 @@ public abstract class BaseActivity extends NaviAppCompatActivity {
     @Override
     public ActionBar getSupportActionBar() {
         final ActionBar ab = super.getSupportActionBar();
-        return Objects.requireNonNull(ab, "An ActionBar should be attached to this activity");
+        return checkNotNull(ab, "An ActionBar should be attached to this activity");
     }
 }

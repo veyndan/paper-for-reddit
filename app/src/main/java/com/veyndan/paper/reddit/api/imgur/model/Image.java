@@ -3,7 +3,7 @@ package com.veyndan.paper.reddit.api.imgur.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.Objects;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Image {
 
@@ -21,6 +21,6 @@ public class Image {
 
     @NonNull
     public String getLink() {
-        return Objects.requireNonNull(link);
+        return checkNotNull(link);
     }
 }
