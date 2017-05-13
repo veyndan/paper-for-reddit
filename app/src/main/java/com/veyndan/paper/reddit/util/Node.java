@@ -4,6 +4,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 
 // TODO NOTE:
@@ -12,12 +13,10 @@ import io.reactivex.Observable;
 // optimize it as before through overriding this implementation.
 public abstract class Node<T> {
 
-    @IntRange(from = 0)
-    public int depth() {
-        // TODO This doesn't work if the current node is the root node. Two solutions
-        // - Null Object pattern but has cons that properties are odd and inconsistent e.g. the depth would have to be -1.
-        // - Return a Maybe type instead, such that if it isn't the root node then an element is emitted but if it is the root node then no element is emitted.
-        return parent().depth() + 1;
+    public Maybe<Integer> depth() {
+        return parent()
+                .flatMap(Node::depth)
+                .map(depth -> depth + 1);
     }
 
     /**
@@ -32,7 +31,7 @@ public abstract class Node<T> {
     }
 
     @NonNull
-    public abstract Node<T> parent();
+    public abstract Maybe<Node<T>> parent();
 
     @NonNull
     public abstract Observable<Node<T>> children();
