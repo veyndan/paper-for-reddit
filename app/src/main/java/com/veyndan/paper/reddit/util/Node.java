@@ -6,14 +6,18 @@ import android.support.annotation.Nullable;
 
 import io.reactivex.Observable;
 
+// TODO NOTE:
+// This is a taste of what pure logical layers (math, physics, programming) looks like. The below
+// should work, but is so inefficient that the physics and programming logical levels need to
+// optimize it as before through overriding this implementation.
 public abstract class Node<T> {
-
-    @IntRange(from = 0) private int depth;
-    @Nullable @IntRange(from = 0) private Integer descendantCount;
 
     @IntRange(from = 0)
     public int depth() {
-        return depth;
+        // TODO This doesn't work if the current node is the root node. Two solutions
+        // - Null Object pattern but has cons that properties are odd and inconsistent e.g. the depth would have to be -1.
+        // - Return a Maybe type instead, such that if it isn't the root node then an element is emitted but if it is the root node then no element is emitted.
+        return parent().depth() + 1;
     }
 
     /**
@@ -28,47 +32,27 @@ public abstract class Node<T> {
     }
 
     @NonNull
+    public abstract Node<T> parent();
+
+    @NonNull
     public abstract Observable<Node<T>> children();
 
     /**
-     * Returns the descendant count of this node, or else {@code null} if the descendant count is
-     * unknown.
+     * Returns the descendant count of this node.
      */
-    @Nullable
     @IntRange(from = 0)
-    public Integer descendantCount() {
-        return descendantCount;
-    }
-
-    public void descendantCount(@Nullable @IntRange(from = 0) final Integer descendantCount) {
-        this.descendantCount = descendantCount;
+    public int descendantCount() {
+        return 1 + children()
+                .map(Node::descendantCount)
+                .reduce((sum, item) -> sum + item)
+                .blockingGet();
     }
 
     @NonNull
-    public Observable<Node<T>> preOrderTraverse(@IntRange(from = 0) final int depth) {
+    public Observable<Node<T>> preOrderTraverse() {
         return Observable.just(this)
-                // Node specific calculations are done here. This is the soonest that these
-                // calculations can be performed, as before this point the node data came from
-                // some unknown place, e.g. a network request, disk etc.
-                .doOnNext(node -> node.depth = depth)
-                .doOnNext(node -> {
-                    if (node.descendantCount == null) {
-                        node.generateDescendantCount().subscribe(integer -> node.descendantCount = integer);
-                    }
-                })
                 .concatMap(node -> Observable.just(node)
                         .concatWith(node.children()
-                                .concatMap(childNode -> childNode.preOrderTraverse(depth + 1))));
-    }
-
-    private Observable<Integer> generateDescendantCount() {
-        return children()
-                .toList()
-                .flatMapObservable(nodes -> Observable.fromIterable(nodes)
-                        .flatMap(Node::generateDescendantCount)
-                        .concatWith(Observable.just(nodes.size()))
-                        .scan((sum, item) -> sum + item))
-                .lastElement()
-                .toObservable();
+                                .concatMap(Node::preOrderTraverse)));
     }
 }
