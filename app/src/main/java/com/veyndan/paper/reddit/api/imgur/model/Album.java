@@ -1,16 +1,17 @@
 package com.veyndan.paper.reddit.api.imgur.model;
 
-import android.support.annotation.NonNull;
+import com.google.auto.value.AutoValue;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class Album {
+@AutoValue
+public abstract class Album {
 
-    @NonNull private final List<Image> images = new ArrayList<>();
+    public abstract List<Image> images();
 
-    @NonNull
-    public List<Image> images() {
-        return images;
+    public static JsonAdapter<Album> jsonAdapter(final Moshi moshi) {
+        return new AutoValue_Album.MoshiJsonAdapter(moshi);
     }
 }

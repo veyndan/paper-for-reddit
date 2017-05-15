@@ -1,26 +1,17 @@
 package com.veyndan.paper.reddit.api.imgur.model;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import com.google.auto.value.AutoValue;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+@AutoValue
+public abstract class Image {
 
-public class Image {
+    public abstract int width();
+    public abstract int height();
+    public abstract String link();
 
-    private int width;
-    private int height;
-    @Nullable private String link;
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    @NonNull
-    public String getLink() {
-        return checkNotNull(link);
+    public static JsonAdapter<Image> jsonAdapter(final Moshi moshi) {
+        return new AutoValue_Image.MoshiJsonAdapter(moshi);
     }
 }

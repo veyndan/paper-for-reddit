@@ -1,26 +1,19 @@
 package com.veyndan.paper.reddit.api.imgur.model;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import com.google.auto.value.AutoValue;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.lang.reflect.Type;
 
-public class Basic<T> {
+@AutoValue
+public abstract class Basic<T> {
 
-    @Nullable private T data;
-    private boolean success;
-    private int status;
+    public abstract T data();
+    public abstract boolean success();
+    public abstract int status();
 
-    @NonNull
-    public T getData() {
-        return checkNotNull(data);
-    }
-
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public int getStatus() {
-        return status;
+    public static <T> JsonAdapter<Basic<T>> jsonAdapter(final Moshi moshi, final Type... types) {
+        return new AutoValue_Basic.MoshiJsonAdapter<>(moshi, types);
     }
 }

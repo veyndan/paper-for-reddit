@@ -3,7 +3,9 @@ package com.veyndan.paper.reddit.post.media.mutator;
 import android.support.annotation.StringRes;
 import android.util.Size;
 
+import com.squareup.moshi.Moshi;
 import com.veyndan.paper.reddit.BuildConfig;
+import com.veyndan.paper.reddit.api.JsonAdapterFactory;
 import com.veyndan.paper.reddit.api.imgur.network.ImgurService;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
 import com.veyndan.paper.reddit.api.reddit.model.Source;
@@ -69,10 +71,14 @@ final class ImgurMutatorFactory implements MutatorFactory {
                                 })
                                 .build();
 
+                        final Moshi moshi = new Moshi.Builder()
+                                .add(JsonAdapterFactory.create())
+                                .build();
+
                         final Retrofit retrofit = new Retrofit.Builder()
                                 .baseUrl("https://api.imgur.com/3/")
                                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                                .addConverterFactory(MoshiConverterFactory.create())
+                                .addConverterFactory(MoshiConverterFactory.create(moshi))
                                 .client(client)
                                 .build();
 
@@ -81,8 +87,8 @@ final class ImgurMutatorFactory implements MutatorFactory {
                         final String id = matcher.group(3);
 
                         images = imgurService.album(id)
-                                .flattenAsObservable(basic -> basic.body().getData().images())
-                                .map(image -> Image.create(image.getLink(), new Size(image.getWidth(), image.getHeight())));
+                                .flattenAsObservable(basic -> basic.body().data().images())
+                                .map(image -> Image.create(image.link(), new Size(image.width(), image.height())));
                     } else {
                         final boolean imageDimensAvailable = post1.preview().images.size() > 0;
 

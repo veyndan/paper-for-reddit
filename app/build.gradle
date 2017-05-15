@@ -103,6 +103,11 @@ dependencies {
     provided "com.google.auto.value:auto-value:$autoValueVersion"
     annotationProcessor "com.google.auto.value:auto-value:$autoValueVersion"
 
+    // Auto Value Moshi
+    final String autoValueMoshiVersion = '0.4.3'
+    annotationProcessor "com.ryanharter.auto.value:auto-value-moshi:$autoValueMoshiVersion"
+    provided "com.ryanharter.auto.value:auto-value-moshi-annotations:$autoValueMoshiVersion"
+
     // Auto Value Parcel
     final String autoValueParcelVersion = '0.2.5'
     annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:$autoValueParcelVersion"
