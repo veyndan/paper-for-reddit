@@ -121,6 +121,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
     public abstract boolean comment();
 
     @NonNull
+    @Override
     public abstract Observable<Node<Response<Thing<Listing>>>> children();
 
     @NonNull
