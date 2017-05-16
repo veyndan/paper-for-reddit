@@ -23,6 +23,7 @@ import com.veyndan.paper.reddit.api.reddit.model.Preview;
 import com.veyndan.paper.reddit.api.reddit.model.Submission;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
+import com.veyndan.paper.reddit.post.Flair;
 import com.veyndan.paper.reddit.post.media.mutator.Mutators;
 import com.veyndan.paper.reddit.util.Linkifier;
 import com.veyndan.paper.reddit.util.MutableObject;
@@ -30,6 +31,8 @@ import com.veyndan.paper.reddit.util.Node;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -247,6 +250,32 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
             result.append('K');
             return result.toString();
         }
+    }
+
+    public final Collection<Flair> flairs(final Context context) {
+        final Collection<Flair> flairs = new ArrayList<>();
+
+        if (stickied()) {
+            flairs.add(Flair.stickied(context));
+        }
+
+        if (locked()) {
+            flairs.add(Flair.locked(context));
+        }
+
+        if (nsfw()) {
+            flairs.add(Flair.nsfw(context));
+        }
+
+        if (hasLinkFlair()) {
+            flairs.add(Flair.link(context, linkFlair()));
+        }
+
+        if (isGilded()) {
+            flairs.add(Flair.gilded(context, gildedCount()));
+        }
+
+        return flairs;
     }
 
     @Nullable

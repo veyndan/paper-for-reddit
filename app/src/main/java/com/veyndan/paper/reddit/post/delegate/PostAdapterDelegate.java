@@ -36,7 +36,6 @@ import com.veyndan.paper.reddit.post.model.Post;
 import com.veyndan.paper.reddit.ui.recyclerview.Swipeable;
 import com.veyndan.paper.reddit.util.Node;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -121,28 +120,7 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
     }
 
     private static void bindFlairs(final Context context, final Post post, final PostViewHolder holder) {
-        final Collection<Flair> flairs = new ArrayList<>();
-
-        if (post.stickied()) {
-            flairs.add(Flair.stickied(context));
-        }
-
-        if (post.locked()) {
-            flairs.add(Flair.locked(context));
-        }
-
-        if (post.nsfw()) {
-            flairs.add(Flair.nsfw(context));
-        }
-
-        if (post.hasLinkFlair()) {
-            flairs.add(Flair.link(context, post.linkFlair()));
-        }
-
-        if (post.isGilded()) {
-            flairs.add(Flair.gilded(context, post.gildedCount()));
-        }
-
+        final Collection<Flair> flairs = post.flairs(context);
         holder.binding.postFlairs.setFlairs(flairs, post.subreddit());
     }
 
