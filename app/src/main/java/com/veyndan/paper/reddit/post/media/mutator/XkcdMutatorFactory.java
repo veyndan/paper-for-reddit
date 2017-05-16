@@ -1,5 +1,7 @@
 package com.veyndan.paper.reddit.post.media.mutator;
 
+import com.squareup.moshi.Moshi;
+import com.veyndan.paper.reddit.api.JsonAdapterFactory;
 import com.veyndan.paper.reddit.api.reddit.model.PostHint;
 import com.veyndan.paper.reddit.api.xkcd.network.XkcdService;
 import com.veyndan.paper.reddit.post.media.model.Image;
@@ -34,16 +36,20 @@ final class XkcdMutatorFactory implements MutatorFactory {
                 .map(post1 -> {
                     final int comicNum = Integer.parseInt(matcher.group(1));
 
+                    final Moshi moshi = new Moshi.Builder()
+                            .add(JsonAdapterFactory.create())
+                            .build();
+
                     final Retrofit retrofit = new Retrofit.Builder()
                             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                            .addConverterFactory(MoshiConverterFactory.create())
+                            .addConverterFactory(MoshiConverterFactory.create(moshi))
                             .baseUrl("https://xkcd.com")
                             .build();
 
                     final XkcdService xkcdService = retrofit.create(XkcdService.class);
 
                     final Single<Image> image = xkcdService.num(comicNum)
-                            .map(comic -> Image.create(comic.body().getImg()));
+                            .map(comic -> Image.create(comic.body().img()));
 
                     return post1
                             .withPostHint(PostHint.IMAGE)

@@ -1,16 +1,15 @@
 package com.veyndan.paper.reddit.api.xkcd.model;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import com.google.auto.value.AutoValue;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+@AutoValue
+public abstract class XkcdComic {
 
-public class XkcdComic {
+    public abstract String img();
 
-    @Nullable private String img;
-
-    @NonNull
-    public String getImg() {
-        return checkNotNull(img);
+    public static JsonAdapter<XkcdComic> jsonAdapter(final Moshi moshi) {
+        return new AutoValue_XkcdComic.MoshiJsonAdapter(moshi);
     }
 }
