@@ -45,8 +45,7 @@ public abstract class Node<T> {
                 // calculations can be performed, as before this point the node data came from
                 // some unknown place, e.g. a network request, disk etc.
                 .doOnNext(node -> node.depth = depth)
-                .concatMap(node -> Observable.just(node)
-                        .concatWith(node.children()
-                                .concatMap(childNode -> childNode.preOrderTraverse(depth + 1))));
+                .concatWith(children()
+                        .concatMap(childNode -> childNode.preOrderTraverse(depth + 1)));
     }
 }
