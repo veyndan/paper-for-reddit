@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
 apply plugin: 'com.getkeepsafe.dexcount'
 
@@ -30,6 +29,13 @@ android {
         manifestPlaceholders = [
                 FABRIC_KEY: fabricProperties['fabricKey']
         ]
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath = true
+            }
+        }
+
         // TODO Should display this better by putting the below somewhere else (a different gradle file like keystore.gradle) and also making the services (e.g. Reddit, Imgur) separated either through comments or functions
 
         /**
