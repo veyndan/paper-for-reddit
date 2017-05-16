@@ -105,7 +105,7 @@ public class PostsFragment extends Fragment {
                 .flatMapSingle(event -> request
                         .subscribeOn(Schedulers.io())
                         .map(Response::body)
-                        .flattenAsObservable(thing -> thing.data.children)
+                        .flattenAsObservable(thing -> thing.data().children())
                         .observeOn(Schedulers.computation())
                         .flatMapSingle(redditObject -> {
                             if (redditObject instanceof Submission) {

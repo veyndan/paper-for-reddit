@@ -10,6 +10,7 @@ import com.google.common.base.MoreObjects;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 import com.veyndan.paper.reddit.BuildConfig;
+import com.veyndan.paper.reddit.api.JsonAdapterFactory;
 import com.veyndan.paper.reddit.api.reddit.json.adapter.DefaultOnDataMismatchAdapter;
 import com.veyndan.paper.reddit.api.reddit.json.adapter.RedditObjectAdapter;
 import com.veyndan.paper.reddit.api.reddit.model.Account2;
@@ -64,7 +65,8 @@ public final class Reddit {
                 // According to the Reddit json contract, if there are no replies an empty string
                 // is returned instead of an empty object or null as expected. This sets an empty
                 // object if there are no replies.
-                .add(DefaultOnDataMismatchAdapter.newFactory(Types.newParameterizedType(Thing.class, Listing.class), new Thing<>(new Listing())))
+                .add(DefaultOnDataMismatchAdapter.newFactory(Types.newParameterizedType(Thing.class, Listing.class), Thing.create(Listing.create())))
+                .add(JsonAdapterFactory.create())
                 .build();
 
         final MoshiConverterFactory jsonConverterFactory = MoshiConverterFactory.create(moshi);
@@ -182,7 +184,7 @@ public final class Reddit {
         return redditService.subredditComments(subreddit, article)
                 .map(response -> {
                     final List<Thing<Listing>> things = response.body();
-                    ((Submission) things.get(0).data.children.get(0)).getReplies().data.children.addAll(things.get(1).data.children);
+                    ((Submission) things.get(0).data().children().get(0)).getReplies().data().children().addAll(things.get(1).data().children());
                     return Response.success(things.get(0));
                 });
     }
@@ -400,6 +402,6 @@ public final class Reddit {
                 // TODO If the query has never been initialized, then we want it to pass.
                 .filter(query1 -> !query1.build().containsKey("after") || query1.build().get("after") != null)
                 .flatMapSingle(query1 -> page)
-                .doOnSuccess(response -> query.after(response.body().data.after));
+                .doOnSuccess(response -> query.after(response.body().data().after()));
     }
 }

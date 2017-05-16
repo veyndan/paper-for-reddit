@@ -1,12 +1,14 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
-
 public interface Votable {
 
-    int getUps();
+    int ups();
 
-    int getDowns();
+    int downs();
 
-    VoteDirection getLikes();
+    /**
+     * How the logged-in user has voted on the submission. {@code true} = upvoted,
+     * {@code false} = downvoted, {@code null} = no vote.
+     */
+    Boolean likes();
 }

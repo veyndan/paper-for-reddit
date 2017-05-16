@@ -1,8 +1,19 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-public class Source {
+import com.google.auto.value.AutoValue;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
-    public String url;
-    public int width;
-    public int height;
+@AutoValue
+public abstract class Source {
+
+    public abstract String url();
+
+    public abstract int width();
+
+    public abstract int height();
+
+    public static JsonAdapter<Source> jsonAdapter(final Moshi moshi) {
+        return new AutoValue_Source.MoshiJsonAdapter(moshi);
+    }
 }

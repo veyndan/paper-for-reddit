@@ -6,49 +6,11 @@ import android.support.annotation.Nullable;
 import com.squareup.moshi.Json;
 import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Submission implements Created, RedditObject, Votable {
+public interface Submission extends Created, RedditObject, Votable {
 
-    private long created;
-    @Json(name = "created_utc") private long createdUtc;
-    private int ups;
-    private int downs;
-
-    /**
-     * How the logged-in user has voted on the submission. {@code true} = upvoted,
-     * {@code false} = downvoted, {@code null} = no vote.
-     */
-    private Boolean likes;
-
-    @Override
-    public long getCreated() {
-        return created;
-    }
-
-    @Override
-    public long getCreatedUtc() {
-        return createdUtc;
-    }
-
-    @Override
-    public int getUps() {
-        return ups;
-    }
-
-    @Override
-    public int getDowns() {
-        return downs;
-    }
-
-    @Override
-    public VoteDirection getLikes() {
-        if (likes == null) {
-            return VoteDirection.UNVOTE;
-        }
-        return likes ? VoteDirection.UPVOTE : VoteDirection.DOWNVOTE;
-    }
+    VoteDirection voteDirection();
 
     /**
      * Returns {@code true} if the Submission has been clicked on before, else {@code false}.
@@ -57,50 +19,53 @@ public abstract class Submission implements Created, RedditObject, Votable {
      * <p>
      * #inferred
      */
-    public abstract boolean isClicked();
+    boolean clicked();
 
     /**
      * The domain of this submission. {@code self} posts will be {@code self.<subreddit>} while
      * other examples include {@code en.wikipedia.org} and {@code s3.amazon.com}. If the submission
      * is a comment, then {@code null} is returned.
      */
-    public abstract String getDomain();
+    String domain();
 
     /**
      * {@code true} if the submission is hidden by the logged in user. {@code false} if not logged
      * in or not hidden. If the submission is a comment, then {@code false} is returned as Reddit
      * doesn't support comment hiding (as of yet).
      */
-    public abstract boolean isHidden();
+    boolean hidden();
 
     /**
      * The CSS class of the link's flair. If the submission is a Comment, then {@code null} is
      * returned.
      */
-    public abstract String getLinkFlairCssClass();
+    @Json(name = "link_flair_css_class")
+    String linkFlairCssClass();
 
     /**
      * The text of the link's flair. If the submission is a Comment, then {@code null} is returned.
      */
-    public abstract String getLinkFlairText();
+    @Json(name = "link_flair_text")
+    String linkFlairText();
 
     /**
      * Whether the submission is locked (closed to new comments) or not. If the submission is a
      * comment, then {@code false} is returned.
      */
-    public abstract boolean isLocked();
+    boolean locked();
 
     /**
      * Used for streaming video. Detailed information about the video and it's origins are placed
      * here. If the submission is a Comment, then {@code null} is returned.
      */
-    public abstract Media getMedia();
+    Media media();
 
     /**
      * Used for streaming video. Technical embed specific information is found here. If the
      * submission is a Comment, then {@code null} is returned.
      */
-    public abstract MediaEmbed getMediaEmbed();
+    @Json(name = "media_embed")
+    MediaEmbed mediaEmbed();
 
     /**
      * The number of comments that belong to this link. includes removed comments. If the submission
@@ -108,44 +73,50 @@ public abstract class Submission implements Created, RedditObject, Votable {
      */
     @Nullable
     @IntRange(from = 0)
-    public abstract Integer getNumComments();
+    @Json(name = "num_comments")
+    Integer numComments();
 
     /**
      * {@code true} if the post is tagged as NSFW. {@code false} if otherwise. If the submission is
      * a Comment, then {@code false} is returned.
      */
-    public abstract boolean isOver18();
+    @Json(name = "over_18")
+    boolean over18();
 
     /**
      * Full URL to the thumbnail for this link. "self" if this is a self post. "default" if a
      * thumbnail is not available. If the submission is a Comment, then {@code null} is returned.
      */
-    public abstract String getThumbnail();
+    String thumbnail();
 
     /**
      * #undocumented
      */
-    public abstract Object getSuggestedSort();
+    @Json(name = "suggested_sort")
+    Object suggestedSort();
 
     /**
      * #undocumented
      */
-    public abstract Media getSecureMedia();
+    @Json(name = "secure_media")
+    Media secureMedia();
 
     /**
      * #undocumented
      */
-    public abstract Object getFromKind();
+    @Json(name = "from_kind")
+    Object fromKind();
 
     /**
      * #undocumented
      */
-    public abstract Preview getPreview();
+    Preview preview();
 
     /**
      * #undocumented
      */
-    public abstract MediaEmbed getSecureMediaEmbed();
+    @Json(name = "secure_media_embed")
+    MediaEmbed secureMediaEmbed();
 
     /**
      * Returns a string that suggests the content of this link. As a hint, this is lossy and may be
@@ -154,17 +125,18 @@ public abstract class Submission implements Created, RedditObject, Votable {
      * <p>
      * #inferred ({@code "post_hint"} defined at <a href="https://github.com/reddit/reddit/blob/b423fe2bf873919b27c4eab885551c8ee325b9af/r2/r2/models/link.py#L896">https://github.com/reddit/reddit/blob/b423fe2bf873919b27c4eab885551c8ee325b9af/r2/r2/models/link.py#L896</a>
      */
-    public abstract PostHint getPostHint();
+    @Json(name = "post_hint")
+    PostHint postHint();
 
     /**
      * #undocumented
      */
-    public abstract Object from();
+    Object from();
 
     /**
      * #undocumented
      */
-    public abstract Object fromId();
+    Object fromId();
 
     /**
      * #undocumented
@@ -192,19 +164,21 @@ public abstract class Submission implements Created, RedditObject, Votable {
     /**
      * The account name of the poster. {@code null} if this is a promotional link.
      */
-    public String author;
+    String author();
 
     public abstract String getLinkAuthor();
 
     /**
      * The CSS class of the author's flair. subreddit specific.
      */
-    @Json(name = "author_flair_css_class") public String authorFlairCssClass;
+    @Json(name = "author_flair_css_class")
+    String authorFlairCssClass();
 
     /**
      * The text of the author's flair. subreddit specific.
      */
-    @Json(name = "author_flair_text") public String authorFlairText;
+    @Json(name = "author_flair_text")
+    String authorFlairText();
 
     /**
      * Url of the permanent link.
@@ -214,7 +188,7 @@ public abstract class Submission implements Created, RedditObject, Votable {
     /**
      * {@code true} if this post is saved by the logged in user.
      */
-    public boolean saved;
+    boolean saved();
 
     /**
      * The net-score of the link.
@@ -227,49 +201,52 @@ public abstract class Submission implements Created, RedditObject, Votable {
      * 21 downvotes, or 12 upvotes, and 10 downvotes. The points score is correct, but the vote
      * totals are "fuzzed".
      */
-    public int score;
+    int score();
 
     /**
      * Subreddit of thing excluding the /r/ prefix e.g. "pics".
      */
-    public String subreddit;
+    String subreddit();
 
     /**
      * The id of the subreddit in which the thing is located.
      */
-    @Json(name = "subreddit_id") public String subredditId;
+    @Json(name = "subreddit_id")
+    String subredditId();
 
     /**
      * Indicates if link has been edited. Will be the edit timestamp if the link has been edited
      * and return {@code false} otherwise.
      */
-    public Object edited;
+    Object edited();
 
     /**
      * To allow determining whether they have been distinguished by moderators/admins. If
      * {@code null} then not distinguished.
      */
-    public Distinguished distinguished;
+    Distinguished distinguished();
 
     /**
      * {@code true} if the post is set as the sticky in its subreddit.
      */
-    public boolean stickied;
+    boolean stickied();
 
     /**
      * Who removed this submission. {@code null} if nobody or you are not a mod.
      */
-    @Json(name = "banned_by") public String bannedBy;
+    @Json(name = "banned_by")
+    String bannedBy();
 
     /**
      * #undocumented
      */
-    @Json(name = "user_reports") public List<Object> userReports = new ArrayList<>();
+    @Json(name = "user_reports")
+    List<Object> userReports();
 
     /**
      * #undocumented
      */
-    public String id;
+    String id();
 
     /**
      * ID of the link the submission is or is in.
@@ -279,48 +256,47 @@ public abstract class Submission implements Created, RedditObject, Votable {
     /**
      * The number of times this submission received Reddit Gold.
      */
-    public int gilded;
+    int gilded();
 
     /**
      * Is this link archived.
      * <p>
      * #inferred
      */
-    public boolean archived;
+    boolean archived();
 
     /**
      * #undocumented
      */
-    @Json(name = "report_reasons") public Object reportReasons;
+    @Json(name = "report_reasons")
+    Object reportReasons();
 
     /**
      * Who approved this submission. {@code null} if nobody or you are not a mod.
      */
-    @Json(name = "approved_by") public String approvedBy;
+    @Json(name = "approved_by")
+    String approvedBy();
 
     /**
      * #undocumented
      */
-    @Json(name = "removal_reason") public Object removalReason;
+    @Json(name = "removal_reason")
+    Object removalReason();
 
-    private String name;
-
-    /**
-     * #undocumented
-     */
-    public String getFullname() {
-        return name;
-    }
+    @Json(name = "name")
+    String fullname();
 
     /**
      * #undocumented
      */
-    @Json(name = "mod_reports") public List<Object> modReports = new ArrayList<>();
+    @Json(name = "mod_reports")
+    List<Object> modReports();
 
     /**
      * How many times this submission has been reported, {@code null} if not a mod.
      */
-    @Json(name = "num_reports") public Object numReports;
+    @Json(name = "num_reports")
+    Object numReports();
 
     @Json(name = "score_hidden") private boolean scoreHidden;
     @Json(name = "hide_score") private boolean hideScore;

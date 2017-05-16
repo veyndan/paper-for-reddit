@@ -3,17 +3,109 @@ package com.veyndan.paper.reddit.api.reddit.model;
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 
+import com.google.auto.value.AutoValue;
 import com.squareup.moshi.Json;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Comment extends Submission {
+@AutoValue
+public abstract class Comment implements Submission {
 
+    @Override
+    public VoteDirection voteDirection() {
+        if (likes() == null) {
+            return VoteDirection.UNVOTE;
+        }
+        return likes() ? VoteDirection.UPVOTE : VoteDirection.DOWNVOTE;
+    }
+
+    @Override
+    public boolean clicked() {
+        return false;
+    }
+
+    @Override
+    public String domain() {
+        return null;
+    }
+
+    @Override
+    public boolean hidden() {
+        return false;
+    }
+
+    @Override
+    public String linkFlairCssClass() {
+        return null;
+    }
+
+    @Override
+    public String linkFlairText() {
+        return null;
+    }
+
+    @Override
+    public boolean locked() {
+        return false;
+    }
+
+    @Override
+    public Media media() {
+        return null;
+    }
+
+    @Override
+    public MediaEmbed mediaEmbed() {
+        return null;
+    }
+
+    @Nullable
+    @IntRange(from = 0)
+    @Override
+    public Integer numComments() {
+        return null;
+    }
+
+    @Override
+    public boolean over18() {
+        return false;
+    }
+
+    @Override
+    public String thumbnail() {
+        return null;
+    }
+
+    @Override
+    public Object suggestedSort() {
+        return null;
+    }
+
+    @Override
+    public Media secureMedia() {
+        return null;
+    }
+
+    @Override
+    public Object fromKind() {
+        throw new UnsupportedOperationException("Method intention unknown");
+    }
+
+    @Override
+    public MediaEmbed secureMediaEmbed() {
+        return null;
+    }
+
+    //
     private int controversiality;
     @Json(name = "link_author") private String linkAuthor;
     @Json(name = "link_id") private String linkId;
+
     @Json(name = "parent_id") private String parentId;
-    private Preview preview = new Preview();
+
     private Thing<Listing> replies;
 
     @Override
@@ -22,89 +114,7 @@ public class Comment extends Submission {
     }
 
     @Override
-    public boolean isClicked() {
-        return false;
-    }
-
-    @Override
-    public String getDomain() {
-        return null;
-    }
-
-    @Override
-    public boolean isHidden() {
-        return false;
-    }
-
-    @Override
-    public String getLinkFlairCssClass() {
-        return null;
-    }
-
-    @Override
-    public String getLinkFlairText() {
-        return null;
-    }
-
-    @Override
-    public boolean isLocked() {
-        return false;
-    }
-
-    @Override
-    public Media getMedia() {
-        return null;
-    }
-
-    @Override
-    public MediaEmbed getMediaEmbed() {
-        return null;
-    }
-
-    @Nullable
-    @IntRange(from = 0)
-    @Override
-    public Integer getNumComments() {
-        return null;
-    }
-
-    @Override
-    public boolean isOver18() {
-        return false;
-    }
-
-    @Override
-    public String getThumbnail() {
-        return null;
-    }
-
-    @Override
-    public Object getSuggestedSort() {
-        return null;
-    }
-
-    @Override
-    public Media getSecureMedia() {
-        return null;
-    }
-
-    @Override
-    public Object getFromKind() {
-        throw new UnsupportedOperationException("Method intention unknown");
-    }
-
-    @Override
-    public Preview getPreview() {
-        return preview;
-    }
-
-    @Override
-    public MediaEmbed getSecureMediaEmbed() {
-        return null;
-    }
-
-    @Override
-    public PostHint getPostHint() {
+    public PostHint postHint() {
         return PostHint.SELF;
     }
 
@@ -147,7 +157,7 @@ public class Comment extends Submission {
      */
     @Override
     public String getPermalink() {
-        return String.format("https://www.reddit.com/comments/%s//%s", linkId.split("_")[1], id);
+        return String.format("https://www.reddit.com/comments/%s//%s", linkId.split("_")[1], id());
     }
 
     @Override
@@ -165,8 +175,7 @@ public class Comment extends Submission {
         return false;
     }
 
-    @Override
-    public String toString() {
-        return author;
+    public static JsonAdapter<Comment> jsonAdapter(final Moshi moshi) {
+        return new AutoValue_Comment.MoshiJsonAdapter(moshi);
     }
 }

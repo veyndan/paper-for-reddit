@@ -1,12 +1,23 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-import java.util.ArrayList;
+import com.google.auto.value.AutoValue;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+
 import java.util.List;
 
-public class Image {
+@AutoValue
+public abstract class Image {
 
-    public final Source source = new Source();
-    public List<Source> resolutions = new ArrayList<>();
-    public Object variants;
-    public String id;
+    public abstract Source source();
+
+    public abstract List<Source> resolutions();
+
+    public abstract Object variants();
+
+    public abstract String id();
+
+    public static JsonAdapter<Image> jsonAdapter(final Moshi moshi) {
+        return new AutoValue_Image.MoshiJsonAdapter(moshi);
+    }
 }

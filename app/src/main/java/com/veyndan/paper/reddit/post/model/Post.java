@@ -42,7 +42,7 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
     public static Post create(@NonNull final Submission submission) {
         final boolean comment = submission instanceof Comment;
 
-        final Observable<Node<Response<Thing<Listing>>>> children = Observable.fromIterable(submission.getReplies().data.children)
+        final Observable<Node<Response<Thing<Listing>>>> children = Observable.fromIterable(submission.getReplies().data().children())
                 .flatMapSingle(redditObject -> {
                     if (redditObject instanceof Submission) {
                         return Single.just(redditObject)
@@ -65,31 +65,31 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
                 .comment(comment)
                 .children(children)
                 .descendantsVisible(new MutableBoolean(comment))
-                .archived(submission.archived)
-                .author(submission.author == null ? "" : submission.author)
+                .archived(submission.archived())
+                .author(submission.author() == null ? "" : submission.author())
                 .bodyHtml(submission.getBodyHtml())
-                .createdUtc(submission.getCreatedUtc())
-                .domain(submission.getDomain())
-                .fullname(submission.getFullname())
-                .gildedCount(submission.gilded)
+                .createdUtc(submission.createdUtc())
+                .domain(submission.domain())
+                .fullname(submission.fullname())
+                .gildedCount(submission.gilded())
                 .hideable(submission.isHideable())
-                .likes(new MutableObject<>(submission.getLikes()))
-                .linkFlair(submission.getLinkFlairText())
+                .likes(new MutableObject<>(submission.voteDirection()))
+                .linkFlair(submission.linkFlairText())
                 .linkTitle(submission.getLinkTitle())
                 .linkUrl(submission.getLinkUrl() == null ? "" : submission.getLinkUrl())
-                .locked(submission.isLocked())
-                .nsfw(submission.isOver18())
+                .locked(submission.locked())
+                .nsfw(submission.over18())
                 .permalink(submission.getPermalink())
-                .points(new MutableInt(submission.score))
-                .postHint(submission.getPostHint())
-                .preview(submission.getPreview())
-                .saved(new MutableBoolean(submission.saved))
+                .points(new MutableInt(submission.score()))
+                .postHint(submission.postHint())
+                .preview(submission.preview())
+                .saved(new MutableBoolean(submission.saved()))
                 .scoreHidden(submission.isScoreHidden())
-                .stickied(submission.stickied)
-                .subreddit(submission.subreddit)
+                .stickied(submission.stickied())
+                .subreddit(submission.subreddit())
                 .build();
 
-        post.descendantCount(submission.getNumComments());
+        post.descendantCount(submission.numComments());
         return post;
     }
 

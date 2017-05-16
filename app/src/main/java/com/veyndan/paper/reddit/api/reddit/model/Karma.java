@@ -1,10 +1,22 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import com.google.auto.value.AutoValue;
 import com.squareup.moshi.Json;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
-public class Karma {
+@AutoValue
+public abstract class Karma {
 
-    public String sr;
-    @Json(name = "comment_karma") public int commentKarma;
-    @Json(name = "link_karma") public int linkKarma;
+    public abstract String sr();
+
+    @Json(name = "comment_karma")
+    public abstract int commentKarma();
+
+    @Json(name = "link_karma")
+    public abstract int linkKarma();
+
+    public static JsonAdapter<Karma> jsonAdapter(final Moshi moshi) {
+        return new AutoValue_Karma.MoshiJsonAdapter(moshi);
+    }
 }

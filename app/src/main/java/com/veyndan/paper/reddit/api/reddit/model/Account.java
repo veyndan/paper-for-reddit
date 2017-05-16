@@ -1,8 +1,19 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-public class Account {
+import com.google.auto.value.AutoValue;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 
-    public long date;
-    public String name;
-    public String id;
+@AutoValue
+public abstract class Account {
+
+    public abstract long date();
+
+    public abstract String name();
+
+    public abstract String id();
+
+    public static JsonAdapter<Account> jsonAdapter(final Moshi moshi) {
+        return new AutoValue_Account.MoshiJsonAdapter(moshi);
+    }
 }

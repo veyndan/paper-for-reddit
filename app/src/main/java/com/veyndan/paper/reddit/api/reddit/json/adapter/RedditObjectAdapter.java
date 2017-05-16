@@ -37,7 +37,7 @@ public final class RedditObjectAdapter extends JsonAdapter<RedditObject> {
     public RedditObject fromJson(final JsonReader reader) throws IOException {
         final JsonAdapter<Thing<Map<String, Object>>> thingMapAdapter = moshi.adapter(new TypeToken<Thing<Map<String, Object>>>() {}.getType());
         final Thing<Map<String, Object>> thing = thingMapAdapter.fromJson(reader);
-        return moshi.adapter(thing.kind.getDerivedClass()).fromJsonValue(thing.data);
+        return moshi.adapter(thing.kind().getDerivedClass()).fromJsonValue(thing.data());
     }
 
     @Override

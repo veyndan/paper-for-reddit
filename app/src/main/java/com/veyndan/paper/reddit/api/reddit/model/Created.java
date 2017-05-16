@@ -1,8 +1,11 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
+import com.squareup.moshi.Json;
+
 public interface Created {
 
-    long getCreated();
+    long created();
 
-    long getCreatedUtc();
+    @Json(name = "created_utc")
+    long createdUtc();
 }

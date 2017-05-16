@@ -1,9 +1,17 @@
 package com.veyndan.paper.reddit.api.reddit.model;
 
-import java.util.ArrayList;
+import com.google.auto.value.AutoValue;
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+
 import java.util.List;
 
-public class Categories {
+@AutoValue
+public abstract class Categories {
 
-    public final List<Category> categories = new ArrayList<>();
+    public abstract List<Category> categories();
+
+    public static JsonAdapter<Categories> jsonAdapter(final Moshi moshi) {
+        return new AutoValue_Categories.MoshiJsonAdapter(moshi);
+    }
 }

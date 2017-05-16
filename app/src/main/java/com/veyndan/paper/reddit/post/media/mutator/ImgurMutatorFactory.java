@@ -90,16 +90,16 @@ final class ImgurMutatorFactory implements MutatorFactory {
                                 .flattenAsObservable(basic -> basic.body().data().images())
                                 .map(image -> Image.create(image.link(), new Size(image.width(), image.height())));
                     } else {
-                        final boolean imageDimensAvailable = post1.preview().images.size() > 0;
+                        final boolean imageDimensAvailable = post1.preview().images().size() > 0;
 
                         final String url = linkUrl.endsWith(".gifv") && imageDimensAvailable
-                                ? post1.preview().images.get(0).source.url
+                                ? post1.preview().images().get(0).source().url()
                                 : linkUrl;
 
                         final Size size;
                         if (imageDimensAvailable) {
-                            final Source source = post1.preview().images.get(0).source;
-                            size = new Size(source.width, source.height);
+                            final Source source = post1.preview().images().get(0).source();
+                            size = new Size(source.width(), source.height());
                         } else {
                             size = new Size(0, 0);
                         }

@@ -26,12 +26,12 @@ public final class ImageMutatorFactory implements MutatorFactory {
         return Single.just(post)
                 .filter(post1 -> post1.postHint() == PostHint.IMAGE)
                 .map(post1 -> {
-                    final boolean imageDimensAvailable = post1.preview().images.size() > 0;
+                    final boolean imageDimensAvailable = post1.preview().images().size() > 0;
 
                     final Size size;
                     if (imageDimensAvailable) {
-                        final Source source = post1.preview().images.get(0).source;
-                        size = new Size(source.width, source.height);
+                        final Source source = post1.preview().images().get(0).source();
+                        size = new Size(source.width(), source.height());
                     } else {
                         size = new Size(0, 0);
                     }
