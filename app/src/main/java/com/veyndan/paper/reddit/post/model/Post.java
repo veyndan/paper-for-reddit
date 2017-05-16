@@ -64,9 +64,10 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
                     }
                 });
 
-        final Post post = builder()
+        return builder()
                 .comment(comment)
                 .children(children)
+                .commentCount(submission.getNumComments())
                 .descendantsVisible(new MutableBoolean(comment))
                 .archived(submission.archived)
                 .author(submission.author == null ? "" : submission.author)
@@ -91,9 +92,6 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
                 .stickied(submission.stickied)
                 .subreddit(submission.subreddit)
                 .build();
-
-        post.descendantCount(submission.getNumComments());
-        return post;
     }
 
     static Builder builder() {
@@ -124,6 +122,16 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
 
     @NonNull
     public abstract Observable<Node<Response<Thing<Listing>>>> children();
+
+    @NonNull
+    @Override
+    public Single<Integer> descendantCount() {
+        final Integer commentCount = commentCount();
+        return commentCount == null ? super.descendantCount() : Single.just(commentCount);
+    }
+
+    @Nullable
+    public abstract Integer commentCount();
 
     public abstract MutableBoolean descendantsVisible();
 
@@ -219,8 +227,9 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
         return source.subSequence(0, i + 1);
     }
 
-    public final String getDisplayDescendants() {
-        return quantityString(descendantCount());
+    public final Single<String> getDisplayDescendants() {
+        return descendantCount()
+                .map(Post::quantityString);
     }
 
     public final String getDisplayPoints(final Context context) {
@@ -292,6 +301,8 @@ public abstract class Post extends Node<Response<Thing<Listing>>> {
         Builder comment(boolean comment);
 
         Builder children(Observable<Node<Response<Thing<Listing>>>> children);
+
+        Builder commentCount(@Nullable Integer commentCount);
 
         Builder descendantsVisible(MutableBoolean descendantsVisible);
 

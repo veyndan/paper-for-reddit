@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Response;
 
@@ -265,8 +266,8 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
 
         if (post.internalNode() && !post.descendantsVisible().value) {
             holder.binding.postCommentCount.setVisibility(View.VISIBLE);
-            final String commentCount = post.getDisplayDescendants();
-            holder.binding.postCommentCount.setText(commentCount);
+            post.getDisplayDescendants()
+                    .subscribe((Consumer<String>) holder.binding.postCommentCount::setText);
         } else {
             holder.binding.postCommentCount.setVisibility(View.INVISIBLE);
         }
