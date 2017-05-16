@@ -28,7 +28,7 @@ public class NodeTest {
 
         final Node<Void> tree = setAsChildren(node10, node11, node12);
 
-        tree.preOrderTraverse(0)
+        tree.preOrderTraverse()
                 .map(Node::descendantCount)
                 .test()
                 .assertValues(7, 0, 3, 1, 0, 0, 1, 0)
@@ -61,7 +61,7 @@ public class NodeTest {
         final Node<Void> tree = setAsChildren(node10, node11, node12);
         tree.descendantCount(7);
 
-        tree.preOrderTraverse(0)
+        tree.preOrderTraverse()
                 .map(Node::descendantCount)
                 .test()
                 .assertValues(7, 0, 3, 1, 0, 0, 1, 0)
@@ -82,7 +82,7 @@ public class NodeTest {
 
         final Node<Void> tree = setAsChildren(node10, node11, node12);
 
-        tree.preOrderTraverse(0)
+        tree.preOrderTraverse()
                 .map(Node::depth)
                 .test()
                 .assertValues(0, 1, 1, 2, 3, 2, 1, 2)

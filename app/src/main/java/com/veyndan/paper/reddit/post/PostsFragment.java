@@ -125,7 +125,7 @@ public class PostsFragment extends Fragment {
                         })
                         .concatWith(Observable.just(new Progress.Builder().build()))
                         .observeOn(AndroidSchedulers.mainThread())
-                        .concatMap(tree1 -> tree1.preOrderTraverse(0))
+                        .concatMap(Node::preOrderTraverse)
                         .toList())
                 .map(NextPageUiModel::forest)
                 .startWith(NextPageUiModel.tree(new Progress.Builder()
