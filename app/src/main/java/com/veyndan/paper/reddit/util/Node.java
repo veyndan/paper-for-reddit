@@ -25,8 +25,10 @@ public abstract class Node<T> {
         return (int) (long) children().count().blockingGet();
     }
 
-    public boolean internalNode() {
-        return descendantCount().blockingGet() > 0;
+    @NonNull
+    public Single<Boolean> internalNode() {
+        return descendantCount()
+                .map(descendantCount -> descendantCount > 0);
     }
 
     @NonNull

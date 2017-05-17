@@ -264,13 +264,16 @@ public class PostAdapterDelegate extends AdapterDelegate<List<Node<Response<Thin
                     }
                 });
 
-        if (post.internalNode() && !post.descendantsVisible().value) {
-            holder.binding.postCommentCount.setVisibility(View.VISIBLE);
-            post.getDisplayDescendants()
-                    .subscribe((Consumer<String>) holder.binding.postCommentCount::setText);
-        } else {
-            holder.binding.postCommentCount.setVisibility(View.INVISIBLE);
-        }
+        post.internalNode()
+                .subscribe(internalNode -> {
+                    if (internalNode && !post.descendantsVisible().value) {
+                        holder.binding.postCommentCount.setVisibility(View.VISIBLE);
+                        post.getDisplayDescendants()
+                                .subscribe((Consumer<String>) holder.binding.postCommentCount::setText);
+                    } else {
+                        holder.binding.postCommentCount.setVisibility(View.INVISIBLE);
+                    }
+                });
     }
 
     private static void bindPopupActions(final Context context, final Post post,
