@@ -21,7 +21,9 @@ public abstract class Node<T> {
      */
     @Nullable
     @IntRange(from = 0)
-    public abstract Integer degree();
+    public Integer degree() {
+        return (int) (long) children().count().blockingGet();
+    }
 
     public boolean internalNode() {
         return descendantCount().blockingGet() > 0;
@@ -34,8 +36,7 @@ public abstract class Node<T> {
     public Single<Integer> descendantCount() {
         return children()
                 .flatMapSingle(Node::descendantCount)
-                .map(descendantCount -> descendantCount + 1)
-                .reduce(0, (sum, item) -> sum + item);
+                .reduce(degree(), (sum, item) -> sum + item);
     }
 
     @NonNull

@@ -1,7 +1,6 @@
 package com.veyndan.paper.reddit;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.veyndan.paper.reddit.util.Node;
 
@@ -81,12 +80,6 @@ public class NodeTest {
     private static <T> Node<T> setAsChildren(final int descendantCount, final Node<T>... children) {
         return new Node<T>() {
 
-            @Nullable
-            @Override
-            public Integer degree() {
-                return null;
-            }
-
             @NonNull
             @Override
             public Observable<Node<T>> children() {
@@ -103,12 +96,6 @@ public class NodeTest {
 
     private static <T> Node<T> setAsChildren(final Node<T>... children) {
         return new Node<T>() {
-
-            @Nullable
-            @Override
-            public Integer degree() {
-                return null;
-            }
 
             @NonNull
             @Override
