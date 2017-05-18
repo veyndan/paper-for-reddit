@@ -12,7 +12,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-public final class ImageMutatorFactory implements MutatorFactory {
+final class ImageMutatorFactory implements MutatorFactory {
 
     @Override
     public Maybe<Post> mutate(final Post post) {
