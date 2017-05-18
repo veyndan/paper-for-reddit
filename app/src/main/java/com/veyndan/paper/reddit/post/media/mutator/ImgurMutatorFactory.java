@@ -27,13 +27,6 @@ final class ImgurMutatorFactory implements MutatorFactory {
 
     private static final Pattern PATTERN = Pattern.compile("^https?://(?:m\\.|www\\.)?(i\\.)?imgur\\.com/(a/|gallery/)?(.*)$");
 
-    static ImgurMutatorFactory create() {
-        return new ImgurMutatorFactory();
-    }
-
-    private ImgurMutatorFactory() {
-    }
-
     @Override
     public Maybe<Post> mutate(final Post post) {
         final Matcher matcher = PATTERN.matcher(post.linkUrl());

@@ -21,13 +21,6 @@ final class TwitterMutatorFactory implements MutatorFactory {
 
     private static final Pattern PATTERN = Pattern.compile("^https?://(?:www\\.)?twitter\\.com/\\w*/status/(\\d+)\\??.*$");
 
-    static TwitterMutatorFactory create() {
-        return new TwitterMutatorFactory();
-    }
-
-    private TwitterMutatorFactory() {
-    }
-
     @Override
     public Maybe<Post> mutate(final Post post) {
         final Matcher matcher = PATTERN.matcher(post.linkUrl());

@@ -29,14 +29,14 @@ public final class Mutators {
      * {@link LinkMutatorFactory} should occur <b><em>after</em></b> {@link TwitterMutatorFactory}.
      */
     private static final Observable<MutatorFactory> MUTATOR_FACTORIES = Observable.fromArray(
-            TwitterMutatorFactory.create(),
-            XkcdMutatorFactory.create(),
-            ImgurMutatorFactory.create(),
-            ImgflipMutatorFactory.create(),
-            ImageMutatorFactory.create(),
-            TextMutatorFactory.create(),
-            LinkImageMutatorFactory.create(),
-            LinkMutatorFactory.create()
+            new TwitterMutatorFactory(),
+            new XkcdMutatorFactory(),
+            new ImgurMutatorFactory(),
+            new ImgflipMutatorFactory(),
+            new ImageMutatorFactory(),
+            new TextMutatorFactory(),
+            new LinkImageMutatorFactory(),
+            new LinkMutatorFactory()
     );
 
     /**

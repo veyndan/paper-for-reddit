@@ -14,13 +14,6 @@ import io.reactivex.Single;
 
 public final class ImageMutatorFactory implements MutatorFactory {
 
-    public static ImageMutatorFactory create() {
-        return new ImageMutatorFactory();
-    }
-
-    private ImageMutatorFactory() {
-    }
-
     @Override
     public Maybe<Post> mutate(final Post post) {
         return Single.just(post)

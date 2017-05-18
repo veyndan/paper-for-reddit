@@ -12,13 +12,6 @@ import io.reactivex.Single;
 
 final class TextMutatorFactory implements MutatorFactory {
 
-    static TextMutatorFactory create() {
-        return new TextMutatorFactory();
-    }
-
-    private TextMutatorFactory() {
-    }
-
     @Override
     public Maybe<Post> mutate(final Post post) {
         return Single.just(post)

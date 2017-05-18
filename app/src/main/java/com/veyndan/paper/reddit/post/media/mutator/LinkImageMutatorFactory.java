@@ -10,13 +10,6 @@ import io.reactivex.Single;
 
 final class LinkImageMutatorFactory implements MutatorFactory {
 
-    static LinkImageMutatorFactory create() {
-        return new LinkImageMutatorFactory();
-    }
-
-    private LinkImageMutatorFactory() {
-    }
-
     @Override
     public Maybe<Post> mutate(final Post post) {
         return Single.just(post)

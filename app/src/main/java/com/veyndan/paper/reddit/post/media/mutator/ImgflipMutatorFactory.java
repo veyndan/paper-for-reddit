@@ -14,13 +14,6 @@ final class ImgflipMutatorFactory implements MutatorFactory {
 
     private static final Pattern PATTERN = Pattern.compile("^https?://(?:www\\.)?imgflip\\.com/i/(.*)$");
 
-    static ImgflipMutatorFactory create() {
-        return new ImgflipMutatorFactory();
-    }
-
-    private ImgflipMutatorFactory() {
-    }
-
     @Override
     public Maybe<Post> mutate(final Post post) {
         final Matcher matcher = PATTERN.matcher(post.linkUrl());

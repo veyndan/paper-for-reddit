@@ -18,13 +18,6 @@ final class XkcdMutatorFactory implements MutatorFactory {
 
     private static final Pattern PATTERN = Pattern.compile("^https?://(?:www\\.)?xkcd\\.com/(\\d+)/?$");
 
-    static XkcdMutatorFactory create() {
-        return new XkcdMutatorFactory();
-    }
-
-    private XkcdMutatorFactory() {
-    }
-
     @Override
     public Maybe<Post> mutate(final Post post) {
         final Matcher matcher = PATTERN.matcher(post.linkUrl());
