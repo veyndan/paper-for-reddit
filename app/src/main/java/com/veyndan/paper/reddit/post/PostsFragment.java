@@ -62,7 +62,7 @@ public class PostsFragment extends Fragment {
     public void onAttach(final Context context) {
         super.onAttach(context);
 
-        reddit = new Reddit(PaperForRedditApp.REDDIT_CREDENTIALS);
+        reddit = new Reddit(PaperForRedditApp.Companion.getREDDIT_CREDENTIALS());
     }
 
     @Override
@@ -98,14 +98,14 @@ public class PostsFragment extends Fragment {
                 //
                 //      When to solve: After nodes is no longer a flattened tree but is instead a
                 //      indexable tree.
-                .map(scrollEvent -> NextPageEvent.create(forest.get(forest.size() - 1)))
+                .map(scrollEvent -> new NextPageEvent(forest.get(forest.size() - 1)))
                 .distinctUntilChanged(event -> forest.size() - 1);
 
         final ObservableTransformer<NextPageEvent, NextPageUiModel> nextPage = events -> events
                 .flatMapSingle(event -> request
                         .subscribeOn(Schedulers.io())
                         .map(Response::body)
-                        .flattenAsObservable(thing -> thing.data.children)
+                        .flattenAsObservable(thing -> thing.getData().getChildren())
                         .observeOn(Schedulers.computation())
                         .flatMapSingle(redditObject -> {
                             if (redditObject instanceof Submission) {
@@ -115,21 +115,18 @@ public class PostsFragment extends Fragment {
                                         .flatMap(Mutators.mutate());
                             } else if (redditObject instanceof More) {
                                 final More more = (More) redditObject;
-                                return Single.just(new Progress.Builder()
-                                        .degree(more.count)
-                                        .build());
+                                return Single.just(new Progress(more.getCount()));
                             } else {
                                 final String message = "Unknown node class: " + redditObject;
                                 return Single.error(new IllegalStateException(message));
                             }
                         })
-                        .concatWith(Observable.just(new Progress.Builder().build()))
+                        .concatWith(Observable.just(new Progress()))
                         .observeOn(AndroidSchedulers.mainThread())
                         .concatMap(tree1 -> tree1.preOrderTraverse(0))
                         .toList())
-                .map(NextPageUiModel::forest)
-                .startWith(NextPageUiModel.tree(new Progress.Builder()
-                        .build()));
+                .map(NextPageUiModel::new)
+                .startWith(new NextPageUiModel(new Progress()));
 
         nextPageEvents.compose(nextPage)
                 .subscribe(model -> {
@@ -139,7 +136,7 @@ public class PostsFragment extends Fragment {
                     if (forest.size() > 0) { // TODO Code smell: This is done as startWith is called above.
                         popTree();
                     }
-                    appendForest(model.forest());
+                    appendForest(model.getForest());
                 });
     }
 

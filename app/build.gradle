@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'io.fabric'
 apply plugin: 'com.getkeepsafe.dexcount'
@@ -98,19 +100,15 @@ dependencies {
     final String apacheCommonsVersion = '3.5'
     compile "org.apache.commons:commons-lang3:$apacheCommonsVersion"
 
-    // Auto Value
-    final String autoValueVersion = '1.4.1'
-    provided "com.google.auto.value:auto-value:$autoValueVersion"
-    annotationProcessor "com.google.auto.value:auto-value:$autoValueVersion"
-
-    // Auto Value Parcel
-    final String autoValueParcelVersion = '0.2.5'
-    annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:$autoValueParcelVersion"
+    // Data Binding
+    final String dataBindingVersion = '2.3.2'
+    kapt "com.android.databinding:compiler:$dataBindingVersion"
 
     // Deep Link Dispatch
     final String deepLinkDispatchVersion = '3.0.0'
     compile "com.airbnb:deeplinkdispatch:$deepLinkDispatchVersion"
     annotationProcessor "com.airbnb:deeplinkdispatch-processor:$deepLinkDispatchVersion"
+    kapt "com.airbnb:deeplinkdispatch-processor:$deepLinkDispatchVersion"
 
     // Flexbox Layout
     final String flexboxLayoutVersion = '0.2.6'
@@ -127,6 +125,10 @@ dependencies {
     // Guava
     final String guavaVersion = '20.0'
     compile "com.google.guava:guava:$guavaVersion"
+
+    // Kotlin
+    final String kotlinVersion = '1.1.2-4'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion"
 
     // Leak Canary
     final String leakCanaryVersion = '1.5'
@@ -163,8 +165,11 @@ dependencies {
     // RxBinding
     final String rxBindingVersion = '2.0.0'
     compile "com.jakewharton.rxbinding2:rxbinding:$rxBindingVersion"
+    compile "com.jakewharton.rxbinding2:rxbinding-kotlin:$rxBindingVersion"
     compile "com.jakewharton.rxbinding2:rxbinding-design:$rxBindingVersion"
+    compile "com.jakewharton.rxbinding2:rxbinding-design-kotlin:$rxBindingVersion"
     compile "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:$rxBindingVersion"
+    compile "com.jakewharton.rxbinding2:rxbinding-recyclerview-v7-kotlin:$rxBindingVersion"
 
     // Spanny
     final String spannyVersion = '1.0.4'
