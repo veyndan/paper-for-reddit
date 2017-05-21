@@ -1,14 +1,15 @@
 package com.veyndan.paper.reddit.api.reddit.json.adapter;
 
-import com.google.common.reflect.TypeToken;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.JsonReader;
 import com.squareup.moshi.JsonWriter;
 import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
 import com.veyndan.paper.reddit.api.reddit.model.RedditObject;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 // TODO Reading large comment sections don't work as Json is too deeply nested.
@@ -35,7 +36,8 @@ public final class RedditObjectAdapter extends JsonAdapter<RedditObject> {
 
     @Override
     public RedditObject fromJson(final JsonReader reader) throws IOException {
-        final JsonAdapter<Thing<Map<String, Object>>> thingMapAdapter = moshi.adapter(new TypeToken<Thing<Map<String, Object>>>() {}.getType());
+        final Type type = Types.newParameterizedType(Thing.class, Types.newParameterizedType(Map.class, String.class, Object.class));
+        final JsonAdapter<Thing<Map<String, Object>>> thingMapAdapter = moshi.adapter(type);
         final Thing<Map<String, Object>> thing = thingMapAdapter.fromJson(reader);
         return moshi.adapter(thing.kind.getDerivedClass()).fromJsonValue(thing.data);
     }
