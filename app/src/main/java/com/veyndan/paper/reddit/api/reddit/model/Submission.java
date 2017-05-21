@@ -6,9 +6,6 @@ import android.support.annotation.Nullable;
 import com.squareup.moshi.Json;
 import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class Submission implements Created, RedditObject, Votable {
 
     private long created;
@@ -51,33 +48,11 @@ public abstract class Submission implements Created, RedditObject, Votable {
     }
 
     /**
-     * Returns {@code true} if the Submission has been clicked on before, else {@code false}.
-     * Probably always returns {@code false}. If the submission is a comment, then {@code false}
-     * is returned.
-     * <p>
-     * #inferred
-     */
-    public abstract boolean isClicked();
-
-    /**
      * The domain of this submission. {@code self} posts will be {@code self.<subreddit>} while
      * other examples include {@code en.wikipedia.org} and {@code s3.amazon.com}. If the submission
      * is a comment, then {@code null} is returned.
      */
     public abstract String getDomain();
-
-    /**
-     * {@code true} if the submission is hidden by the logged in user. {@code false} if not logged
-     * in or not hidden. If the submission is a comment, then {@code false} is returned as Reddit
-     * doesn't support comment hiding (as of yet).
-     */
-    public abstract boolean isHidden();
-
-    /**
-     * The CSS class of the link's flair. If the submission is a Comment, then {@code null} is
-     * returned.
-     */
-    public abstract String getLinkFlairCssClass();
 
     /**
      * The text of the link's flair. If the submission is a Comment, then {@code null} is returned.
@@ -97,12 +72,6 @@ public abstract class Submission implements Created, RedditObject, Votable {
     public abstract Media getMedia();
 
     /**
-     * Used for streaming video. Technical embed specific information is found here. If the
-     * submission is a Comment, then {@code null} is returned.
-     */
-    public abstract MediaEmbed getMediaEmbed();
-
-    /**
      * The number of comments that belong to this link. includes removed comments. If the submission
      * is a Comment, then {@code 0} is returned.
      */
@@ -117,35 +86,9 @@ public abstract class Submission implements Created, RedditObject, Votable {
     public abstract boolean isOver18();
 
     /**
-     * Full URL to the thumbnail for this link. "self" if this is a self post. "default" if a
-     * thumbnail is not available. If the submission is a Comment, then {@code null} is returned.
-     */
-    public abstract String getThumbnail();
-
-    /**
-     * #undocumented
-     */
-    public abstract Object getSuggestedSort();
-
-    /**
-     * #undocumented
-     */
-    public abstract Media getSecureMedia();
-
-    /**
-     * #undocumented
-     */
-    public abstract Object getFromKind();
-
-    /**
      * #undocumented
      */
     public abstract Preview getPreview();
-
-    /**
-     * #undocumented
-     */
-    public abstract MediaEmbed getSecureMediaEmbed();
 
     /**
      * Returns a string that suggests the content of this link. As a hint, this is lossy and may be
@@ -157,34 +100,6 @@ public abstract class Submission implements Created, RedditObject, Votable {
     public abstract PostHint getPostHint();
 
     /**
-     * #undocumented
-     */
-    public abstract Object from();
-
-    /**
-     * #undocumented
-     */
-    public abstract Object fromId();
-
-    /**
-     * #undocumented
-     */
-    public abstract boolean quarantine();
-
-    /**
-     * #undocumented
-     */
-    public abstract boolean visited();
-
-    /**
-     * Returns the submissions's parent ID. If the Submission is a Link, then {@code null} is
-     * returned, as no logical parent is available.
-     *
-     * @return Submission's parent ID.
-     */
-    public abstract String getParentId();
-
-    /**
      * The comment forest/leaves exactly one below the current Submission.
      */
     public abstract Thing<Listing> getReplies();
@@ -193,18 +108,6 @@ public abstract class Submission implements Created, RedditObject, Votable {
      * The account name of the poster. {@code null} if this is a promotional link.
      */
     public String author;
-
-    public abstract String getLinkAuthor();
-
-    /**
-     * The CSS class of the author's flair. subreddit specific.
-     */
-    @Json(name = "author_flair_css_class") public String authorFlairCssClass;
-
-    /**
-     * The text of the author's flair. subreddit specific.
-     */
-    @Json(name = "author_flair_text") public String authorFlairText;
 
     /**
      * Url of the permanent link.
@@ -235,46 +138,14 @@ public abstract class Submission implements Created, RedditObject, Votable {
     public String subreddit;
 
     /**
-     * The id of the subreddit in which the thing is located.
-     */
-    @Json(name = "subreddit_id") public String subredditId;
-
-    /**
-     * Indicates if link has been edited. Will be the edit timestamp if the link has been edited
-     * and return {@code false} otherwise.
-     */
-    public Object edited;
-
-    /**
-     * To allow determining whether they have been distinguished by moderators/admins. If
-     * {@code null} then not distinguished.
-     */
-    public Distinguished distinguished;
-
-    /**
      * {@code true} if the post is set as the sticky in its subreddit.
      */
     public boolean stickied;
 
     /**
-     * Who removed this submission. {@code null} if nobody or you are not a mod.
-     */
-    @Json(name = "banned_by") public String bannedBy;
-
-    /**
-     * #undocumented
-     */
-    @Json(name = "user_reports") public List<Object> userReports = new ArrayList<>();
-
-    /**
      * #undocumented
      */
     public String id;
-
-    /**
-     * ID of the link the submission is or is in.
-     */
-    public abstract String getLinkId();
 
     /**
      * The number of times this submission received Reddit Gold.
@@ -288,21 +159,6 @@ public abstract class Submission implements Created, RedditObject, Votable {
      */
     public boolean archived;
 
-    /**
-     * #undocumented
-     */
-    @Json(name = "report_reasons") public Object reportReasons;
-
-    /**
-     * Who approved this submission. {@code null} if nobody or you are not a mod.
-     */
-    @Json(name = "approved_by") public String approvedBy;
-
-    /**
-     * #undocumented
-     */
-    @Json(name = "removal_reason") public Object removalReason;
-
     private String name;
 
     /**
@@ -311,16 +167,6 @@ public abstract class Submission implements Created, RedditObject, Votable {
     public String getFullname() {
         return name;
     }
-
-    /**
-     * #undocumented
-     */
-    @Json(name = "mod_reports") public List<Object> modReports = new ArrayList<>();
-
-    /**
-     * How many times this submission has been reported, {@code null} if not a mod.
-     */
-    @Json(name = "num_reports") public Object numReports;
 
     @Json(name = "score_hidden") private boolean scoreHidden;
     @Json(name = "hide_score") private boolean hideScore;
@@ -381,11 +227,6 @@ public abstract class Submission implements Created, RedditObject, Votable {
     public String getBodyHtml() {
         return bodyHtml != null ? bodyHtml : selfTextHtml;
     }
-
-    /**
-     * #undocumented
-     */
-    public abstract int getControversiality();
 
     /**
      * Returns whether this submission can be hidden. {@code true} for {@link Link} and

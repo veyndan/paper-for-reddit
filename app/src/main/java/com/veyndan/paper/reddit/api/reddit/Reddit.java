@@ -12,25 +12,13 @@ import com.squareup.moshi.Types;
 import com.veyndan.paper.reddit.BuildConfig;
 import com.veyndan.paper.reddit.api.reddit.json.adapter.DefaultOnDataMismatchAdapter;
 import com.veyndan.paper.reddit.api.reddit.json.adapter.RedditObjectAdapter;
-import com.veyndan.paper.reddit.api.reddit.model.Account2;
-import com.veyndan.paper.reddit.api.reddit.model.CaptchaNew;
-import com.veyndan.paper.reddit.api.reddit.model.Categories;
-import com.veyndan.paper.reddit.api.reddit.model.Karma;
 import com.veyndan.paper.reddit.api.reddit.model.Listing;
-import com.veyndan.paper.reddit.api.reddit.model.MoreChildren;
-import com.veyndan.paper.reddit.api.reddit.model.Prefs;
 import com.veyndan.paper.reddit.api.reddit.model.Submission;
-import com.veyndan.paper.reddit.api.reddit.model.Subreddit;
 import com.veyndan.paper.reddit.api.reddit.model.Thing;
-import com.veyndan.paper.reddit.api.reddit.model.Trophies;
-import com.veyndan.paper.reddit.api.reddit.network.AboutSubreddit;
 import com.veyndan.paper.reddit.api.reddit.network.AuthenticationService;
 import com.veyndan.paper.reddit.api.reddit.network.Credentials;
-import com.veyndan.paper.reddit.api.reddit.network.Message;
-import com.veyndan.paper.reddit.api.reddit.network.MySubreddits;
 import com.veyndan.paper.reddit.api.reddit.network.RedditService;
 import com.veyndan.paper.reddit.api.reddit.network.Sort;
-import com.veyndan.paper.reddit.api.reddit.network.SubredditSort;
 import com.veyndan.paper.reddit.api.reddit.network.TimePeriod;
 import com.veyndan.paper.reddit.api.reddit.network.User;
 import com.veyndan.paper.reddit.api.reddit.network.VoteDirection;
@@ -111,38 +99,6 @@ public final class Reddit {
     }
 
     // ================================
-    //             Account
-    // ================================
-
-    public Single<Response<Account2>> me() {
-        return redditService.me();
-    }
-
-    public Single<Response<Thing<List<Karma>>>> myKarma() {
-        return redditService.myKarma();
-    }
-
-    public Single<Response<Prefs>> myPrefs() {
-        return redditService.myPrefs();
-    }
-
-    public Single<Response<Thing<Trophies>>> myTrophies() {
-        return redditService.myTrophies();
-    }
-
-    // ================================
-    //             Captcha
-    // ================================
-
-    public Single<Response<CaptchaNew>> newCaptcha() {
-        return redditService.newCaptcha("json");
-    }
-
-    public Single<Response<Void>> idenCaptcha(final String iden) {
-        return redditService.idenCaptcha(iden);
-    }
-
-    // ================================
     //         Links & Comments
     // ================================
 
@@ -154,16 +110,8 @@ public final class Reddit {
         return redditService.hide(TextUtils.join(",", ids));
     }
 
-    public Single<Response<MoreChildren>> moreChildren(final List<String> children, final String linkId) {
-        return redditService.moreChildren(TextUtils.join(",", children), linkId);
-    }
-
     public Single<Response<Void>> save(final String category, final String id) {
         return redditService.save(category, id);
-    }
-
-    public Single<Response<Categories>> savedCategories() {
-        return redditService.savedCategories();
     }
 
     public Single<Response<Void>> unsave(final String id) {
@@ -200,14 +148,6 @@ public final class Reddit {
     }
 
     // ================================
-    //         Private Messages
-    // ================================
-
-    public Single<Response<Thing<Listing>>> message(final Message message) {
-        return redditService.message(message);
-    }
-
-    // ================================
     //              Search
     // ================================
 
@@ -219,37 +159,8 @@ public final class Reddit {
     }
 
     // ================================
-    //            Subreddits
-    // ================================
-
-    public Single<Response<Thing<Listing>>> mySubreddits(final MySubreddits mySubreddits) {
-        return redditService.mySubreddits(mySubreddits);
-    }
-
-    public Single<Response<Thing<Listing>>> subreddits(final SubredditSort sort) {
-        return redditService.subreddits(sort);
-    }
-
-    public Single<Response<Thing<Subreddit>>> subredditAbout(final String subreddit) {
-        return redditService.subredditAbout(subreddit);
-    }
-
-    // ================================
     //              Users
     // ================================
-
-    public Single<Response<Thing<Listing>>> aboutSubreddit(
-            final String subreddit, final AboutSubreddit where) {
-        return redditService.aboutSubreddit(subreddit, where);
-    }
-
-    public Single<Response<Thing<Trophies>>> userTrophies(final String username) {
-        return redditService.userTrophies(username);
-    }
-
-    public Single<Response<Thing<Account2>>> userAbout(final String username) {
-        return redditService.userAbout(username);
-    }
 
     private Single<Response<Thing<Listing>>> user(final String username, final User where,
                                                   @Nullable final TimePeriod timePeriod) {

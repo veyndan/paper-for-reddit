@@ -5,8 +5,6 @@ import java.util.List;
 
 public class Listing implements RedditObject {
 
-    public String before;
     public String after;
-    public String modhash;
     public final List<RedditObject> children = new ArrayList<>();
 }
