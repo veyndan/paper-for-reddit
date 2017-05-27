@@ -9,23 +9,21 @@ import io.reactivex.Single
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 class XkcdMutatorFactory : MutatorFactory {
 
     companion object {
 
-        private val PATTERN: Pattern = Pattern.compile("^https?://(?:www\\.)?xkcd\\.com/(\\d+)/?$")
+        private val REGEX = Regex("^https?://(?:www\\.)?xkcd\\.com/(\\d+)/?$")
     }
 
     override fun mutate(post: Post): Maybe<Post> {
-        val matcher: Matcher = PATTERN.matcher(post.linkUrl)
+        val matchResult = REGEX.matchEntire(post.linkUrl)
 
         return Single.just(post)
-                .filter { matcher.matches() }
+                .filter { matchResult != null }
                 .map {
-                    val comicNum: Int = matcher.group(1).toInt()
+                    val comicNum: Int = matchResult!!.groupValues[1].toInt()
 
                     val retrofit: Retrofit = Retrofit.Builder()
                             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

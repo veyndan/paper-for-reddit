@@ -17,24 +17,22 @@ import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 class ImgurMutatorFactory : MutatorFactory {
 
     companion object {
 
-        val PATTERN: Pattern = Pattern.compile("^https?://(?:m\\.|www\\.)?(i\\.)?imgur\\.com/(a/|gallery/)?(.*)$")
+        val REGEX = Regex("^https?://(?:m\\.|www\\.)?(i\\.)?imgur\\.com/(a/|gallery/)?(.*)$")
     }
 
     override fun mutate(post: Post): Maybe<Post> {
-        val matcher: Matcher = PATTERN.matcher(post.linkUrl)
+        val matchResult = REGEX.matchEntire(post.linkUrl)
 
         return Single.just(post)
-                .filter {BuildConfig.HAS_IMGUR_API_CREDENTIALS && matcher.matches()}
+                .filter {BuildConfig.HAS_IMGUR_API_CREDENTIALS && matchResult != null}
                 .map {
-                    val isAlbum: Boolean = matcher.group(2) != null
-                    val isDirectImage: Boolean = matcher.group(1) != null
+                    val isAlbum = matchResult!!.groupValues[2].isNotEmpty()
+                    val isDirectImage = matchResult.groupValues[1].isNotEmpty()
 
                     var linkUrl: String = it.linkUrl
                     var postHint: PostHint = it.postHint
@@ -70,7 +68,7 @@ class ImgurMutatorFactory : MutatorFactory {
 
                         val imgurService: ImgurService = retrofit.create(ImgurService::class.java)
 
-                        val id: String = matcher.group(3)
+                        val id: String = matchResult.groupValues[3]
 
                         images = imgurService.album(id)
                                 .flattenAsObservable { basic -> basic.body().data.images }
