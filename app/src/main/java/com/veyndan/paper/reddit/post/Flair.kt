@@ -35,7 +35,7 @@ sealed class Flair(@ColorInt val backgroundColor: Int, val text: String?,
     data class Link(val context: Context, val text1: String?) : Flair(
             ContextCompat.getColor(context, R.color.post_flair_link),
             text1,
-            searchQuery = String.format("flair:'%s'", text1))
+            searchQuery = "flair:'$text1'")
 
     data class Gilded(val context: Context, val gildedCount: Int) : Flair(
             ContextCompat.getColor(context, R.color.post_flair_gilded),
