@@ -22,7 +22,7 @@ class ImgurMutatorFactory : MutatorFactory {
 
     companion object {
 
-        val REGEX = Regex("^https?://(?:m\\.|www\\.)?(i\\.)?imgur\\.com/(a/|gallery/)?(.*)$")
+        val REGEX = Regex("""^https?://(?:m\.|www\.)?(i\.)?imgur\.com/(a/|gallery/)?(.*)$""")
     }
 
     override fun mutate(post: Post): Maybe<Post> {

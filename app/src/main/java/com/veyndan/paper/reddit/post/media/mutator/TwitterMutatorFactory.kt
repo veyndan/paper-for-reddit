@@ -17,7 +17,7 @@ class TwitterMutatorFactory : MutatorFactory {
 
     companion object {
 
-        private val REGEX = Regex("^https?://(?:www\\.)?twitter\\.com/\\w*/status/(\\d+)\\??.*$")
+        private val REGEX = Regex("""^https?://(?:www\.)?twitter\.com/\w*/status/(\d+)\??.*$""")
     }
 
     override fun mutate(post: Post): Maybe<Post> {

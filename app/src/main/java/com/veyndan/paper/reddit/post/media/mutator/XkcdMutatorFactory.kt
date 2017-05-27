@@ -14,7 +14,7 @@ class XkcdMutatorFactory : MutatorFactory {
 
     companion object {
 
-        private val REGEX = Regex("^https?://(?:www\\.)?xkcd\\.com/(\\d+)/?$")
+        private val REGEX = Regex("""^https?://(?:www\.)?xkcd\.com/(\d+)/?$""")
     }
 
     override fun mutate(post: Post): Maybe<Post> {

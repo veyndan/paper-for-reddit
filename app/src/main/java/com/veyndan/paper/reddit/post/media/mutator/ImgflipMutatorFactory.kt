@@ -10,7 +10,7 @@ class ImgflipMutatorFactory : MutatorFactory {
 
     companion object {
 
-        private val REGEX = Regex("^https?://(?:www\\.)?imgflip\\.com/i/(.*)#.*$")
+        private val REGEX = Regex("""^https?://(?:www\.)?imgflip\.com/i/(.*)#.*$""")
     }
 
     override fun mutate(post: Post): Maybe<Post> {
