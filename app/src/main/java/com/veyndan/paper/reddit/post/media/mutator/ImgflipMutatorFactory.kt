@@ -12,7 +12,7 @@ class ImgflipMutatorFactory : MutatorFactory {
 
     companion object {
 
-        private val PATTERN: Pattern = Pattern.compile("^https?://(?:www\\.)?imgflip\\.com/i/(.*)$")
+        private val PATTERN: Pattern = Pattern.compile("^https?://(?:www\\.)?imgflip\\.com/i/(.*)#.*$")
     }
 
     override fun mutate(post: Post): Maybe<Post> {
