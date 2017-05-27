@@ -18,12 +18,11 @@ class ImageMutatorFactory : MutatorFactory {
                 .map {
                     val imageDimensAvailable: Boolean = it.preview.images.isNotEmpty()
 
-                    val size: Size
-                    if (imageDimensAvailable) {
+                    val size = if (imageDimensAvailable) {
                         val source: Source = it.preview.images[0].source
-                        size = Size(source.width, source.height)
+                        Size(source.width, source.height)
                     } else {
-                        size = Size(0, 0)
+                        Size(0, 0)
                     }
 
                     @StringRes val type: Int = if (it.linkUrl.endsWith(".gif")) Image.IMAGE_TYPE_GIF else Image.IMAGE_TYPE_STANDARD

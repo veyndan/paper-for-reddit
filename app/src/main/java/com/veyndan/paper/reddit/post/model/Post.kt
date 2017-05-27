@@ -121,11 +121,11 @@ data class Post(var medias: Observable<Any> = Observable.empty(), val comment: B
     fun getDisplayPoints(context: Context): String {
         val resources: Resources = context.resources
 
-        if (scoreHidden) {
-            return resources.getString(R.string.score_hidden)
+        return if (scoreHidden) {
+            resources.getString(R.string.score_hidden)
         } else {
             val formattedString: String = quantityString(points)
-            return resources.getQuantityString(R.plurals.points, points, formattedString)
+            resources.getQuantityString(R.plurals.points, points, formattedString)
         }
     }
 

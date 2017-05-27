@@ -78,12 +78,11 @@ class ImgurMutatorFactory : MutatorFactory {
 
                         val url: String = if (linkUrl.endsWith(".gifv") && imageDimensAvailable) it.preview.images[0].source.url else linkUrl
 
-                        val size: Size
-                        if (imageDimensAvailable) {
+                        val size = if (imageDimensAvailable) {
                             val source: Source = it.preview.images[0].source
-                            size = Size(source.width, source.height)
+                            Size(source.width, source.height)
                         } else {
-                            size = Size(0, 0)
+                            Size(0, 0)
                         }
 
                         @StringRes val type: Int = if (linkUrl.endsWith(".gif") || linkUrl.endsWith(".gifv")) Image.IMAGE_TYPE_GIF else Image.IMAGE_TYPE_STANDARD
