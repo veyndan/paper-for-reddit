@@ -89,10 +89,8 @@ data class Post(var medias: Observable<Any> = Observable.empty(), val comment: B
 
     override fun children(): Observable<Node<Response<Thing<Listing>>>> = children
 
-    override fun descendantCount(): Single<Int> {
-        val commentCount: Int? = commentCount
-        return if (commentCount == null) super.descendantCount() else Single.just(commentCount)
-    }
+    override fun descendantCount(): Single<Int> =
+            if (commentCount == null) super.descendantCount() else Single.just(commentCount)
 
     fun article(): String = fullname.substring(3, fullname.length)
 
