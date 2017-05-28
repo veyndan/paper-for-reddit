@@ -13,6 +13,7 @@ import com.veyndan.paper.reddit.post.Flair
 import com.veyndan.paper.reddit.post.media.mutator.Mutators
 import com.veyndan.paper.reddit.util.Linkifier
 import com.veyndan.paper.reddit.util.Node
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.apache.commons.lang3.StringEscapeUtils
@@ -153,7 +154,7 @@ data class Post(var medias: Observable<Any> = Observable.empty(), val comment: B
             .filter { it.first }
             .map { it.second }
 
-    override fun degree(): Int? {
-        return null
+    override fun degree(): Maybe<Long> {
+        return Maybe.empty()
     }
 }

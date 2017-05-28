@@ -18,7 +18,7 @@ class MoreAdapterDelegate : AbsListItemAdapterDelegate<Progress, Node<Response<T
     override fun isForViewType(node: Node<Response<Thing<Listing>>>,
                                nodes: MutableList<Node<Response<Thing<Listing>>>>,
                                position: Int): Boolean {
-        return node is Progress && node.degree() != null
+        return node is Progress && node.degree().count().blockingGet() > 0
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): MoreViewHolder {
@@ -28,7 +28,7 @@ class MoreAdapterDelegate : AbsListItemAdapterDelegate<Progress, Node<Response<T
     }
 
     override fun onBindViewHolder(progress: Progress, holder: MoreViewHolder, payloads: List<Any>) {
-        val count: Int = progress.degree()!!
+        val count: Int = progress.degree().blockingGet().toInt()
         val resources: Resources = holder.itemView.resources
 
         holder.binding.moreText.text = resources.getQuantityString(R.plurals.children, count, count)

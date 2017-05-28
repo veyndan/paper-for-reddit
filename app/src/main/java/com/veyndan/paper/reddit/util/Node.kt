@@ -1,6 +1,7 @@
 package com.veyndan.paper.reddit.util
 
 import android.support.annotation.IntRange
+import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.Single
 
@@ -10,11 +11,11 @@ abstract class Node<T> {
     var depth: Int = 0
 
     /**
-     * Returns the degree of this node, or else {@code null} if the degree is unknown.
+     * Returns the degree of this node, or else {@code Maybe.empty()} if the degree is unknown.
      */
     @IntRange(from = 0)
-    open fun degree(): Int? {
-        return children().count().blockingGet().toInt()
+    open fun degree(): Maybe<Long> {
+        return children().count().toMaybe()
     }
 
     fun internalNode(): Single<Boolean> {
@@ -27,7 +28,7 @@ abstract class Node<T> {
     open fun descendantCount(): Single<Int> {
         return children()
                 .flatMapSingle(Node<T>::descendantCount)
-                .reduce(degree()) { sum, item -> sum!! + item }
+                .reduce(degree().blockingGet().toInt()) { sum, item -> sum!! + item }
     }
 
     fun preOrderTraverse(@IntRange(from = 0) depth: Int): Observable<Node<T>> {
