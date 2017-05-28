@@ -107,7 +107,6 @@ dependencies {
     // Deep Link Dispatch
     final String deepLinkDispatchVersion = '3.0.0'
     compile "com.airbnb:deeplinkdispatch:$deepLinkDispatchVersion"
-    annotationProcessor "com.airbnb:deeplinkdispatch-processor:$deepLinkDispatchVersion"
     kapt "com.airbnb:deeplinkdispatch-processor:$deepLinkDispatchVersion"
 
     // Flexbox Layout
