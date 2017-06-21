@@ -136,7 +136,7 @@ dependencies {
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
 
     // Moshi
-    final String moshiVersion = '1.4.0'
+    final String moshiVersion = '1.5.0'
     compile "com.squareup.moshi:moshi:$moshiVersion"
 
     // Navi
