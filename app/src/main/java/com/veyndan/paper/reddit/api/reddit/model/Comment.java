@@ -14,49 +14,49 @@ public class Comment extends Submission {
     private Thing<Listing> replies;
 
     @Override
-    public Thing<Listing> getReplies() {
+    public Thing<Listing> replies() {
         return checkNotNull(replies);
     }
 
     @Override
-    public String getDomain() {
+    public String domain() {
         return null;
     }
 
     @Override
-    public String getLinkFlairText() {
+    public String linkFlairText() {
         return null;
     }
 
     @Override
-    public boolean isLocked() {
+    public boolean locked() {
         return false;
     }
 
     @Override
-    public Media getMedia() {
+    public Media media() {
         return null;
     }
 
     @Nullable
     @IntRange(from = 0)
     @Override
-    public Integer getNumComments() {
+    public Integer numComments() {
         return null;
     }
 
     @Override
-    public boolean isOver18() {
+    public boolean over18() {
         return false;
     }
 
     @Override
-    public Preview getPreview() {
+    public Preview preview() {
         return preview;
     }
 
     @Override
-    public PostHint getPostHint() {
+    public PostHint postHint() {
         return PostHint.SELF;
     }
 
@@ -65,15 +65,15 @@ public class Comment extends Submission {
      * {@link Comment#linkTitle} parsing is required. Omission of the slug doesn't affect the
      * permalink endpoint.
      *
-     * @see Submission#getPermalink()
+     * @see Submission#permalink()
      */
     @Override
-    public String getPermalink() {
+    public String permalink() {
         return String.format("https://www.reddit.com/comments/%s//%s", linkId.split("_")[1], id);
     }
 
     @Override
-    public boolean isHideable() {
+    public boolean hideable() {
         return false;
     }
 

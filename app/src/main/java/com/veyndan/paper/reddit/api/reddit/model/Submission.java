@@ -52,24 +52,24 @@ public abstract class Submission implements Created, RedditObject, Votable {
      * other examples include {@code en.wikipedia.org} and {@code s3.amazon.com}. If the submission
      * is a comment, then {@code null} is returned.
      */
-    public abstract String getDomain();
+    public abstract String domain();
 
     /**
      * The text of the link's flair. If the submission is a Comment, then {@code null} is returned.
      */
-    public abstract String getLinkFlairText();
+    public abstract String linkFlairText();
 
     /**
      * Whether the submission is locked (closed to new comments) or not. If the submission is a
      * comment, then {@code false} is returned.
      */
-    public abstract boolean isLocked();
+    public abstract boolean locked();
 
     /**
      * Used for streaming video. Detailed information about the video and it's origins are placed
      * here. If the submission is a Comment, then {@code null} is returned.
      */
-    public abstract Media getMedia();
+    public abstract Media media();
 
     /**
      * The number of comments that belong to this link. includes removed comments. If the submission
@@ -77,18 +77,18 @@ public abstract class Submission implements Created, RedditObject, Votable {
      */
     @Nullable
     @IntRange(from = 0)
-    public abstract Integer getNumComments();
+    public abstract Integer numComments();
 
     /**
      * {@code true} if the post is tagged as NSFW. {@code false} if otherwise. If the submission is
      * a Comment, then {@code false} is returned.
      */
-    public abstract boolean isOver18();
+    public abstract boolean over18();
 
     /**
      * #undocumented
      */
-    public abstract Preview getPreview();
+    public abstract Preview preview();
 
     /**
      * Returns a string that suggests the content of this link. As a hint, this is lossy and may be
@@ -97,12 +97,12 @@ public abstract class Submission implements Created, RedditObject, Votable {
      * <p>
      * #inferred ({@code "post_hint"} defined at <a href="https://github.com/reddit/reddit/blob/b423fe2bf873919b27c4eab885551c8ee325b9af/r2/r2/models/link.py#L896">https://github.com/reddit/reddit/blob/b423fe2bf873919b27c4eab885551c8ee325b9af/r2/r2/models/link.py#L896</a>
      */
-    public abstract PostHint getPostHint();
+    public abstract PostHint postHint();
 
     /**
      * The comment forest/leaves exactly one below the current Submission.
      */
-    public abstract Thing<Listing> getReplies();
+    public abstract Thing<Listing> replies();
 
     /**
      * The account name of the poster. {@code null} if this is a promotional link.
@@ -112,7 +112,7 @@ public abstract class Submission implements Created, RedditObject, Votable {
     /**
      * Url of the permanent link.
      */
-    public abstract String getPermalink();
+    public abstract String permalink();
 
     /**
      * {@code true} if this post is saved by the logged in user.
@@ -232,5 +232,5 @@ public abstract class Submission implements Created, RedditObject, Votable {
      * Returns whether this submission can be hidden. {@code true} for {@link Link} and
      * {@code false} for {@link Comment}.
      */
-    public abstract boolean isHideable();
+    public abstract boolean hideable();
 }

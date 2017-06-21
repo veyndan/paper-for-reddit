@@ -107,7 +107,7 @@ class Reddit(credentials: Credentials) {
             redditService.subredditComments(subreddit, article)
                     .map { response ->
                         val things: List <Thing <Listing>> = response.body()
-                        (things[0].data.children[0] as Submission).replies.data.children.addAll(things[1].data.children)
+                        (things[0].data.children[0] as Submission).replies().data.children.addAll(things[1].data.children)
                         Response.success(things[0])
                     }
 

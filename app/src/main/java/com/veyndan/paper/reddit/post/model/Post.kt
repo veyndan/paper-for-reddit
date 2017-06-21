@@ -41,7 +41,7 @@ data class Post(var medias: Observable<Any> = Observable.empty(), val comment: B
         fun create(submission: Submission): Post {
             val comment: Boolean = submission is Comment
 
-            val children: Observable<Node<Response<Thing<Listing>>>> = Observable.fromIterable(submission.replies.data.children)
+            val children: Observable<Node<Response<Thing<Listing>>>> = Observable.fromIterable(submission.replies().data.children)
                     .flatMapSingle { redditObject ->
                         when (redditObject) {
                             is Submission -> Single.just(redditObject)
@@ -61,26 +61,26 @@ data class Post(var medias: Observable<Any> = Observable.empty(), val comment: B
             return Post(
                     comment = comment,
                     children = children,
-                    commentCount = submission.numComments,
+                    commentCount = submission.numComments(),
                     descendantsVisible = comment,
                     archived = submission.archived,
                     author = submission.author.orEmpty(),
                     bodyHtml = submission.bodyHtml,
                     createdUtc = submission.createdUtc,
-                    domain = submission.domain,
+                    domain = submission.domain(),
                     fullname = submission.fullname,
                     gildedCount = submission.gilded,
-                    hideable = submission.isHideable,
+                    hideable = submission.hideable(),
                     likes = submission.likes,
-                    linkFlair = submission.linkFlairText,
+                    linkFlair = submission.linkFlairText(),
                     linkTitle = submission.linkTitle,
                     linkUrl = submission.linkUrl.orEmpty(),
-                    locked = submission.isLocked,
-                    nsfw = submission.isOver18,
-                    permalink = submission.permalink,
+                    locked = submission.locked(),
+                    nsfw = submission.over18(),
+                    permalink = submission.permalink(),
                     points = submission.score,
-                    postHint = submission.postHint,
-                    preview = submission.preview,
+                    postHint = submission.postHint(),
+                    preview = submission.preview(),
                     saved = submission.saved,
                     scoreHidden = submission.isScoreHidden,
                     stickied = submission.stickied,
