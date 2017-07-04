@@ -1,11 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.fabric'
 apply plugin: 'com.getkeepsafe.dexcount'
 
 final Properties keystoreProperties = loadProperties('app/keystore.properties')
-final Properties fabricProperties = loadProperties('app/fabric.properties')
 
 Properties loadProperties(final String absolutePath) {
     loadProperties(rootProject.file(absolutePath))
@@ -28,9 +26,6 @@ android {
         versionCode 1
         versionName '1.0'
         vectorDrawables.useSupportLibrary = true
-        manifestPlaceholders = [
-                FABRIC_KEY: fabricProperties['fabricKey']
-        ]
         // TODO Should display this better by putting the below somewhere else (a different gradle file like keystore.gradle) and also making the services (e.g. Reddit, Imgur) separated either through comments or functions
 
         /**
@@ -190,8 +185,6 @@ dependencies {
     compile "com.jakewharton.timber:timber:$timberVersion"
 
     // Twitter
-    final String twitterVersion = '2.3.2'
-    compile("com.twitter.sdk.android:twitter:$twitterVersion@aar") {
-        transitive = true;
-    }
+    final String twitterVersion = '3.0.0'
+    compile "com.twitter.sdk.android:tweet-ui:$twitterVersion"
 }

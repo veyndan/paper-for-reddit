@@ -3,13 +3,15 @@ package com.veyndan.paper.reddit
 import android.app.Application
 import android.content.Context
 import android.support.multidex.MultiDex
+import android.util.Log
 
 import com.squareup.leakcanary.LeakCanary
-import com.twitter.sdk.android.Twitter
+import com.twitter.sdk.android.core.DefaultLogger
+import com.twitter.sdk.android.core.Twitter
 import com.twitter.sdk.android.core.TwitterAuthConfig
+import com.twitter.sdk.android.core.TwitterConfig
 import com.veyndan.paper.reddit.api.reddit.network.Credentials
 
-import io.fabric.sdk.android.Fabric
 import timber.log.Timber
 
 class PaperForRedditApp : Application() {
@@ -34,8 +36,11 @@ class PaperForRedditApp : Application() {
                 }
             })
         }
-        val authConfig = TwitterAuthConfig(BuildConfig.TWITTER_API_KEY, BuildConfig.TWITTER_API_SECRET)
-        Fabric.with(this, Twitter(authConfig))
+        Twitter.initialize(TwitterConfig.Builder(this)
+                .logger(DefaultLogger(Log.DEBUG)) // TODO Use Timber
+                .twitterAuthConfig(TwitterAuthConfig(BuildConfig.TWITTER_API_KEY, BuildConfig.TWITTER_API_SECRET))
+                .debug(BuildConfig.DEBUG)
+                .build())
         LeakCanary.install(this)
     }
 
