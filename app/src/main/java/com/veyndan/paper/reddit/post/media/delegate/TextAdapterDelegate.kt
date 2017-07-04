@@ -22,7 +22,7 @@ class TextAdapterDelegate : AbsListItemAdapterDelegate<Text, Any, TextAdapterDel
 
     override fun onBindViewHolder(text: Text, holder: TextViewHolder, payloads: List<Any>) {
         val context = holder.itemView.context
-        holder.binding.postMediaText.text = text.getBody(context)
+        holder.binding.postMediaText.text = text.body.invoke(context)
         holder.binding.postMediaText.movementMethod = LinkMovementMethod.getInstance()
     }
 
