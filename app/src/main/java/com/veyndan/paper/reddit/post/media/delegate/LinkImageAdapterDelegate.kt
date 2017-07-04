@@ -2,6 +2,7 @@ package com.veyndan.paper.reddit.post.media.delegate
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.support.customtabs.CustomTabsClient
 import android.support.customtabs.CustomTabsIntent
@@ -11,7 +12,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.GlideDrawable
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate
@@ -19,7 +21,6 @@ import com.jakewharton.rxbinding2.view.clicks
 import com.veyndan.paper.reddit.databinding.PostMediaLinkImageBinding
 import com.veyndan.paper.reddit.post.media.model.LinkImage
 import com.veyndan.paper.reddit.post.model.Post
-import java.lang.Exception
 
 class LinkImageAdapterDelegate(private val activity: Activity,
                                private val customTabsClient: CustomTabsClient?,
@@ -54,13 +55,13 @@ class LinkImageAdapterDelegate(private val activity: Activity,
 
         Glide.with(context)
                 .load(linkImage.url)
-                .listener(object: RequestListener<String, GlideDrawable> {
-                    override fun onException(e: Exception?, model: String?, target: Target<GlideDrawable>?, isFirstResource: Boolean): Boolean {
+                .listener(object: RequestListener<Drawable> {
+                    override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
                         holder.binding.postMediaImageProgress.visibility = View.GONE
                         return false
                     }
 
-                    override fun onResourceReady(resource: GlideDrawable?, model: String?, target: Target<GlideDrawable>?, isFromMemoryCache: Boolean, isFirstResource: Boolean): Boolean {
+                    override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
                         holder.binding.postMediaImageProgress.visibility = View.GONE
                         return false
                     }
