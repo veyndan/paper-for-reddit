@@ -71,7 +71,7 @@ class ImgurMutatorFactory : MutatorFactory {
                         val id: String = matchResult.groupValues[3]
 
                         images = imgurService.album(id)
-                                .flattenAsObservable { basic -> basic.body().data.images }
+                                .flattenAsObservable { basic -> basic.body()!!.data.images }
                                 .map { (width, height, link) -> Image(link, Size(width, height)) }
                     } else {
                         val imageDimensAvailable: Boolean = it.preview.images.isNotEmpty()

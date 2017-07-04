@@ -88,7 +88,7 @@ class PostsFragment : Fragment() {
                     .flatMapSingle { _ ->
                         request
                                 .subscribeOn(Schedulers.io())
-                                .map { response -> response.body() }
+                                .map { response -> response.body()!! }
                                 .flattenAsObservable { thing -> thing!!.data.children }
                                 .observeOn(Schedulers.computation())
                                 .flatMapSingle { redditObject ->

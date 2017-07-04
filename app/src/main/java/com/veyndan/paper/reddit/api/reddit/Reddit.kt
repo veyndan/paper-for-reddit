@@ -106,7 +106,7 @@ class Reddit(credentials: Credentials) {
     private fun subredditComments(subreddit: String, article: String): Single<Response<Thing<Listing>>> =
             redditService.subredditComments(subreddit, article)
                     .map { response ->
-                        val things: List <Thing <Listing>> = response.body()
+                        val things: List <Thing <Listing>> = response.body()!!
                         (things[0].data.children[0] as Submission).replies.data.children.addAll(things[1].data.children)
                         Response.success(things[0])
                     }
@@ -263,5 +263,5 @@ class Reddit(credentials: Credentials) {
                     // TODO If the query has never been initialized, then we want it to pass.
                     .filter { !it.build().containsKey("after") || it.build()["after"] != null }
                     .flatMapSingle { page }
-                    .doOnSuccess { response -> query.after(response.body().data.after!!) }
+                    .doOnSuccess { response -> query.after(response.body()!!.data.after!!) }
 }

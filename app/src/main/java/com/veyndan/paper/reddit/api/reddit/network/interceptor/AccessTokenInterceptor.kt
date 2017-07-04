@@ -36,7 +36,7 @@ class AccessTokenInterceptor(private val authenticationService: AuthenticationSe
     private fun accessTokenNetwork(): Single<AccessToken> {
         val single: Single<AccessToken> = authenticationService.getAccessToken(
                 "password", credentials.username, credentials.password)
-                .map<AccessToken> { it.body() }
+                .map { it.body()!! }
 
         // Save access token from network into the cache.
         return single.doOnSuccess { accessToken -> accessTokenCache = accessToken }

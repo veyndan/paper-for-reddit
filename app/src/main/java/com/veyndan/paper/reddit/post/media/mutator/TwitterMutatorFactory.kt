@@ -39,7 +39,7 @@ class TwitterMutatorFactory : MutatorFactory {
                             }
                         })
                     }
-                    it.copy(it.medias.concatWith(tweet.map { it.body() }.toObservable()))
+                    it.copy(it.medias.concatWith(tweet.map { it.body()!! }.toObservable()))
                 }
     }
 }

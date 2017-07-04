@@ -34,7 +34,7 @@ class XkcdMutatorFactory : MutatorFactory {
                     val xkcdService: XkcdService = retrofit.create(XkcdService::class.java)
 
                     val image: Single<Image> = xkcdService.num(comicNum)
-                            .map { comic -> Image(comic.body().img) }
+                            .map { comic -> Image(comic.body()!!.img) }
 
                     it.copy(it.medias.concatWith(image.toObservable()), postHint = PostHint.IMAGE)
                 }
