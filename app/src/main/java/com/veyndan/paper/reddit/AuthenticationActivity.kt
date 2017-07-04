@@ -10,7 +10,8 @@ import com.trello.navi2.Event
 import com.trello.navi2.rx.RxNavi
 import com.veyndan.paper.reddit.databinding.AuthenticationActivityBinding
 import okhttp3.HttpUrl
-import org.apache.commons.lang3.RandomStringUtils
+import org.apache.commons.text.CharacterPredicates
+import org.apache.commons.text.RandomStringGenerator
 import timber.log.Timber
 
 class AuthenticationActivity : BaseActivity() {
@@ -39,7 +40,10 @@ class AuthenticationActivity : BaseActivity() {
                     val cookieManager: CookieManager = CookieManager.getInstance()
                     cookieManager.removeAllCookies(null)
 
-                    val state: String = RandomStringUtils.randomAlphanumeric(16)
+                    val state: String = RandomStringGenerator.Builder()
+                            .filteredBy(CharacterPredicates.LETTERS, CharacterPredicates.DIGITS)
+                            .build()
+                            .generate(16)
 
                     binding.webView.setWebViewClient(object : WebViewClient() {
                         @Suppress("OverridingDeprecatedMember")

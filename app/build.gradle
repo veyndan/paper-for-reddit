@@ -86,9 +86,9 @@ dependencies {
     final String adapterDelegatesVersion = '3.0.1'
     compile "com.hannesdorfmann:adapterdelegates3:$adapterDelegatesVersion"
 
-    // Apache Commons
-    final String apacheCommonsVersion = '3.5'
-    compile "org.apache.commons:commons-lang3:$apacheCommonsVersion"
+    // Apache Commons Text
+    final String apacheCommonsTextVersion = '1.1'
+    compile "org.apache.commons:commons-text:$apacheCommonsTextVersion"
 
     // Data Binding
     final String dataBindingVersion = '2.3.2'
