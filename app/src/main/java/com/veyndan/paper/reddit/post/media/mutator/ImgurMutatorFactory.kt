@@ -103,6 +103,6 @@ class ImgurMutatorFactory : MutatorFactory {
      * @return The direct image url.
      */
     private fun singleImageUrlToDirectImageUrl(url: String): String {
-        return "${HttpUrl.parse(url).newBuilder().host("i.imgur.com").build()}.png"
+        return "${HttpUrl.parse(url)!!.newBuilder().host("i.imgur.com").build()}.png"
     }
 }

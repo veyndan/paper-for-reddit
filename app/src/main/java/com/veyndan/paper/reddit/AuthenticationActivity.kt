@@ -49,7 +49,7 @@ class AuthenticationActivity : BaseActivity() {
                         @Suppress("OverridingDeprecatedMember")
                         override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
                             if (url!!.startsWith(Constants.REDDIT_REDIRECT_URI)) {
-                                val redirectUrl: HttpUrl = HttpUrl.parse(url)
+                                val redirectUrl: HttpUrl = HttpUrl.parse(url)!!
 
                                 if (state != redirectUrl.queryParameter("state")) {
                                     Timber.e("This app didn't initiate the authorization request. " +
@@ -81,7 +81,7 @@ class AuthenticationActivity : BaseActivity() {
                         }
                     })
 
-                    val url: HttpUrl = HttpUrl.parse("https://www.reddit.com/api/v1/authorize.compact")
+                    val url: HttpUrl = HttpUrl.parse("https://www.reddit.com/api/v1/authorize.compact")!!
                             .newBuilder()
                             .addQueryParameter("client_id", BuildConfig.REDDIT_API_KEY)
                             .addQueryParameter("response_type", "code")
