@@ -21,10 +21,10 @@ class RedditObjectAdapter private constructor(private val moshi: Moshi) : JsonAd
         val type = Types.newParameterizedType(Thing::class.java, Types.newParameterizedType(Map::class.java, String::class.java, Any::class.java))
         val thingMapAdapter = moshi.adapter<Thing<Map<String, Any>>>(type)
         val thing = thingMapAdapter.fromJson(reader)
-        return moshi.adapter<RedditObject>(thing.kind!!.derivedClass).fromJsonValue(thing.data)
+        return moshi.adapter<RedditObject>(thing!!.kind!!.derivedClass).fromJsonValue(thing.data)!!
     }
 
-    override fun toJson(writer: JsonWriter, value: RedditObject) {
+    override fun toJson(writer: JsonWriter?, value: RedditObject?) {
         throw UnsupportedOperationException("toJson() not implemented")
     }
 }

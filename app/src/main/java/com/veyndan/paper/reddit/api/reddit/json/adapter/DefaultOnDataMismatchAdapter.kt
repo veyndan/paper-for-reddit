@@ -28,13 +28,13 @@ class DefaultOnDataMismatchAdapter<T> private constructor(private val delegate: 
 
         // Use the delegate to convert the JSON value to the target type.
         return try {
-            delegate.fromJsonValue(jsonValue)
+            delegate.fromJsonValue(jsonValue)!!
         } catch (e: JsonDataException) {
             defaultValue
         }
     }
 
-    override fun toJson(writer: JsonWriter, value: T) {
+    override fun toJson(writer: JsonWriter?, value: T?) {
         delegate.toJson(writer, value)
     }
 

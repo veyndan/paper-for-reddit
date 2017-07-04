@@ -28,7 +28,7 @@ abstract class Node<T> {
     open fun descendantCount(): Single<Int> {
         return children()
                 .flatMapSingle(Node<T>::descendantCount)
-                .reduce(degree().blockingGet().toInt()) { sum, item -> sum!! + item }
+                .reduce(degree().blockingGet().toInt()) { sum, item -> sum + item }
     }
 
     fun preOrderTraverse(@IntRange(from = 0) depth: Int): Observable<Node<T>> {

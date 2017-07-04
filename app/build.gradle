@@ -95,12 +95,12 @@ dependencies {
     kapt "com.android.databinding:compiler:$dataBindingVersion"
 
     // Deep Link Dispatch
-    final String deepLinkDispatchVersion = '3.0.0'
+    final String deepLinkDispatchVersion = '3.1.0'
     compile "com.airbnb:deeplinkdispatch:$deepLinkDispatchVersion"
     kapt "com.airbnb:deeplinkdispatch-processor:$deepLinkDispatchVersion"
 
     // Flexbox Layout
-    final String flexboxLayoutVersion = '0.2.6'
+    final String flexboxLayoutVersion = '0.3.0'
     compile "com.google.android:flexbox:$flexboxLayoutVersion"
 
     // Glide
@@ -114,21 +114,21 @@ dependencies {
     }
 
     // Guava
-    final String guavaVersion = '20.0'
-    compile "com.google.guava:guava:$guavaVersion"
+    final String guavaVersion = '22.0'
+    compile "com.google.guava:guava:$guavaVersion-android"
 
     // Kotlin
     final String kotlinVersion = '1.1.3'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion"
 
     // Leak Canary
-    final String leakCanaryVersion = '1.5'
+    final String leakCanaryVersion = '1.5.1'
     debugCompile "com.squareup.leakcanary:leakcanary-android:$leakCanaryVersion"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$leakCanaryVersion"
 
     // Moshi
-    final String moshiVersion = '1.4.0'
+    final String moshiVersion = '1.5.0'
     compile "com.squareup.moshi:moshi:$moshiVersion"
 
     // Navi
@@ -150,7 +150,7 @@ dependencies {
     compile "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
 
     // RxJava
-    final String rxJavaVersion = '2.0.8'
+    final String rxJavaVersion = '2.1.1'
     compile "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
 
     // RxBinding
@@ -164,7 +164,7 @@ dependencies {
     compile "com.binaryfork:spanny:$spannyVersion"
 
     // Support
-    final String supportVersion = '25.4.0'
+    final String supportVersion = '26.0.0-beta2'
     compile "com.android.support:appcompat-v7:$supportVersion"
     compile "com.android.support:cardview-v7:$supportVersion"
     compile "com.android.support:customtabs:$supportVersion"
