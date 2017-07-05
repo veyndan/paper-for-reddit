@@ -33,15 +33,12 @@ class AccessTokenInterceptor(private val authenticationService: AuthenticationSe
         return chain.proceed(authorizedRequest)
     }
 
-    private fun accessTokenNetwork(): Single<Timed<AccessToken>> {
-        val single: Single<Timed<AccessToken>> = authenticationService.getAccessToken(
-                "password", credentials.username, credentials.password)
-                .map { it.body()!! }
-                .toObservable()
-                .timestamp()
-                .singleOrError()
-
-        // Save access token from network into the cache.
-        return single.doOnSuccess { accessToken -> accessTokenCache = Single.just(accessToken) }
-    }
+    private fun accessTokenNetwork(): Single<Timed<AccessToken>> = authenticationService
+            .getAccessToken("password", credentials.username, credentials.password)
+            .map { it.body()!! }
+            .toObservable()
+            .timestamp()
+            .singleOrError()
+            // Save access token from network into the cache.
+            .doOnSuccess { accessToken -> accessTokenCache = Single.just(accessToken) }
 }
