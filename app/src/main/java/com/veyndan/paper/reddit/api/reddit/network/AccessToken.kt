@@ -21,16 +21,10 @@ class AccessToken(
         val EXPIRED_ACCESS_TOKEN: AccessToken = AccessToken()
     }
 
-    private val timestamp: Long = System.currentTimeMillis()
-
     /**
      * The number of milliseconds that this access token is valid for.
      */
-    private fun expiresIn(): Long {
+    fun expiresIn(): Long {
         return TimeUnit.MILLISECONDS.convert(expiresIn, TimeUnit.SECONDS)
-    }
-
-    fun isExpired(): Boolean {
-        return timestamp + expiresIn() < System.currentTimeMillis()
     }
 }
